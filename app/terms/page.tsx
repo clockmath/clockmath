@@ -37,7 +37,7 @@ export default function TermsPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Calculator
+            Back to ClockMath
           </Link>
           <h1 className="text-4xl font-bold text-foreground dark:text-slate-100 mb-2">
             ⚖️ Terms of Service
@@ -144,7 +144,7 @@ export default function TermsPage() {
           </div>
         </div>
 
-        {/* Back to Calculator CTA */}
+        {/* Back to ClockMath CTA */}
         <div className="text-center mt-8">
           <Link
             href="/"
@@ -153,7 +153,7 @@ export default function TermsPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Use Time Calculator
+            Go to ClockMath
           </Link>
         </div>
       </div>
