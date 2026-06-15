@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Metadata } from "next";
 import Analytics from "@/components/Analytics";
+import ConsentBanner from "@/components/ConsentBanner";
 
   
 
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Analytics />
         {children}
+        <ConsentBanner />
       </body>
     </html>
   );
