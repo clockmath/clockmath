@@ -11,6 +11,31 @@ const path = require('path');
 const workerPath = path.join(__dirname, '../.vercel/output/static/_worker.js/index.js');
 
 const apiHandlersCode = `
+// ---- Injected security headers ----
+// _headers is unreliable in next-on-pages Advanced Mode (the _worker.js
+// overrides response headers), so security headers are applied here on every
+// response instead. This is the authoritative source for these headers.
+const SECURITY_HEADERS = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self)',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests",
+};
+
+function withSecurityHeaders(res) {
+  try {
+    const headers = new Headers(res.headers);
+    for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+      headers.set(key, value);
+    }
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+  } catch (e) {
+    return res;
+  }
+}
+
 // ---- Injected API handlers (mirror of functions/api/*.js) ----
 const ALLOWED_ORIGINS = new Set(['https://clockmath.com', 'https://www.clockmath.com']);
 
@@ -129,8 +154,21 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   }
 `;
   workerContent = workerContent.replace(originalExport, wrappedExport);
+
+  // Wrap the default export so security headers are applied to every response
+  // (API responses above and all Next.js pages/assets below).
+  const exportPattern = new RegExp(`export\\{${varName} as default\\}`);
+  if (!exportPattern.test(workerContent)) {
+    console.error(`[inject-api] Could not find "export{${varName} as default}" — security headers NOT applied.`);
+    process.exit(1);
+  }
+  workerContent = workerContent.replace(
+    exportPattern,
+    `var __securedDefault={async fetch(req,env,ctx){return withSecurityHeaders(await ${varName}.fetch(req,env,ctx));}};export{__securedDefault as default}`
+  );
+
   fs.writeFileSync(workerPath, workerContent);
-  console.log('[inject-api] Injected /api/places and /api/geo handlers into worker.');
+  console.log('[inject-api] Injected /api/places + /api/geo handlers and security headers into worker.');
 } else {
   console.error('[inject-api] Could not find fetch handler pattern in worker — API routes NOT injected.');
   process.exit(1);
