@@ -137,8 +137,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         params: {
           from,
           to,
-          hasCustomDatetime: Boolean(dateStr && timeStr),
-          hour12,
+          has_custom_datetime: Boolean(dateStr && timeStr),
+          is_12_hour: hour12,
           device: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop'
         }
       });

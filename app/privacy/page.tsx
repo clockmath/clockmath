@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
 import { Metadata } from "next";
+import ManageConsentButton from "@/components/ManageConsentButton";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Clock Math",
@@ -37,7 +38,7 @@ export default function PrivacyPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Calculator
+            Back to ClockMath
           </Link>
           <h1 className="text-4xl font-bold text-foreground dark:text-slate-100 mb-2">
             Privacy Policy
@@ -138,8 +139,13 @@ export default function PrivacyPage() {
             <p className="mb-4">
               ClockMath uses cookies only to support basic analytics tracking. Cookies are small files stored on your device that help us understand how visitors interact with the site.
             </p>
-            <p className="mb-6">
+            <p className="mb-4">
               You may disable cookies in your browser settings, though some features of the site may not function as intended.
+            </p>
+            <p className="mb-6">
+              If you're in the EEA, UK, or Switzerland, we ask for your consent
+              before setting analytics cookies. You can review or change your
+              choice at any time: <ManageConsentButton />.
             </p>
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
@@ -179,7 +185,7 @@ export default function PrivacyPage() {
           </div>
         </div>
 
-        {/* Back to Calculator CTA */}
+        {/* Back to ClockMath CTA */}
         <div className="text-center mt-8">
           <Link
             href="/"
@@ -188,7 +194,7 @@ export default function PrivacyPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Use Time Calculator
+            Go to ClockMath
           </Link>
         </div>
       </div>
