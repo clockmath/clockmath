@@ -1,19 +1,36 @@
-// Post-build script to inject the places API into the worker
+// Post-build script to inject the API handlers into the next-on-pages worker.
+//
+// Why this exists: @cloudflare/next-on-pages emits a `_worker.js` (Pages
+// "Advanced Mode"), which causes Cloudflare to IGNORE the `functions/`
+// directory. So the /api/places and /api/geo handlers can't live only in
+// functions/ — they must be injected into the generated worker here. Keep this
+// file in sync with functions/api/places.js and functions/api/geo.js.
 const fs = require('fs');
 const path = require('path');
 
 const workerPath = path.join(__dirname, '../.vercel/output/static/_worker.js/index.js');
-const placesApiCode = `
-// Injected Places API handler
+
+const apiHandlersCode = `
+// ---- Injected API handlers (mirror of functions/api/*.js) ----
+const ALLOWED_ORIGINS = new Set(['https://clockmath.com', 'https://www.clockmath.com']);
+
+function buildCorsHeaders(request) {
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  };
+  const origin = request.headers.get('Origin');
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+  return headers;
+}
+
 async function handlePlacesApi(request, env) {
   const url = new URL(request.url);
   const query = url.searchParams.get('q');
-
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  const corsHeaders = buildCorsHeaders(request);
 
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -26,12 +43,11 @@ async function handlePlacesApi(request, env) {
     );
   }
 
-  // Try multiple ways to access the API key
-  const apiKey = env.GEOAPIFY_API_KEY || env.GEOAPIFY_KEY || (globalThis.process?.env?.GEOAPIFY_API_KEY);
+  const apiKey = env.GEOAPIFY_API_KEY || env.GEOAPIFY_KEY;
 
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ error: 'API configuration error', debug: Object.keys(env || {}).join(',') }),
+      JSON.stringify({ error: 'API configuration error' }),
       { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
@@ -44,8 +60,7 @@ async function handlePlacesApi(request, env) {
     geoapifyUrl.searchParams.set('format', 'json');
     geoapifyUrl.searchParams.set('type', 'city');
 
-    const fetchUrl = geoapifyUrl.toString();
-    const response = await fetch(fetchUrl);
+    const response = await fetch(geoapifyUrl.toString());
 
     if (!response.ok) {
       const responseText = await response.text();
@@ -76,10 +91,20 @@ async function handlePlacesApi(request, env) {
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: 'Failed to search locations', message: error?.message || String(error), results: [] }),
+      JSON.stringify({ error: 'Failed to search locations', results: [] }),
       { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
+}
+
+function handleGeoApi(request) {
+  const country = (request.cf && request.cf.country) || request.headers.get('CF-IPCountry') || 'XX';
+  const headers = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Vary': 'Origin' };
+  const origin = request.headers.get('Origin');
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+  return new Response(JSON.stringify({ country }), { headers });
 }
 `;
 
@@ -92,16 +117,21 @@ const match = workerContent.match(fetchPattern);
 
 if (match) {
   const [originalExport, varName, reqParam, envParam, ctxParam] = match;
-  const wrappedExport = `${placesApiCode}
+  const wrappedExport = `${apiHandlersCode}
 var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
-  // Check if this is a places API request
+  // Route injected API requests before falling through to Next.js assets
   const reqUrl = new URL(${reqParam}.url);
   if (reqUrl.pathname === '/api/places' || reqUrl.pathname === '/api/places/') {
     return handlePlacesApi(${reqParam}, ${envParam});
   }
+  if (reqUrl.pathname === '/api/geo' || reqUrl.pathname === '/api/geo/') {
+    return handleGeoApi(${reqParam});
+  }
 `;
   workerContent = workerContent.replace(originalExport, wrappedExport);
   fs.writeFileSync(workerPath, workerContent);
+  console.log('[inject-api] Injected /api/places and /api/geo handlers into worker.');
 } else {
+  console.error('[inject-api] Could not find fetch handler pattern in worker — API routes NOT injected.');
   process.exit(1);
 }
