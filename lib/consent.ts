@@ -3,7 +3,17 @@
 
 export const CONSENT_STORAGE_KEY = "cm_consent";
 
+// Custom event used to reopen the consent banner (e.g. from a "Manage cookie
+// preferences" link) regardless of region or prior choice.
+export const CONSENT_OPEN_EVENT = "open-consent-banner";
+
 export type ConsentChoice = "granted" | "denied";
+
+// Dispatch the event that reopens the consent banner.
+export const openConsentBanner = () => {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(CONSENT_OPEN_EVENT));
+};
 
 // EEA (EU 27 + Iceland, Liechtenstein, Norway) + UK + Switzerland.
 // These are the regions where we require explicit opt-in before granting

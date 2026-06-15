@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GA_MEASUREMENT_ID } from "@/lib/gtag";
 import {
+  CONSENT_OPEN_EVENT,
   type ConsentChoice,
   detectCountry,
   getStoredConsent,
@@ -18,9 +19,17 @@ export default function ConsentBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Allow the banner to be reopened from anywhere (e.g. the privacy page's
+    // "Manage cookie preferences" link), regardless of region or prior choice.
+    const onOpen = () => setVisible(true);
+    window.addEventListener(CONSENT_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(CONSENT_OPEN_EVENT, onOpen);
+  }, []);
+
+  useEffect(() => {
     // Nothing to consent to if analytics isn't configured.
     if (!GA_MEASUREMENT_ID) return;
-    // Respect a prior choice — banner only shows until the user decides.
+    // Respect a prior choice — banner only auto-shows until the user decides.
     if (getStoredConsent()) return;
 
     let cancelled = false;

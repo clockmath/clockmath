@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
 import { Metadata } from "next";
+import ManageConsentButton from "@/components/ManageConsentButton";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Clock Math",
@@ -138,8 +139,13 @@ export default function PrivacyPage() {
             <p className="mb-4">
               ClockMath uses cookies only to support basic analytics tracking. Cookies are small files stored on your device that help us understand how visitors interact with the site.
             </p>
-            <p className="mb-6">
+            <p className="mb-4">
               You may disable cookies in your browser settings, though some features of the site may not function as intended.
+            </p>
+            <p className="mb-6">
+              If you're in the EEA, UK, or Switzerland, we ask for your consent
+              before setting analytics cookies. You can review or change your
+              choice at any time: <ManageConsentButton />.
             </p>
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
