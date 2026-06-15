@@ -177,39 +177,26 @@ export function LocationSearch({
         setLoading(true);
         
         try {
-          // Try Geoapify API directly, fallback to hardcoded cities if API fails
+          // Use secure server-side proxy to keep API key private
           let results: Place[] = [];
-          
-          try {
-            const apiKey = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY;
-            
-            if (apiKey) {
-              // Use Geoapify API directly (client-side)
-              const geoapifyUrl = new URL('https://api.geoapify.com/v1/geocode/search');
-              geoapifyUrl.searchParams.set('text', q.trim());
-              geoapifyUrl.searchParams.set('apiKey', apiKey);
-              geoapifyUrl.searchParams.set('limit', '8');
-              geoapifyUrl.searchParams.set('type', 'city');
 
-              const res = await fetch(geoapifyUrl.toString(), {
-                signal: ac.signal,
-              });
-              
-              if (res.ok) {
-                const data = await res.json();
-                // Handle GeoJSON FeatureCollection format
-                results = (data.features || []).map((feature: any) => ({
-                  name: formatPlaceName(feature.properties),
-                  lat: feature.geometry.coordinates[1], // lat is second coordinate
-                  lon: feature.geometry.coordinates[0], // lon is first coordinate
-                }));
-              } else {
-                results = getFallbackCities(q.toLowerCase().trim());
-              }
+          try {
+            // Call our secure /api/places proxy endpoint
+            const proxyUrl = `/api/places?q=${encodeURIComponent(q.trim())}`;
+            const res = await fetch(proxyUrl, {
+              signal: ac.signal,
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              // The proxy returns { results: Place[] }
+              results = data.results || [];
             } else {
+              // If proxy fails, fall back to hardcoded cities
               results = getFallbackCities(q.toLowerCase().trim());
             }
           } catch (apiError) {
+            // If fetch fails (network error, etc.), fall back to hardcoded cities
             results = getFallbackCities(q.toLowerCase().trim());
           }
           

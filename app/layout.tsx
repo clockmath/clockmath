@@ -11,26 +11,26 @@ import WebVitals from "@/components/WebVitals";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://clockmath.com"),
-  title: "Time Duration Calculator & Hours Calculator — Clock Math",
+  title: "Time Duration Calculator & Hours Calculator — ClockMath",
   description:
     "Calculate the time difference between two times (even across midnight). Fast, simple, mobile-friendly. Also shows decimal hours and minutes.",
-  generator: "v0.app",
+  generator: "Next.js",
   alternates: {
     canonical: "https://clockmath.com/",
   },
   openGraph: {
-    title: "Clock Math — Time Between Two Times",
+    title: "ClockMath — Time Between Two Times",
     description:
       "Quickly compute elapsed time between two times. Handles crossing midnight; shows HH:MM:SS, minutes, and decimal hours.",
     type: "website",
     url: "https://clockmath.com/",
-    siteName: "Clock Math",
+    siteName: "ClockMath",
     images: [
       {
         url: "/og.png",            // becomes https://clockmath.com/og.png
         width: 1200,
         height: 630,
-        alt: "Clock Math — Time Between Two Times",
+        alt: "ClockMath — Time Between Two Times",
       },
     ],
   },

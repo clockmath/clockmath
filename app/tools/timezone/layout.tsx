@@ -4,13 +4,13 @@ export const metadata: Metadata = {
   title: 'Timezone Converter | ClockMath',
   description: 'Convert time between any two timezones instantly. Handles Daylight Saving Time automatically. Perfect for scheduling meetings, calls, or events across different time zones.',
   alternates: {
-    canonical: 'https://clockmath.com/tools/timezone',
+    canonical: 'https://clockmath.com/tools/timezone/',
   },
   openGraph: {
     title: 'Timezone Converter | ClockMath',
     description: 'Convert time between any two timezones instantly. Handles DST automatically.',
     type: 'website',
-    url: 'https://clockmath.com/tools/timezone',
+    url: 'https://clockmath.com/tools/timezone/',
     siteName: 'ClockMath',
     images: [
       {

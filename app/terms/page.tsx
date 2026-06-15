@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     description: "Terms of Service for ClockMath.com — free time duration and timezone calculators.",
     type: "website",
     url: "https://clockmath.com/terms",
-    siteName: "Clock Math",
+    siteName: "ClockMath",
   },
   twitter: {
     card: "summary",
