@@ -1,17 +1,33 @@
 // Cloudflare Pages Function for location search using Geoapify
 // Using the official Cloudflare Pages Functions API
 
+// Only allow the production site to read responses cross-origin. Same-origin
+// requests (the site calling its own /api/places) are unaffected by CORS, so
+// this just stops other websites from spending our shared Geoapify quota.
+const ALLOWED_ORIGINS = new Set([
+  'https://clockmath.com',
+  'https://www.clockmath.com',
+]);
+
+function buildCorsHeaders(request) {
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    Vary: 'Origin',
+  };
+  const origin = request.headers.get('Origin');
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+  return headers;
+}
+
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const query = url.searchParams.get('q');
 
-  // CORS headers
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  const corsHeaders = buildCorsHeaders(request);
 
   // Handle preflight requests
   if (request.method === 'OPTIONS') {
