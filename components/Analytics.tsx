@@ -58,7 +58,9 @@ export default function Analytics() {
             }));
           }
 
-          gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false });
+          gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false${
+            process.env.NEXT_PUBLIC_GA_DEBUG === "true" ? ", debug_mode: true" : ""
+          } });
         `}
       </Script>
       <Suspense fallback={null}>

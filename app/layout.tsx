@@ -5,6 +5,7 @@ import "./globals.css";
 import { Metadata } from "next";
 import Analytics from "@/components/Analytics";
 import ConsentBanner from "@/components/ConsentBanner";
+import WebVitals from "@/components/WebVitals";
 
   
 
@@ -50,6 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Analytics />
+        <WebVitals />
         {children}
         <ConsentBanner />
       </body>
