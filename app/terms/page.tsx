@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Clock Math",
-  description: "Terms of Service for ClockMath.com time duration calculator. Learn about usage rights, limitations, and legal information.",
+  description: "Terms of Service for ClockMath.com — free time duration and timezone calculators. Learn about usage rights, limitations, and legal information.",
   robots: {
     index: true,
     follow: true,
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Terms of Service — Clock Math",
-    description: "Terms of Service for ClockMath.com time duration calculator.",
+    description: "Terms of Service for ClockMath.com — free time duration and timezone calculators.",
     type: "website",
     url: "https://clockmath.com/terms",
     siteName: "Clock Math",
@@ -62,8 +62,13 @@ export default function TermsPage() {
 
             <h2 className="text-2xl font-semibold mb-4">1. Use of the Site</h2>
             <p className="mb-4">
-              ClockMath.com provides a free online calculator to help users calculate time durations.
+              ClockMath.com provides free online tools and content, including:
             </p>
+            <ul className="mb-4">
+              <li>Calculators for time durations and the difference between two times</li>
+              <li>A timezone converter for comparing times across locations</li>
+              <li>Educational articles about time management and related topics</li>
+            </ul>
             <ul className="mb-6">
               <li>You may use the site for personal or professional purposes.</li>
               <li>You agree not to misuse the site or attempt to interfere with its functionality.</li>
@@ -77,7 +82,7 @@ export default function TermsPage() {
             </p>
             <ul className="mb-6">
               <li>We make no guarantees regarding accuracy, availability, or fitness for a particular purpose.</li>
-              <li>While we strive to provide accurate results, the calculator should not be relied upon for legal, medical, financial, or critical decision-making purposes.</li>
+              <li>While we strive to provide accurate results, our tools and content should not be relied upon for legal, medical, financial, or critical decision-making purposes.</li>
             </ul>
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
@@ -105,8 +110,16 @@ export default function TermsPage() {
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
 
             <h2 className="text-2xl font-semibold mb-4">5. Third-Party Services</h2>
+            <p className="mb-4">
+              ClockMath.com uses Google Analytics and Google Search Console to analyze traffic. By using the site, you acknowledge that your usage data may be collected in accordance with our{" "}
+              <Link href="/privacy" className="text-primary hover:text-primary/80 underline">
+                Privacy Policy
+              </Link>.
+            </p>
             <p className="mb-6">
-              ClockMath.com uses Google Analytics and Google Search Console to analyze traffic. By using the site, you acknowledge that your usage data may be collected in accordance with our Privacy Policy.
+              If you are in the EEA, UK, or Switzerland, analytics cookies are
+              only set after you consent via our cookie banner. You can review or
+              change your choice at any time from the Privacy Policy page.
             </p>
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
