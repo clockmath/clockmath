@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Clock, Globe, BookOpen, History } from 'lucide-react'
+import { Clock, Globe, BookOpen, History, Hourglass } from 'lucide-react'
 
 interface ToolTab {
   id: string
@@ -26,6 +26,13 @@ const tools: ToolTab[] = [
     href: '/tools/timezone',
     icon: <Globe className="w-5 h-5 sm:w-4 sm:h-4" />,
     description: 'Convert between timezones'
+  },
+  {
+    id: 'countdown',
+    label: 'Countdown Timer',
+    href: '/tools/countdown',
+    icon: <Hourglass className="w-5 h-5 sm:w-4 sm:h-4" />,
+    description: 'Count down to any date'
   },
   {
     id: 'articles',
@@ -57,6 +64,7 @@ export default function ToolsNavigation({
   const activeToolId = currentTool || (
     pathname === '/' ? 'calculator' :
     pathname.startsWith('/tools/timezone') ? 'timezone' :
+    pathname.startsWith('/tools/countdown') ? 'countdown' :
     pathname.startsWith('/articles') ? 'articles' :
     'calculator'
   )
