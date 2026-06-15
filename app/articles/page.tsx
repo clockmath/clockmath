@@ -2,7 +2,6 @@
 
 import { getArticlesByCategory } from '@/lib/articlesCatalog';
 import ArticlesIndexContent from '@/components/ArticlesIndexContent';
-import Head from 'next/head';
 
 const CATEGORY_COPY: Record<string, { title: string; blurb: string }> = {
   timezone: {
@@ -40,14 +39,9 @@ export default function ArticlesIndexPage() {
 
   return (
     <>
-      <Head>
-        <title>Time Calculators & Timezone Guides | ClockMath Articles</title>
-        <meta name="description" content="Browse every ClockMath guide: calculator tutorials, timezone playbooks, and productivity tips to master time across work and life." />
-        <link rel="canonical" href="https://clockmath.com/articles/" />
-      </Head>
-      <ArticlesIndexContent 
-        groupedArticles={groupedArticles} 
-        categoryCopy={CATEGORY_COPY} 
+      <ArticlesIndexContent
+        groupedArticles={groupedArticles}
+        categoryCopy={CATEGORY_COPY}
       />
     </>
   );

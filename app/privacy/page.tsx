@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: "Privacy Policy for ClockMath.com time duration calculator.",
     type: "website",
     url: "https://clockmath.com/privacy",
-    siteName: "Clock Math",
+    siteName: "ClockMath",
   },
   twitter: {
     card: "summary",
