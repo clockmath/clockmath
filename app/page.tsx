@@ -8,7 +8,7 @@ import PageChrome from "@/components/PageChrome"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
-import { format } from "date-fns"
+import { format, intervalToDuration, type Duration } from "date-fns"
 import { event as gaEvent } from "@/lib/gtag"
 import JsonLd, { getSoftwareApplicationSchema } from "@/components/JsonLd"
 
@@ -121,55 +121,36 @@ export default function ClockMathPage() {
     return hours * 3600 + minutes * 60 + seconds
   }, [])
 
-  const formatDuration = useCallback((seconds: number): string => {
-    if (isNaN(seconds) || seconds < 0) return "Invalid"
+  // Format a calendar-accurate breakdown (from date-fns intervalToDuration)
+  // into a friendly summary string. Single source of truth for the summary.
+  const formatDurationParts = useCallback((d: Duration): string => {
+    const years = d.years ?? 0
+    const months = d.months ?? 0
+    const days = d.days ?? 0
+    const hours = d.hours ?? 0
+    const minutes = d.minutes ?? 0
+    const seconds = d.seconds ?? 0
 
-    const totalDays = Math.floor(seconds / 86400)
-    const totalHours = Math.floor(seconds / 3600)
-    const remainingHours = Math.floor((seconds % 86400) / 3600)
-    const remainingMinutes = Math.floor((seconds % 3600) / 60)
-    const remainingSecs = seconds % 60
-
-    // Less than a day: show hours, minutes, seconds
-    if (totalDays === 0) {
-      const parts = []
-      if (totalHours > 0) parts.push(`${totalHours}h`)
-      if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`)
-      if (remainingSecs > 0 || parts.length === 0) parts.push(`${remainingSecs}s`)
-      return parts.join(" ")
-    }
-
-    // Less than a year: show days, hours, minutes
-    const totalYears = Math.floor(totalDays / 365)
-    const totalMonths = Math.floor(totalDays / 30.44)
-
-    if (totalYears === 0) {
-      if (totalMonths >= 1) {
-        // Show months and remaining days
-        const remainingDays = Math.floor(totalDays % 30.44)
-        const parts = []
-        parts.push(`${totalMonths} month${totalMonths !== 1 ? 's' : ''}`)
-        if (remainingDays > 0) parts.push(`${remainingDays} day${remainingDays !== 1 ? 's' : ''}`)
-        return parts.join(", ")
-      } else {
-        // Show days and hours
-        const parts = []
-        parts.push(`${totalDays} day${totalDays !== 1 ? 's' : ''}`)
-        if (remainingHours > 0) parts.push(`${remainingHours}h`)
-        if (remainingMinutes > 0 && totalDays < 7) parts.push(`${remainingMinutes}m`)
-        return parts.join(", ")
-      }
-    }
-
-    // Years: show years, months, days
-    const remainingMonths = Math.floor((totalDays % 365) / 30.44)
-    const remainingDays = Math.floor((totalDays % 365) % 30.44)
-    const parts = []
-    parts.push(`${totalYears} year${totalYears !== 1 ? 's' : ''}`)
-    if (remainingMonths > 0) parts.push(`${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`)
-    if (remainingDays > 0) parts.push(`${remainingDays} day${remainingDays !== 1 ? 's' : ''}`)
-    return parts.join(", ")
+    const parts: string[] = []
+    if (years) parts.push(`${years} year${years !== 1 ? 's' : ''}`)
+    if (months) parts.push(`${months} month${months !== 1 ? 's' : ''}`)
+    if (days) parts.push(`${days} day${days !== 1 ? 's' : ''}`)
+    if (hours) parts.push(`${hours}h`)
+    if (minutes) parts.push(`${minutes}m`)
+    // Show seconds only for sub-day durations (avoids noise on long spans).
+    if (seconds && !years && !months && !days) parts.push(`${seconds}s`)
+    return parts.length ? parts.join(", ") : "0s"
   }, [])
+
+  // Calendar-accurate duration between two datetimes (handles real month
+  // lengths, leap years, DST) — replaces average-constant division.
+  const formatDuration = useCallback(
+    (start: Date, end: Date): string => {
+      if (end.getTime() < start.getTime()) return "Invalid"
+      return formatDurationParts(intervalToDuration({ start, end }))
+    },
+    [formatDurationParts],
+  )
 
   const formatDetailedDuration = useCallback((seconds: number) => {
     if (isNaN(seconds) || seconds < 0) return null
@@ -237,16 +218,20 @@ export default function ClockMathPage() {
       }
     })
 
-    const totalDuration = formatDuration(totalSeconds)
+    // A sum has no calendar anchor, so derive the breakdown from epoch + total
+    // through the same intervalToDuration path the single calculation uses.
+    const totalDuration = formatDurationParts(
+      intervalToDuration({ start: 0, end: totalSeconds * 1000 }),
+    )
     const detailedDuration = formatDetailedDuration(totalSeconds)
-    
+
     if (detailedDuration) {
       setSumResult({
         total: totalDuration,
         detailed: detailedDuration
       })
     }
-  }, [selectedCalculations, history, formatDuration, formatDetailedDuration])
+  }, [selectedCalculations, history, formatDurationParts, formatDetailedDuration])
 
   // Clear selection
   const clearSelection = useCallback(() => {
@@ -318,7 +303,7 @@ export default function ClockMathPage() {
       if (diffSeconds < 0) {
         setResult("End is before start")
       } else {
-        const duration = formatDuration(diffSeconds)
+        const duration = formatDuration(startDateTime, endDateTime)
         const detailedDuration = formatDetailedDuration(diffSeconds)
         setResult(duration)
         setCurrentDetailedResult(detailedDuration)
