@@ -144,6 +144,7 @@ export function InlineDatePicker({
               selected={value}
               onSelect={handleCalendarSelect}
               captionLayout="dropdown"
+              fixedWeeks
               initialFocus
             />
           </div>
