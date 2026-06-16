@@ -383,7 +383,7 @@ export function CustomTimePicker({
                     handleHourChange(-1);
                   } else if (e.key === 'Tab' && !e.shiftKey) {
                     e.preventDefault();
-                    document.querySelector('button[data-confirm]')?.focus();
+                    (document.querySelector('button[data-confirm]') as HTMLElement | null)?.focus();
                   }
                 }}
                 className="w-36 text-center bg-transparent border-none outline-none focus:bg-muted/20 dark:focus:bg-slate-700/50 rounded-lg px-4 py-2"
@@ -398,7 +398,7 @@ export function CustomTimePicker({
                     onKeyDown={(e) => {
                       if (e.key === 'Tab' && e.shiftKey) {
                         e.preventDefault();
-                        document.querySelector('input[type="text"]')?.focus();
+                        (document.querySelector('input[type="text"]') as HTMLElement | null)?.focus();
                       }
                     }}
                     data-period-input
@@ -415,7 +415,7 @@ export function CustomTimePicker({
                     onKeyDown={(e) => {
                       if (e.key === 'Tab' && !e.shiftKey) {
                         e.preventDefault();
-                        document.querySelector('button[data-confirm]')?.focus();
+                        (document.querySelector('button[data-confirm]') as HTMLElement | null)?.focus();
                       }
                     }}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${

@@ -82,31 +82,6 @@ function getFallbackCities(query: string): Place[] {
   ).slice(0, 8);
 }
 
-// Helper function to format place names from Geoapify API
-function formatPlaceName(item: any): string {
-  const parts = [];
-  
-  if (item.name) {
-    parts.push(item.name);
-  } else if (item.city) {
-    parts.push(item.city);
-  }
-
-  if (item.state && item.state !== item.name) {
-    parts.push(item.state);
-  } else if (item.county && item.county !== item.name) {
-    parts.push(item.county);
-  }
-
-  if (item.country && item.country !== item.state && item.country !== item.name) {
-    parts.push(item.country);
-  }
-
-  return parts.filter(Boolean).join(', ');
-}
-
-
-
 interface LocationSearchProps {
   placeholder?: string;
   ariaLabel: string;

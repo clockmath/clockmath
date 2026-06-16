@@ -87,7 +87,13 @@ export default function ArticlesIndexContent({ groupedArticles, categoryCopy }: 
 
   // Get category stats
   const categoryStats = useMemo(() => {
-    const stats: Record<ArticleCategory | 'all', number> = { all: allArticles.length };
+    const stats: Record<ArticleCategory | 'all', number> = {
+      all: allArticles.length,
+      timezone: 0,
+      calculator: 0,
+      productivity: 0,
+      business: 0,
+    };
     Object.entries(groupedArticles).forEach(([category, articles]) => {
       stats[category as ArticleCategory] = articles.length;
     });
@@ -246,10 +252,10 @@ export default function ArticlesIndexContent({ groupedArticles, categoryCopy }: 
       <section className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800 mb-8">
         <div className="text-center">
           <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-            Can't find what you're looking for?
+            Can&apos;t find what you&apos;re looking for?
           </h2>
           <p className="text-emerald-700 dark:text-emerald-300 mb-4">
-            Send us your question and we'll help you out personally
+            Send us your question and we&apos;ll help you out personally
           </p>
           <Link
             href="/contact"

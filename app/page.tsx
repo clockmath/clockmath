@@ -383,16 +383,16 @@ export default function ClockMathPage() {
       const parsed = JSON.parse(saved)
       
       // Filter out entries missing required fields and convert timestamps
-      const validEntries: CalculationHistory[] = parsed
-        .filter((item: any) => 
-          item && 
-          item.id && 
-          item.startTime && 
-          item.endTime && 
-          item.result && 
+      const validEntries: CalculationHistory[] = (parsed as StoredCalculation[])
+        .filter((item) =>
+          item &&
+          item.id &&
+          item.startTime &&
+          item.endTime &&
+          item.result &&
           item.timestamp
         )
-        .map((item: any) => ({
+        .map((item) => ({
           ...item,
           timestamp: new Date(item.timestamp)
         }))

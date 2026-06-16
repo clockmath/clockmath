@@ -113,7 +113,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
   
   // Add any additional static pages that might not be auto-discovered
-  const additionalPages = [
+  const additionalPages: MetadataRoute.Sitemap = [
     // Add any API routes or special pages here if needed
   ];
   

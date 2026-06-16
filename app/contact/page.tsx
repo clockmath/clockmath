@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PageChrome from '@/components/PageChrome';
 import SiteFooter from '@/components/SiteFooter';
-import { generateSEOMetadata } from '@/lib/seo';
+import Link from 'next/link';
 import { event as gaEvent } from '@/lib/gtag';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 
@@ -249,9 +249,9 @@ export default function ContactPage() {
 
         {/* Breadcrumb */}
         <nav className="text-sm text-muted-foreground mb-6">
-          <a href="/" className="hover:text-primary transition-colors">
+          <Link href="/" className="hover:text-primary transition-colors">
             ClockMath
-          </a>
+          </Link>
           <span className="mx-2">›</span>
           <span>Contact</span>
         </nav>
