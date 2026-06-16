@@ -77,15 +77,16 @@ export default function ToolsNavigation({
           <Link
             key={tool.id}
             href={tool.href}
-            className={`flex-1 min-w-0 px-3 sm:px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 flex items-center gap-2 sm:gap-2 whitespace-nowrap min-h-[2.5rem] ${
+            aria-label={tool.label}
+            className={`flex-1 min-w-0 px-3 sm:px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 flex items-center justify-center sm:justify-start gap-2 whitespace-nowrap min-h-[2.5rem] ${
               activeToolId === tool.id
                 ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             }`}
           >
             {tool.icon}
-            <span className="hidden sm:inline">{tool.label}</span>
-            <span className="sm:hidden">{tool.label.split(' ')[0]}</span>
+            {/* Icon-only on mobile (label stays available to screen readers) */}
+            <span className="sr-only sm:not-sr-only">{tool.label}</span>
           </Link>
         ))}
         
