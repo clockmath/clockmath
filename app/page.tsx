@@ -439,7 +439,7 @@ export default function ClockMathPage() {
       />
       <div className="space-y-8 pb-24">
         {/* Header */}
-        <header className="text-center">
+        <header className="text-center mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
@@ -467,6 +467,9 @@ export default function ClockMathPage() {
               </p>
             </div>
           </div>
+          <p className="text-sm text-muted-foreground mb-6">
+            Free online time &amp; date calculators
+          </p>
         </header>
 
         {/* Main Calculator Card */}

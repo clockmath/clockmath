@@ -176,6 +176,13 @@ export default function ArticlesIndexContent({ groupedArticles, categoryCopy }: 
             </p>
           </div>
         </div>
+        <nav className="text-sm text-muted-foreground mb-6">
+          <Link href="/" className="hover:text-primary transition-colors">
+            ClockMath
+          </Link>
+          <span className="mx-2">›</span>
+          <span>Guides</span>
+        </nav>
       </header>
 
       {/* Search and Filter Controls */}
@@ -248,29 +255,8 @@ export default function ArticlesIndexContent({ groupedArticles, categoryCopy }: 
         </div>
       </section>
 
-      {/* Contact CTA */}
-      <section className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800 mb-8">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-            Can&apos;t find what you&apos;re looking for?
-          </h2>
-          <p className="text-emerald-700 dark:text-emerald-300 mb-4">
-            Send us your question and we&apos;ll help you out personally
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Contact Us
-          </Link>
-        </div>
-      </section>
-
       {/* Articles Grid */}
-      <section>
+      <section className="mb-8">
         {filteredArticles.length === 0 ? (
           <div className="text-center py-12 bg-card/70 dark:bg-slate-800/70 rounded-2xl border border-border/50 dark:border-slate-700/50">
             <div className="text-6xl mb-4">🔍</div>
@@ -339,6 +325,27 @@ export default function ArticlesIndexContent({ groupedArticles, categoryCopy }: 
             })}
           </div>
         )}
+      </section>
+
+      {/* Contact CTA */}
+      <section className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
+            Can&apos;t find what you&apos;re looking for?
+          </h2>
+          <p className="text-emerald-700 dark:text-emerald-300 mb-4">
+            Send us your question and we&apos;ll help you out personally
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contact Us
+          </Link>
+        </div>
       </section>
 
       <SiteFooter />

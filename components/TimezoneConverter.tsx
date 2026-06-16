@@ -10,6 +10,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { LocationTimezonePicker } from '@/components/location/LocationTimezonePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
+import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import {
   getUserTimeZone,
   getTimeZoneOptions,
@@ -19,13 +20,25 @@ import {
   getTimezoneOffset,
   getOffsetLabel,
 } from '@/lib/time';
-import { ArrowLeftRight, Clock, Calendar, MapPin } from 'lucide-react';
+import { ArrowLeftRight, Clock, MapPin } from 'lucide-react';
 import { event as gaEvent } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
 
 interface TimezoneConverterProps {
   className?: string;
 }
+
+// Convert between a YYYY-MM-DD string and a local Date for the date picker.
+const formatLocalDate = (date: Date): string => {
+  const y = date.getFullYear();
+  const m = `${date.getMonth() + 1}`.padStart(2, '0');
+  const d = `${date.getDate()}`.padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+const parseLocalDate = (s: string): Date => {
+  const [y, m, d] = s.split('-').map((n) => parseInt(n, 10));
+  return new Date(y, (m || 1) - 1, d || 1);
+};
 
 export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   const [fromTZ, setFromTZ] = useState<string>('');
@@ -151,6 +164,12 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   const handleCalculate = useCallback(() => {
     computeConversion(fromTZ, toTZ);
   }, [computeConversion, fromTZ, toTZ]);
+
+  // Default the date to today so the picker isn't empty (matches the calculator
+  // and countdown tools). Set on mount to avoid hydration mismatches.
+  useEffect(() => {
+    setInputDate((prev) => prev || formatLocalDate(new Date()));
+  }, []);
 
   const handleSwapTimezones = () => {
     if (!fromTZ || !toTZ) {
@@ -430,7 +449,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   }, [inputTime, formatTimeDisplay, isHydrated]);
 
   return (
-    <div className={`bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-border/50 dark:border-slate-700/50 hover:shadow-2xl transition-all duration-300 ${className}`}>
+    <div className={`relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-border/50 dark:border-slate-700/50 hover:shadow-2xl transition-all duration-300 ${className}`}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
@@ -604,19 +623,14 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label htmlFor="date-input" className="block text-xs text-muted-foreground">
+            <label className="block text-xs text-muted-foreground">
               Date
             </label>
-            <div className="relative">
-              <input
-                id="date-input"
-                type="date"
-                value={inputDate}
-                onChange={(e) => setInputDate(e.target.value)}
-                className="w-full px-3 py-3 bg-input dark:bg-slate-700 border-2 border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-sm font-mono shadow-sm dark:text-slate-100"
-              />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            </div>
+            <InlineDatePicker
+              value={inputDate ? parseLocalDate(inputDate) : new Date()}
+              onChange={(date) => setInputDate(formatLocalDate(date))}
+              placeholder="Select date"
+            />
           </div>
           
           <div className="space-y-2">

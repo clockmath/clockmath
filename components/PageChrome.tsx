@@ -1,8 +1,9 @@
+import Link from 'next/link';
 import ToolsNavigation from '@/components/ToolsNavigation';
 
 interface PageChromeProps {
   children: React.ReactNode;
-  currentTool: 'calculator' | 'timezone' | 'articles';
+  currentTool: 'calculator' | 'timezone' | 'countdown' | 'articles';
   className?: string;
   onToggleTheme?: () => void;
   isDarkMode?: boolean;
@@ -14,14 +15,36 @@ export default function PageChrome({ currentTool, children, className = '', onTo
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(5,150,105,0.12),transparent_55%)] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(5,150,105,0.18),transparent_55%)]" />
       <main className="relative max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
         <div className="mb-8 sm:mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex-1">
+          <div className="flex items-center gap-2 sm:gap-3 mb-6">
+            {/* Persistent brand — anchors identity and links home */}
+            <Link
+              href="/"
+              aria-label="ClockMath home"
+              className="shrink-0 flex items-center gap-2 rounded-xl transition-opacity hover:opacity-90"
+            >
+              <span className="grid place-items-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 border border-slate-700 dark:border-slate-600 shadow-sm">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400"
+                >
+                  <circle cx="12" cy="12" r="9" strokeWidth={2} />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 7v5l3 2" />
+                </svg>
+              </span>
+              <span className="hidden md:block text-lg font-bold leading-none">
+                <span className="text-emerald-600 dark:text-emerald-400">Clock</span>
+                <span className="text-blue-600 dark:text-blue-400">Math</span>
+              </span>
+            </Link>
+            <div className="flex-1 min-w-0">
               <ToolsNavigation currentTool={currentTool} />
             </div>
             {onToggleTheme && (
               <button
                 onClick={onToggleTheme}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm text-foreground dark:text-slate-200 rounded-xl hover:bg-card dark:hover:bg-slate-700 transition-all duration-200 shadow-lg border border-border/50 dark:border-slate-700/50 ml-4"
+                className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm text-foreground dark:text-slate-200 rounded-xl hover:bg-card dark:hover:bg-slate-700 transition-all duration-200 shadow-lg border border-border/50 dark:border-slate-700/50"
                 title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
               >
                 {isDarkMode ? (
