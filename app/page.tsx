@@ -213,7 +213,7 @@ export default function ClockMathPage() {
     
     selectedEntries.forEach(entry => {
       // Use stored seconds value directly (much more efficient!)
-      if (entry.seconds && !isNaN(entry.seconds)) {
+      if (typeof entry.seconds === "number" && !isNaN(entry.seconds)) {
         totalSeconds += entry.seconds
       } else {
         // Fallback for old entries without seconds field (backward compatibility)
@@ -671,7 +671,10 @@ export default function ClockMathPage() {
                 const formatEntryDate = (dateStr: string | undefined) => {
                   if (!dateStr) return null
                   try {
-                    const date = new Date(dateStr)
+                    // Parse as local (new Date('yyyy-MM-dd') is UTC midnight,
+                    // which renders a day early west of UTC).
+                    const [yy, mm, dd] = dateStr.split('-').map(Number)
+                    const date = new Date(yy, (mm || 1) - 1, dd || 1)
                     const today = new Date()
                     const yesterday = new Date(today)
                     yesterday.setDate(yesterday.getDate() - 1)

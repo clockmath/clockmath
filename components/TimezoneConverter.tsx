@@ -84,9 +84,10 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     const userTZ = getUserTimeZone();
     setFromTZ(userTZ);
     
-    // Set initial date/time to now
+    // Set initial date/time to now (host-local, not UTC — toISOString() would
+    // be a day off near midnight west of UTC).
     const now = new Date();
-    setInputDate(now.toISOString().split('T')[0]);
+    setInputDate(formatLocalDate(now));
     setInputTime(now.toTimeString().slice(0, 5));
     
     // Load hour12 preference from localStorage
@@ -165,11 +166,6 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     computeConversion(fromTZ, toTZ);
   }, [computeConversion, fromTZ, toTZ]);
 
-  // Default the date to today so the picker isn't empty (matches the calculator
-  // and countdown tools). Set on mount to avoid hydration mismatches.
-  useEffect(() => {
-    setInputDate((prev) => prev || formatLocalDate(new Date()));
-  }, []);
 
   const handleSwapTimezones = () => {
     if (!fromTZ || !toTZ) {
@@ -314,10 +310,10 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
       setInputDate(dateStr);
       setInputTime(timeStr);
     } else {
-      // Fallback to local time if no timezone selected
-      const dateStr = now.toISOString().split('T')[0];
+      // Fallback to local time if no timezone selected (host-local, not UTC)
+      const dateStr = formatLocalDate(now);
       const timeStr = now.toTimeString().slice(0, 5);
-      
+
       setInputDate(dateStr);
       setInputTime(timeStr);
     }
@@ -380,49 +376,6 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   };
 
   // Helper functions for time format conversion
-  const convertTo24Hour = useCallback((time12h: string): string => {
-    if (!time12h) return "";
-    
-    const time = time12h.trim().toUpperCase();
-    const pmMatch = time.match(/(\d+):?(\d*)\s*(PM|P)/);
-    const amMatch = time.match(/(\d+):?(\d*)\s*(AM|A)/);
-    const noPeriodMatch = time.match(/(\d+):?(\d*)/);
-
-    let h: number | undefined;
-    let m: number | undefined;
-
-    if (pmMatch) {
-      h = Number.parseInt(pmMatch[1], 10);
-      m = Number.parseInt(pmMatch[2] || "0", 10);
-      if (h === 12) h = 12; // 12 PM is 12:00
-      else h = (h % 12) + 12;
-    } else if (amMatch) {
-      h = Number.parseInt(amMatch[1], 10);
-      m = Number.parseInt(amMatch[2] || "0", 10);
-      if (h === 12) h = 0; // 12 AM is 00:00
-      else h = h % 12;
-    } else if (noPeriodMatch) {
-      h = Number.parseInt(noPeriodMatch[1], 10);
-      m = Number.parseInt(noPeriodMatch[2] || "0", 10);
-      // Assume 24h format if no AM/PM and hour is > 12
-      if (h > 12 && h <= 23) {
-        // Valid 24h time
-      } else if (h >= 1 && h <= 12) {
-        // Could be 12h or 24h, default to 12h AM for simplicity if no period
-      } else {
-        return ""; // Invalid hour
-      }
-    } else {
-      return ""; // No match
-    }
-
-    if (h === undefined || m === undefined || Number.isNaN(h) || Number.isNaN(m) || m > 59 || h > 23) {
-      return ""; // Invalid time components
-    }
-
-    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-  }, []);
-
   const formatTimeDisplay = useCallback((timeStr: string): string => {
     if (!timeStr) return "";
     
