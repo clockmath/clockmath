@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface InlineTimePickerProps {
   value: string;
@@ -64,6 +64,7 @@ export function InlineTimePicker({
   const [timeInput, setTimeInput] = useState('');
   const [isInputMode, setIsInputMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Parse current time on mount or when value changes
   useEffect(() => {
@@ -410,15 +411,16 @@ export function InlineTimePicker({
   }, [selectedHour, selectedMinute, selectedPeriod, is24h, timeInput, onChange]);
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${className}`}>
       {/* Time Input Button */}
       <button
         onClick={() => {
           setIsOpen(!isOpen);
-          // If opening, focus the input and select text
+          // If opening, focus THIS picker's own input (scoped to the container
+          // so a text input elsewhere on the page isn't grabbed by mistake).
           if (!isOpen) {
             setTimeout(() => {
-              const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+              const input = containerRef.current?.querySelector('input[type="text"]') as HTMLInputElement | null;
               if (input) {
                 input.focus();
                 input.select();
