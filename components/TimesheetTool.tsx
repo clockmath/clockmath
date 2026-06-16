@@ -427,7 +427,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                   onClick={() => removeShift(shift.id)}
                   aria-label={`Remove shift ${i + 1}`}
                   disabled={shifts.length === 1}
-                  className="shrink-0 self-center p-2 text-muted-foreground hover:text-destructive disabled:opacity-30 disabled:pointer-events-none rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
+                  className="shrink-0 self-center p-2.5 text-muted-foreground hover:text-destructive disabled:opacity-30 disabled:pointer-events-none rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -484,8 +484,44 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           </div>
         </div>
 
-        {/* Breakdown table */}
-        <div className="overflow-x-auto rounded-xl border border-border/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/30">
+        {/* Breakdown — stacked cards on mobile */}
+        <div className="sm:hidden space-y-2">
+          {shifts.map((s) => {
+            const mins = shiftMinutes(s);
+            const pay = gross != null ? (mins / 60) * rateNum : null;
+            return (
+              <div
+                key={s.id}
+                className="rounded-xl border border-border/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/30 px-3 py-2.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-foreground">{formatShiftDate(s.date)}</span>
+                  <span className="tabular-nums font-semibold text-emerald-700 dark:text-emerald-400">
+                    {decimalHours(mins)} h
+                  </span>
+                </div>
+                <div className="mt-0.5 text-xs text-muted-foreground">
+                  {formatClock(s.start)}–{formatClock(s.end)}
+                  {isOvernight(s) && <span className="text-amber-600 dark:text-amber-400"> +1d</span>}
+                  {' · '}
+                  {s.breakMins} min break
+                  {pay != null && <span className="text-foreground"> · ${pay.toFixed(2)}</span>}
+                </div>
+              </div>
+            );
+          })}
+          <div className="rounded-xl border-2 border-border dark:border-slate-600 bg-white/60 dark:bg-slate-900/40 px-3 py-2.5 flex items-center justify-between font-bold">
+            <span className="text-foreground dark:text-slate-100">
+              Total <span className="font-normal text-muted-foreground text-xs">({hhmm(totalMins)})</span>
+            </span>
+            <span className="tabular-nums text-emerald-700 dark:text-emerald-400">
+              {decimalHours(totalMins)} h{gross != null && <span className="text-foreground"> · ${gross.toFixed(2)}</span>}
+            </span>
+          </div>
+        </div>
+
+        {/* Breakdown table (desktop) */}
+        <div className="hidden sm:block overflow-x-auto rounded-xl border border-border/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/30">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-[11px] uppercase tracking-wide text-muted-foreground border-b border-border/50 dark:border-slate-700/50">
@@ -616,7 +652,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                   <button
                     onClick={() => shareSaved(t)}
                     aria-label={`Share ${t.name}`}
-                    className="shrink-0 p-2 text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
+                    className="shrink-0 p-2.5 text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -625,7 +661,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                   <button
                     onClick={() => deleteSaved(t.id)}
                     aria-label={`Delete ${t.name}`}
-                    className="shrink-0 p-2 text-muted-foreground hover:text-destructive rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
+                    className="shrink-0 p-2.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
