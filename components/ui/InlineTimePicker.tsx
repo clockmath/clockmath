@@ -465,9 +465,15 @@ export function InlineTimePicker({
                   // Select all text when focused
                   setTimeout(() => e.target.select(), 0);
                 }}
-                onBlur={() => {
+                onBlur={(e) => {
                   setIsInputMode(false);
-                  // Auto-confirm when blurring (user clicked away)
+                  // Don't auto-confirm/close when focus moves to another control
+                  // inside the picker (steppers, AM/PM, hour/min inputs).
+                  const next = e.relatedTarget as Node | null;
+                  if (next && containerRef.current?.contains(next)) {
+                    return;
+                  }
+                  // Auto-confirm when blurring away from the picker entirely
                   if (timeInput && isOpen) {
                     handleConfirm();
                   } else {
@@ -495,6 +501,7 @@ export function InlineTimePicker({
                 <div className="flex bg-muted/50 dark:bg-slate-700 rounded-lg p-1">
                   <button
                     onClick={() => setSelectedPeriod('AM')}
+                    onMouseDown={(e) => e.preventDefault()}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       selectedPeriod === 'AM'
                         ? 'bg-primary text-primary-foreground'
@@ -505,6 +512,7 @@ export function InlineTimePicker({
                   </button>
                   <button
                     onClick={() => setSelectedPeriod('PM')}
+                    onMouseDown={(e) => e.preventDefault()}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       selectedPeriod === 'PM'
                         ? 'bg-primary text-primary-foreground'
@@ -526,6 +534,7 @@ export function InlineTimePicker({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleHourChange(-1)}
+                  onMouseDown={(e) => e.preventDefault()}
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -566,6 +575,7 @@ export function InlineTimePicker({
                 </div>
                 <button
                   onClick={() => handleHourChange(1)}
+                  onMouseDown={(e) => e.preventDefault()}
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -581,6 +591,7 @@ export function InlineTimePicker({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleMinuteChange(-1)}
+                  onMouseDown={(e) => e.preventDefault()}
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -611,6 +622,7 @@ export function InlineTimePicker({
                 </div>
                 <button
                   onClick={() => handleMinuteChange(1)}
+                  onMouseDown={(e) => e.preventDefault()}
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
