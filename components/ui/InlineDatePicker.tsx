@@ -11,6 +11,8 @@ interface InlineDatePickerProps {
   onChange: (date: Date) => void;
   placeholder?: string;
   className?: string;
+  /** Open straight to the calendar, skipping the Today/Tomorrow quick options. */
+  startOnCalendar?: boolean;
 }
 
 export function InlineDatePicker({
@@ -18,9 +20,10 @@ export function InlineDatePicker({
   onChange,
   placeholder = "Select date",
   className = "",
+  startOnCalendar = false,
 }: InlineDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(startOnCalendar);
 
   // Format the display value
   const displayValue = useMemo(() => {
@@ -52,12 +55,12 @@ export function InlineDatePicker({
     }
   };
 
-  // Reset calendar view when popover closes
+  // Reset calendar view when popover closes (back to the configured entry view)
   useEffect(() => {
     if (!isOpen) {
-      setShowCalendar(false);
+      setShowCalendar(startOnCalendar);
     }
-  }, [isOpen]);
+  }, [isOpen, startOnCalendar]);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -128,15 +131,17 @@ export function InlineDatePicker({
           </div>
         ) : (
           <div className="p-2">
-            {/* Back button */}
-            <button
-              type="button"
-              onClick={() => setShowCalendar(false)}
-              className="mb-2 px-2 py-1 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-            >
-              <ChevronDown className="w-4 h-4 rotate-90" />
-              Back
-            </button>
+            {/* Back button (only when there's a quick-options view to return to) */}
+            {!startOnCalendar && (
+              <button
+                type="button"
+                onClick={() => setShowCalendar(false)}
+                className="mb-2 px-2 py-1 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <ChevronDown className="w-4 h-4 rotate-90" />
+                Back
+              </button>
+            )}
 
             {/* Calendar */}
             <Calendar

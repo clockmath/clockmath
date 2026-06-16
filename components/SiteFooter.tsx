@@ -43,8 +43,20 @@ export default function SiteFooter() {
           <a href="https://clockmath.com" className="hover:text-foreground">clockmath.com</a>
         </div>
 
-        {/* Legal links */}
+        {/* Site + legal links */}
         <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground dark:text-slate-400 mb-2">
+          <a
+            href="/articles"
+            className="hover:text-foreground underline underline-offset-4"
+          >
+            Guides
+          </a>
+          <a
+            href="/contact"
+            className="hover:text-foreground underline underline-offset-4"
+          >
+            Contact
+          </a>
           <a
             href="/terms"
             className="hover:text-foreground underline underline-offset-4"
