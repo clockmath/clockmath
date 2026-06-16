@@ -269,7 +269,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     if (!active) return;
     const to = toWallClock(new Date(active.ms));
     const savedTitle = active.title.trim() || 'Untitled countdown';
-    const entry: SavedCountdown = { id: `${nowMs}-${to}`, title: savedTitle, to };
+    const entry: SavedCountdown = { id: `${nowMs}-${to}-${savedTitle}`, title: savedTitle, to };
     const next = [entry, ...saved.filter((s) => !(s.to === to && s.title === savedTitle))].slice(0, 12);
     persistSaved(next);
     gaEvent({ action: 'countdown_saved', params: { device: getDevice(), has_title: Boolean(active.title.trim()) } });
@@ -316,7 +316,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           )
         )}
 
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-3" aria-live="polite">
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
           {tiles.map((unit) => (
             <div
               key={unit.label}
