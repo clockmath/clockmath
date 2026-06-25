@@ -557,6 +557,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               value={inputDate ? parseLocalDate(inputDate) : new Date()}
               onChange={(date) => setInputDate(formatLocalDate(date))}
               placeholder="Select date"
+              startOnCalendar
             />
           </div>
           
