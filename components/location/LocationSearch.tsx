@@ -117,7 +117,7 @@ export function LocationSearch({
   const reqIdRef = useRef(0);
   
   // Track hydration to prevent SSR mismatches
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [, setIsHydrated] = useState(false);
 
   // Hydration effect
   useEffect(() => {
@@ -133,6 +133,8 @@ export function LocationSearch({
       setOpen(false);
       setLoading(false); // Clear any loading state
     }
+    // Intentionally only re-syncs when the external value changes, not on `q`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalValue]);
 
   useEffect(() => {
@@ -170,7 +172,7 @@ export function LocationSearch({
               // If proxy fails, fall back to hardcoded cities
               results = getFallbackCities(q.toLowerCase().trim());
             }
-          } catch (apiError) {
+          } catch {
             // If fetch fails (network error, etc.), fall back to hardcoded cities
             results = getFallbackCities(q.toLowerCase().trim());
           }
@@ -180,7 +182,7 @@ export function LocationSearch({
 
           setItems(results);
           setOpen(focused && results.length > 0);
-        } catch (error) {
+        } catch {
           if (ac.signal.aborted) return;
           
           const fallbackResults = getFallbackCities(q.toLowerCase().trim());

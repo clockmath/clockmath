@@ -13,8 +13,7 @@ interface InlineTimePickerProps {
 export function InlineTimePicker({ 
   value, 
   onChange, 
-  is24h, 
-  placeholder = "Select time",
+  is24h,
   className = ""
 }: InlineTimePickerProps) {
   // Parse initial value for proper initialization
@@ -62,7 +61,7 @@ export function InlineTimePicker({
   const [selectedMinute, setSelectedMinute] = useState(initialState.minute);
   const [selectedPeriod, setSelectedPeriod] = useState<'AM' | 'PM'>(initialState.period);
   const [timeInput, setTimeInput] = useState('');
-  const [isInputMode, setIsInputMode] = useState(false);
+  const [, setIsInputMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -175,78 +174,6 @@ export function InlineTimePicker({
   }, [is24h, selectedHour, selectedMinute, selectedPeriod]);
 
 
-  // Parse time input and update state (called on blur or confirm)
-  const parseAndApplyTimeInput = useCallback((input: string) => {
-    if (!input || input.trim() === '') return;
-    
-    const cleaned = input.trim().toUpperCase();
-    
-    // Check for AM/PM in 12h mode
-    let period = selectedPeriod;
-    if (!is24h) {
-      if (cleaned.includes('P')) period = 'PM';
-      if (cleaned.includes('A')) period = 'AM';
-    }
-    
-    // Extract just the numbers and colon
-    const digits = cleaned.replace(/[^\d:]/g, '');
-    
-    let hour: number | null = null;
-    let minute: number | null = null;
-    
-    if (digits.includes(':')) {
-      // Format: "9:30" or "09:30"
-      const parts = digits.split(':');
-      hour = parseInt(parts[0], 10);
-      minute = parseInt(parts[1], 10);
-    } else {
-      // Format: "930" or "0930" or "1230"
-      if (digits.length === 1 || digits.length === 2) {
-        // "9" or "09" → hour only
-        hour = parseInt(digits, 10);
-        minute = 0;
-      } else if (digits.length === 3) {
-        // "930" → 9:30
-        hour = parseInt(digits.slice(0, 1), 10);
-        minute = parseInt(digits.slice(1, 3), 10);
-      } else if (digits.length === 4) {
-        // "0930" or "1230" → 09:30 or 12:30
-        hour = parseInt(digits.slice(0, 2), 10);
-        minute = parseInt(digits.slice(2, 4), 10);
-      }
-    }
-    
-    // Validate and apply
-    if (hour !== null && minute !== null && !isNaN(hour) && !isNaN(minute) && minute >= 0 && minute <= 59) {
-      if (is24h) {
-        if (hour >= 0 && hour <= 23) {
-          setSelectedHour(hour);
-          setSelectedMinute(minute);
-          setHourFormat('24h');
-        }
-      } else {
-        // 12h format
-        if (hour >= 1 && hour <= 12) {
-          setSelectedHour(hour);
-          setSelectedMinute(minute);
-          setSelectedPeriod(period);
-          setHourFormat('12h');
-        } else if (hour >= 13 && hour <= 23) {
-          // User typed 24h format in 12h mode - convert it
-          setSelectedHour(hour > 12 ? hour - 12 : hour);
-          setSelectedMinute(minute);
-          setSelectedPeriod('PM');
-          setHourFormat('12h');
-        } else if (hour === 0) {
-          // Midnight
-          setSelectedHour(12);
-          setSelectedMinute(minute);
-          setSelectedPeriod('AM');
-          setHourFormat('12h');
-        }
-      }
-    }
-  }, [is24h, selectedPeriod]);
   
   // Handle time input - just update the display, don't parse until blur/confirm
   const handleTimeInputChange = useCallback((inputValue: string) => {
