@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { event as gaEvent } from '@/lib/gtag';
+import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 
@@ -222,6 +222,20 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   }, [loaded, shifts, rate, saveName]);
 
   const totalMins = useMemo(() => shifts.reduce((sum, s) => sum + shiftMinutes(s), 0), [shifts]);
+
+  // Track real timesheet usage: fire once per session when the user has entered
+  // shifts that produce a non-zero total (the tool's primary action).
+  const calcTrackedRef = useRef(false);
+  useEffect(() => {
+    if (calcTrackedRef.current || totalMins <= 0) return;
+    calcTrackedRef.current = true;
+    const device = getDevice();
+    gaEvent({
+      action: 'timesheet_calculated',
+      params: { device, shifts: shifts.length, total_minutes: totalMins },
+    });
+    toolUsed('timesheet', { device });
+  }, [totalMins, shifts.length]);
 
   const rateNum = parseFloat(rate);
   const gross = rate.trim() && !Number.isNaN(rateNum) && rateNum > 0 ? (totalMins / 60) * rateNum : null;

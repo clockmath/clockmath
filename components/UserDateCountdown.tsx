@@ -3,6 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { EventCountdown } from '@/components/EventCountdown';
+import { event as gaEvent } from '@/lib/gtag';
+
+const getDevice = (): 'mobile' | 'desktop' =>
+  typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
+    ? 'mobile'
+    : 'desktop';
 
 interface UserDateCountdownProps {
   /** localStorage key used to remember the user's chosen date. */
@@ -48,6 +54,11 @@ export function UserDateCountdown({
     (d: Date) => {
       setDate(d);
       localStorage.setItem(storageKey, String(d.getTime()));
+      // Fires only on a real user selection (not the initial default load).
+      gaEvent({
+        action: 'user_date_set',
+        params: { device: getDevice(), page: typeof window !== 'undefined' ? window.location.pathname : '' },
+      });
     },
     [storageKey],
   );
