@@ -1,11 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { intervalToDuration, formatDistance } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
+
+// Curated event countdowns (each is its own SEO landing page).
+const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
+  { title: 'GTA 6 Release', href: '/countdown/gta-6/', note: 'November 19, 2026' },
+];
 
 interface CountdownToolProps {
   className?: string;
@@ -536,6 +542,31 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           </ul>
         </div>
       )}
+
+      {/* Popular countdowns */}
+      <div className="relative z-0 mt-6 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
+          Popular countdowns
+        </h3>
+        <ul className="space-y-2">
+          {POPULAR_COUNTDOWNS.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className="flex items-center justify-between gap-3 rounded-xl border border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40 px-4 py-2.5 hover:border-primary/50 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
+              >
+                <span className="min-w-0">
+                  <span className="block font-medium text-foreground truncate">{item.title}</span>
+                  <span className="block text-xs text-muted-foreground">{item.note}</span>
+                </span>
+                <svg className="w-4 h-4 shrink-0 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
