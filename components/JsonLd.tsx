@@ -18,6 +18,22 @@ export default function JsonLd({ data }: JsonLdProps) {
 
 // Pre-built schema generators for common types
 
+// Brand/entity schema. Helps Google associate the logo + (later) social
+// profiles with the "ClockMath" brand. Add profile URLs to `sameAs` when ready.
+export function getOrganizationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'ClockMath',
+    url: 'https://clockmath.com',
+    logo: 'https://clockmath.com/icon-512.png',
+    description:
+      'Free online time, timezone, countdown, and work-hours/timesheet calculators.',
+    // Add official profile URLs here to link them to the brand, e.g.:
+    // sameAs: ['https://www.reddit.com/...', 'https://x.com/...'],
+  };
+}
+
 export function getSoftwareApplicationSchema({
   name,
   description,
