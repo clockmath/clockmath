@@ -50,29 +50,6 @@ const toDateInputValue = (date: Date): string => {
 const toWallClock = (date: Date): string =>
   `${toDateInputValue(date)}T${`${date.getHours()}`.padStart(2, '0')}:${`${date.getMinutes()}`.padStart(2, '0')}`;
 
-const nextOccurrence = (month0: number, day: number): Date => {
-  const now = new Date();
-  let d = new Date(now.getFullYear(), month0, day);
-  if (d.getTime() <= now.getTime()) d = new Date(now.getFullYear() + 1, month0, day);
-  return d;
-};
-
-const nextSaturday = (): Date => {
-  const now = new Date();
-  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const add = (6 - d.getDay() + 7) % 7 || 7; // upcoming Saturday (never today)
-  d.setDate(d.getDate() + add);
-  return d;
-};
-
-const QUICK_PICKS: Array<{ label: string; build: () => { date: Date; title: string } }> = [
-  { label: 'New Year', build: () => ({ date: nextOccurrence(0, 1), title: 'New Year' }) },
-  { label: "Valentine's", build: () => ({ date: nextOccurrence(1, 14), title: "Valentine's Day" }) },
-  { label: 'Halloween', build: () => ({ date: nextOccurrence(9, 31), title: 'Halloween' }) },
-  { label: 'Christmas', build: () => ({ date: nextOccurrence(11, 25), title: 'Christmas' }) },
-  { label: 'Weekend', build: () => ({ date: nextSaturday(), title: 'The weekend' }) },
-];
-
 export function CountdownTool({ className = '' }: CountdownToolProps) {
   // Draft inputs (the form) — only committed to `active` on Start countdown.
   const [dateValue, setDateValue] = useState<Date>(() => new Date(2025, 0, 1));
@@ -223,15 +200,6 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     setTimeStr('00:00:00');
     setActive(null);
     titleInputRef.current?.focus();
-  }, []);
-
-  const handleQuickPick = useCallback((date: Date, presetTitle: string, label: string) => {
-    setDateValue(date);
-    setTimeStr('00:00:00');
-    setTitle(presetTitle);
-    const ms = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0).getTime();
-    setActive({ ms, title: presetTitle });
-    gaEvent({ action: 'countdown_preset', params: { preset: label, device: getDevice() } });
   }, []);
 
   const buildShareUrl = useCallback(() => {
@@ -468,22 +436,6 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           >
             Clear
           </button>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="text-sm text-muted-foreground">Quick pick:</span>
-          {QUICK_PICKS.map((p) => (
-            <button
-              key={p.label}
-              onClick={() => {
-                const { date, title: t } = p.build();
-                handleQuickPick(date, t, p.label);
-              }}
-              className="px-3 py-1.5 text-sm rounded-lg bg-muted/60 dark:bg-slate-700/60 hover:bg-muted dark:hover:bg-slate-700 text-foreground transition-colors"
-            >
-              {p.label}
-            </button>
-          ))}
         </div>
       </div>
 
