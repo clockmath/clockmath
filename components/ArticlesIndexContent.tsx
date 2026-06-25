@@ -16,7 +16,7 @@ interface ArticlesIndexContentProps {
   categoryCopy: CategoryCopy;
 }
 
-export default function ArticlesIndexContent({ groupedArticles, categoryCopy }: ArticlesIndexContentProps) {
+export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexContentProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ArticleCategory | 'all'>('all');

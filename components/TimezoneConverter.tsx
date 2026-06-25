@@ -20,7 +20,7 @@ import {
   getTimezoneOffset,
   getOffsetLabel,
 } from '@/lib/time';
-import { ArrowLeftRight, Clock, MapPin } from 'lucide-react';
+import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
 
@@ -374,32 +374,6 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         : `${hours}h ${minutes}m behind`;
     }
   };
-
-  // Helper functions for time format conversion
-  const formatTimeDisplay = useCallback((timeStr: string): string => {
-    if (!timeStr) return "";
-    
-    const [hourStr, minuteStr] = timeStr.split(':');
-    const hour = parseInt(hourStr, 10);
-    const minute = parseInt(minuteStr, 10);
-    
-    if (isNaN(hour) || isNaN(minute)) return timeStr;
-    
-    if (hour12) {
-      const period = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-      return `${displayHour}:${minute.toString().padStart(2, "0")} ${period}`;
-    } else {
-      return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-    }
-  }, [hour12]);
-
-
-  // Convert inputTime for display in the input field
-  const displayTime = useMemo(() => {
-    if (!isHydrated || !inputTime) return "";
-    return formatTimeDisplay(inputTime);
-  }, [inputTime, formatTimeDisplay, isHydrated]);
 
   return (
     <div className={`relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-border/50 dark:border-slate-700/50 hover:shadow-2xl transition-all duration-300 ${className}`}>

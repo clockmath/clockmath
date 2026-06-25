@@ -115,9 +115,13 @@ export default function ClockMathPage() {
     if (!str) return Number.NaN
     const parts = str.split(":")
     if (parts.length < 2) return Number.NaN
-    const hours = parseInt(parts[0]) || 0
-    const minutes = parseInt(parts[1]) || 0
-    const seconds = parseInt(parts[2]) || 0
+    const hours = parseInt(parts[0], 10)
+    const minutes = parseInt(parts[1], 10)
+    const seconds = parts[2] !== undefined ? parseInt(parts[2], 10) : 0
+    if ([hours, minutes, seconds].some(Number.isNaN)) return Number.NaN
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) {
+      return Number.NaN
+    }
     return hours * 3600 + minutes * 60 + seconds
   }, [])
 
@@ -676,7 +680,6 @@ export default function ClockMathPage() {
 
                 const startDateFormatted = formatEntryDate(entry.startDate)
                 const endDateFormatted = formatEntryDate(entry.endDate)
-                const isSameDay = entry.startDate === entry.endDate
                 const isMultiDay = entry.startDate && entry.endDate && entry.startDate !== entry.endDate
 
                 return (
