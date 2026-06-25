@@ -18,12 +18,17 @@ export default function JsonLd({ data }: JsonLdProps) {
 
 // Pre-built schema generators for common types
 
+// Stable @ids so entities can reference each other across JSON-LD blocks.
+const ORG_ID = 'https://clockmath.com/#organization';
+const WEBSITE_ID = 'https://clockmath.com/#website';
+
 // Brand/entity schema. Helps Google associate the logo + (later) social
 // profiles with the "ClockMath" brand. Add profile URLs to `sameAs` when ready.
 export function getOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': ORG_ID,
     name: 'ClockMath',
     url: 'https://clockmath.com',
     logo: 'https://clockmath.com/icon-512.png',
@@ -31,6 +36,19 @@ export function getOrganizationSchema() {
       'Free online time, timezone, countdown, and work-hours/timesheet calculators.',
     // Add official profile URLs here to link them to the brand, e.g.:
     // sameAs: ['https://www.reddit.com/...', 'https://x.com/...'],
+  };
+}
+
+// The website entity, published by the Organization above (linked via @id).
+// Mainly signals the site name ("ClockMath") to Google.
+export function getWebSiteSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': WEBSITE_ID,
+    name: 'ClockMath',
+    url: 'https://clockmath.com',
+    publisher: { '@id': ORG_ID },
   };
 }
 

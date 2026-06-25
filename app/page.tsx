@@ -10,7 +10,7 @@ import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
 import { format, intervalToDuration, type Duration } from "date-fns"
 import { event as gaEvent } from "@/lib/gtag"
-import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema } from "@/components/JsonLd"
+import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSiteSchema } from "@/components/JsonLd"
 
 // Interface for calculator-specific data
 interface CalculationHistory {
@@ -416,6 +416,7 @@ export default function ClockMathPage() {
   return (
     <PageChrome currentTool="calculator" onToggleTheme={toggleTheme} isDarkMode={isDarkMode}>
       <JsonLd data={getOrganizationSchema()} />
+      <JsonLd data={getWebSiteSchema()} />
       <JsonLd
         data={getSoftwareApplicationSchema({
           name: 'ClockMath Time Duration Calculator',
