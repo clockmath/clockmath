@@ -294,7 +294,8 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
 
   return (
     <div className={className}>
-      {/* Countdown display */}
+      {/* Countdown display — only shown once a countdown is active */}
+      {active && (
       <div className="relative z-10 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-emerald-100 dark:border-slate-700/50 text-center mb-6">
         {activeTitle && (
           <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
@@ -370,6 +371,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           </button>
         </div>
       </div>
+      )}
 
       {/* Configuration */}
       <div className="relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
