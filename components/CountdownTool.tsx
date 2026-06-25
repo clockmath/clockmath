@@ -399,6 +399,20 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
             maxLength={80}
             className="w-full px-4 py-2.5 rounded-xl bg-background dark:bg-slate-900/60 border border-border dark:border-slate-700 text-foreground outline-none focus:ring-2 focus:ring-emerald-500/50"
           />
+          {/* Popular pre-built countdowns — quick inspiration alongside the input */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="text-sm text-muted-foreground">Popular:</span>
+            {POPULAR_COUNTDOWNS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={item.note}
+                className="px-3 py-1.5 text-sm rounded-lg bg-muted/60 dark:bg-slate-700/60 hover:bg-muted dark:hover:bg-slate-700 text-foreground transition-colors"
+              >
+                {item.title}
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center justify-between mb-2">
@@ -546,31 +560,6 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           </ul>
         </div>
       )}
-
-      {/* Popular countdowns */}
-      <div className="relative z-0 mt-6 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
-        <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
-          Popular countdowns
-        </h3>
-        <ul className="space-y-2">
-          {POPULAR_COUNTDOWNS.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40 px-4 py-2.5 hover:border-primary/50 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
-              >
-                <span className="min-w-0">
-                  <span className="block font-medium text-foreground truncate">{item.title}</span>
-                  <span className="block text-xs text-muted-foreground">{item.note}</span>
-                </span>
-                <svg className="w-4 h-4 shrink-0 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }
