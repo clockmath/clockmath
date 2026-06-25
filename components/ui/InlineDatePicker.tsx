@@ -143,12 +143,15 @@ export function InlineDatePicker({
               </button>
             )}
 
-            {/* Calendar */}
+            {/* Calendar — wide year range so the year dropdown reaches any
+                realistic date (historical durations + future countdowns). */}
             <Calendar
               mode="single"
               selected={value}
               onSelect={handleCalendarSelect}
               captionLayout="dropdown"
+              startMonth={new Date(1920, 0)}
+              endMonth={new Date(new Date().getFullYear() + 20, 11)}
               fixedWeeks
               initialFocus
             />

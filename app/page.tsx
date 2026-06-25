@@ -506,6 +506,7 @@ export default function ClockMathPage() {
                       value={startDate}
                       onChange={setStartDate}
                       placeholder="Select date"
+                      startOnCalendar
                     />
                   </div>
                   <div className="flex-1">
@@ -530,6 +531,7 @@ export default function ClockMathPage() {
                       value={endDate}
                       onChange={setEndDate}
                       placeholder="Select date"
+                      startOnCalendar
                     />
                   </div>
                   <div className="flex-1">
