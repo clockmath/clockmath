@@ -6,6 +6,14 @@ import { EventCountdown } from '@/components/EventCountdown';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
+import { Toaster } from '@/components/ui/toaster';
+import { toast } from '@/hooks/use-toast';
+import { event as gaEvent } from '@/lib/gtag';
+
+const getDevice = (): 'mobile' | 'desktop' =>
+  typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
+    ? 'mobile'
+    : 'desktop';
 
 export interface EventPageProps {
   /** Styled headline, e.g. <><span>GTA 6</span> Countdown</> */
@@ -14,17 +22,24 @@ export interface EventPageProps {
   tagline: string;
   /** Breadcrumb leaf label (e.g. "GTA 6"). */
   breadcrumb: string;
-  /** Fixed one-off target. Provide either this or `recurring`. */
+  /** Fixed one-off target. Provide either this or `recurring`/`weekly`. */
   target?: Date;
   /** Recurring annual event ({ month: 0-indexed, day }). */
   recurring?: { month: number; day: number };
+  /** Recurring weekly event ({ weekday: 0-indexed, 0 = Sun }). */
+  weekly?: { weekday: number };
   /** Title used inside the timer ("Until {countdownTitle}"). */
-  countdownTitle: string;
+  countdownTitle?: string;
   /** Heading shown once the event arrives (e.g. "It's Christmas! 🎄"). */
   arrivedLabel?: string;
   /** Trademark/affiliation disclaimer (use buildEventDisclaimer). */
   disclaimer?: string;
-  facts: Array<{ label: string; value: string }>;
+  /**
+   * Custom countdown element rendered in place of the built-in timer — used
+   * for interactive countdowns where the user supplies their own date.
+   */
+  countdownSlot?: ReactNode;
+  facts?: Array<{ label: string; value: string }>;
   intro: ReactNode;
   faqs: Array<{ question: string; answer: string }>;
 }
@@ -38,9 +53,11 @@ export default function EventPage({
   breadcrumb,
   target,
   recurring,
+  weekly,
   countdownTitle,
   arrivedLabel,
   disclaimer,
+  countdownSlot,
   facts,
   intro,
   faqs,
@@ -65,6 +82,27 @@ export default function EventPage({
     });
   }, []);
 
+  const handleShare = useCallback(async () => {
+    const url = window.location.href;
+    const shareTitle = document.title;
+    gaEvent({ action: 'event_countdown_shared', params: { device: getDevice(), page: window.location.pathname } });
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareTitle, url });
+        return;
+      } catch {
+        /* user dismissed or unsupported — fall through to copy */
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'Link copied!', description: 'Share this countdown anywhere.' });
+    } catch {
+      toast({ title: 'Copy this link', description: url });
+    }
+  }, []);
+
   return (
     <PageChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd data={getFAQPageSchema(faqs)} />
@@ -85,26 +123,45 @@ export default function EventPage({
         </nav>
       </header>
 
-      <EventCountdown
-        target={target}
-        recurring={recurring}
-        title={countdownTitle}
-        arrivedLabel={arrivedLabel}
-        disclaimer={disclaimer}
-        className="mb-6"
-      />
+      {countdownSlot ? (
+        <div className="mb-6">{countdownSlot}</div>
+      ) : (
+        <EventCountdown
+          target={target}
+          recurring={recurring}
+          weekly={weekly}
+          title={countdownTitle ?? breadcrumb}
+          arrivedLabel={arrivedLabel}
+          disclaimer={disclaimer}
+          className="mb-6"
+        />
+      )}
 
-      <div className="grid gap-3 sm:grid-cols-3 mb-6">
-        {facts.map((f) => (
-          <div
-            key={f.label}
-            className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 border border-border/50 dark:border-slate-700/50 text-center"
-          >
-            <div className="text-xs uppercase tracking-wide text-muted-foreground">{f.label}</div>
-            <div className="font-semibold text-foreground dark:text-slate-100 mt-1">{f.value}</div>
-          </div>
-        ))}
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={handleShare}
+          className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg transition-all duration-200"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+          Share this countdown
+        </button>
       </div>
+
+      {facts && facts.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-3 mb-6">
+          {facts.map((f) => (
+            <div
+              key={f.label}
+              className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 border border-border/50 dark:border-slate-700/50 text-center"
+            >
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">{f.label}</div>
+              <div className="font-semibold text-foreground dark:text-slate-100 mt-1">{f.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-6">
         <p className="text-foreground dark:text-slate-200 leading-relaxed">{intro}</p>
@@ -133,6 +190,7 @@ export default function EventPage({
       </div>
 
       <SiteFooter />
+      <Toaster />
     </PageChrome>
   );
 }

@@ -12,6 +12,11 @@ interface EventCountdownProps {
    * goes stale after the date passes.
    */
   recurring?: { month: number; day: number };
+  /**
+   * Recurring weekly event (e.g. "the weekend"). `weekday` is 0-indexed
+   * (0 = Sunday … 6 = Saturday). Resolves to the next occurrence client-side.
+   */
+  weekly?: { weekday: number };
   title: string;
   className?: string;
   /** Heading shown once the target has arrived. Defaults to `${title} has released!`. */
@@ -44,34 +49,46 @@ function nextOccurrence(month: number, day: number): number {
   return new Date(targetYear, month, day, 0, 0, 0, 0).getTime();
 }
 
+// Next occurrence of a weekday (0 = Sun … 6 = Sat) at midnight. On the day
+// itself the target is today's midnight (already passed → reads as arrived).
+function nextWeekday(weekday: number): number {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const add = (weekday - today.getDay() + 7) % 7;
+  today.setDate(today.getDate() + add);
+  return today.getTime();
+}
+
 // Display-only live countdown to a fixed or recurring target (event pages).
 export function EventCountdown({
   target,
   recurring,
+  weekly,
   title,
   className = '',
   arrivedLabel,
   disclaimer,
 }: EventCountdownProps) {
   // Fixed targets are stable across server/client, so they can seed state
-  // directly. Recurring targets must be resolved on the client (current date
-  // dependent), so they start null and fill in on mount.
+  // directly. Recurring/weekly targets must be resolved on the client (current
+  // date dependent), so they start null and fill in on mount.
   const [targetMs, setTargetMs] = useState<number | null>(
-    recurring ? null : (target ? target.getTime() : null),
+    recurring || weekly ? null : (target ? target.getTime() : null),
   );
   const [nowMs, setNowMs] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (recurring) setTargetMs(nextOccurrence(recurring.month, recurring.day));
+    else if (weekly) setTargetMs(nextWeekday(weekly.weekday));
     setNowMs(Date.now());
     setMounted(true);
     const id = setInterval(() => setNowMs(Date.now()), 1000);
     return () => clearInterval(id);
-    // `recurring` is a fresh object literal each render; depend on its parts
-    // instead so the effect doesn't re-run on every parent render.
+    // `recurring`/`weekly` are fresh object literals each render; depend on
+    // their parts so the effect doesn't re-run on every parent render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recurring?.month, recurring?.day]);
+  }, [recurring?.month, recurring?.day, weekly?.weekday]);
 
   const ready = mounted && targetMs !== null && nowMs !== null;
   const isPast = ready && (targetMs as number) < (nowMs as number);

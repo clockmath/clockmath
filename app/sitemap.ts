@@ -87,6 +87,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (page.startsWith('/tools/')) {
       priority = 0.9;
       changeFreq = 'monthly';
+    } else if (page.startsWith('/countdown/')) {
+      // Event countdown landing pages — deliberate traffic-capture pages.
+      priority = 0.8;
+      changeFreq = 'weekly';
     } else if (page === '/articles') {
       priority = 0.85;
       changeFreq = 'weekly';
