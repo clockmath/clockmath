@@ -62,3 +62,13 @@ export const event = ({ action, params = {} }: GtagEvent) => {
   window.gtag?.("event", action, params);
   log(`event sent: ${action}`);
 };
+
+// Unified tool-usage event so tool popularity is comparable in one report.
+// Callers fire this once per page session (on first real use of the tool) so
+// counts reflect users-who-used-it rather than raw interactions.
+export const toolUsed = (
+  tool: "calculator" | "countdown" | "timezone" | "timesheet",
+  params: Record<string, unknown> = {},
+) => {
+  event({ action: "tool_used", params: { tool, ...params } });
+};

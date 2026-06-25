@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { intervalToDuration, formatDistance } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
-import { event as gaEvent } from '@/lib/gtag';
+import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 
@@ -70,6 +70,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
   const [userTz, setUserTz] = useState('');
   const [saved, setSaved] = useState<SavedCountdown[]>([]);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const toolUsedRef = useRef(false);
 
   // Compute a target timestamp from the current draft inputs.
   const draftTargetMs = useMemo(() => {
@@ -197,6 +198,10 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
       action: 'countdown_created',
       params: { device: getDevice(), has_title: true },
     });
+    if (!toolUsedRef.current) {
+      toolUsedRef.current = true;
+      toolUsed('countdown', { device: getDevice() });
+    }
   }, [draftTargetMs, title]);
 
   const handleClear = useCallback(() => {

@@ -10,7 +10,7 @@ import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
 import { format, intervalToDuration, type Duration } from "date-fns"
-import { event as gaEvent } from "@/lib/gtag"
+import { event as gaEvent, toolUsed } from "@/lib/gtag"
 import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSiteSchema } from "@/components/JsonLd"
 
 // Interface for calculator-specific data
@@ -75,21 +75,9 @@ export default function ClockMathPage() {
     }
   } | null>(null);
 
-  // Emit debounced inputs_change (no PII)
-  const emitInputsChange = useCallback(() => {
-    gaEvent({
-      action: "inputs_change",
-      params: {
-        page: "calculator",
-        has_start: Boolean(startTime),
-        has_end: Boolean(endTime),
-        has_break: false, // This calculator doesn't have breaks, but keeping for consistency
-        device: getDevice(),
-        tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-    });
-  }, [startTime, endTime]);
-  
+  // Fire the unified tool_used event at most once per page session.
+  const toolUsedRef = useRef(false)
+
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem("clockmath-darkmode")
@@ -352,6 +340,10 @@ export default function ClockMathPage() {
             device: getDevice(),
           },
         });
+        if (!toolUsedRef.current) {
+          toolUsedRef.current = true
+          toolUsed("calculator", { device: getDevice() })
+        }
       }
 
       setIsCalculating(false)
@@ -402,21 +394,6 @@ export default function ClockMathPage() {
       localStorage.removeItem("clockmath-history")
     }
   }, [])
-
-  // Debounced inputs change event
-  const debouncedInputsChange = useRef<NodeJS.Timeout | null>(null)
-  useEffect(() => {
-    if (debouncedInputsChange.current) {
-      clearTimeout(debouncedInputsChange.current)
-    }
-    debouncedInputsChange.current = setTimeout(emitInputsChange, 1000)
-    
-    return () => {
-      if (debouncedInputsChange.current) {
-        clearTimeout(debouncedInputsChange.current)
-      }
-    }
-  }, [emitInputsChange])
 
   return (
     <PageChrome currentTool="calculator" onToggleTheme={toggleTheme} isDarkMode={isDarkMode}>

@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { LocationTimezonePicker } from '@/components/location/LocationTimezonePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
@@ -21,7 +21,7 @@ import {
   getOffsetLabel,
 } from '@/lib/time';
 import { ArrowLeftRight, MapPin } from 'lucide-react';
-import { event as gaEvent } from '@/lib/gtag';
+import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
 
 interface TimezoneConverterProps {
@@ -41,6 +41,7 @@ const parseLocalDate = (s: string): Date => {
 };
 
 export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
+  const toolUsedRef = useRef(false);
   const [fromTZ, setFromTZ] = useState<string>('');
   const [toTZ, setToTZ] = useState<string>('UTC');
   const [inputDate, setInputDate] = useState<string>('');
@@ -146,6 +147,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         targetDate
       });
 
+      const device = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop';
       gaEvent({
         action: 'tz_convert',
         params: {
@@ -153,9 +155,13 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           to,
           has_custom_datetime: Boolean(dateStr && timeStr),
           is_12_hour: hour12,
-          device: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop'
+          device
         }
       });
+      if (!toolUsedRef.current) {
+        toolUsedRef.current = true;
+        toolUsed('timezone', { device });
+      }
     } catch {
       setResult(null);
     }
