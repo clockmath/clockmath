@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Timesheet Calculator – Calculate Weekly Hours for Payroll",
   description: "Calculate timesheet totals for weekly or bi-weekly pay periods. Get decimal hours for payroll systems and accurate totals every time.",
   alternates: {
-    canonical: "https://clockmath.com/articles/timesheet-calculator",
+    canonical: "https://clockmath.com/articles/timesheet-calculator/",
   },
   openGraph: {
     title: "Timesheet Calculator – Calculate Weekly Hours for Payroll",
     description: "Calculate timesheet totals for weekly or bi-weekly pay periods. Get decimal hours for payroll systems and accurate totals every time.",
     type: "article",
-    url: "https://clockmath.com/articles/timesheet-calculator",
+    url: "https://clockmath.com/articles/timesheet-calculator/",
   },
   twitter: {
     card: "summary_large_image",

@@ -27,7 +27,7 @@ export default function ArticleLayout({
         data={getArticleSchema({
           headline: title,
           description,
-          url: `https://clockmath.com${currentPath}`,
+          url: `https://clockmath.com${currentPath}${currentPath.endsWith('/') ? '' : '/'}`,
           datePublished: `${publishDate}-01-01`,
         })}
       />

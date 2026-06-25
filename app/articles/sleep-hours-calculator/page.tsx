@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Sleep Hours Calculator – Find Out Exactly How Long You Slept",
   description: "Wondering how much sleep you got? Use ClockMath's free hours calculator to track your exact sleep duration in minutes and hours.",
   alternates: {
-    canonical: "https://clockmath.com/articles/sleep-hours-calculator",
+    canonical: "https://clockmath.com/articles/sleep-hours-calculator/",
   },
   openGraph: {
     title: "Sleep Hours Calculator – Find Out Exactly How Long You Slept",
     description: "Wondering how much sleep you got? Use ClockMath's free hours calculator to track your exact sleep duration in minutes and hours.",
     type: "article",
-    url: "https://clockmath.com/articles/sleep-hours-calculator",
+    url: "https://clockmath.com/articles/sleep-hours-calculator/",
   },
   twitter: {
     card: "summary_large_image",

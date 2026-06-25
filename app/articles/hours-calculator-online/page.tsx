@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Hours Calculator Online – Faster Than Manual Math",
   description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
   alternates: {
-    canonical: "https://clockmath.com/articles/hours-calculator-online",
+    canonical: "https://clockmath.com/articles/hours-calculator-online/",
   },
   openGraph: {
     title: "Hours Calculator Online – Faster Than Manual Math",
     description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
     type: "article",
-    url: "https://clockmath.com/articles/hours-calculator-online",
+    url: "https://clockmath.com/articles/hours-calculator-online/",
   },
   twitter: {
     card: "summary_large_image",

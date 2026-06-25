@@ -2,6 +2,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { generateSEOMetadata } from '@/lib/seo';
+import JsonLd from '@/components/JsonLd';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: 'Timezone Converter Guides - All Scenarios | ClockMath',
@@ -86,6 +87,25 @@ const CATEGORY_COLORS = {
 export default function TimezoneConvertersHubPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800/20">
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Timezone Converter Guides',
+          description:
+            'Guides for converting time across timezones — remote work, travel, gaming, family calls, and more.',
+          url: 'https://clockmath.com/articles/timezone-converters/',
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: TIMEZONE_GUIDES.map((guide, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: guide.title,
+              url: `https://clockmath.com${guide.href}/`,
+            })),
+          },
+        }}
+      />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(5,150,105,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(5,150,105,0.2),transparent_50%)]"></div>
       
       <main className="relative max-w-6xl mx-auto px-4 py-8">
