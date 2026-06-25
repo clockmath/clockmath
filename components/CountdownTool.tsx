@@ -1,11 +1,26 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { intervalToDuration, formatDistance } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
+
+// Curated event countdowns (each is its own SEO landing page).
+const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
+  { title: 'Weekend', href: '/countdown/weekend/', note: 'Every Saturday' },
+  { title: 'Christmas', href: '/countdown/christmas/', note: 'December 25' },
+  { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
+  { title: 'Halloween', href: '/countdown/halloween/', note: 'October 31' },
+  { title: '4th of July', href: '/countdown/july-4th/', note: 'July 4' },
+  { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
+  { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },
+  { title: 'Spider-Man: Brand New Day', href: '/countdown/spider-man-brand-new-day/', note: 'July 31, 2026' },
+  { title: 'GTA 6', href: '/countdown/gta-6/', note: 'November 19, 2026' },
+  { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
+];
 
 interface CountdownToolProps {
   className?: string;
@@ -39,29 +54,6 @@ const toDateInputValue = (date: Date): string => {
 // Local wall-clock string "YYYY-MM-DDTHH:MM" from a Date.
 const toWallClock = (date: Date): string =>
   `${toDateInputValue(date)}T${`${date.getHours()}`.padStart(2, '0')}:${`${date.getMinutes()}`.padStart(2, '0')}`;
-
-const nextOccurrence = (month0: number, day: number): Date => {
-  const now = new Date();
-  let d = new Date(now.getFullYear(), month0, day);
-  if (d.getTime() <= now.getTime()) d = new Date(now.getFullYear() + 1, month0, day);
-  return d;
-};
-
-const nextSaturday = (): Date => {
-  const now = new Date();
-  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const add = (6 - d.getDay() + 7) % 7 || 7; // upcoming Saturday (never today)
-  d.setDate(d.getDate() + add);
-  return d;
-};
-
-const QUICK_PICKS: Array<{ label: string; build: () => { date: Date; title: string } }> = [
-  { label: 'New Year', build: () => ({ date: nextOccurrence(0, 1), title: 'New Year' }) },
-  { label: "Valentine's", build: () => ({ date: nextOccurrence(1, 14), title: "Valentine's Day" }) },
-  { label: 'Halloween', build: () => ({ date: nextOccurrence(9, 31), title: 'Halloween' }) },
-  { label: 'Christmas', build: () => ({ date: nextOccurrence(11, 25), title: 'Christmas' }) },
-  { label: 'Weekend', build: () => ({ date: nextSaturday(), title: 'The weekend' }) },
-];
 
 export function CountdownTool({ className = '' }: CountdownToolProps) {
   // Draft inputs (the form) — only committed to `active` on Start countdown.
@@ -213,15 +205,6 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     setTimeStr('00:00:00');
     setActive(null);
     titleInputRef.current?.focus();
-  }, []);
-
-  const handleQuickPick = useCallback((date: Date, presetTitle: string, label: string) => {
-    setDateValue(date);
-    setTimeStr('00:00:00');
-    setTitle(presetTitle);
-    const ms = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0).getTime();
-    setActive({ ms, title: presetTitle });
-    gaEvent({ action: 'countdown_preset', params: { preset: label, device: getDevice() } });
   }, []);
 
   const buildShareUrl = useCallback(() => {
@@ -376,9 +359,32 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
       {/* Configuration */}
       <div className="relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
         <div className="mb-4">
-          <label htmlFor="cd-title" className="block text-sm font-medium text-foreground mb-1.5">
-            What are you counting down to?
-          </label>
+          {/* Question label + auto-scrolling Popular marquee share one row;
+              the marquee chips are duplicated for a seamless right-to-left loop. */}
+          <div className="flex flex-col gap-2 mb-1.5 sm:flex-row sm:items-center sm:gap-3">
+            <label htmlFor="cd-title" className="block text-sm font-medium text-foreground shrink-0">
+              What are you counting down to?
+            </label>
+            <div className="flex w-full min-w-0 items-center gap-2 sm:flex-1">
+              <span className="text-sm text-muted-foreground shrink-0">Popular:</span>
+              <div className="relative flex-1 min-w-0 overflow-hidden marquee-mask">
+                <div className="flex w-max gap-2 animate-marquee hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] active:[animation-play-state:paused]">
+                  {[...POPULAR_COUNTDOWNS, ...POPULAR_COUNTDOWNS].map((item, i) => (
+                    <Link
+                      key={`${item.href}-${i}`}
+                      href={item.href}
+                      title={item.note}
+                      aria-hidden={i >= POPULAR_COUNTDOWNS.length}
+                      tabIndex={i >= POPULAR_COUNTDOWNS.length ? -1 : undefined}
+                      className="shrink-0 inline-flex items-center min-h-[44px] whitespace-nowrap px-4 py-2.5 text-sm font-medium rounded-lg border bg-white border-slate-300 text-slate-700 shadow-sm hover:border-emerald-500 hover:text-emerald-700 dark:bg-slate-700/60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white transition-colors"
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
           <input
             id="cd-title"
             ref={titleInputRef}
@@ -444,22 +450,6 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           >
             Clear
           </button>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="text-sm text-muted-foreground">Quick pick:</span>
-          {QUICK_PICKS.map((p) => (
-            <button
-              key={p.label}
-              onClick={() => {
-                const { date, title: t } = p.build();
-                handleQuickPick(date, t, p.label);
-              }}
-              className="px-3 py-1.5 text-sm rounded-lg bg-muted/60 dark:bg-slate-700/60 hover:bg-muted dark:hover:bg-slate-700 text-foreground transition-colors"
-            >
-              {p.label}
-            </button>
-          ))}
         </div>
       </div>
 

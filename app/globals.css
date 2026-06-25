@@ -132,3 +132,38 @@
     }
   }
 }
+
+/* Continuous right-to-left marquee (e.g. the Popular countdowns row). The
+   track renders two copies of its content, so translating by -50% loops
+   seamlessly. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  will-change: transform;
+}
+
+/* Fade the edges so chips appear/disappear smoothly instead of clipping. */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 6%,
+    black 94%,
+    transparent
+  );
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
