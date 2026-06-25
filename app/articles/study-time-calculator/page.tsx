@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Study Time Calculator – Track Your Sessions Easily",
   description: "Stay productive by tracking exact study hours. Use ClockMath's free duration calculator to measure and log your study sessions.",
   alternates: {
-    canonical: "https://clockmath.com/articles/study-time-calculator",
+    canonical: "https://clockmath.com/articles/study-time-calculator/",
   },
   openGraph: {
     title: "Study Time Calculator – Track Your Sessions Easily",
     description: "Stay productive by tracking exact study hours. Use ClockMath's free duration calculator to measure and log your study sessions.",
     type: "article",
-    url: "https://clockmath.com/articles/study-time-calculator",
+    url: "https://clockmath.com/articles/study-time-calculator/",
   },
   twitter: {
     card: "summary_large_image",

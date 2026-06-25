@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Freelancer Time Tracking – Calculate Billable Hours Accurately",
   description: "Track billable hours as a freelancer or contractor. Calculate client time, convert to invoicing amounts, and manage multiple projects with our free tool.",
   alternates: {
-    canonical: "https://clockmath.com/articles/freelancer-time-tracking",
+    canonical: "https://clockmath.com/articles/freelancer-time-tracking/",
   },
   openGraph: {
     title: "Freelancer Time Tracking – Calculate Billable Hours Accurately",
     description: "Track billable hours as a freelancer or contractor. Calculate client time, convert to invoicing amounts, and manage multiple projects with our free tool.",
     type: "article",
-    url: "https://clockmath.com/articles/freelancer-time-tracking",
+    url: "https://clockmath.com/articles/freelancer-time-tracking/",
   },
   twitter: {
     card: "summary_large_image",

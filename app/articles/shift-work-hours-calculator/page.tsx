@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Shift Work Hours Calculator – Track Overnight & Rotating Shifts",
   description: "Calculate shift work hours across midnight, rotating schedules, and irregular patterns. Free tool for nurses, factory workers, and night shift employees.",
   alternates: {
-    canonical: "https://clockmath.com/articles/shift-work-hours-calculator",
+    canonical: "https://clockmath.com/articles/shift-work-hours-calculator/",
   },
   openGraph: {
     title: "Shift Work Hours Calculator – Track Overnight & Rotating Shifts",
     description: "Calculate shift work hours across midnight, rotating schedules, and irregular patterns. Free tool for nurses, factory workers, and night shift employees.",
     type: "article",
-    url: "https://clockmath.com/articles/shift-work-hours-calculator",
+    url: "https://clockmath.com/articles/shift-work-hours-calculator/",
   },
   twitter: {
     card: "summary_large_image",

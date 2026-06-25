@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Overtime Hours Calculator – Fast & Simple Online Tool",
   description: "Stop guessing your overtime pay. Use ClockMath's elapsed time calculator to instantly find total hours worked and overtime hours.",
   alternates: {
-    canonical: "https://clockmath.com/articles/overtime-hours-calculator",
+    canonical: "https://clockmath.com/articles/overtime-hours-calculator/",
   },
   openGraph: {
     title: "Overtime Hours Calculator – Fast & Simple Online Tool",
     description: "Stop guessing your overtime pay. Use ClockMath's elapsed time calculator to instantly find total hours worked and overtime hours.",
     type: "article",
-    url: "https://clockmath.com/articles/overtime-hours-calculator",
+    url: "https://clockmath.com/articles/overtime-hours-calculator/",
   },
   twitter: {
     card: "summary_large_image",

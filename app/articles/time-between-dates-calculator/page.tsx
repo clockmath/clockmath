@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Time Between Two Dates Calculator – Free Online Tool",
   description: "Quickly calculate the time between two dates in days, hours, and minutes. ClockMath makes planning deadlines and events easy.",
   alternates: {
-    canonical: "https://clockmath.com/articles/time-between-dates-calculator",
+    canonical: "https://clockmath.com/articles/time-between-dates-calculator/",
   },
   openGraph: {
     title: "Time Between Two Dates Calculator – Free Online Tool",
     description: "Quickly calculate the time between two dates in days, hours, and minutes. ClockMath makes planning deadlines and events easy.",
     type: "article",
-    url: "https://clockmath.com/articles/time-between-dates-calculator",
+    url: "https://clockmath.com/articles/time-between-dates-calculator/",
   },
   twitter: {
     card: "summary_large_image",

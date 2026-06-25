@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Calculate Work Hours Instantly – Free Online Tool",
   description: "Enter your start and end times to calculate work hours fast. Try ClockMath's free time duration calculator for accurate results every time.",
   alternates: {
-    canonical: "https://clockmath.com/articles/work-hours-calculator",
+    canonical: "https://clockmath.com/articles/work-hours-calculator/",
   },
   openGraph: {
     title: "Calculate Work Hours Instantly – Free Online Tool",
     description: "Enter your start and end times to calculate work hours fast. Try ClockMath's free time duration calculator for accurate results every time.",
     type: "article",
-    url: "https://clockmath.com/articles/work-hours-calculator",
+    url: "https://clockmath.com/articles/work-hours-calculator/",
   },
   twitter: {
     card: "summary_large_image",
