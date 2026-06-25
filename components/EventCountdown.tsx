@@ -7,10 +7,26 @@ interface EventCountdownProps {
   target: Date;
   title: string;
   className?: string;
+  /**
+   * Optional trademark / affiliation disclaimer rendered beneath the timer.
+   * Recommended on any event page that names a third-party brand so the page
+   * can't be read as official or endorsed (nominative fair use). See
+   * EVENT_DISCLAIMER for the standard template.
+   */
+  disclaimer?: string;
+}
+
+/**
+ * Reusable disclaimer template for event countdowns that reference a
+ * third-party brand. Fill in the brand name and rights holder(s).
+ * Example: buildEventDisclaimer('Grand Theft Auto', 'Rockstar Games and Take-Two Interactive')
+ */
+export function buildEventDisclaimer(brand: string, rightsHolders: string): string {
+  return `ClockMath is not affiliated with, endorsed by, or sponsored by ${rightsHolders}. "${brand}" and related names are trademarks of their respective owners. Release date subject to change.`;
 }
 
 // Display-only live countdown to a fixed target (used by event landing pages).
-export function EventCountdown({ target, title, className = '' }: EventCountdownProps) {
+export function EventCountdown({ target, title, className = '', disclaimer }: EventCountdownProps) {
   const targetMs = target.getTime();
   // Before mount nowMs === targetMs so the breakdown is all zeros and matches
   // the server render (no hydration mismatch); the live value kicks in on mount.
@@ -77,6 +93,12 @@ export function EventCountdown({ target, title, className = '' }: EventCountdown
           </div>
         ))}
       </div>
+
+      {disclaimer && (
+        <p className="text-[11px] leading-relaxed text-muted-foreground dark:text-slate-500 mt-6 max-w-2xl mx-auto">
+          {disclaimer}
+        </p>
+      )}
     </div>
   );
 }

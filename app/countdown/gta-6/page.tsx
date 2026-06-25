@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { EventCountdown } from '@/components/EventCountdown';
+import { EventCountdown, buildEventDisclaimer } from '@/components/EventCountdown';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
@@ -85,7 +85,12 @@ export default function Gta6CountdownPage() {
         </nav>
       </header>
 
-      <EventCountdown target={GTA6_RELEASE} title="GTA 6" className="mb-6" />
+      <EventCountdown
+        target={GTA6_RELEASE}
+        title="GTA 6"
+        className="mb-6"
+        disclaimer={buildEventDisclaimer('Grand Theft Auto', 'Rockstar Games or Take-Two Interactive')}
+      />
 
       {/* Facts */}
       <div className="grid gap-3 sm:grid-cols-3 mb-6">
