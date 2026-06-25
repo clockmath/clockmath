@@ -416,7 +416,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
         </div>
         <div className="flex gap-2">
           <div className="flex-1">
-            <InlineDatePicker value={dateValue} onChange={setDateValue} placeholder="Select date" />
+            <InlineDatePicker value={dateValue} onChange={setDateValue} placeholder="Select date" startOnCalendar />
           </div>
           <div className="flex-1">
             <InlineTimePicker value={timeStr} onChange={setTimeStr} is24h={is24h} placeholder="Time" />
