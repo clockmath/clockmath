@@ -10,7 +10,11 @@ import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
+  { title: 'Christmas', href: '/countdown/christmas/', note: 'December 25' },
+  { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
+  { title: 'Halloween', href: '/countdown/halloween/', note: 'October 31' },
   { title: 'GTA 6 Release', href: '/countdown/gta-6/', note: 'November 19, 2026' },
+  { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
 ];
 
 interface CountdownToolProps {
