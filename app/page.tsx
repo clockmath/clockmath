@@ -652,7 +652,7 @@ export default function ClockMathPage() {
               </div>
             </div>
             <div className="grid gap-3">
-              {history.slice(0, 5).map((entry) => {
+              {history.map((entry) => {
                 const startTimeFormatted = formatTime(entry.startTime)
                 const endTimeFormatted = formatTime(entry.endTime)
                 const isExpanded = expandedHistory.has(entry.id)
