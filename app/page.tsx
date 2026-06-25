@@ -2,6 +2,7 @@
 
 /* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect, useCallback, useRef } from "react"
+import Link from "next/link"
 import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import PageChrome from "@/components/PageChrome"
@@ -589,6 +590,25 @@ export default function ClockMathPage() {
                       size="large"
                     />
                   )}
+                </div>
+
+                {/* Contextual cross-promo: nudge engaged users toward the other tools */}
+                <div className="mt-4 bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-4 border border-border/50 dark:border-slate-700/50">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground">💡 Did you know?</span> You can also use ClockMath to{" "}
+                    <Link href="/tools/timesheet/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
+                      add up your work hours
+                    </Link>
+                    ,{" "}
+                    <Link href="/tools/countdown/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
+                      create countdowns for events
+                    </Link>
+                    , and{" "}
+                    <Link href="/tools/timezone/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
+                      convert time between time zones
+                    </Link>
+                    .
+                  </p>
                 </div>
               </div>
             )}
