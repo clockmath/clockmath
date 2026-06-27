@@ -12,8 +12,16 @@ Free online time, timezone, countdown, and timesheet calculators.
 
 - **Time Duration Calculator** (home) — the exact duration between two dates/times, broken down calendar-accurately (years, months, days, hours, minutes, seconds) plus per-unit equivalences. Keeps a recent-calculations history.
 - **Timezone Converter** (`/tools/timezone`) — convert times across global timezones with automatic location detection and daylight-saving support.
-- **Countdown Timer** (`/tools/countdown`) — a live countdown to any date/time, with shareable links and saved countdowns.
+- **Countdown Timer** (`/tools/countdown`) — a live countdown to any date/time, with shareable links and saved countdowns. Surfaces popular pre-built countdowns in an auto-scrolling marquee.
 - **Work Hours / Timesheet Calculator** (`/tools/timesheet`) — add up shifts (with breaks and overnight handling) to get total hours, decimal hours for payroll, and gross pay. Auto-saves your in-progress sheet; save/share multiple timesheets; export as text or CSV.
+
+### Event countdown pages
+
+Dedicated SEO landing pages under `/countdown/*`, each a live countdown built on a shared `EventPage` scaffold (timer, facts, FAQ + structured data, share button, CTA). Three flavours:
+
+- **Fixed dates** — `gta-6`, `spider-man-brand-new-day`, `olympics-2028` (with trademark/affiliation disclaimers where a third-party brand is named).
+- **Recurring** — `christmas`, `new-year`, `halloween`, `july-4th`, `canada-day` (annual), and `weekend` (weekly); these auto-roll to their next occurrence client-side, so they never go stale.
+- **Interactive** — `retirement`, where the visitor picks their own date (saved locally).
 
 ### Educational content
 
@@ -22,6 +30,7 @@ A library of in-depth guides (`/articles`) on practical time topics — work hou
 ### Privacy & analytics
 
 - **Google Analytics 4** with **Consent Mode v2** — analytics/ad storage is denied by default in the EEA, UK, and Switzerland until the visitor opts in via the cookie banner; granted elsewhere. A "Manage cookie preferences" link reopens the banner.
+- A unified `tool_used` event (with a `tool` parameter) fires once per session on each tool's primary action, so tool popularity is comparable in one report; each tool also has its own primary-action event (`calculation_completed`, `tz_convert`, `countdown_created`, `timesheet_calculated`).
 - Core Web Vitals are reported to GA4.
 
 ### PWA
@@ -85,6 +94,7 @@ GEOAPIFY_KEY=your_geoapify_api_key
 │   │   ├── timezone/           # Timezone Converter
 │   │   ├── countdown/          # Countdown Timer
 │   │   └── timesheet/          # Work Hours / Timesheet
+│   ├── countdown/              # Event countdown landing pages (gta-6, christmas, retirement, …)
 │   ├── articles/               # Educational guides
 │   ├── privacy/ · terms/ · contact/
 │   └── icon.png · apple-icon.png   # App icons (generated)
@@ -94,6 +104,7 @@ GEOAPIFY_KEY=your_geoapify_api_key
 │   ├── ConsentBanner.tsx       # EEA/UK/CH cookie banner
 │   ├── WebVitals.tsx           # Core Web Vitals → GA4
 │   ├── CountdownTool.tsx · TimesheetTool.tsx · TimezoneConverter.tsx
+│   ├── EventPage.tsx · EventCountdown.tsx · UserDateCountdown.tsx   # Event countdown pages
 │   └── PageChrome.tsx · ToolsNavigation.tsx · SiteFooter.tsx
 ├── lib/
 │   ├── time.ts                 # Timezone/duration utilities
