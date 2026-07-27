@@ -404,6 +404,9 @@ export function getMarketStatus(market: Market, now: Date): MarketStatus {
   const nextOpen = next?.sessions[0]?.openUtc ?? new Date(now.getTime() + 24 * 60 * 60 * 1000);
   const afterCloseBase = {
     ...base,
+    // The card now describes the next trading day, so today's half-day flag
+    // no longer applies (it would falsely label the next day as shortened).
+    isHalfDay: false,
     sessions: next?.sessions ?? todaySessions,
     sessionsDate: next?.localDate ?? localDate,
   };

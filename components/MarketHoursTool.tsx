@@ -97,18 +97,16 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
     }
   }, []);
 
-  const setHourFormat = useCallback(
-    (is12: boolean) => {
-      setHour12(is12);
-      try {
-        window.localStorage.setItem('clockmath-hour12', is12.toString());
-      } catch {
-        /* ignore */
-      }
-      markToolUsed();
-    },
-    [markToolUsed],
-  );
+  // Note: deliberately not counted as tool use — the format toggle is a
+  // cosmetic preference (TimezoneConverter treats the same toggle the same way).
+  const setHourFormat = useCallback((is12: boolean) => {
+    setHour12(is12);
+    try {
+      window.localStorage.setItem('clockmath-hour12', is12.toString());
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const togglePin = useCallback(
     (marketId: string) => {

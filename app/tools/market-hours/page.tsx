@@ -24,7 +24,7 @@ const FAQS = [
   {
     question: 'Why do Tokyo and Hong Kong show a lunch break?',
     answer:
-      'Several Asian exchanges pause trading midday. Tokyo halts from 11:30 AM to 12:30 PM local time, and Hong Kong and Shanghai from noon to 1:00 PM. The cards show a “Lunch break” status during the pause and count down to the afternoon session.',
+      'Several Asian exchanges pause trading midday. Tokyo halts from 11:30 AM to 12:30 PM local time, Hong Kong from noon to 1:00 PM, and Shanghai from 11:30 AM to 1:00 PM. The cards show a “Lunch break” status during the pause and count down to the afternoon session.',
   },
   {
     question: 'What are pre-market and after-hours trading?',
