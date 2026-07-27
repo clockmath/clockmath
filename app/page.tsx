@@ -580,9 +580,13 @@ export default function ClockMathPage() {
                     <Link href="/tools/countdown/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
                       create countdowns for events
                     </Link>
-                    , and{" "}
+                    ,{" "}
                     <Link href="/tools/timezone/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
                       convert time between time zones
+                    </Link>
+                    , and{" "}
+                    <Link href="/tools/market-hours/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
+                      check when stock markets open
                     </Link>
                     .
                   </p>

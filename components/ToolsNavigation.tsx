@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Clock, Globe, History, Hourglass, ClipboardList } from 'lucide-react'
+import { Clock, Globe, History, Hourglass, ClipboardList, CandlestickChart } from 'lucide-react'
 
 interface ToolTab {
   id: string
@@ -40,6 +40,13 @@ const tools: ToolTab[] = [
     href: '/tools/timesheet',
     icon: <ClipboardList className="w-5 h-5 sm:w-4 sm:h-4" />,
     description: 'Add up your work hours'
+  },
+  {
+    id: 'market-hours',
+    label: 'Market Hours',
+    href: '/tools/market-hours',
+    icon: <CandlestickChart className="w-5 h-5 sm:w-4 sm:h-4" />,
+    description: 'Live stock market hours'
   }
 ]
 
@@ -66,6 +73,7 @@ export default function ToolsNavigation({
     pathname.startsWith('/tools/timezone') ? 'timezone' :
     pathname.startsWith('/tools/countdown') ? 'countdown' :
     pathname.startsWith('/tools/timesheet') ? 'timesheet' :
+    pathname.startsWith('/tools/market-hours') ? 'market-hours' :
     pathname.startsWith('/articles') ? 'articles' :
     'calculator'
   )
