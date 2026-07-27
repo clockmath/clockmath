@@ -93,8 +93,10 @@ export default function ToolsNavigation({
             }`}
           >
             {tool.icon}
-            {/* Icon-only on mobile (label stays available to screen readers) */}
-            <span className="sr-only sm:not-sr-only">{tool.label}</span>
+            {/* Icon-only on mobile (the Link's aria-label keeps it accessible).
+                hidden/inline rather than sr-only: not-sr-only resets white-space
+                and lets squeezed labels wrap to two lines with 5 tabs. */}
+            <span className="hidden sm:inline">{tool.label}</span>
           </Link>
         ))}
         
