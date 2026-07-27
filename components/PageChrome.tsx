@@ -3,7 +3,7 @@ import ToolsNavigation from '@/components/ToolsNavigation';
 
 interface PageChromeProps {
   children: React.ReactNode;
-  currentTool: 'calculator' | 'timezone' | 'countdown' | 'timesheet' | 'articles';
+  currentTool: 'calculator' | 'timezone' | 'countdown' | 'timesheet' | 'market-hours' | 'articles';
   className?: string;
   onToggleTheme?: () => void;
   isDarkMode?: boolean;

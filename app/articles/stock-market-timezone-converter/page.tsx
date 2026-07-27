@@ -65,7 +65,7 @@ export default function StockMarketTimezoneConverterPage() {
 
         <h2>The Solution</h2>
         <p>
-          Use <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> to quickly line up stock exchange hours with your local time. Stay ahead of market movements worldwide.
+          Use <a href="/tools/market-hours" className="text-primary hover:text-primary/80 font-semibold">ClockMath's live market hours tool</a> to see every major exchange's open and close in your local time — with live open/closed status and countdowns to the next bell.
         </p>
 
         <div className="bg-muted/50 dark:bg-slate-800/50 rounded-lg p-6 my-8">
@@ -176,16 +176,16 @@ export default function StockMarketTimezoneConverterPage() {
 
         <h2>Conclusion</h2>
         <p>
-          Stay ahead of the market by knowing exactly when global exchanges open and close. <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> keeps you in sync with markets worldwide, helping you never miss a trading opportunity.
+          Stay ahead of the market by knowing exactly when global exchanges open and close. <a href="/tools/market-hours" className="text-primary hover:text-primary/80 font-semibold">ClockMath's market hours tool</a> keeps you in sync with markets worldwide, and for one-off conversions the <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">timezone converter</a> handles any two zones.
         </p>
 
         <div className="bg-gradient-to-r from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-3">Ready to Track Global Markets?</h3>
           <p className="mb-4">
-            Convert stock market hours to your local timezone and never miss an opening bell.
+            See live open/closed status for every major exchange in your local timezone and never miss an opening bell.
           </p>
-          <a 
-            href="/tools/timezone"
+          <a
+            href="/tools/market-hours"
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105"
           >
             Check Market Hours
