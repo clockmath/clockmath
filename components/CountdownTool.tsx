@@ -17,7 +17,7 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: '4th of July', href: '/countdown/july-4th/', note: 'July 4' },
   { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
   { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },
-  { title: 'Spider-Man: Brand New Day', href: '/countdown/spider-man-brand-new-day/', note: 'July 31, 2026' },
+  { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: 'December 18, 2026' },
   { title: 'GTA 6', href: '/countdown/gta-6/', note: 'November 19, 2026' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
 ];

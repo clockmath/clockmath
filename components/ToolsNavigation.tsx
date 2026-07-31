@@ -17,35 +17,35 @@ const tools: ToolTab[] = [
     id: 'calculator',
     label: 'Time Calculator',
     href: '/',
-    icon: <Clock className="w-5 h-5 sm:w-4 sm:h-4" />,
+    icon: <Clock className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
     description: 'Calculate time between two times'
   },
   {
     id: 'timezone',
     label: 'Timezone Converter',
     href: '/tools/timezone',
-    icon: <Globe className="w-5 h-5 sm:w-4 sm:h-4" />,
+    icon: <Globe className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
     description: 'Convert between timezones'
   },
   {
     id: 'countdown',
     label: 'Countdown Timer',
     href: '/tools/countdown',
-    icon: <Hourglass className="w-5 h-5 sm:w-4 sm:h-4" />,
+    icon: <Hourglass className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
     description: 'Count down to any date'
   },
   {
     id: 'timesheet',
     label: 'Timesheet',
     href: '/tools/timesheet',
-    icon: <ClipboardList className="w-5 h-5 sm:w-4 sm:h-4" />,
+    icon: <ClipboardList className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
     description: 'Add up your work hours'
   },
   {
     id: 'market-hours',
     label: 'Market Hours',
     href: '/tools/market-hours',
-    icon: <CandlestickChart className="w-5 h-5 sm:w-4 sm:h-4" />,
+    icon: <CandlestickChart className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
     description: 'Live stock market hours'
   }
 ]
@@ -109,7 +109,7 @@ export default function ToolsNavigation({
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             }`}
           >
-            <History className="w-5 h-5 sm:w-4 sm:h-4" />
+            <History className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
             <span className="hidden sm:inline">Recent Calculations</span>
             <span className="sm:hidden">History</span>
             {historyCount > 0 && (
