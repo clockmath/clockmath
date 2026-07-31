@@ -3,7 +3,8 @@
 import EventPage from '@/components/EventPage';
 import { buildEventDisclaimer } from '@/components/EventCountdown';
 
-// Theatrical release of Spider-Man: Brand New Day.
+// Theatrical release of Spider-Man: Brand New Day (now released — the timer
+// counts up from release day and the copy targets post-release intent).
 const RELEASE = new Date(2026, 6, 31);
 
 export default function SpiderManCountdownPage() {
@@ -15,7 +16,7 @@ export default function SpiderManCountdownPage() {
           <span className="text-blue-600 dark:text-blue-400">Brand New Day</span>
         </>
       }
-      tagline="Time until Spider-Man: Brand New Day hits theaters"
+      tagline="Spider-Man: Brand New Day is now in theaters"
       breadcrumb="Spider-Man: Brand New Day"
       target={RELEASE}
       countdownTitle="Spider-Man: Brand New Day"
@@ -25,21 +26,36 @@ export default function SpiderManCountdownPage() {
         'Sony Pictures, Marvel Studios, or The Walt Disney Company',
       )}
       facts={[
-        { label: 'Release date', value: 'July 31, 2026' },
-        { label: 'Format', value: 'Theatrical' },
+        { label: 'Released', value: 'July 31, 2026' },
+        { label: 'Status', value: 'Now in theaters' },
         { label: 'Starring', value: 'Tom Holland' },
       ]}
       intro={
         <>
-          The next chapter of the MCU&apos;s web-slinger, <strong>Spider-Man: Brand New Day</strong>,
-          swings into theaters on <strong>July 31, 2026</strong>. The live countdown above shows exactly
-          how many days, hours, minutes, and seconds remain until release — updating every second.
+          <strong>Spider-Man: Brand New Day</strong> swung into theaters on{' '}
+          <strong>July 31, 2026</strong>. The live timer above shows exactly how long the
+          web-slinger has been on the big screen. A digital or streaming release hasn&apos;t been
+          announced yet — see the FAQ below for when to expect it. Counting down to the next big
+          Marvel release instead? Check the{' '}
+          <a
+            href="/countdown/avengers-doomsday/"
+            className="text-primary hover:text-primary/80 font-semibold"
+          >
+            Avengers: Doomsday countdown
+          </a>
+          .
         </>
       }
       faqs={[
         {
-          question: 'When does Spider-Man: Brand New Day come out?',
-          answer: 'Spider-Man: Brand New Day is scheduled to release in theaters on July 31, 2026.',
+          question: 'Is Spider-Man: Brand New Day out yet?',
+          answer:
+            'Yes — Spider-Man: Brand New Day released in theaters on July 31, 2026, and is playing now.',
+        },
+        {
+          question: 'When will Spider-Man: Brand New Day be on streaming?',
+          answer:
+            'No digital or streaming date has been announced yet. Sony’s recent pattern puts premium digital roughly three months after the theatrical release, with a Netflix debut to follow — most likely late 2026 or early 2027.',
         },
         {
           question: 'Who stars in Spider-Man: Brand New Day?',
