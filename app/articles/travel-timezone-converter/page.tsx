@@ -72,7 +72,7 @@ export default function TravelTimezoneConverterPage() {
           <ul className="space-y-2">
             <li><strong>Flight leaves Toronto at:</strong> 2:00 PM EST</li>
             <li><strong>Lands in Tokyo at:</strong> 4:00 PM JST (the next day)</li>
-            <li><strong>Flight duration:</strong> 13 hours</li>
+            <li><strong>Flight duration:</strong> 12 hours</li>
           </ul>
           <p className="text-sm text-muted-foreground mt-3">
             This helps you understand you're essentially "losing" a day due to crossing the International Date Line.

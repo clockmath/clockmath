@@ -16,7 +16,7 @@ interface EventCountdownProps {
    * Recurring weekly event (e.g. "the weekend"). `weekday` is 0-indexed
    * (0 = Sunday … 6 = Saturday). Resolves to the next occurrence client-side.
    */
-  weekly?: { weekday: number };
+  weekly?: { weekday: number; spanDays?: number };
   title: string;
   className?: string;
   /** Heading shown once the target has arrived. Defaults to `${title} has released!`. */
@@ -49,12 +49,20 @@ function nextOccurrence(month: number, day: number): number {
   return new Date(targetYear, month, day, 0, 0, 0, 0).getTime();
 }
 
-// Next occurrence of a weekday (0 = Sun … 6 = Sat) at midnight. On the day
-// itself the target is today's midnight (already passed → reads as arrived).
-function nextWeekday(weekday: number): number {
+// Next occurrence of a weekday (0 = Sun … 6 = Sat) at midnight. While inside
+// the event window (`spanDays` days starting at the target weekday) the target
+// is the window's start midnight — already passed → reads as arrived. The
+// weekend page spans Sat+Sun, so Sunday still reads "It's the weekend!"
+// instead of counting 6 days to the next Saturday.
+function nextWeekday(weekday: number, spanDays = 1): number {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const add = (weekday - today.getDay() + 7) % 7;
+  const daysSinceLast = (today.getDay() - weekday + 7) % 7;
+  if (daysSinceLast < spanDays) {
+    today.setDate(today.getDate() - daysSinceLast);
+    return today.getTime();
+  }
+  const add = (weekday - today.getDay() + 7) % 7 || 7;
   today.setDate(today.getDate() + add);
   return today.getTime();
 }
@@ -80,7 +88,7 @@ export function EventCountdown({
 
   useEffect(() => {
     if (recurring) setTargetMs(nextOccurrence(recurring.month, recurring.day));
-    else if (weekly) setTargetMs(nextWeekday(weekly.weekday));
+    else if (weekly) setTargetMs(nextWeekday(weekly.weekday, weekly.spanDays));
     setNowMs(Date.now());
     setMounted(true);
     const id = setInterval(() => setNowMs(Date.now()), 1000);
@@ -88,7 +96,7 @@ export function EventCountdown({
     // `recurring`/`weekly` are fresh object literals each render; depend on
     // their parts so the effect doesn't re-run on every parent render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recurring?.month, recurring?.day, weekly?.weekday]);
+  }, [recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays]);
 
   const ready = mounted && targetMs !== null && nowMs !== null;
   const isPast = ready && (targetMs as number) < (nowMs as number);
