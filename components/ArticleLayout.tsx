@@ -28,7 +28,10 @@ export default function ArticleLayout({
           headline: title,
           description,
           url: `https://clockmath.com${currentPath}${currentPath.endsWith('/') ? '' : '/'}`,
-          datePublished: `${publishDate}-01-01`,
+          // publishDate may be a bare year ("2025") or a full ISO date
+          // ("2025-01-15") — appending "-01-01" to the latter emitted invalid
+          // dates like "2025-01-15-01-01" in the JSON-LD.
+          datePublished: /^\d{4}$/.test(publishDate) ? `${publishDate}-01-01` : publishDate,
         })}
       />
       <ArticleAnalytics title={title} category={category} currentPath={currentPath} />
@@ -65,10 +68,11 @@ export default function ArticleLayout({
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold">
+                {/* Not a heading: the article title below is the page's single H1 */}
+                <p className="text-2xl sm:text-3xl font-bold">
                   <span className="text-emerald-600 dark:text-emerald-400">Clock</span>{" "}
                   <span className="text-blue-600 dark:text-blue-400">Math</span>
-                </h1>
+                </p>
                 <p className="text-sm text-muted-foreground">Resources</p>
               </div>
             </div>

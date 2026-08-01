@@ -13,7 +13,7 @@ export default function WeekendCountdownPage() {
       }
       tagline="How long until the weekend?"
       breadcrumb="Weekend"
-      weekly={{ weekday: 6 }}
+      weekly={{ weekday: 6, spanDays: 2 }}
       countdownTitle="the weekend"
       arrivedLabel="It's the weekend! 🎉"
       facts={[

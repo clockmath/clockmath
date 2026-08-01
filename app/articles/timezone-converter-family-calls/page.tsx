@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Metadata } from 'next';
 import ArticleLayout from '@/components/ArticleLayout';
-import { generateSEOMetadata, generateArticleStructuredData } from '@/lib/seo';
+import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: 'Timezone Converter for Family Calls | ClockMath',
@@ -21,19 +21,8 @@ export default function FamilyCallsTimezoneConverterPage() {
       category="timezone"
       currentPath="/articles/timezone-converter-family-calls"
     >
-      {/* Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateArticleStructuredData({
-            title: 'Timezone Converter for Family Calls',
-            description: 'Easily schedule family calls across time zones with ClockMath\'s free timezone converter. Perfect for staying connected worldwide.',
-            path: '/articles/timezone-converter-family-calls',
-            publishDate: '2025-01-15',
-          })),
-        }}
-      />
-      
+      {/* Article structured data comes from ArticleLayout — a second block here
+          used to emit a conflicting duplicate Article schema. */}
       <section className="prose prose-lg max-w-none dark:prose-invert">
         <h2>Introduction</h2>
         <p>
@@ -71,7 +60,7 @@ export default function FamilyCallsTimezoneConverterPage() {
             <li><strong>6:00 PM PST =</strong> 1:00 PM next day in Sydney (perfect lunch time)</li>
           </ul>
           <p className="text-sm text-muted-foreground mt-3">
-            This 17-hour time difference means your evening is their afternoon the next day.
+            This 19-hour time difference means your evening is their afternoon the next day.
           </p>
         </div>
 

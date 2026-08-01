@@ -102,7 +102,7 @@ export default function StockMarketTimezoneConverterPage() {
 
         <h3>American Session (New York)</h3>
         <p>
-          The NYSE and NASDAQ drive significant market volume. The overlap with London (8:00 AM - 12:00 PM EST) is often the most volatile trading period.
+          The NYSE and NASDAQ drive significant market volume. The overlap with London (9:30 – 11:30 AM ET) is often the most volatile trading period.
         </p>
 
         <h2>Critical Trading Times to Track</h2>
