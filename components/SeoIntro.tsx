@@ -124,6 +124,12 @@ export default function SeoIntro() {
             — live open/closed status for major exchanges in your timezone
           </li>
           <li>
+            <Link href="/tools/decimal-hours" className="text-primary hover:text-primary/80 font-semibold">
+              Decimal hours converter
+            </Link>{' '}
+            — minutes to decimal (and back) with the full payroll chart
+          </li>
+          <li>
             <Link href="/tools/countdown" className="text-primary hover:text-primary/80 font-semibold">
               Countdown timer
             </Link>{' '}

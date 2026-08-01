@@ -191,7 +191,15 @@ export default function TimesheetPage() {
         </h2>
         <p className="text-muted-foreground mb-4">
           Payroll multiplies hours × rate, so minutes must become decimals: divide by 60. Forty-five
-          minutes is 45 ÷ 60 = 0.75, so 7&nbsp;h&nbsp;45&nbsp;m is 7.75 hours. Common values:
+          minutes is 45 ÷ 60 = 0.75, so 7&nbsp;h&nbsp;45&nbsp;m is 7.75 hours. Common values below —
+          for any other value (or the reverse conversion), use the{' '}
+          <Link
+            href="/tools/decimal-hours"
+            className="text-primary hover:text-primary/80 font-semibold"
+          >
+            decimal hours converter
+          </Link>
+          :
         </p>
         <div className="overflow-x-auto">
           <table className="w-full max-w-md mx-auto text-sm border-collapse">
