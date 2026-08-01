@@ -65,6 +65,9 @@ export default function SiteFooter() {
           <Link href="/tools/market-hours" className="hover:text-foreground underline underline-offset-4">
             Stock Market Hours
           </Link>
+          <Link href="/tools/decimal-hours" className="hover:text-foreground underline underline-offset-4">
+            Decimal Hours Converter
+          </Link>
         </nav>
 
         {/* Site + legal links */}
