@@ -30,13 +30,14 @@ export default function NewYearCountdownPage() {
       }
       faqs={[
         {
-          question: 'How many days until New Year?',
+          question: 'What day of the week is New Year’s Day 2027?',
           answer:
-            'The live countdown above shows the exact number of days, hours, minutes, and seconds remaining until January 1.',
+            'January 1, 2027 falls on a Friday, so New Year’s Eve 2026 is a Thursday night and the new year starts with a long weekend.',
         },
         {
           question: "When is New Year's Day?",
-          answer: 'New Year’s Day is January 1, and New Year’s Eve is the night before, on December 31.',
+          answer:
+            'New Year’s Day is January 1, and New Year’s Eve is the night before, December 31. The countdown above ticks down to midnight in your own timezone.',
         },
         {
           question: 'Does this countdown reset each year?',

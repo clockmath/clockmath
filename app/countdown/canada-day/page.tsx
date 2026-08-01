@@ -30,13 +30,14 @@ export default function CanadaDayCountdownPage() {
       }
       faqs={[
         {
-          question: 'How many days until Canada Day?',
+          question: 'What day of the week is Canada Day 2027?',
           answer:
-            'The live countdown above shows the exact number of days, hours, minutes, and seconds remaining until Canada Day this year.',
+            'July 1, 2027 falls on a Thursday. Canada Day is a statutory holiday nationwide, marking Confederation on July 1, 1867.',
         },
         {
           question: 'When is Canada Day?',
-          answer: 'Canada Day is celebrated on July 1 every year.',
+          answer:
+            'Canada Day is July 1 every year, and the live countdown above shows exactly how long remains until the next one, down to the second.',
         },
         {
           question: 'Does this countdown reset each year?',

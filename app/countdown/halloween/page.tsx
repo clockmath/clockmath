@@ -30,13 +30,14 @@ export default function HalloweenCountdownPage() {
       }
       faqs={[
         {
-          question: 'How many days until Halloween?',
+          question: 'What day of the week is Halloween 2026?',
           answer:
-            'The live countdown above shows the exact number of days, hours, minutes, and seconds remaining until Halloween this year.',
+            'Halloween 2026 — October 31 — falls on a Saturday, ideal for trick-or-treating and weekend parties without a school night.',
         },
         {
           question: 'When is Halloween?',
-          answer: 'Halloween falls on October 31 every year.',
+          answer:
+            'Halloween is October 31 every year, and the live countdown above shows exactly how long remains until the next one, down to the second.',
         },
         {
           question: 'Does this countdown reset each year?',

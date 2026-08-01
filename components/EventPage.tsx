@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { EventCountdown } from '@/components/EventCountdown';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
@@ -9,6 +10,20 @@ import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
+
+// Cross-linked from every event page (minus the current one). Renders in
+// static HTML, so it also fixes pages otherwise orphaned from internal links.
+const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
+  { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/' },
+  { title: 'GTA 6', href: '/countdown/gta-6/' },
+  { title: 'Christmas', href: '/countdown/christmas/' },
+  { title: 'Spider-Man: Brand New Day', href: '/countdown/spider-man-brand-new-day/' },
+  { title: 'Halloween', href: '/countdown/halloween/' },
+  { title: 'New Year', href: '/countdown/new-year/' },
+  { title: 'The Weekend', href: '/countdown/weekend/' },
+  { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/' },
+  { title: 'Retirement', href: '/countdown/retirement/' },
+];
 
 const getDevice = (): 'mobile' | 'desktop' =>
   typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
@@ -27,7 +42,7 @@ export interface EventPageProps {
   /** Recurring annual event ({ month: 0-indexed, day }). */
   recurring?: { month: number; day: number };
   /** Recurring weekly event ({ weekday: 0-indexed, 0 = Sun }). */
-  weekly?: { weekday: number };
+  weekly?: { weekday: number; spanDays?: number };
   /** Title used inside the timer ("Until {countdownTitle}"). */
   countdownTitle?: string;
   /** Heading shown once the event arrives (e.g. "It's Christmas! 🎄"). */
@@ -63,6 +78,7 @@ export default function EventPage({
   faqs,
 }: EventPageProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const saved = localStorage.getItem('clockmath-darkmode');
@@ -176,6 +192,24 @@ export default function EventPage({
               <p className="text-muted-foreground dark:text-slate-400 mt-1">{faq.answer}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Cross-links between event pages (excludes the page you're on) */}
+      <section className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-6">
+        <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">More countdowns</h2>
+        <div className="flex flex-wrap gap-2">
+          {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, '')))
+            .slice(0, 6)
+            .map((c) => (
+              <Link
+                key={c.href}
+                href={c.href}
+                className="px-3 py-1.5 rounded-full text-sm font-medium bg-muted/50 dark:bg-slate-700/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                {c.title}
+              </Link>
+            ))}
         </div>
       </section>
 

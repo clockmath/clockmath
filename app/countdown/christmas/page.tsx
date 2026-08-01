@@ -30,13 +30,14 @@ export default function ChristmasCountdownPage() {
       }
       faqs={[
         {
-          question: 'How many days until Christmas?',
+          question: 'What day of the week is Christmas 2026?',
           answer:
-            'The live countdown above shows the exact number of days, hours, minutes, and seconds remaining until Christmas Day this year.',
+            'Christmas Day 2026 — December 25 — falls on a Friday, giving most people a three-day holiday weekend. Christmas Eve is Thursday, December 24.',
         },
         {
           question: 'When is Christmas?',
-          answer: 'Christmas Day falls on December 25 every year.',
+          answer:
+            'Christmas Day is December 25 every year, and the live countdown above shows exactly how long remains until the next one, down to the second.',
         },
         {
           question: 'Does this countdown reset each year?',

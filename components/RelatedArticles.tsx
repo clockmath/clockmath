@@ -35,26 +35,37 @@ export default function RelatedArticles({
     if (currentPath) {
       related = related.filter(article => article.href !== currentPath);
     }
-    
+
+    // Deterministic per-page rotation: without it every article in a category
+    // shows the identical top-priority 3 links, concentrating internal links
+    // on the same few pages and leaving the rest under-linked.
+    const seed = currentPath
+      .split('')
+      .reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) % 997, 0);
+    const byPriority = (a: ArticleLink, b: ArticleLink) => (b.priority || 0) - (a.priority || 0);
+    const rotate = (arr: ArticleLink[]): ArticleLink[] => {
+      if (arr.length < 2) return arr;
+      const offset = seed % arr.length;
+      return [...arr.slice(offset), ...arr.slice(0, offset)];
+    };
+
     if (!showAllCategories && category) {
       // Prioritize same category
-      const sameCategory = related.filter(article => article.category === category);
-      const otherCategories = related.filter(article => article.category !== category);
-      
+      const sameCategory = rotate(related.filter(article => article.category === category).sort(byPriority));
+      const otherCategories = rotate(related.filter(article => article.category !== category).sort(byPriority));
+
       // Mix same category (80%) with other categories (20%) for diversity
       const sameCategoryCount = Math.min(Math.ceil(maxArticles * 0.8), sameCategory.length);
       const otherCategoryCount = maxArticles - sameCategoryCount;
-      
+
       related = [
         ...sameCategory.slice(0, sameCategoryCount),
         ...otherCategories.slice(0, otherCategoryCount),
       ];
+      return related.slice(0, maxArticles);
     }
-    
-    // Sort by priority and take requested number
-    return related
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-      .slice(0, maxArticles);
+
+    return rotate(related.sort(byPriority)).slice(0, maxArticles);
   };
 
   // Get cross-links to tools

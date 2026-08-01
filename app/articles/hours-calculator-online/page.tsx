@@ -7,7 +7,10 @@ export const metadata: Metadata = {
   title: "Hours Calculator Online – Faster Than Manual Math",
   description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
   alternates: {
-    canonical: "https://clockmath.com/articles/hours-calculator-online/",
+    // Consolidation: this page targets the same "calculate hours worked"
+    // intent as the work-hours article and was cannibalizing it. Canonical
+    // points at the stronger page; the URL keeps working for visitors.
+    canonical: "https://clockmath.com/articles/work-hours-calculator/",
   },
   openGraph: {
     title: "Hours Calculator Online – Faster Than Manual Math",
