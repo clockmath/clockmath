@@ -32,15 +32,16 @@ export default function WeekendCountdownPage() {
         {
           question: 'How long until the weekend?',
           answer:
-            'The live countdown above shows the exact number of days, hours, minutes, and seconds remaining until Saturday.',
+            'From Monday morning it’s just under five days to Saturday midnight; by Friday at 5 PM only 7 hours remain. The live countdown above shows your exact time to the second.',
         },
         {
           question: 'What day does this count down to?',
-          answer: 'This timer counts down to Saturday at midnight, the start of the weekend.',
+          answer:
+            'This timer counts down to Saturday at midnight in your timezone — the start of the weekend. On Saturday and Sunday it shows how long the weekend has been underway.',
         },
         {
           question: 'Does it reset every week?',
-          answer: 'Yes — once Saturday arrives, the countdown automatically targets the next Saturday.',
+          answer: 'Yes — once the weekend ends on Sunday night, the countdown automatically targets the next Saturday.',
         },
       ]}
     />

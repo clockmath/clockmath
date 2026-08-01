@@ -30,9 +30,9 @@ export default function July4thCountdownPage() {
       }
       faqs={[
         {
-          question: 'How many days until the 4th of July?',
+          question: 'What day of the week is July 4th, 2027?',
           answer:
-            'The live countdown above shows the exact number of days, hours, minutes, and seconds remaining until July 4th this year.',
+            'July 4, 2027 falls on a Sunday, so the federal holiday is observed on Monday, July 5 — a three-day weekend for most workers.',
         },
         {
           question: 'What does the 4th of July celebrate?',

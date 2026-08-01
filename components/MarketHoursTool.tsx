@@ -161,7 +161,9 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
   // the live grid appears after hydration (status depends on the real clock).
   if (!isHydrated) {
     return (
-      <div className={`bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50 ${className}`}>
+      // min-height approximates the hydrated grid so the swap doesn't cause a
+      // large layout shift (CLS) below the placeholder.
+      <div className={`bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50 min-h-[640px] ${className}`}>
         <p className="text-center text-muted-foreground py-12">Loading live market hours…</p>
       </div>
     );
