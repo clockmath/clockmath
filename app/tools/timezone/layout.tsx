@@ -1,40 +1,17 @@
-import { Metadata } from 'next';
+import type { ReactNode } from 'react';
+import { generateSEOMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+// Metadata lives in this server-component layout because the timezone page
+// itself is a client component ("use client") and can't export metadata.
+export const metadata = generateSEOMetadata({
   title: 'Timezone Converter | ClockMath',
-  description: 'Convert time between any two timezones instantly. Handles Daylight Saving Time automatically. Perfect for scheduling meetings, calls, or events across different time zones.',
-  alternates: {
-    canonical: 'https://clockmath.com/tools/timezone/',
-  },
-  openGraph: {
-    title: 'Timezone Converter | ClockMath',
-    description: 'Convert time between any two timezones instantly. Handles DST automatically.',
-    type: 'website',
-    url: 'https://clockmath.com/tools/timezone/',
-    siteName: 'ClockMath',
-    images: [
-      {
-        url: '/og.png',
-        width: 1200,
-        height: 630,
-        alt: 'ClockMath Timezone Converter',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    images: ['/og.png'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+  description:
+    'Convert time between any two timezones instantly. Handles Daylight Saving Time automatically. Perfect for scheduling meetings, calls, or events across different time zones.',
+  path: '/tools/timezone',
+  keywords:
+    'timezone converter, time zone converter, convert time zones, meeting timezone converter, time difference calculator, what time is it in',
+});
 
-export default function TimezoneLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function TimezoneLayout({ children }: { children: ReactNode }) {
   return children;
 }

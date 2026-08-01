@@ -430,6 +430,8 @@ export default function ClockMathPage() {
               <h1 className="text-3xl sm:text-4xl font-bold">
                 <span className="text-emerald-600 dark:text-emerald-400">Clock</span>{" "}
                 <span className="text-blue-600 dark:text-blue-400">Math</span>
+                {/* Keyword context for the page's single H1 without changing the visual brand */}
+                <span className="sr-only"> — Time Duration Calculator</span>
               </h1>
               <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium">
                 Time Calculator
