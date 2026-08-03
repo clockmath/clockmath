@@ -8,6 +8,7 @@
 
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { ArrowDown } from 'lucide-react';
+import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
 
 const getDevice = (): 'mobile' | 'desktop' =>
@@ -129,7 +130,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
           ) : (
             <>
               <p className="text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                {toDecimal.value}
+                <RollingNumber value={toDecimal.value} />
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 decimal hours ({toDecimal.h}h {toDecimal.m}m)
@@ -178,7 +179,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
           ) : (
             <>
               <p className="text-3xl font-bold font-mono text-blue-600 dark:text-blue-400">
-                {toTime.hours}h {toTime.minutes}m
+                <RollingNumber value={`${toTime.hours}h ${toTime.minutes}m`} />
               </p>
               <p className="text-xs text-muted-foreground mt-1">{toTime.d} decimal hours</p>
             </>

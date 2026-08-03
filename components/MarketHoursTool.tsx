@@ -18,6 +18,7 @@ import {
   type MarketStatus,
 } from '@/lib/markets';
 import { getUserTimeZone, formatZoned, getTimeZoneDisplayName } from '@/lib/time';
+import { RollingNumber } from '@/components/RollingNumber';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 
 const PINNED_KEY = 'clockmath-pinned-markets';
@@ -266,7 +267,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
               <p className="text-lg font-semibold text-foreground mb-1">
                 {TRANSITION_VERB[status.nextTransitionLabel]} in{' '}
                 <span className="font-mono text-primary">
-                  {formatCountdown(status.nextTransition, new Date(nowMs))}
+                  <RollingNumber value={formatCountdown(status.nextTransition, new Date(nowMs))} />
                 </span>
               </p>
 
