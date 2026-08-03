@@ -383,16 +383,9 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
   return (
     <div className={`relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-border/50 dark:border-slate-700/50 hover:shadow-2xl transition-all duration-300 ${className}`}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-2">
-            Timezone Converter
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground dark:text-slate-400">
-            Convert time between any two timezones. Handles DST automatically.
-          </p>
-        </div>
+      {/* Card toolbar — the page header already carries the title/subtitle;
+          repeating them here was the page's third title. */}
+      <div className="flex items-center justify-end gap-4 mb-4 sm:mb-6">
         <div className="flex items-center justify-center">
           <div className="bg-muted/50 dark:bg-slate-700/50 rounded-xl p-1.5 flex items-center gap-1">
             <button
