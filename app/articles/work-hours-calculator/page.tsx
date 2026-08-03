@@ -31,7 +31,7 @@ export default function WorkHoursCalculatorPage() {
   return (
     <ArticleLayout
       title="How to Calculate Work Hours Quickly"
-      description="Keeping track of work hours is essential whether you're an employee logging time, a freelancer tracking billable hours, or an employer calculating payroll."
+      description="Add up hours worked — with lunch breaks, overnight shifts, and decimal totals for payroll."
       publishDate="2025"
       category="calculator"
       currentPath="/articles/work-hours-calculator"
