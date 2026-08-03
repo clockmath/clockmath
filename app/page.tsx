@@ -445,7 +445,9 @@ export default function ClockMathPage() {
         </header>
 
         {/* Main Calculator Card */}
-        <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-border/50 dark:border-slate-700/50 min-h-[600px]">
+        {/* No min-height: the card hugs its content (a fixed 600px left a large
+            dead area below the form before any result existed) */}
+        <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-border/50 dark:border-slate-700/50">
           <div className="grid gap-6 sm:gap-8">
 
             {/* Time Format Toggle */}
