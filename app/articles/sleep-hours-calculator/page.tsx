@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sleep Hours Calculator – Find Out Exactly How Long You Slept",
     description: "Wondering how much sleep you got? Use ClockMath's free hours calculator to track your exact sleep duration in minutes and hours.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Calculate Work Hours Instantly – Free Online Tool",
     description: "Enter your start and end times to calculate work hours fast. Try ClockMath's free time duration calculator for accurate results every time.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

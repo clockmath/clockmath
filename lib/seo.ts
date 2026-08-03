@@ -23,7 +23,7 @@ export function generateSEOMetadata({
   publishDate,
   keywords,
   noindex = false,
-  ogImage = '/og.png',
+  ogImage = '/og-v2.png',
 }: SEOConfig): Metadata {
   // Ensure canonical URL is properly formatted (non-www, with trailing slash)
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
@@ -150,7 +150,7 @@ export function generateArticleStructuredData({
     },
     image: {
       '@type': 'ImageObject',
-      url: 'https://clockmath.com/og.png',
+      url: 'https://clockmath.com/og-v2.png',
       width: 1200,
       height: 630,
     },

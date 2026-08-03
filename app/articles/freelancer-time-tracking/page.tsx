@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Freelancer Time Tracking – Calculate Billable Hours Accurately",
     description: "Track billable hours as a freelancer or contractor. Calculate client time, convert to invoicing amounts, and manage multiple projects with our free tool.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

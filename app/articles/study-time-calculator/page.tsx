@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Study Time Calculator – Track Your Sessions Easily",
     description: "Stay productive by tracking exact study hours. Use ClockMath's free duration calculator to measure and log your study sessions.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,
