@@ -74,7 +74,7 @@ export default function ArticleLayout({
           </div>
 
           {/* Call to action */}
-          <div className="mt-12 p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
+          <div className="mt-section p-5 sm:p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
             <div className="text-center">
               <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
                 Try Our Free Time Calculator

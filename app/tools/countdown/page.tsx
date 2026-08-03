@@ -69,7 +69,7 @@ export default function CountdownPage() {
         </div>
       </header>
 
-      <CountdownTool className="mb-8" />
+      <CountdownTool className="mb-section" />
 
       <SiteFooter />
     </PageChrome>

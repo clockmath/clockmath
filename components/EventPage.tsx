@@ -123,7 +123,7 @@ export default function EventPage({
     <PageChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd data={getFAQPageSchema(faqs)} />
 
-      <header className="text-center mb-8 sm:mb-10">
+      <header className="text-center mb-8 sm:mb-section">
         <h1 className="text-3xl sm:text-4xl font-bold">{heading}</h1>
         <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium mt-1">{tagline}</p>
         <nav className="text-sm text-muted-foreground mt-4">
@@ -179,11 +179,11 @@ export default function EventPage({
         </div>
       )}
 
-      <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
+      <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <p className="text-foreground dark:text-slate-200 leading-relaxed">{intro}</p>
       </div>
 
-      <section className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
+      <section className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">Frequently asked questions</h2>
         <div className="space-y-4">
           {faqs.map((faq) => (
@@ -196,7 +196,7 @@ export default function EventPage({
       </section>
 
       {/* Cross-links between event pages (excludes the page you're on) */}
-      <section className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
+      <section className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">More countdowns</h2>
         <div className="flex flex-wrap gap-2">
           {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, '')))

@@ -91,10 +91,10 @@ export default function DecimalHoursPage() {
         </div>
       </header>
 
-      <DecimalHoursTool className="mb-10" />
+      <DecimalHoursTool className="mb-section" />
 
       {/* Explanation */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           How the conversion works
         </h2>
@@ -113,7 +113,7 @@ export default function DecimalHoursPage() {
       </section>
 
       {/* Full chart — static, server-rendered */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           Minutes to decimal hours chart
         </h2>
@@ -158,7 +158,7 @@ export default function DecimalHoursPage() {
       </section>
 
       {/* FAQ */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4">
           Frequently asked questions
         </h2>
@@ -176,7 +176,7 @@ export default function DecimalHoursPage() {
       </section>
 
       {/* Related */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           Related tools and guides
         </h2>

@@ -362,7 +362,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
       )}
 
       {/* Configuration */}
-      <div className="relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+      <div className="relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
         <div className="mb-4">
           {/* Question label + auto-scrolling Popular marquee share one row;
               the marquee chips are duplicated for a seamless right-to-left loop. */}
@@ -462,7 +462,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
 
       {/* Saved countdowns */}
       {saved.length > 0 && (
-        <div className="relative z-0 mt-6 bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+        <div className="relative z-0 mt-6 bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
             Saved countdowns
           </h3>

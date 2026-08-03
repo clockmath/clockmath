@@ -232,7 +232,7 @@ export default function ContactPage() {
         </div>
       </header>
 
-      <div className="grid lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid lg:grid-cols-2 gap-6 mb-section">
         {/* FAQ Section */}
         <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h2 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-6">

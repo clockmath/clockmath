@@ -163,8 +163,8 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
     return (
       // min-height approximates the hydrated grid so the swap doesn't cause a
       // large layout shift (CLS) below the placeholder.
-      <div className={`bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 min-h-[640px] ${className}`}>
-        <p className="text-center text-muted-foreground py-12">Loading live market hours…</p>
+      <div className={`bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 min-h-[640px] ${className}`}>
+        <p className="text-center text-muted-foreground py-10">Loading live market hours…</p>
       </div>
     );
   }

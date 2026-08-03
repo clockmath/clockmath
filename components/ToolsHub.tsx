@@ -116,7 +116,7 @@ export default function ToolsHub() {
     <PageChrome currentTool="tools" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd data={getItemListSchema()} />
 
-      <header className="text-center mb-8 sm:mb-10">
+      <header className="text-center mb-8 sm:mb-section">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Six calculators. No signup, no ads in your way — everything runs in your browser.
@@ -130,7 +130,7 @@ export default function ToolsHub() {
         </nav>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-section">
         {TILES.map((tile) => {
           const Icon = tile.icon;
           return (
