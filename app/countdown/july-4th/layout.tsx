@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: '4th of July Countdown — How Many Days Until Independence Day? | ClockMath',
+  title: 'How Many Days Until the 4th of July? Live Countdown | ClockMath',
   description:
     'Live countdown to the 4th of July (Independence Day). See exactly how many days, hours, minutes, and seconds are left until July 4th this year.',
   path: '/countdown/july-4th',
