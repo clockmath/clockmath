@@ -36,35 +36,35 @@ const primaryTabs: NavItem[] = [
     label: 'Time',
     shortLabel: 'Time',
     href: '/',
-    icon: <Clock className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
+    icon: <Clock className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
     id: 'timezone',
     label: 'Timezone',
     shortLabel: 'Zones',
     href: '/tools/timezone',
-    icon: <Globe className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
+    icon: <Globe className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
     id: 'timesheet',
     label: 'Timesheet',
     shortLabel: 'Shifts',
     href: '/tools/timesheet',
-    icon: <ClipboardList className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
+    icon: <ClipboardList className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
     id: 'market-hours',
     label: 'Markets',
     shortLabel: 'Markets',
     href: '/tools/market-hours',
-    icon: <CandlestickChart className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
+    icon: <CandlestickChart className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
     id: 'articles',
     label: 'Guides',
     shortLabel: 'Guides',
     href: '/articles',
-    icon: <BookOpen className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />,
+    icon: <BookOpen className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
 ]
 
@@ -150,7 +150,7 @@ export default function ToolsNavigation({
   const moreActive = moreItems.some((item) => item.id === activeToolId) || activeToolId === 'tools'
 
   const tabClass = (active: boolean) =>
-    `flex-1 min-w-0 px-2 sm:px-3 py-2 sm:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-0.5 sm:gap-2 whitespace-nowrap min-h-[2.5rem] ${
+    `flex-1 min-w-0 px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
       active
         ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg'
         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -170,9 +170,9 @@ export default function ToolsNavigation({
                 />
               )}
             </span>
-            <span className="text-[11px] leading-tight sm:text-sm">
-              <span className="sm:hidden">{tab.shortLabel}</span>
-              <span className="hidden sm:inline">{tab.label}</span>
+            <span className="text-[11px] leading-tight lg:text-sm">
+              <span className="lg:hidden">{tab.shortLabel}</span>
+              <span className="hidden lg:inline">{tab.label}</span>
             </span>
           </Link>
         ))}
@@ -187,9 +187,9 @@ export default function ToolsNavigation({
             className={`w-full h-full ${tabClass(moreActive)}`}
           >
             <ChevronDown
-              className={`w-5 h-5 sm:w-4 sm:h-4 shrink-0 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
+              className={`w-5 h-5 lg:w-4 lg:h-4 shrink-0 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
             />
-            <span className="text-[11px] leading-tight sm:text-sm">More</span>
+            <span className="text-[11px] leading-tight lg:text-sm">More</span>
           </button>
 
           <div
@@ -228,13 +228,13 @@ export default function ToolsNavigation({
             onClick={onHistoryClick}
             className={`${tabClass(currentTool === 'history')} !flex-none`}
           >
-            <History className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="text-[11px] leading-tight sm:text-sm">
-              <span className="sm:hidden">History</span>
-              <span className="hidden sm:inline">Recent Calculations</span>
+            <History className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />
+            <span className="text-[11px] leading-tight lg:text-sm">
+              <span className="lg:hidden">History</span>
+              <span className="hidden lg:inline">Recent Calculations</span>
             </span>
             {historyCount > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 bg-primary/20 text-xs rounded-full min-w-[1.25rem] text-center hidden sm:inline">
+              <span className="ml-1 px-1.5 py-0.5 bg-primary/20 text-xs rounded-full min-w-[1.25rem] text-center hidden lg:inline">
                 {historyCount}
               </span>
             )}
