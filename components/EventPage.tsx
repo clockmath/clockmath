@@ -156,7 +156,7 @@ export default function EventPage({
       <div className="flex justify-center mb-6">
         <button
           onClick={handleShare}
-          className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg transition-all duration-200"
+          className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl shadow-sm transition-all duration-200"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -170,20 +170,20 @@ export default function EventPage({
           {facts.map((f) => (
             <div
               key={f.label}
-              className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 border border-border/50 dark:border-slate-700/50 text-center"
+              className="bg-card dark:bg-slate-800 rounded-2xl p-4 border border-border/50 dark:border-slate-700/50 text-center"
             >
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">{f.label}</div>
+              <div className="text-xs text-muted-foreground">{f.label}</div>
               <div className="font-semibold text-foreground dark:text-slate-100 mt-1">{f.value}</div>
             </div>
           ))}
         </div>
       )}
 
-      <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-6">
+      <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <p className="text-foreground dark:text-slate-200 leading-relaxed">{intro}</p>
       </div>
 
-      <section className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-6">
+      <section className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">Frequently asked questions</h2>
         <div className="space-y-4">
           {faqs.map((faq) => (
@@ -196,7 +196,7 @@ export default function EventPage({
       </section>
 
       {/* Cross-links between event pages (excludes the page you're on) */}
-      <section className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-6">
+      <section className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">More countdowns</h2>
         <div className="flex flex-wrap gap-2">
           {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, '')))
@@ -217,7 +217,7 @@ export default function EventPage({
         <p className="text-sm text-muted-foreground mb-3">Want a countdown to your own event?</p>
         <Link
           href="/tools/countdown/"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition-all duration-200"
         >
           Make your own countdown
         </Link>

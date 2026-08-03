@@ -9,7 +9,7 @@ export default function SiteFooter() {
   const year = new Date().getFullYear();
   return (
     <footer className="mt-8 sm:mt-12">
-      <div className="bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-border/50 dark:border-slate-700/50 text-center">
+      <div className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 text-center">
         <p className="text-sm text-muted-foreground dark:text-slate-400 mb-4">
           Find Clock Math useful? Support the development!
         </p>
@@ -19,7 +19,7 @@ export default function SiteFooter() {
           href="https://www.buymeacoffee.com/clockmath?utm_source=clockmath&utm_medium=site&utm_campaign=footer_button"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 mb-4"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md mb-4"
           aria-label="Support Clock Math on Buy Me a Coffee"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

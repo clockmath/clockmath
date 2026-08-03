@@ -65,7 +65,7 @@ export function UserDateCountdown({
 
   return (
     <div className="space-y-4">
-      <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50">
+      <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
         <label className="block text-sm font-medium text-foreground mb-2">{prompt}</label>
         {mounted && date && (
           <InlineDatePicker value={date} onChange={handleChange} placeholder="Select your date" startOnCalendar />

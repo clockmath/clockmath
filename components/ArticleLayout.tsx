@@ -54,7 +54,7 @@ export default function ArticleLayout({
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl"></div>
-                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2 rounded-xl shadow-lg border border-slate-700 dark:border-slate-600">
+                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2 rounded-xl shadow-sm border border-slate-700 dark:border-slate-600">
                   <svg width="40" height="40" viewBox="0 0 80 80" className="w-8 h-8">
                     <circle cx="40" cy="40" r="39.5" fill="white" stroke="#1e293b" strokeWidth="1"></circle>
                     <text x="40" y="15" textAnchor="middle" className="text-xs font-bold fill-emerald-600">+</text>
@@ -80,7 +80,7 @@ export default function ArticleLayout({
         </div>
 
         {/* Article Content */}
-        <article className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <article className="bg-card dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <header className="mb-8 text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground dark:text-slate-100 mb-4">
               {title}
@@ -98,7 +98,7 @@ export default function ArticleLayout({
           </div>
 
           {/* Call to Action */}
-          <div className="mt-12 p-6 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
+          <div className="mt-12 p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
             <div className="text-center">
               <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
                 Try Our Free Time Calculator

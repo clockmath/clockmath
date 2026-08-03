@@ -49,7 +49,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Content */}
-        <div className="bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-lg border border-border/50 dark:border-slate-700/50">
+        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <div className="prose prose-slate dark:prose-invert max-w-none">
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
               <strong>Effective Date:</strong> January 15, 2025

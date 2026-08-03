@@ -9,12 +9,7 @@ const RELEASE = new Date(2026, 11, 18);
 export default function AvengersDoomsdayCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">Avengers:</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Doomsday</span>
-        </>
-      }
+      heading={'Avengers: Doomsday'}
       tagline="Time until Avengers: Doomsday hits theaters"
       breadcrumb="Avengers: Doomsday"
       target={RELEASE}

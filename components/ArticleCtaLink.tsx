@@ -12,7 +12,7 @@ export default function ArticleCtaLink({ href, title }: ArticleCtaLinkProps) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium rounded-xl hover:from-emerald-500 hover:to-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl"
+      className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:from-emerald-500 hover:to-emerald-400 transition-all duration-200 shadow-sm hover:shadow-md"
       onClick={() =>
         gaEvent({
           action: 'article_primary_cta_click',

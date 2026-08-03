@@ -5,12 +5,7 @@ import EventPage from '@/components/EventPage';
 export default function ChristmasCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">Christmas</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Countdown</span>
-        </>
-      }
+      heading={'Christmas Countdown'}
       tagline="How many days until Christmas?"
       breadcrumb="Christmas"
       recurring={{ month: 11, day: 25 }}

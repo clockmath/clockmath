@@ -215,7 +215,7 @@ export default function ContactPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-lg border border-slate-700 dark:border-slate-600">
+            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-sm border border-slate-700 dark:border-slate-600">
               {/* Contact/Mail icon */}
               <svg width="80" height="80" viewBox="0 0 80 80" className="w-12 sm:w-16 h-12 sm:h-16">
                 <rect x="10" y="20" width="60" height="40" rx="6" fill="white" stroke="#1e293b" strokeWidth="1" />
@@ -259,7 +259,7 @@ export default function ContactPage() {
 
       <div className="grid lg:grid-cols-2 gap-8 mb-8">
         {/* FAQ Section */}
-        <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h2 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-6">
             Frequently Asked Questions
           </h2>
@@ -285,7 +285,7 @@ export default function ContactPage() {
         </section>
 
         {/* Contact Form */}
-        <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h2 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-6">
             Send Message
           </h2>
@@ -415,7 +415,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting || !formData.name || !formData.email || !formData.subject || !formData.message}
-              className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:from-muted disabled:to-muted disabled:text-muted-foreground text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-muted disabled:text-muted-foreground text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>

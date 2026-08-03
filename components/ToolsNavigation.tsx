@@ -152,12 +152,12 @@ export default function ToolsNavigation({
   const tabClass = (active: boolean) =>
     `flex-1 min-w-0 px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
       active
-        ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg'
+        ? 'bg-emerald-600 text-white shadow-sm'
         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
     }`
 
   return (
-    <div className={`bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-1 shadow-xl border border-border/50 dark:border-slate-700/50 ${className}`}>
+    <div className={`bg-card dark:bg-slate-800 rounded-2xl p-1 shadow-sm border border-border/50 dark:border-slate-700/50 ${className}`}>
       <div className="flex items-stretch min-h-[3rem]">
         {primaryTabs.map((tab) => (
           <Link key={tab.id} href={tab.href} aria-label={tab.label} className={tabClass(activeToolId === tab.id)}>
@@ -193,7 +193,7 @@ export default function ToolsNavigation({
           </button>
 
           <div
-            className={`${moreOpen ? '' : 'hidden'} absolute right-0 top-full mt-2 z-50 w-56 bg-card dark:bg-slate-800 rounded-xl shadow-xl border border-border/50 dark:border-slate-700/50 p-1.5`}
+            className={`${moreOpen ? '' : 'hidden'} absolute right-0 top-full mt-2 z-50 w-56 bg-card dark:bg-slate-800 rounded-xl shadow-sm border border-border/50 dark:border-slate-700/50 p-1.5`}
           >
             {moreItems.map((item) => (
               <Link

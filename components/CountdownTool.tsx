@@ -284,7 +284,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     <div className={className}>
       {/* Countdown display — only shown once a countdown is active */}
       {active && (
-      <div className="relative z-10 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-emerald-100 dark:border-slate-700/50 text-center mb-6">
+      <div className="relative z-10 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center mb-6">
         {activeTitle && (
           <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
             {isPast ? 'Since' : 'Until'} {activeTitle}
@@ -330,7 +330,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           <button
             onClick={handleShare}
             disabled={!active}
-            className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:opacity-50 disabled:pointer-events-none text-white font-medium rounded-xl shadow-lg transition-all duration-200"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-medium rounded-xl shadow-sm transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -345,7 +345,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           <button
             onClick={handleSave}
             disabled={!active}
-            className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 disabled:opacity-50 disabled:pointer-events-none text-white font-medium rounded-xl shadow-lg transition-all duration-200"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-medium rounded-xl shadow-sm transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -362,7 +362,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
       )}
 
       {/* Configuration */}
-      <div className="relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
+      <div className="relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
         <div className="mb-4">
           {/* Question label + auto-scrolling Popular marquee share one row;
               the marquee chips are duplicated for a seamless right-to-left loop. */}
@@ -407,6 +407,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
             <button
               onClick={() => setIs24h(false)}
+            aria-pressed={!is24h}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
                 !is24h
                   ? 'bg-primary text-primary-foreground shadow-sm'
@@ -417,6 +418,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
             </button>
             <button
               onClick={() => setIs24h(true)}
+            aria-pressed={is24h}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
                 is24h
                   ? 'bg-primary text-primary-foreground shadow-sm'
@@ -441,7 +443,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           <button
             onClick={startCountdown}
             disabled={Number.isNaN(draftTargetMs)}
-            className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:opacity-50 disabled:pointer-events-none text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
@@ -460,7 +462,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
 
       {/* Saved countdowns */}
       {saved.length > 0 && (
-        <div className="relative z-0 mt-6 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <div className="relative z-0 mt-6 bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
             Saved countdowns
           </h3>

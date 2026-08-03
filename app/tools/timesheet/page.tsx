@@ -220,7 +220,7 @@ export default function TimesheetPage() {
           {FAQS.map((faq) => (
             <div
               key={faq.question}
-              className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-slate-700/50"
+              className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-slate-700/50"
             >
               <h3 className="font-semibold text-foreground mb-1.5">{faq.question}</h3>
               <p className="text-sm text-muted-foreground">{faq.answer}</p>

@@ -168,7 +168,7 @@ export default function FamilyCallsTimezoneConverterPage() {
           </p>
           <a 
             href="/tools/timezone"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-200 hover:shadow-sm"
           >
             Check Family Time
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

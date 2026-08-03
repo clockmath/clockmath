@@ -120,7 +120,7 @@ export default function DecimalHoursPage() {
         <p className="text-muted-foreground mb-4">
           Exact values rounded to two decimal places — the convention most timesheet software uses.
         </p>
-        <div className="overflow-x-auto bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 border border-border/50 dark:border-slate-700/50">
+        <div className="overflow-x-auto bg-card dark:bg-slate-800 rounded-2xl p-4 border border-border/50 dark:border-slate-700/50">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b border-border dark:border-slate-700">
@@ -151,7 +151,7 @@ export default function DecimalHoursPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-muted-foreground/70 mt-3">
+        <p className="text-xs text-muted-foreground mt-3">
           Note: some payroll systems round punches to the nearest tenth of an hour (6-minute steps)
           or quarter hour (15-minute steps) before converting — this chart shows unrounded values.
         </p>
@@ -166,7 +166,7 @@ export default function DecimalHoursPage() {
           {FAQS.map((faq) => (
             <div
               key={faq.question}
-              className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-slate-700/50"
+              className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-slate-700/50"
             >
               <h3 className="font-semibold text-foreground mb-1.5">{faq.question}</h3>
               <p className="text-sm text-muted-foreground">{faq.answer}</p>

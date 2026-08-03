@@ -10,12 +10,7 @@ const GTA6_RELEASE = new Date(2026, 10, 19);
 export default function Gta6CountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">GTA 6</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Countdown</span>
-        </>
-      }
+      heading={'GTA 6 Countdown'}
       tagline="Time until Grand Theft Auto VI releases"
       breadcrumb="GTA 6"
       target={GTA6_RELEASE}

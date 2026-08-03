@@ -137,7 +137,7 @@ export default function ToolsHub() {
             <Link
               key={tile.href}
               href={tile.href}
-              className="group bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-border/50 dark:border-slate-700/50 hover:border-emerald-500/50 hover:shadow-2xl transition-all duration-200"
+              className="group bg-card dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-border/50 dark:border-slate-700/50 hover:border-emerald-500/50 hover:shadow-md transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15">

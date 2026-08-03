@@ -10,12 +10,7 @@ const RELEASE = new Date(2026, 6, 31);
 export default function SpiderManCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">Spider-Man:</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Brand New Day</span>
-        </>
-      }
+      heading={'Spider-Man: Brand New Day'}
       tagline="Spider-Man: Brand New Day is now in theaters"
       breadcrumb="Spider-Man: Brand New Day"
       target={RELEASE}

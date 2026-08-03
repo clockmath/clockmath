@@ -140,7 +140,7 @@ export function EventCountdown({
 
   return (
     <div
-      className={`bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-emerald-100 dark:border-slate-700/50 text-center ${className}`}
+      className={`bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center ${className}`}
     >
       <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
         {isPast ? (arrivedLabel ?? `${title} has released!`) : `Until ${title}`}

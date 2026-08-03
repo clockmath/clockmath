@@ -44,7 +44,7 @@ export default function PageChrome({ currentTool, children, className = '', onTo
             {onToggleTheme && (
               <button
                 onClick={onToggleTheme}
-                className="shrink-0 grid place-items-center w-10 h-10 sm:w-11 sm:h-11 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm text-foreground dark:text-slate-200 rounded-xl hover:bg-card dark:hover:bg-slate-700 transition-all duration-200 shadow-lg border border-border/50 dark:border-slate-700/50"
+                className="shrink-0 grid place-items-center w-10 h-10 sm:w-11 sm:h-11 bg-card dark:bg-slate-800 text-foreground dark:text-slate-200 rounded-xl hover:bg-card dark:hover:bg-slate-700 transition-all duration-200 shadow-sm border border-border/50 dark:border-slate-700/50"
                 title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
                 aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
               >

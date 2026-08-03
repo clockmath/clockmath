@@ -240,7 +240,7 @@ export function LocationSearch({
       {open && items.length > 0 && (
         <ul
           role="listbox"
-          className="absolute z-10 mt-1 w-full rounded-xl border border-border/50 bg-card dark:bg-slate-800 shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-10 mt-1 w-full rounded-xl border border-border/50 bg-card dark:bg-slate-800 shadow-sm max-h-60 overflow-y-auto"
         >
           {items.map((p) => (
             <li
