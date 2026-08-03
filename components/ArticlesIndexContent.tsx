@@ -134,7 +134,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-lg border border-slate-700 dark:border-slate-600">
+            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-sm border border-slate-700 dark:border-slate-600">
               {/* Book/Guides icon */}
               <svg width="80" height="80" viewBox="0 0 80 80" className="w-12 sm:w-16 h-12 sm:h-16">
                 {/* Book cover */}
@@ -186,7 +186,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
       </header>
 
       {/* Search and Filter Controls */}
-      <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-8">
+      <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-8">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Search */}
           <div className="lg:col-span-2">
@@ -288,7 +288,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
                   href={article.href}
                   className="group block h-full"
                 >
-                  <div className={`h-full p-6 rounded-xl bg-gradient-to-br ${categoryColors} border hover:shadow-lg transition-all duration-200 hover:scale-105`}>
+                  <div className={`h-full p-6 rounded-xl bg-gradient-to-br ${categoryColors} border hover:shadow-sm transition-all duration-200 hover:scale-105`}>
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/80 dark:bg-slate-800/80 rounded-lg">
@@ -328,7 +328,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
       </section>
 
       {/* Contact CTA */}
-      <section className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+      <section className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
         <div className="text-center">
           <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
             Can&apos;t find what you&apos;re looking for?
@@ -338,7 +338,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

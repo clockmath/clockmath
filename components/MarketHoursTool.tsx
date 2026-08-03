@@ -163,7 +163,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
     return (
       // min-height approximates the hydrated grid so the swap doesn't cause a
       // large layout shift (CLS) below the placeholder.
-      <div className={`bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50 min-h-[640px] ${className}`}>
+      <div className={`bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 min-h-[640px] ${className}`}>
         <p className="text-center text-muted-foreground py-12">Loading live market hours…</p>
       </div>
     );
@@ -175,7 +175,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
   return (
     <div className={className}>
       {/* Summary bar */}
-      <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl px-4 sm:px-6 py-4 shadow-xl border border-border/50 dark:border-slate-700/50 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-card dark:bg-slate-800 rounded-2xl px-4 sm:px-6 py-4 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-lg font-semibold text-foreground">
             {openCount === 0 ? 'No markets open right now' : `${openCount} of ${MARKETS.length} markets open`}
@@ -187,6 +187,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
         <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
           <button
             onClick={() => setHourFormat(true)}
+            aria-pressed={hour12}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
               hour12
                 ? 'bg-primary text-primary-foreground shadow-sm'
@@ -197,6 +198,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
           </button>
           <button
             onClick={() => setHourFormat(false)}
+            aria-pressed={!hour12}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
               !hour12
                 ? 'bg-primary text-primary-foreground shadow-sm'
@@ -229,7 +231,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
           return (
             <div
               key={market.id}
-              className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-xl border border-border/50 dark:border-slate-700/50"
+              className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm border border-border/50 dark:border-slate-700/50"
             >
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -272,7 +274,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
                 {sessionDayLabel}
                 {sessionTimes || '—'} your time
               </p>
-              <p className="text-xs text-muted-foreground/70">
+              <p className="text-xs text-muted-foreground">
                 {localHours} in {market.city}
               </p>
 
@@ -286,7 +288,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
         })}
       </div>
 
-      <p className="mt-4 text-xs text-muted-foreground/70 text-center">
+      <p className="mt-4 text-xs text-muted-foreground text-center">
         Regular trading hours with automatic DST handling. Holiday closures included for NYSE, NASDAQ,
         and LSE; {uncuratedNames} show regular weekday hours only.
       </p>

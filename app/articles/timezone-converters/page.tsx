@@ -138,7 +138,7 @@ export default function TimezoneConvertersHubPage() {
             <div className="flex items-center justify-center gap-3 mb-6">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl"></div>
-                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-3 rounded-xl shadow-lg border border-slate-700 dark:border-slate-600">
+                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-3 rounded-xl shadow-sm border border-slate-700 dark:border-slate-600">
                   <svg width="48" height="48" viewBox="0 0 80 80" className="w-10 h-10">
                     {/* Globe with timezone indicators */}
                     <circle cx="40" cy="40" r="39.5" fill="white" stroke="#1e293b" strokeWidth="1"></circle>
@@ -169,7 +169,7 @@ export default function TimezoneConvertersHubPage() {
         </div>
 
         {/* Introduction */}
-        <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 mb-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h2 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-4">
             Complete Timezone Conversion Guide
           </h2>
@@ -190,7 +190,7 @@ export default function TimezoneConvertersHubPage() {
             </p>
             <Link
               href="/tools/timezone"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:scale-105"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-all duration-200 hover:shadow-sm"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -206,7 +206,7 @@ export default function TimezoneConvertersHubPage() {
             <Link
               key={guide.href}
               href={guide.href}
-              className={`group block p-6 bg-gradient-to-br ${CATEGORY_COLORS[guide.category as keyof typeof CATEGORY_COLORS]} rounded-2xl border hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
+              className={`group block p-6 bg-gradient-to-br ${CATEGORY_COLORS[guide.category as keyof typeof CATEGORY_COLORS]} rounded-2xl border hover:shadow-sm transition-all duration-300`}
             >
               <div className="flex items-start gap-3 mb-4">
                 <span className="text-2xl">{guide.icon}</span>
@@ -246,7 +246,7 @@ export default function TimezoneConvertersHubPage() {
         </div>
 
         {/* Quick Tips Section */}
-        <div className="bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50 mb-8">
+        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-8">
           <h3 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -298,7 +298,7 @@ export default function TimezoneConvertersHubPage() {
         </div>
 
         {/* Related Tools */}
-        <div className="bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50">
+        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
           <h3 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -310,7 +310,7 @@ export default function TimezoneConvertersHubPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <Link
               href="/tools/timezone"
-              className="p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-lg border border-emerald-200 dark:border-emerald-800 hover:shadow-md transition-all duration-200 group"
+              className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800 hover:shadow-md transition-all duration-200 group"
             >
               <h4 className="font-semibold text-emerald-800 dark:text-emerald-200 text-sm group-hover:underline">
                 🌍 Timezone Converter Tool

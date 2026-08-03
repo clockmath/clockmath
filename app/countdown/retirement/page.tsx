@@ -6,12 +6,7 @@ import { UserDateCountdown } from '@/components/UserDateCountdown';
 export default function RetirementCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">Retirement</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Countdown</span>
-        </>
-      }
+      heading={'Retirement Countdown'}
       tagline="How long until you retire?"
       breadcrumb="Retirement"
       countdownSlot={

@@ -8,12 +8,7 @@ const LA28_OPENING = new Date(2028, 6, 14);
 export default function Olympics2028CountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">LA 2028</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Olympics Countdown</span>
-        </>
-      }
+      heading={'LA 2028 Olympics Countdown'}
       tagline="Time until the 2028 Summer Olympics"
       breadcrumb="LA 2028 Olympics"
       target={LA28_OPENING}

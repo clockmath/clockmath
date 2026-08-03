@@ -20,7 +20,7 @@ import {
   getTimezoneOffset,
   getOffsetLabel,
 } from '@/lib/time';
-import { ArrowLeftRight, MapPin } from 'lucide-react';
+import { ArrowLeftRight, MapPin, Globe } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
 
@@ -382,7 +382,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   };
 
   return (
-    <div className={`relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-border/50 dark:border-slate-700/50 hover:shadow-2xl transition-all duration-300 ${className}`}>
+    <div className={`relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-border/50 dark:border-slate-700/50 hover:shadow-md transition-all duration-300 ${className}`}>
       {/* Card toolbar — the page header already carries the title/subtitle;
           repeating them here was the page's third title. */}
       <div className="flex items-center justify-end gap-4 mb-4 sm:mb-6">
@@ -390,6 +390,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           <div className="bg-muted/50 dark:bg-slate-700/50 rounded-xl p-1.5 flex items-center gap-1">
             <button
               onClick={() => setHour12(true)}
+            aria-pressed={hour12}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 hour12
                   ? "bg-primary text-primary-foreground shadow-sm"
@@ -400,6 +401,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             </button>
             <button
               onClick={() => setHour12(false)}
+            aria-pressed={!hour12}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 !hour12
                   ? "bg-primary text-primary-foreground shadow-sm"
@@ -418,7 +420,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           {/* From Timezone */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide">
+              <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200">
                 From Location
               </label>
               <button
@@ -452,7 +454,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
           {/* To Timezone */}
           <div className="space-y-3 relative">
-            <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide">
+            <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200">
               To Location
             </label>
             <LocationTimezonePicker
@@ -478,7 +480,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             <button
               type="button"
               onClick={handleSwapTimezones}
-              className="absolute top-8 right-2 sm:left-auto sm:right-full sm:mr-2 sm:top-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-105"
+              className="absolute top-8 right-2 sm:left-auto sm:right-full sm:mr-2 sm:top-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full p-2 shadow-sm transition-all duration-200 hover:scale-105"
               title="Swap locations"
             >
               <ArrowLeftRight className="w-4 h-4" />
@@ -526,7 +528,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         {/* Date/Time Input - moved closer to location inputs */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide">
+            <h3 className="text-sm font-semibold text-foreground dark:text-slate-200">
               Date & Time (in {getFromZoneDisplayName()})
             </h3>
             <div className="flex gap-2">
@@ -589,7 +591,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             <button
               type="button"
               onClick={handleCalculate}
-              className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
@@ -618,7 +620,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
             {/* Time Difference - Emphasized */}
             <div className="bg-gradient-to-r from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
-              <div className="text-xs text-muted-foreground dark:text-slate-400 uppercase tracking-wider mb-1">
+              <div className="text-xs text-muted-foreground dark:text-slate-400 mb-1">
                 Time Difference
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-primary dark:text-accent">
@@ -654,7 +656,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
       {/* DST Notice */}
       <div className="text-center">
         <p className="text-xs text-muted-foreground dark:text-slate-400">
-          🌍 Handles Daylight Saving Time automatically
+          <Globe className="inline w-3.5 h-3.5 -mt-0.5 mr-1" aria-hidden="true" />Handles Daylight Saving Time automatically
         </p>
       </div>
 

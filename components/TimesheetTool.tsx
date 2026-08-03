@@ -375,12 +375,13 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   return (
     <div className={className}>
       {/* Shifts (input) */}
-      <div className="relative z-20 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl border border-border/50 dark:border-slate-700/50 mb-6">
+      <div className="relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide">Shifts</h2>
+          <h2 className="text-sm font-semibold text-foreground dark:text-slate-200">Shifts</h2>
           <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
             <button
               onClick={() => setIs24h(false)}
+            aria-pressed={!is24h}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
                 !is24h ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -389,6 +390,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             </button>
             <button
               onClick={() => setIs24h(true)}
+            aria-pressed={is24h}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
                 is24h ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -418,7 +420,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                 <div className="flex-1 min-w-0">
                   <label className="block text-xs text-muted-foreground mb-1 flex items-center gap-1">
                     End
-                    {overnight && <span className="text-[10px] font-semibold uppercase text-amber-600 dark:text-amber-400">+1 day</span>}
+                    {overnight && <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">+1 day</span>}
                   </label>
                   <InlineTimePicker value={shift.end} onChange={(v) => updateShift(shift.id, { end: v })} is24h={is24h} />
                 </div>
@@ -471,7 +473,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
       </div>
 
       {/* Result (this is what export/share captures) */}
-      <div className="relative z-10 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-xl border border-emerald-100 dark:border-slate-700/50">
+      <div className="relative z-10 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl p-4 sm:p-5 shadow-sm border border-emerald-100 dark:border-slate-700/50">
         {/* Header: name + rate */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <h2 className="text-base font-bold text-foreground dark:text-slate-100">
@@ -538,7 +540,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
         <div className="hidden sm:block overflow-x-auto rounded-xl border border-border/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/30">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[11px] uppercase tracking-wide text-muted-foreground border-b border-border/50 dark:border-slate-700/50">
+              <tr className="text-[11px] text-muted-foreground border-b border-border/50 dark:border-slate-700/50">
                 <th className="text-left font-medium px-3 py-2">Date</th>
                 <th className="text-left font-medium px-3 py-2">Shift</th>
                 <th className="text-right font-medium px-3 py-2 whitespace-nowrap">Break</th>
@@ -603,13 +605,14 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           </div>
           <button
             onClick={handleSave}
-            className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-medium rounded-lg shadow transition-all duration-200"
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow transition-all duration-200"
           >
             Save
           </button>
+          {/* Secondary: outlined — Save is the single primary in this row */}
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-medium rounded-lg shadow transition-all duration-200"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-card dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 text-foreground font-medium rounded-lg border border-border/50 dark:border-slate-600 shadow transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -639,8 +642,8 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
       {/* Saved timesheets */}
       {saved.length > 0 && (
-        <div className="relative z-0 mt-6 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-border/50 dark:border-slate-700/50">
-          <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
+        <div className="relative z-0 mt-6 bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+          <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 mb-3">
             Saved timesheets
           </h3>
           <ul className="space-y-2">

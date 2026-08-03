@@ -5,12 +5,7 @@ import EventPage from '@/components/EventPage';
 export default function July4thCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">4th of July</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Countdown</span>
-        </>
-      }
+      heading={'4th of July Countdown'}
       tagline="How many days until Independence Day?"
       breadcrumb="4th of July"
       recurring={{ month: 6, day: 4 }}

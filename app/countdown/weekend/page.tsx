@@ -5,12 +5,7 @@ import EventPage from '@/components/EventPage';
 export default function WeekendCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">Weekend</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Countdown</span>
-        </>
-      }
+      heading={'Weekend Countdown'}
       tagline="How long until the weekend?"
       breadcrumb="Weekend"
       weekly={{ weekday: 6, spanDays: 2 }}

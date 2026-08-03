@@ -5,12 +5,7 @@ import EventPage from '@/components/EventPage';
 export default function CanadaDayCountdownPage() {
   return (
     <EventPage
-      heading={
-        <>
-          <span className="text-emerald-600 dark:text-emerald-400">Canada Day</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">Countdown</span>
-        </>
-      }
+      heading={'Canada Day Countdown'}
       tagline="How many days until Canada Day?"
       breadcrumb="Canada Day"
       recurring={{ month: 6, day: 1 }}

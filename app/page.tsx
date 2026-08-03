@@ -3,6 +3,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
+import { Lightbulb } from "lucide-react"
 import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import PageChrome from "@/components/PageChrome"
@@ -420,7 +421,7 @@ export default function ClockMathPage() {
         {/* Main Calculator Card */}
         {/* No min-height: the card hugs its content (a fixed 600px left a large
             dead area below the form before any result existed) */}
-        <div className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-border/50 dark:border-slate-700/50">
+        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <div className="grid gap-6 sm:gap-8">
 
             {/* Time Format Toggle */}
@@ -428,6 +429,7 @@ export default function ClockMathPage() {
               <div className="bg-muted/50 dark:bg-slate-700/50 rounded-xl p-1.5 flex items-center gap-1">
                 <button
                   onClick={() => setIs24HourFormat(false)}
+            aria-pressed={!is24HourFormat}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     !is24HourFormat
                       ? "bg-primary text-primary-foreground shadow-sm"
@@ -438,6 +440,7 @@ export default function ClockMathPage() {
                 </button>
                 <button
                   onClick={() => setIs24HourFormat(true)}
+            aria-pressed={is24HourFormat}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     is24HourFormat
                       ? "bg-primary text-primary-foreground shadow-sm"
@@ -506,7 +509,7 @@ export default function ClockMathPage() {
             <button
               onClick={calculateTimeDifference}
               disabled={!startTime || !endTime || isCalculating}
-              className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:from-muted disabled:to-muted disabled:text-muted-foreground text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-muted disabled:text-muted-foreground text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isCalculating ? (
                 <>
@@ -527,7 +530,7 @@ export default function ClockMathPage() {
             {/* Result */}
             {result && (
               <div className="text-center">
-                <div className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
                   <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-4">
                     Duration
                   </h3>
@@ -580,9 +583,9 @@ export default function ClockMathPage() {
                 </div>
 
                 {/* Contextual cross-promo: nudge engaged users toward the other tools */}
-                <div className="mt-4 bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-4 border border-border/50 dark:border-slate-700/50">
+                <div className="mt-4 bg-card dark:bg-slate-800 rounded-xl p-4 border border-border/50 dark:border-slate-700/50">
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    <span className="font-medium text-foreground">💡 Did you know?</span> You can also use ClockMath to{" "}
+                    <span className="font-medium text-foreground inline-flex items-center gap-1.5"><Lightbulb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />Did you know?</span> You can also use ClockMath to{" "}
                     <Link href="/tools/timesheet/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
                       add up your work hours
                     </Link>
@@ -608,7 +611,7 @@ export default function ClockMathPage() {
 
         {/* History */}
         {history.length > 0 && (
-          <div className="bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border/50 dark:border-slate-700/50">
+          <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-bold text-foreground dark:text-slate-100">
@@ -616,7 +619,7 @@ export default function ClockMathPage() {
                 </h3>
                 {history.length >= 2 && selectedCalculations.size === 0 && (
                   <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                    <span>💡</span>
+                    <Lightbulb className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
                     <span>Tip: Select multiple calculations to sum them together</span>
                   </p>
                 )}
@@ -796,7 +799,7 @@ export default function ClockMathPage() {
 
         {/* Sum Result */}
         {sumResult && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-6 shadow-lg border border-blue-200 dark:border-blue-800 animate-in fade-in-50 duration-500">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-6 shadow-sm border border-blue-200 dark:border-blue-800 animate-in fade-in-50 duration-500">
             <div className="text-center">
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
                 Sum of Selected Calculations

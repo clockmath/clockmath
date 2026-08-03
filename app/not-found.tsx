@@ -17,10 +17,10 @@ const links = [
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 py-12">
-      <div className="w-full max-w-lg text-center bg-card/70 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-border/50 dark:border-slate-700/50">
+      <div className="w-full max-w-lg text-center bg-card/70 dark:bg-slate-800/60 rounded-2xl p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
         <div className="text-6xl font-extrabold tracking-tight">
           <span className="text-emerald-600 dark:text-emerald-400">4</span>
-          <span className="text-blue-600 dark:text-blue-400">0</span>
+          <span className="text-emerald-600 dark:text-emerald-400">0</span>
           <span className="text-emerald-600 dark:text-emerald-400">4</span>
         </div>
         <h1 className="mt-3 text-xl font-bold text-foreground dark:text-slate-100">Page not found</h1>
@@ -43,7 +43,7 @@ export default function NotFound() {
 
         <Link
           href="/"
-          className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
+          className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition-all duration-200"
         >
           Back to ClockMath
         </Link>

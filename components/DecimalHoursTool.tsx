@@ -72,7 +72,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
       {/* Time → decimal */}
       <section
         aria-labelledby="to-decimal-heading"
-        className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-xl border border-border/50 dark:border-slate-700/50"
+        className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
       >
         <h2 id="to-decimal-heading" className="text-lg font-bold text-foreground mb-4">
           Hours &amp; minutes → decimal
@@ -142,7 +142,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
       {/* Decimal → time */}
       <section
         aria-labelledby="to-time-heading"
-        className="bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-xl border border-border/50 dark:border-slate-700/50"
+        className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
       >
         <h2 id="to-time-heading" className="text-lg font-bold text-foreground mb-4">
           Decimal → hours &amp; minutes
