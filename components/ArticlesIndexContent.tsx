@@ -5,7 +5,7 @@ import Link from 'next/link';
 import PageChrome from '@/components/PageChrome';
 import SiteFooter from '@/components/SiteFooter';
 import type { ArticleCategory, ArticleLink } from '@/lib/articlesCatalog';
-import { Search, Filter, Clock, Target, Users, Briefcase } from 'lucide-react';
+import {Search, Filter, Clock, Target, Users, Briefcase, BookOpen} from 'lucide-react';
 
 type GroupedArticles = Record<ArticleCategory, ArticleLink[]>;
 
@@ -130,59 +130,24 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
   return (
     <PageChrome currentTool="articles" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       {/* Header */}
-      <header className="text-center mb-8 sm:mb-12">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-sm border border-slate-700 dark:border-slate-600">
-              {/* Book/Guides icon */}
-              <svg width="80" height="80" viewBox="0 0 80 80" className="w-12 sm:w-16 h-12 sm:h-16">
-                {/* Book cover */}
-                <rect x="20" y="15" width="40" height="50" rx="4" fill="white" stroke="#1e293b" strokeWidth="1" />
-                
-                {/* Book pages effect */}
-                <rect x="22" y="13" width="36" height="50" rx="3" fill="#f8fafc" stroke="#64748b" strokeWidth="0.5" opacity="0.7" />
-                <rect x="24" y="11" width="32" height="50" rx="2" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
-                
-                {/* Text lines */}
-                <path d="M28 25h24" stroke="#059669" strokeWidth="2" strokeLinecap="round" />
-                <path d="M28 32h24" stroke="#059669" strokeWidth="2" strokeLinecap="round" />
-                <path d="M28 39h18" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" />
-                
-                {/* Clock symbol on book */}
-                <circle cx="48" cy="48" r="8" fill="#0f172a" />
-                <circle cx="48" cy="48" r="7" fill="white" stroke="#1e293b" strokeWidth="0.5" />
-                <path d="M48 44v4l3 3" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="48" cy="48" r="1" fill="#1e293b" />
-                
-                {/* Mathematical operators as accent */}
-                <text x="32" y="55" textAnchor="middle" className="text-xs font-bold fill-emerald-600">
-                  +
-                </text>
-                <text x="40" y="55" textAnchor="middle" className="text-xs font-bold fill-red-500">
-                  =
-                </text>
-              </svg>
-            </div>
-          </div>
-          <div className="text-center sm:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold">
-              <span className="text-emerald-600 dark:text-emerald-400">Clock</span>{" "}
-              <span className="text-blue-600 dark:text-blue-400">Math</span>{" "}
-              <span className="text-slate-700 dark:text-slate-300">Guides</span>
-            </h1>
-            <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium">
-              Master every time scenario
-            </p>
-          </div>
-        </div>
-        <nav className="text-sm text-muted-foreground mb-6">
+      {/* Header — slim: brand lives in the nav; the page leads with what it is */}
+      <header className="mb-6 sm:mb-8">
+        <nav className="text-sm text-muted-foreground mb-3">
           <Link href="/" className="hover:text-primary transition-colors">
             ClockMath
           </Link>
           <span className="mx-2">›</span>
           <span>Guides</span>
         </nav>
+        <div className="flex items-center gap-3">
+          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
+            <BookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          </span>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">ClockMath Guides</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Practical guides for work hours, payroll time math, and timezones</p>
+          </div>
+        </div>
       </header>
 
       {/* Search and Filter Controls */}
@@ -294,7 +259,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
                         <div className="p-2 bg-white/80 dark:bg-slate-800/80 rounded-lg">
                           <CategoryIcon className="w-5 h-5" />
                         </div>
-                        <div className="text-xs px-2 py-1 bg-white/50 dark:bg-slate-800/50 rounded-full font-medium uppercase tracking-wide">
+                        <div className="text-xs px-2 py-1 bg-white/50 dark:bg-slate-800/50 rounded-full font-medium capitalize">
                           {article.category}
                         </div>
                       </div>
