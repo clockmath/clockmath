@@ -6,6 +6,13 @@ export interface ArticleLink {
   href: string;
   category: ArticleCategory;
   priority?: number;
+  /**
+   * Hrefs of the most relevant TOOL_LINKS entries for this article, most
+   * relevant first. RelatedArticles shows these instead of the generic
+   * category default (e.g. the stock-market guide points at the live
+   * market-hours tool, not just the timezone converter).
+   */
+  relatedTools?: string[];
 }
 
 export interface ToolLink {
@@ -23,6 +30,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/timezone-converter-family-calls',
     category: 'timezone',
     priority: 5,
+    relatedTools: ['/tools/timezone'],
   },
   {
     title: 'Remote Work Meeting Timezone Converter',
@@ -30,6 +38,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/timezone-converter-remote-work-meetings',
     category: 'timezone',
     priority: 5,
+    relatedTools: ['/tools/timezone'],
   },
   {
     title: 'Gaming Events Timezone Converter',
@@ -37,6 +46,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/timezone-converter-gaming-events',
     category: 'timezone',
     priority: 4,
+    relatedTools: ['/tools/timezone', '/tools/countdown'],
   },
   {
     title: 'Travel Timezone Converter',
@@ -44,6 +54,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/travel-timezone-converter',
     category: 'timezone',
     priority: 4,
+    relatedTools: ['/tools/timezone'],
   },
   {
     title: 'Stock Market Timezone Converter',
@@ -51,6 +62,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/stock-market-timezone-converter',
     category: 'timezone',
     priority: 3,
+    relatedTools: ['/tools/market-hours', '/tools/timezone'],
   },
   {
     title: 'Work Hours Calculator',
@@ -58,6 +70,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/work-hours-calculator',
     category: 'calculator',
     priority: 5,
+    relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
   },
   {
     title: 'Sleep Hours Calculator',
@@ -65,6 +78,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/sleep-hours-calculator',
     category: 'calculator',
     priority: 4,
+    relatedTools: ['/'],
   },
   {
     title: 'Overtime Hours Calculator',
@@ -72,6 +86,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/overtime-hours-calculator',
     category: 'calculator',
     priority: 4,
+    relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
   },
   {
     title: 'Study Time Calculator',
@@ -79,6 +94,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/study-time-calculator',
     category: 'calculator',
     priority: 3,
+    relatedTools: ['/'],
   },
   {
     title: 'Time Between Dates Calculator',
@@ -86,6 +102,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/time-between-dates-calculator',
     category: 'calculator',
     priority: 3,
+    relatedTools: ['/'],
   },
   {
     title: 'Hours Calculator Online',
@@ -93,6 +110,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/hours-calculator-online',
     category: 'calculator',
     priority: 2,
+    relatedTools: ['/tools/timesheet'],
   },
   {
     title: 'Shift Work Hours Calculator',
@@ -100,6 +118,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/shift-work-hours-calculator',
     category: 'calculator',
     priority: 4,
+    relatedTools: ['/tools/timesheet'],
   },
   {
     title: 'Freelancer Time Tracking',
@@ -107,6 +126,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/freelancer-time-tracking',
     category: 'calculator',
     priority: 4,
+    relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
   },
   {
     title: 'Timesheet Calculator',
@@ -114,6 +134,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/timesheet-calculator',
     category: 'calculator',
     priority: 4,
+    relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
   },
 ];
 
@@ -131,6 +152,34 @@ export const TOOL_LINKS: ToolLink[] = [
     href: '/tools/timezone',
     category: 'timezone',
     priority: 5,
+  },
+  {
+    title: 'Work Hours & Timesheet Calculator',
+    description: 'Add up shifts with breaks, decimal hours, and gross pay',
+    href: '/tools/timesheet',
+    category: 'calculator',
+    priority: 5,
+  },
+  {
+    title: 'Stock Market Hours',
+    description: 'Live open/closed status for major exchanges in your timezone',
+    href: '/tools/market-hours',
+    category: 'timezone',
+    priority: 4,
+  },
+  {
+    title: 'Decimal Hours Converter',
+    description: 'Minutes to decimal hours (and back) with the payroll chart',
+    href: '/tools/decimal-hours',
+    category: 'calculator',
+    priority: 4,
+  },
+  {
+    title: 'Countdown Timer',
+    description: 'Count down to any date and share it',
+    href: '/tools/countdown',
+    category: 'productivity',
+    priority: 3,
   },
 ];
 

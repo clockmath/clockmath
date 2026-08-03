@@ -68,8 +68,15 @@ export default function RelatedArticles({
     return rotate(related.sort(byPriority)).slice(0, maxArticles);
   };
 
-  // Get cross-links to tools
+  // Get cross-links to tools: the article's curated relatedTools first,
+  // falling back to a generic per-category default.
   const getRelatedTools = (): ToolLink[] => {
+    const current = ARTICLE_LINKS.find(article => article.href === currentPath);
+    if (current?.relatedTools?.length) {
+      return current.relatedTools
+        .map(href => TOOL_LINKS.find(link => link.href === href))
+        .filter((link): link is ToolLink => Boolean(link));
+    }
     if (category === 'timezone') {
       const tool = TOOL_LINKS.find(link => link.href === '/tools/timezone');
       return tool ? [tool] : TOOL_LINKS.slice(0, 1);
