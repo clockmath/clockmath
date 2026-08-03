@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Time Between Two Dates Calculator – Free Online Tool",
     description: "Quickly calculate the time between two dates in days, hours, and minutes. ClockMath makes planning deadlines and events easy.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

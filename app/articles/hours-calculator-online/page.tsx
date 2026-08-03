@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hours Calculator Online – Faster Than Manual Math",
     description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

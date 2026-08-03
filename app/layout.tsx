@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "ClockMath",
     images: [
       {
-        url: "/og.png",            // becomes https://clockmath.com/og.png
+        url: "/og-v2.png",            // becomes https://clockmath.com/og-v2.png
         width: 1200,
         height: 630,
         alt: "ClockMath — Time Between Two Times",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

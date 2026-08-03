@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Shift Work Hours Calculator – Track Overnight & Rotating Shifts",
     description: "Calculate shift work hours across midnight, rotating schedules, and irregular patterns. Free tool for nurses, factory workers, and night shift employees.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

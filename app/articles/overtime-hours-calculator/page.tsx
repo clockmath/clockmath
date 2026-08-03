@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Overtime Hours Calculator – Fast & Simple Online Tool",
     description: "Stop guessing your overtime pay. Use ClockMath's elapsed time calculator to instantly find total hours worked and overtime hours.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,

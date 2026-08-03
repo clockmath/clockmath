@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Timesheet Calculator – Calculate Weekly Hours for Payroll",
     description: "Calculate timesheet totals for weekly or bi-weekly pay periods. Get decimal hours for payroll systems and accurate totals every time.",
-    images: ["/og.png"],
+    images: ["/og-v2.png"],
   },
   robots: {
     index: true,
