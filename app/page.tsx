@@ -571,6 +571,21 @@ export default function ClockMathPage() {
                   )}
                 </div>
 
+                {/* Intent-matched nudge: a duration result showing decimal hours
+                    is usually someone doing payroll/timesheet math */}
+                <div className="mt-4 flex items-center gap-2.5 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-3.5">
+                  <svg className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  <p className="text-sm text-foreground m-0">
+                    Adding up a work week?{" "}
+                    <Link href="/tools/timesheet/" className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+                      Total your shifts in the timesheet calculator
+                    </Link>
+                    {" "}— breaks, overnight shifts, and gross pay included.
+                  </p>
+                </div>
+
                 {/* Contextual cross-promo: nudge engaged users toward the other tools */}
                 <div className="mt-4 bg-card/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-4 border border-border/50 dark:border-slate-700/50">
                   <p className="text-sm text-muted-foreground leading-relaxed">

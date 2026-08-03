@@ -68,6 +68,9 @@ export default function SiteFooter() {
           <Link href="/tools/decimal-hours" className="hover:text-foreground underline underline-offset-4">
             Decimal Hours Converter
           </Link>
+          <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
+            All Tools
+          </Link>
         </nav>
 
         {/* Site + legal links */}

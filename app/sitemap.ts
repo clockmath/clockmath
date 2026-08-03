@@ -84,7 +84,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority = 1.0;
       changeFreq = 'weekly';
       lastmod = new Date().toISOString().split('T')[0];
-    } else if (page.startsWith('/tools/')) {
+    } else if (page === '/tools' || page.startsWith('/tools/')) {
       priority = 0.9;
       changeFreq = 'monthly';
     } else if (page.startsWith('/countdown/')) {
