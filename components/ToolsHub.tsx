@@ -117,11 +117,8 @@ export default function ToolsHub() {
       <JsonLd data={getItemListSchema()} />
 
       <header className="text-center mb-8 sm:mb-10">
-        <h1 className="text-3xl sm:text-4xl font-bold">
-          <span className="text-emerald-600 dark:text-emerald-400">Free Time</span>{' '}
-          <span className="text-blue-600 dark:text-blue-400">&amp; Date Tools</span>
-        </h1>
-        <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium mt-1">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Six calculators. No signup, no ads in your way — everything runs in your browser.
         </p>
         <nav className="text-sm text-muted-foreground mt-4">

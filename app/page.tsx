@@ -408,39 +408,12 @@ export default function ClockMathPage() {
         })}
       />
       <div className="space-y-8 pb-24">
-        {/* Header */}
-        <header className="text-center mb-8 sm:mb-12">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-              <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-lg border border-slate-700 dark:border-slate-600">
-                {/* Clock Calculator Icon */}
-                <svg width="80" height="80" viewBox="0 0 80 80" className="w-12 sm:w-16 h-12 sm:h-16">
-                  <circle cx="40" cy="40" r="39.5" fill="white" stroke="#1e293b" strokeWidth="1"></circle>
-                  <text x="40" y="15" textAnchor="middle" className="text-xs font-bold fill-emerald-600">+</text>
-                  <text x="65" y="45" textAnchor="middle" className="text-xs font-bold fill-emerald-600">×</text>
-                  <text x="40" y="70" textAnchor="middle" className="text-xs font-bold fill-red-500">÷</text>
-                  <text x="15" y="45" textAnchor="middle" className="text-xs font-bold fill-red-500">−</text>
-                  <line x1="40" y1="40" x2="40" y2="25" stroke="#059669" strokeWidth="2" strokeLinecap="round"></line>
-                  <line x1="40" y1="40" x2="52" y2="40" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round"></line>
-                  <circle cx="40" cy="40" r="1.5" fill="#1e293b"></circle>
-                </svg>
-              </div>
-            </div>
-            <div className="text-center sm:text-left">
-              <h1 className="text-3xl sm:text-4xl font-bold">
-                <span className="text-emerald-600 dark:text-emerald-400">Clock</span>{" "}
-                <span className="text-blue-600 dark:text-blue-400">Math</span>
-                {/* Keyword context for the page's single H1 without changing the visual brand */}
-                <span className="sr-only"> — Time Duration Calculator</span>
-              </h1>
-              <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium">
-                Time Calculator
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground mb-6">
-            Free online time &amp; date calculators
+        {/* Header — slim: the nav already carries the brand, so the page
+            leads with what the page is. Reclaims ~350px above the fold. */}
+        <header className="text-center mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Time Duration Calculator</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
+            The exact time between two times or dates — free, no signup
           </p>
         </header>
 

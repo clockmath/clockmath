@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { Percent } from 'lucide-react';
 import { DecimalHoursTool, minutesToDecimal } from '@/components/DecimalHoursTool';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
@@ -70,44 +71,24 @@ export default function DecimalHoursPage() {
       />
       <JsonLd data={getFAQPageSchema(FAQS)} />
 
-      {/* Header */}
-      <header className="text-center mb-8 sm:mb-12">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-            <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-lg border border-slate-700 dark:border-slate-600">
-              {/* Clock-to-decimal icon, matching the sibling tool icons */}
-              <svg width="80" height="80" viewBox="0 0 80 80" className="w-12 sm:w-16 h-12 sm:h-16">
-                <circle cx="40" cy="40" r="39.5" fill="white" stroke="#1e293b" strokeWidth="1" />
-                <circle cx="26" cy="34" r="14" fill="none" stroke="#059669" strokeWidth="2.5" />
-                <line x1="26" y1="34" x2="26" y2="26" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="26" y1="34" x2="32" y2="34" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" />
-                <text x="54" y="42" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#2563eb" fontFamily="monospace">
-                  .75
-                </text>
-                <path d="M40 52 L52 58" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" markerEnd="none" />
-                <path d="M48 60 L53 58.5 L50 54" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <div className="text-center sm:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold">
-              <span className="text-emerald-600 dark:text-emerald-400">Decimal Hours</span>{' '}
-              <span className="text-blue-600 dark:text-blue-400">Converter</span>
-            </h1>
-            <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium">
-              Minutes ↔ decimal, for timesheets and payroll
-            </p>
-          </div>
-        </div>
-
-        <nav className="text-sm text-muted-foreground mb-6">
+      {/* Header — slim: brand lives in the nav; the page leads with what it is */}
+      <header className="mb-6 sm:mb-8">
+        <nav className="text-sm text-muted-foreground mb-3">
           <Link href="/" className="hover:text-primary transition-colors">
             ClockMath
           </Link>
           <span className="mx-2">›</span>
           <span>Decimal Hours</span>
         </nav>
+        <div className="flex items-center gap-3">
+          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
+            <Percent className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          </span>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Decimal Hours Converter</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Minutes to decimal and back, for timesheets and payroll</p>
+          </div>
+        </div>
       </header>
 
       <DecimalHoursTool className="mb-10" />
