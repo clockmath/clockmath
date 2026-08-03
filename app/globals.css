@@ -247,3 +247,14 @@
   color: var(--foreground);
   font-weight: 600;
 }
+
+/* Consistent keyboard focus treatment: buttons and links get an emerald
+   focus-visible ring (mouse clicks don't trigger it). Inputs keep their own
+   focus:ring styles. */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
