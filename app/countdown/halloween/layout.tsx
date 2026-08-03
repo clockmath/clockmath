@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: 'Halloween Countdown — How Many Days Until Halloween? | ClockMath',
+  title: 'How Many Days Until Halloween? Live Countdown | ClockMath',
   description:
     'Live countdown to Halloween (October 31). See exactly how many days, hours, minutes, and seconds are left until Halloween this year.',
   path: '/countdown/halloween',

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: 'New Year Countdown — How Many Days Until New Year? | ClockMath',
+  title: 'How Many Days Until New Year? Live Countdown | ClockMath',
   description:
     'Live countdown to New Year (January 1). See exactly how many days, hours, minutes, and seconds are left until the new year.',
   path: '/countdown/new-year',

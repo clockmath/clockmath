@@ -62,6 +62,7 @@ export default function ClockMathPage() {
     minutes: number
     seconds: number
   } | null>(null);
+  const [showBreakdown, setShowBreakdown] = useState(false);
   const [sumResult, setSumResult] = useState<{
     total: string
     detailed: {
@@ -557,17 +558,34 @@ export default function ClockMathPage() {
                   </h3>
                   
                   {/* Main duration (hours and minutes) - largest and centered */}
-                  <p className="text-4xl font-bold text-emerald-900 dark:text-emerald-100 font-mono mb-4">
+                  <p className="text-4xl font-bold text-emerald-900 dark:text-emerald-100 font-mono mb-2">
                     {result}
                   </p>
-                  
-                  {/* Detailed breakdown - smaller, for interest/fun */}
+
+                  {/* The payroll-useful conversions stay inline; the full
+                      years→seconds breakdown collapses behind a toggle after
+                      user feedback that it made simple results feel busy. */}
                   {currentDetailedResult && (
-                    <DetailedDurationBreakdown 
-                      detailedResult={currentDetailedResult}
-                      variant="primary"
-                      size="large"
-                    />
+                    <>
+                      <p className="text-sm text-emerald-800/80 dark:text-emerald-200/80 mb-2">
+                        = {currentDetailedResult.hours.toFixed(2)} decimal hours ·{' '}
+                        {Math.round(currentDetailedResult.minutes).toLocaleString()} minutes
+                      </p>
+                      <button
+                        onClick={() => setShowBreakdown((prev) => !prev)}
+                        aria-expanded={showBreakdown}
+                        className="text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline mb-2"
+                      >
+                        {showBreakdown ? 'Hide details' : 'Show details'}
+                      </button>
+                      {showBreakdown && (
+                        <DetailedDurationBreakdown
+                          detailedResult={currentDetailedResult}
+                          variant="primary"
+                          size="large"
+                        />
+                      )}
+                    </>
                   )}
                 </div>
 
