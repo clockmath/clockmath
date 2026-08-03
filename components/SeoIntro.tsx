@@ -41,7 +41,7 @@ export default function SeoIntro() {
     <>
       <JsonLd data={getFAQPageSchema(FAQS)} />
 
-      <section aria-labelledby="about-heading" className="max-w-3xl mx-auto mb-10">
+      <section aria-labelledby="about-heading" className="max-w-3xl mx-auto mb-section">
         <h2
           id="about-heading"
           className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3"
@@ -77,7 +77,7 @@ export default function SeoIntro() {
         </p>
       </section>
 
-      <section aria-labelledby="faq-heading" className="max-w-3xl mx-auto mb-10">
+      <section aria-labelledby="faq-heading" className="max-w-3xl mx-auto mb-section">
         <h2
           id="faq-heading"
           className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4"
@@ -97,7 +97,7 @@ export default function SeoIntro() {
         </div>
       </section>
 
-      <section aria-labelledby="tools-heading" className="max-w-3xl mx-auto mb-10">
+      <section aria-labelledby="tools-heading" className="max-w-3xl mx-auto mb-section">
         <h2
           id="tools-heading"
           className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3"

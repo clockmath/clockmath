@@ -16,7 +16,7 @@ const links = [
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 py-10">
       <div className="w-full max-w-lg text-center bg-card/70 dark:bg-slate-800/60 rounded-2xl p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
         <div className="text-6xl font-extrabold tracking-tight">
           <span className="text-emerald-600 dark:text-emerald-400">4</span>

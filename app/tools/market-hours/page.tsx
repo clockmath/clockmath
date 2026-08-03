@@ -95,10 +95,10 @@ export default function MarketHoursPage() {
       </header>
 
       {/* Live market grid */}
-      <MarketHoursTool className="mb-10" />
+      <MarketHoursTool className="mb-section" />
 
       {/* SEO / help content */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           World stock market trading hours, converted for you
         </h2>
@@ -126,7 +126,7 @@ export default function MarketHoursPage() {
       </section>
 
       {/* FAQ */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4">
           Frequently asked questions
         </h2>

@@ -115,10 +115,10 @@ export default function TimesheetPage() {
         </div>
       </header>
 
-      <TimesheetTool className="mb-8" />
+      <TimesheetTool className="mb-section" />
 
       {/* Supporting content — static JSX, fully server-rendered for crawlers */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           How to use the work hours calculator
         </h2>
@@ -147,7 +147,7 @@ export default function TimesheetPage() {
         </p>
       </section>
 
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           A worked payroll example
         </h2>
@@ -171,7 +171,7 @@ export default function TimesheetPage() {
         </p>
       </section>
 
-      <section id="decimal-hours" className="max-w-3xl mx-auto mb-10">
+      <section id="decimal-hours" className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           Minutes to decimal hours
         </h2>
@@ -212,7 +212,7 @@ export default function TimesheetPage() {
       </section>
 
       {/* FAQ */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4">
           Frequently asked questions
         </h2>
@@ -230,7 +230,7 @@ export default function TimesheetPage() {
       </section>
 
       {/* Related tools & guides */}
-      <section className="max-w-3xl mx-auto mb-10">
+      <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           Related tools and guides
         </h2>

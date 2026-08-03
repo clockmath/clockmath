@@ -408,7 +408,7 @@ export default function ClockMathPage() {
           url: 'https://clockmath.com/',
         })}
       />
-      <div className="space-y-8 pb-24">
+      <div className="space-y-section pb-10">
         {/* Header — slim: the nav already carries the brand, so the page
             leads with what the page is. Reclaims ~350px above the fold. */}
         <header className="text-center mb-2">
@@ -422,7 +422,7 @@ export default function ClockMathPage() {
         {/* No min-height: the card hugs its content (a fixed 600px left a large
             dead area below the form before any result existed) */}
         <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <div className="grid gap-6 sm:gap-8">
+          <div className="grid gap-6">
 
             {/* Time Format Toggle */}
             <div className="flex items-center justify-center">
@@ -530,7 +530,7 @@ export default function ClockMathPage() {
             {/* Result */}
             {result && (
               <div className="text-center">
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-5 sm:p-6 border border-emerald-200 dark:border-emerald-800">
                   <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-4">
                     Duration
                   </h3>
@@ -611,7 +611,7 @@ export default function ClockMathPage() {
 
         {/* History */}
         {history.length > 0 && (
-          <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+          <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-bold text-foreground dark:text-slate-100">
@@ -799,7 +799,7 @@ export default function ClockMathPage() {
 
         {/* Sum Result */}
         {sumResult && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-6 shadow-sm border border-blue-200 dark:border-blue-800 animate-in fade-in-50 duration-500">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-5 sm:p-6 shadow-sm border border-blue-200 dark:border-blue-800 animate-in fade-in-50 duration-500">
             <div className="text-center">
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
                 Sum of Selected Calculations

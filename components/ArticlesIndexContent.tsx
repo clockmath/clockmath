@@ -151,7 +151,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
       </header>
 
       {/* Search and Filter Controls */}
-      <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-8">
+      <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-8">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Search */}
           <div className="lg:col-span-2">
@@ -223,7 +223,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
       {/* Articles Grid */}
       <section className="mb-8">
         {filteredArticles.length === 0 ? (
-          <div className="text-center py-12 bg-card/70 dark:bg-slate-800/70 rounded-2xl border border-border/50 dark:border-slate-700/50">
+          <div className="text-center py-10 bg-card/70 dark:bg-slate-800/70 rounded-2xl border border-border/50 dark:border-slate-700/50">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-foreground dark:text-slate-100 mb-2">
               No guides found
@@ -253,7 +253,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
                   href={article.href}
                   className="group block h-full"
                 >
-                  <div className={`h-full p-6 rounded-xl bg-gradient-to-br ${categoryColors} border hover:shadow-sm transition-all duration-200 hover:scale-105`}>
+                  <div className={`h-full p-5 sm:p-6 rounded-xl bg-gradient-to-br ${categoryColors} border hover:shadow-sm transition-all duration-200 hover:scale-105`}>
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/80 dark:bg-slate-800/80 rounded-lg">
@@ -293,7 +293,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
       </section>
 
       {/* Contact CTA */}
-      <section className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+      <section className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-5 sm:p-6 border border-emerald-200 dark:border-emerald-800">
         <div className="text-center">
           <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
             Can&apos;t find what you&apos;re looking for?

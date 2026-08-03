@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-8 sm:mt-12">
+    <footer className="mt-8 sm:mt-section">
       <div className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 text-center">
         <p className="text-sm text-muted-foreground dark:text-slate-400 mb-4">
           Find Clock Math useful? Support the development!

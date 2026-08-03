@@ -3,6 +3,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ---------------------------------------------------------------------------
+   Spacing scale (the sanctioned palette — see scripts/spacing-audit.js):
+   - micro   1 / 1.5 / 2 / 3   inside controls, chips, table cells, icon gaps
+   - block   4 / 6             between elements within a card or section
+   - cards   p-4 sm:p-5 (compact) · p-5 sm:p-6 (standard) · p-6 sm:p-8 (hero,
+             one per page max)
+   - section mb-section (2.5rem) between page-level sections; page headers
+             use mb-6 sm:mb-8
+   Values outside this palette should be exceptional and justified.
+--------------------------------------------------------------------------- */
+@theme {
+  --spacing-section: 2.5rem;
+}
+
+
 :root {
   /* Updated color tokens to match design brief */
   --background: #ffffff;

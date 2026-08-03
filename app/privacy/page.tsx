@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 sm:py-10 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-8">
           <Link 
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Content */}
-        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
+        <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 md:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
           <div className="prose prose-slate dark:prose-invert max-w-none">
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
               <strong>Effective Date:</strong> January 15, 2025

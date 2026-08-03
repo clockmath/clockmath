@@ -70,7 +70,7 @@ export default function TimezonePage() {
 
         {/* Tools Navigation */}
         {/* Timezone Converter */}
-        <TimezoneConverter className="mb-8" />
+        <TimezoneConverter className="mb-section" />
 
 
         <SiteFooter />
