@@ -149,11 +149,21 @@ export function EventCountdown({
         {dateLabel}
       </p>
 
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3" aria-live="off">
+      {/* 5 tiles fit one row at 390px with min-w-56 (min-w-64 overflowed by
+          exactly one tile, orphaning SECONDS); 6 tiles (year+ events) wrap as
+          a balanced 3×2 grid on phones instead of 5+1. */}
+      <div
+        className={
+          tiles.length > 5
+            ? 'grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-3'
+            : 'flex flex-wrap justify-center gap-2 sm:gap-3'
+        }
+        aria-live="off"
+      >
         {tiles.map((unit) => (
           <div
             key={unit.label}
-            className="flex-1 min-w-[64px] max-w-[120px] bg-white dark:bg-slate-900/60 rounded-xl py-4 sm:py-5 border border-slate-200 dark:border-slate-700/60 shadow-sm"
+            className="flex-1 min-w-[56px] sm:max-w-[120px] bg-white dark:bg-slate-900/60 rounded-xl py-4 sm:py-5 border border-slate-200 dark:border-slate-700/60 shadow-sm"
           >
             <div className="text-2xl sm:text-4xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400" suppressHydrationWarning>
               {unit.value.toLocaleString()}

@@ -407,7 +407,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             return (
               <div
                 key={shift.id}
-                className="rounded-xl border border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40 p-3 flex flex-col gap-2 sm:flex-row sm:items-end"
+                className="relative rounded-xl border border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40 p-3 flex flex-col gap-2 sm:flex-row sm:items-end"
               >
                 <div className="sm:w-36">
                   <label className="block text-xs text-muted-foreground mb-1">Date</label>
@@ -443,7 +443,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                   onClick={() => removeShift(shift.id)}
                   aria-label={`Remove shift ${i + 1}`}
                   disabled={shifts.length === 1}
-                  className="shrink-0 self-center p-2.5 text-muted-foreground hover:text-destructive disabled:opacity-30 disabled:pointer-events-none rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
+                  className="absolute top-2 right-2 sm:static sm:self-center shrink-0 p-2.5 text-muted-foreground hover:text-destructive disabled:opacity-30 disabled:pointer-events-none rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
