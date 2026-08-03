@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
+import { RollingNumber } from '@/components/RollingNumber';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
@@ -312,7 +313,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
               className="flex-1 min-w-[64px] max-w-[120px] bg-white dark:bg-slate-900/60 rounded-xl py-4 sm:py-5 border border-slate-200 dark:border-slate-700/60 shadow-sm"
             >
               <div className="text-2xl sm:text-4xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">
-                {unit.value.toLocaleString()}
+                <RollingNumber value={unit.value.toLocaleString()} />
               </div>
               <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mt-1">
                 {unit.label}

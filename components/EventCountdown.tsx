@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { RollingNumber } from '@/components/RollingNumber';
 import { intervalToDuration } from 'date-fns';
 
 interface EventCountdownProps {
@@ -166,7 +167,7 @@ export function EventCountdown({
             className="flex-1 min-w-[56px] sm:max-w-[120px] bg-white dark:bg-slate-900/60 rounded-xl py-4 sm:py-5 border border-slate-200 dark:border-slate-700/60 shadow-sm"
           >
             <div className="text-2xl sm:text-4xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400" suppressHydrationWarning>
-              {unit.value.toLocaleString()}
+              <RollingNumber value={unit.value.toLocaleString()} />
             </div>
             <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mt-1">
               {unit.label}

@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
+import { RollingNumber } from '@/components/RollingNumber';
 
 interface TimesheetToolProps {
   className?: string;
@@ -436,7 +437,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                 </div>
                 <div className="sm:w-20 text-center">
                   <div className="text-xs text-muted-foreground mb-1 sm:mb-2">Hours</div>
-                  <div className="font-bold tabular-nums text-emerald-700 dark:text-emerald-400">{decimalHours(mins)}</div>
+                  <div className="font-bold tabular-nums text-emerald-700 dark:text-emerald-400"><RollingNumber value={decimalHours(mins)} /></div>
                   <div className="text-[11px] text-muted-foreground">{hhmm(mins)}</div>
                 </div>
                 <button
@@ -579,7 +580,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                 </td>
                 <td className="px-3 py-2.5" />
                 <td className="px-3 py-2.5 text-right tabular-nums text-emerald-700 dark:text-emerald-400 text-base">
-                  {decimalHours(totalMins)}
+                  <RollingNumber value={decimalHours(totalMins)} />
                 </td>
                 {gross != null && (
                   <td className="px-3 py-2.5 text-right tabular-nums text-base">${gross.toFixed(2)}</td>

@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { Lightbulb } from "lucide-react"
+import { RollingNumber } from "@/components/RollingNumber"
 import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import PageChrome from "@/components/PageChrome"
@@ -537,7 +538,7 @@ export default function ClockMathPage() {
                   
                   {/* Main duration (hours and minutes) - largest and centered */}
                   <p className="text-4xl font-bold text-emerald-900 dark:text-emerald-100 font-mono mb-2">
-                    {result}
+                    <RollingNumber value={result} />
                   </p>
 
                   {/* The payroll-useful conversions stay inline; the full
