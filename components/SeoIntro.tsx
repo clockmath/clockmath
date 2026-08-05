@@ -130,6 +130,12 @@ export default function SeoIntro() {
             — minutes to decimal (and back) with the full payroll chart
           </li>
           <li>
+            <Link href="/tools/sleep" className="text-primary hover:text-primary/80 font-semibold">
+              Sleep calculator
+            </Link>{' '}
+            — hours slept and sleep-cycle bedtimes for any wake-up time
+          </li>
+          <li>
             <Link href="/tools/countdown" className="text-primary hover:text-primary/80 font-semibold">
               Countdown timer
             </Link>{' '}

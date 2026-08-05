@@ -48,7 +48,7 @@ export default function SleepHoursCalculatorPage() {
 
       <h2>Quick Sleep Calculation</h2>
       <p>
-        Instead of guessing, try our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator</Link>. Enter your bedtime and wake-up time, and you'll instantly know how long you slept. The calculator automatically handles overnight periods, so you don't need to worry about crossing midnight.
+        Instead of guessing, try our <Link href="/tools/sleep" className="text-emerald-600 hover:text-emerald-500 font-medium">sleep calculator</Link>. Enter your bedtime and wake-up time, and you'll instantly know how long you slept — overnight is handled automatically, and it can also suggest bedtimes that line up with 90-minute sleep cycles.
       </p>
 
       <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
@@ -77,7 +77,7 @@ export default function SleepHoursCalculatorPage() {
 
       <h2>Conclusion</h2>
       <p>
-        Understanding your real sleep patterns starts with accurate calculation. Use ClockMath's <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> to see exactly how much rest you got. Better sleep tracking leads to better sleep habits, and better sleep leads to better days.
+        Understanding your real sleep patterns starts with accurate calculation. Use ClockMath's <Link href="/tools/sleep" className="text-emerald-600 hover:text-emerald-500 font-medium">sleep calculator</Link> to see exactly how much rest you got. Better sleep tracking leads to better sleep habits, and better sleep leads to better days.
       </p>
     </ArticleLayout>
   );
