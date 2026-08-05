@@ -27,13 +27,18 @@ export function toMinutes(t: string): number | null {
   return h * 60 + m;
 }
 
-/** Minutes slept from bed → wake, crossing midnight when needed */
+/**
+ * Minutes slept from bed → wake, crossing midnight when needed.
+ * Equal times return null — a 0-minute/24-hour reading is an input error,
+ * not an answer (the UI prompts to adjust instead).
+ */
 export function sleepDuration(bed: string, wake: string): number | null {
   const b = toMinutes(bed);
   const w = toMinutes(wake);
   if (b == null || w == null) return null;
+  if (b === w) return null;
   let diff = w - b;
-  if (diff <= 0) diff += 1440;
+  if (diff < 0) diff += 1440;
   return diff;
 }
 
@@ -188,7 +193,11 @@ export function SleepTool({ className = '' }: SleepToolProps) {
             className="text-center rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 py-4 px-3"
           >
             {slept === null ? (
-              <p className="text-sm text-muted-foreground">Enter your bed and wake times</p>
+              <p className="text-sm text-muted-foreground">
+                {toMinutes(bedTime) !== null && toMinutes(bedTime) === toMinutes(wakeTime)
+                  ? 'Bed and wake times are the same — adjust one to see your sleep duration.'
+                  : 'Enter your bed and wake times'}
+              </p>
             ) : (
               <>
                 <p className="text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
