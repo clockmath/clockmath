@@ -15,6 +15,7 @@ import {
   CandlestickChart,
   Hourglass,
   Percent,
+  Bed,
   BookOpen,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
@@ -53,6 +54,12 @@ const TILES = [
     title: 'Decimal Hours Converter',
     description: 'Minutes to decimal (and back) with the full payroll chart',
     icon: Percent,
+  },
+  {
+    href: '/tools/sleep',
+    title: 'Sleep Calculator',
+    description: 'Hours slept, plus bedtimes that fit 90-minute sleep cycles',
+    icon: Bed,
   },
   {
     href: '/tools/countdown',
@@ -119,7 +126,7 @@ export default function ToolsHub() {
       <header className="text-center mb-8 sm:mb-section">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
-          Six calculators. No signup, no ads in your way — everything runs in your browser.
+          Seven calculators. No signup, no ads in your way — everything runs in your browser.
         </p>
         <nav className="text-sm text-muted-foreground mt-4">
           <Link href="/" className="hover:text-primary transition-colors">

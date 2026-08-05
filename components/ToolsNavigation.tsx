@@ -12,6 +12,7 @@ import {
   CandlestickChart,
   BookOpen,
   Percent,
+  Bed,
   LayoutGrid,
   ChevronDown,
 } from 'lucide-react'
@@ -83,6 +84,13 @@ const moreItems: NavItem[] = [
     href: '/tools/decimal-hours',
     icon: <Percent className="w-4 h-4 shrink-0" />,
   },
+  {
+    id: 'sleep',
+    label: 'Sleep Calculator',
+    shortLabel: 'Sleep',
+    href: '/tools/sleep',
+    icon: <Bed className="w-4 h-4 shrink-0" />,
+  },
 ]
 
 interface ToolsNavigationProps {
@@ -142,6 +150,7 @@ export default function ToolsNavigation({
     pathname.startsWith('/tools/timesheet') ? 'timesheet' :
     pathname.startsWith('/tools/market-hours') ? 'market-hours' :
     pathname.startsWith('/tools/decimal-hours') ? 'decimal-hours' :
+    pathname.startsWith('/tools/sleep') ? 'sleep' :
     pathname === '/tools' ? 'tools' :
     pathname.startsWith('/articles') ? 'articles' :
     pathname.startsWith('/countdown') ? 'countdown' :

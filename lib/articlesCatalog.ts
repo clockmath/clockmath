@@ -78,7 +78,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/sleep-hours-calculator',
     category: 'calculator',
     priority: 4,
-    relatedTools: ['/'],
+    relatedTools: ['/tools/sleep', '/'],
   },
   {
     title: 'Overtime Hours Calculator',
@@ -171,6 +171,13 @@ export const TOOL_LINKS: ToolLink[] = [
     title: 'Decimal Hours Converter',
     description: 'Minutes to decimal hours (and back) with the payroll chart',
     href: '/tools/decimal-hours',
+    category: 'calculator',
+    priority: 4,
+  },
+  {
+    title: 'Sleep Calculator',
+    description: 'Hours slept and sleep-cycle bedtimes for any wake-up time',
+    href: '/tools/sleep',
     category: 'calculator',
     priority: 4,
   },
