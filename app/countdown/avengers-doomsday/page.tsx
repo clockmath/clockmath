@@ -11,6 +11,7 @@ export default function AvengersDoomsdayCountdownPage() {
     <EventPage
       heading={'Avengers: Doomsday'}
       tagline="Time until Avengers: Doomsday hits theaters"
+      lastUpdated="2026-07-31"
       breadcrumb="Avengers: Doomsday"
       target={RELEASE}
       countdownTitle="Avengers: Doomsday"

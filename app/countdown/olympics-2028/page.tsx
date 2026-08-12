@@ -10,6 +10,7 @@ export default function Olympics2028CountdownPage() {
     <EventPage
       heading={'LA 2028 Olympics Countdown'}
       tagline="Time until the 2028 Summer Olympics"
+      lastUpdated="2026-08-04"
       breadcrumb="LA 2028 Olympics"
       target={LA28_OPENING}
       countdownTitle="the 2028 Olympics"

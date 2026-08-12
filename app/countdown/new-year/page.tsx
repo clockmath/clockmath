@@ -7,6 +7,7 @@ export default function NewYearCountdownPage() {
     <EventPage
       heading={'New Year Countdown'}
       tagline="How many days until the New Year?"
+      lastUpdated="2026-08-03"
       breadcrumb="New Year"
       recurring={{ month: 0, day: 1 }}
       countdownTitle="New Year"

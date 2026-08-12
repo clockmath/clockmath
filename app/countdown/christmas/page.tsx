@@ -7,6 +7,7 @@ export default function ChristmasCountdownPage() {
     <EventPage
       heading={'Christmas Countdown'}
       tagline="How many days until Christmas?"
+      lastUpdated="2026-08-03"
       breadcrumb="Christmas"
       recurring={{ month: 11, day: 25 }}
       countdownTitle="Christmas"

@@ -7,6 +7,7 @@ export default function WeekendCountdownPage() {
     <EventPage
       heading={'Weekend Countdown'}
       tagline="How long until the weekend?"
+      lastUpdated="2026-08-03"
       breadcrumb="Weekend"
       weekly={{ weekday: 6, spanDays: 2 }}
       countdownTitle="the weekend"

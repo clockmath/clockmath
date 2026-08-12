@@ -7,6 +7,7 @@ export default function HalloweenCountdownPage() {
     <EventPage
       heading={'Halloween Countdown'}
       tagline="How many days until Halloween?"
+      lastUpdated="2026-08-03"
       breadcrumb="Halloween"
       recurring={{ month: 9, day: 31 }}
       countdownTitle="Halloween"

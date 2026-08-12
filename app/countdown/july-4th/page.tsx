@@ -7,6 +7,7 @@ export default function July4thCountdownPage() {
     <EventPage
       heading={'4th of July Countdown'}
       tagline="How many days until Independence Day?"
+      lastUpdated="2026-08-03"
       breadcrumb="4th of July"
       recurring={{ month: 6, day: 4 }}
       countdownTitle="the 4th of July"
