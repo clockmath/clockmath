@@ -8,13 +8,16 @@ interface InlineTimePickerProps {
   is24h: boolean;
   placeholder?: string;
   className?: string;
+  /** Accessible field name (e.g. "Start time") — announced with the value. */
+  ariaLabel?: string;
 }
 
 export function InlineTimePicker({ 
   value, 
   onChange, 
   is24h,
-  className = ""
+  className = "",
+  ariaLabel,
 }: InlineTimePickerProps) {
   // Parse initial value for proper initialization
   const parseInitialValue = (val: string) => {
@@ -64,6 +67,20 @@ export function InlineTimePicker({
   const [, setIsInputMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const wasOpenRef = useRef(false);
+
+  // Return keyboard focus to the trigger when the popup closes (Escape,
+  // Cancel, or Confirm) so keyboard users aren't dropped at the body.
+  useEffect(() => {
+    if (wasOpenRef.current && !isOpen) {
+      const active = document.activeElement;
+      if (!active || active === document.body || containerRef.current?.contains(active)) {
+        triggerRef.current?.focus();
+      }
+    }
+    wasOpenRef.current = isOpen;
+  }, [isOpen]);
 
   // Parse current time on mount or when value changes
   useEffect(() => {
@@ -341,6 +358,10 @@ export function InlineTimePicker({
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Time Input Button */}
       <button
+        ref={triggerRef}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-label={`${ariaLabel ? ariaLabel + ', ' : ''}${timeInput || formatDisplayTime()}`}
         onClick={() => {
           setIsOpen(!isOpen);
           // If opening, focus THIS picker's own input (scoped to the container
@@ -361,7 +382,7 @@ export function InlineTimePicker({
           <span className="text-foreground dark:text-slate-100 font-mono">
             {timeInput || formatDisplayTime()}
           </span>
-          <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg aria-hidden="true" className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -369,7 +390,18 @@ export function InlineTimePicker({
 
       {/* Dropdown Time Picker */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-background dark:bg-slate-800 border border-border dark:border-slate-700 rounded-xl shadow-xl z-[100] p-4 mb-4">
+        <div
+          role="dialog"
+          aria-label={`${ariaLabel ? ariaLabel + ' — ' : ''}choose a time`}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsOpen(false);
+            }
+          }}
+          className="absolute top-full left-0 right-0 mt-2 bg-background dark:bg-slate-800 border border-border dark:border-slate-700 rounded-xl shadow-xl z-[100] p-4 mb-4"
+        >
           {/* Time Display */}
           <div className="text-center mb-4">
             <div className="text-2xl font-bold text-foreground dark:text-slate-100 font-mono">
@@ -417,6 +449,7 @@ export function InlineTimePicker({
                     setIsOpen(false);
                   }
                 }}
+                aria-label="Type a time"
                 className="w-full text-center bg-transparent border-none outline-none focus:bg-muted/20 dark:focus:bg-slate-700/50 rounded-lg px-2 py-1"
                 placeholder={is24h ? "09:00" : "9:00 AM"}
                 maxLength={is24h ? 5 : 8}
@@ -429,6 +462,7 @@ export function InlineTimePicker({
                   <button
                     onClick={() => setSelectedPeriod('AM')}
                     onMouseDown={(e) => e.preventDefault()}
+                    aria-pressed={selectedPeriod === 'AM'}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       selectedPeriod === 'AM'
                         ? 'bg-primary text-primary-foreground'
@@ -440,6 +474,7 @@ export function InlineTimePicker({
                   <button
                     onClick={() => setSelectedPeriod('PM')}
                     onMouseDown={(e) => e.preventDefault()}
+                    aria-pressed={selectedPeriod === 'PM'}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       selectedPeriod === 'PM'
                         ? 'bg-primary text-primary-foreground'
@@ -462,15 +497,17 @@ export function InlineTimePicker({
                 <button
                   onClick={() => handleHourChange(-1)}
                   onMouseDown={(e) => e.preventDefault()}
+                  aria-label="Decrease hour"
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                   </svg>
                 </button>
                 <div className="w-12 text-center">
                   <input
                     type="number"
+                    aria-label="Hour"
                     value={selectedHour}
                     onChange={(e) => {
                       const value = parseInt(e.target.value, 10);
@@ -503,9 +540,10 @@ export function InlineTimePicker({
                 <button
                   onClick={() => handleHourChange(1)}
                   onMouseDown={(e) => e.preventDefault()}
+                  aria-label="Increase hour"
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                 </button>
@@ -519,15 +557,17 @@ export function InlineTimePicker({
                 <button
                   onClick={() => handleMinuteChange(-1)}
                   onMouseDown={(e) => e.preventDefault()}
+                  aria-label="Decrease minute"
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                   </svg>
                 </button>
                 <div className="w-12 text-center">
                   <input
                     type="number"
+                    aria-label="Minute"
                     value={selectedMinute}
                     onChange={(e) => {
                       const value = parseInt(e.target.value, 10);
@@ -550,9 +590,10 @@ export function InlineTimePicker({
                 <button
                   onClick={() => handleMinuteChange(1)}
                   onMouseDown={(e) => e.preventDefault()}
+                  aria-label="Increase minute"
                   className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                 </button>

@@ -412,18 +412,18 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
               >
                 <div className="sm:w-36">
                   <label className="block text-xs text-muted-foreground mb-1">Date</label>
-                  <InlineDatePicker value={shift.date} onChange={(d) => updateShift(shift.id, { date: d })} startOnCalendar />
+                  <InlineDatePicker ariaLabel={`Shift ${i + 1} date`} value={shift.date} onChange={(d) => updateShift(shift.id, { date: d })} startOnCalendar />
                 </div>
                 <div className="flex-1 min-w-0">
                   <label className="block text-xs text-muted-foreground mb-1">Start</label>
-                  <InlineTimePicker value={shift.start} onChange={(v) => updateShift(shift.id, { start: v })} is24h={is24h} />
+                  <InlineTimePicker ariaLabel={`Shift ${i + 1} start time`} value={shift.start} onChange={(v) => updateShift(shift.id, { start: v })} is24h={is24h} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <label className="block text-xs text-muted-foreground mb-1 flex items-center gap-1">
                     End
                     {overnight && <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">+1 day</span>}
                   </label>
-                  <InlineTimePicker value={shift.end} onChange={(v) => updateShift(shift.id, { end: v })} is24h={is24h} />
+                  <InlineTimePicker ariaLabel={`Shift ${i + 1} end time`} value={shift.end} onChange={(v) => updateShift(shift.id, { end: v })} is24h={is24h} />
                 </div>
                 <div className="sm:w-24">
                   <label className="block text-xs text-muted-foreground mb-1">Break (min)</label>

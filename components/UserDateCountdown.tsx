@@ -68,7 +68,7 @@ export function UserDateCountdown({
       <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
         <label className="block text-sm font-medium text-foreground mb-2">{prompt}</label>
         {mounted && date && (
-          <InlineDatePicker value={date} onChange={handleChange} placeholder="Select your date" startOnCalendar />
+          <InlineDatePicker ariaLabel="Your date" value={date} onChange={handleChange} placeholder="Select your date" startOnCalendar />
         )}
         <p className="text-xs text-muted-foreground mt-2">Your date is saved on this device only.</p>
       </div>

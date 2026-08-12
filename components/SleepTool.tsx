@@ -160,8 +160,9 @@ export function SleepTool({ className = '' }: SleepToolProps) {
               <label id="bed-label" className="block text-sm font-medium text-foreground mb-1">
                 Went to bed
               </label>
-              <div aria-labelledby="bed-label">
+              <div>
                 <InlineTimePicker
+                  ariaLabel="Went to bed"
                   value={bedTime}
                   onChange={(t) => {
                     setBedTime(t);
@@ -175,8 +176,9 @@ export function SleepTool({ className = '' }: SleepToolProps) {
               <label id="wake-label" className="block text-sm font-medium text-foreground mb-1">
                 Woke up
               </label>
-              <div aria-labelledby="wake-label">
+              <div>
                 <InlineTimePicker
+                  ariaLabel="Woke up"
                   value={wakeTime}
                   onChange={(t) => {
                     setWakeTime(t);
@@ -252,8 +254,9 @@ export function SleepTool({ className = '' }: SleepToolProps) {
               <label id="target-wake-label" className="block text-sm font-medium text-foreground mb-1">
                 I need to wake up at
               </label>
-              <div aria-labelledby="target-wake-label">
+              <div>
                 <InlineTimePicker
+                  ariaLabel="Wake-up time"
                   value={targetWake}
                   onChange={(t) => {
                     setTargetWake(t);
