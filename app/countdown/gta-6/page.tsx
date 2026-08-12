@@ -12,6 +12,7 @@ export default function Gta6CountdownPage() {
     <EventPage
       heading={'GTA 6 Countdown'}
       tagline="Time until Grand Theft Auto VI releases"
+      lastUpdated="2026-08-04"
       breadcrumb="GTA 6"
       target={GTA6_RELEASE}
       countdownTitle="GTA 6"

@@ -50,6 +50,12 @@ export interface EventPageProps {
   /** Trademark/affiliation disclaimer (use buildEventDisclaimer). */
   disclaimer?: string;
   /**
+   * ISO date (YYYY-MM-DD) the page's event facts were last verified against
+   * a source. Rendered as a visible trust line and used by the sitemap for
+   * an honest lastmod. Update whenever facts are re-checked or edited.
+   */
+  lastUpdated?: string;
+  /**
    * Custom countdown element rendered in place of the built-in timer — used
    * for interactive countdowns where the user supplies their own date.
    */
@@ -72,6 +78,7 @@ export default function EventPage({
   countdownTitle,
   arrivedLabel,
   disclaimer,
+  lastUpdated,
   countdownSlot,
   facts,
   intro,
@@ -177,6 +184,17 @@ export default function EventPage({
             </div>
           ))}
         </div>
+      )}
+
+      {lastUpdated && (
+        <p className="text-xs text-muted-foreground text-center mb-6">
+          Event details last verified{' '}
+          {new Date(`${lastUpdated}T12:00:00`).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </p>
       )}
 
       <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">

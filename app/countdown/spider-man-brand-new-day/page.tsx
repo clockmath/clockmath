@@ -12,6 +12,7 @@ export default function SpiderManCountdownPage() {
     <EventPage
       heading={'Spider-Man: Brand New Day'}
       tagline="Spider-Man: Brand New Day is now in theaters"
+      lastUpdated="2026-07-31"
       breadcrumb="Spider-Man: Brand New Day"
       target={RELEASE}
       countdownTitle="Spider-Man: Brand New Day"

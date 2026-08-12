@@ -91,6 +91,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // Event countdown landing pages — deliberate traffic-capture pages.
       priority = 0.8;
       changeFreq = 'weekly';
+      // Honest lastmod: the lastUpdated stamp each page carries (falls back
+      // to the generic date if a page hasn't been stamped).
+      try {
+        const content = fs.readFileSync(path.join(process.cwd(), 'app', page.substring(1), 'page.tsx'), 'utf-8');
+        const m = content.match(/lastUpdated="(\d{4}-\d{2}-\d{2})"/);
+        if (m) lastmod = m[1];
+      } catch {
+        // keep default
+      }
     } else if (page === '/articles') {
       priority = 0.85;
       changeFreq = 'weekly';

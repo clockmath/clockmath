@@ -8,6 +8,7 @@ export default function RetirementCountdownPage() {
     <EventPage
       heading={'Retirement Countdown'}
       tagline="How long until you retire?"
+      lastUpdated="2026-08-03"
       breadcrumb="Retirement"
       countdownSlot={
         <UserDateCountdown

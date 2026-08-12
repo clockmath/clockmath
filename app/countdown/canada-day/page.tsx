@@ -7,6 +7,7 @@ export default function CanadaDayCountdownPage() {
     <EventPage
       heading={'Canada Day Countdown'}
       tagline="How many days until Canada Day?"
+      lastUpdated="2026-08-03"
       breadcrumb="Canada Day"
       recurring={{ month: 6, day: 1 }}
       countdownTitle="Canada Day"
