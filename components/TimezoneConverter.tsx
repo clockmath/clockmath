@@ -555,6 +555,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               Date
             </label>
             <InlineDatePicker
+              ariaLabel="Date"
               value={inputDate ? parseLocalDate(inputDate) : new Date()}
               onChange={(date) => setInputDate(formatLocalDate(date))}
               placeholder="Select date"
@@ -567,6 +568,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               Time
             </label>
             <InlineTimePicker
+              ariaLabel="Time"
               value={inputTime && inputTime.trim() ? `${inputTime.trim()}:00` : "09:00:00"}
               onChange={(timeStr) => {
                 // timeStr comes in as "HH:mm:ss" format, extract just "HH:mm"

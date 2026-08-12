@@ -463,6 +463,7 @@ export default function ClockMathPage() {
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <InlineDatePicker
+                      ariaLabel="Start date"
                       value={startDate}
                       onChange={setStartDate}
                       placeholder="Select date"
@@ -471,6 +472,7 @@ export default function ClockMathPage() {
                   </div>
                   <div className="flex-1">
                     <InlineTimePicker
+                      ariaLabel="Start time"
                       value={startTime}
                       onChange={setStartTime}
                       is24h={is24HourFormat}
@@ -488,6 +490,7 @@ export default function ClockMathPage() {
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <InlineDatePicker
+                      ariaLabel="End date"
                       value={endDate}
                       onChange={setEndDate}
                       placeholder="Select date"
@@ -496,6 +499,7 @@ export default function ClockMathPage() {
                   </div>
                   <div className="flex-1">
                     <InlineTimePicker
+                      ariaLabel="End time"
                       value={endTime}
                       onChange={setEndTime}
                       is24h={is24HourFormat}

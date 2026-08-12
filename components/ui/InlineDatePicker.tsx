@@ -13,6 +13,8 @@ interface InlineDatePickerProps {
   className?: string;
   /** Open straight to the calendar, skipping the Today/Tomorrow quick options. */
   startOnCalendar?: boolean;
+  /** Accessible field name (e.g. "Start date") — announced with the value. */
+  ariaLabel?: string;
 }
 
 export function InlineDatePicker({
@@ -21,6 +23,7 @@ export function InlineDatePicker({
   placeholder = "Select date",
   className = "",
   startOnCalendar = false,
+  ariaLabel,
 }: InlineDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showCalendar, setShowCalendar] = useState(startOnCalendar);
@@ -67,6 +70,7 @@ export function InlineDatePicker({
       <PopoverTrigger asChild>
         <button
           type="button"
+          aria-label={`${ariaLabel ? ariaLabel + ', ' : ''}${displayValue}`}
           className={`
             flex items-center justify-between gap-2
             w-full px-4 py-3
