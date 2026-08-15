@@ -13,6 +13,7 @@ import {
   BookOpen,
   Percent,
   Bed,
+  Trophy,
   LayoutGrid,
   ChevronDown,
 } from 'lucide-react'
@@ -90,6 +91,13 @@ const moreItems: NavItem[] = [
     shortLabel: 'Sleep',
     href: '/tools/sleep',
     icon: <Bed className="w-4 h-4 shrink-0" />,
+  },
+  {
+    id: 'quiz',
+    label: 'Daily Time Quiz',
+    shortLabel: 'Quiz',
+    href: '/tools/quiz',
+    icon: <Trophy className="w-4 h-4 shrink-0" />,
   },
 ]
 
