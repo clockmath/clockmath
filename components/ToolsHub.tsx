@@ -16,6 +16,7 @@ import {
   Hourglass,
   Percent,
   Bed,
+  Trophy,
   BookOpen,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
@@ -66,6 +67,12 @@ const TILES = [
     title: 'Countdown Timer',
     description: 'Count down to any date — then share it with a link',
     icon: Hourglass,
+  },
+  {
+    href: '/tools/quiz',
+    title: 'Daily Time Quiz',
+    description: 'Five clock-math questions a day, with an arcade-style leaderboard',
+    icon: Trophy,
   },
   {
     href: '/articles',
@@ -126,7 +133,7 @@ export default function ToolsHub() {
       <header className="text-center mb-8 sm:mb-section">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
-          Seven calculators. No signup, no ads in your way — everything runs in your browser.
+          Eight free tools. No signup, no ads in your way — everything runs in your browser.
         </p>
         <nav className="text-sm text-muted-foreground mt-4">
           <Link href="/" className="hover:text-primary transition-colors">

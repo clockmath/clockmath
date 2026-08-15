@@ -131,6 +131,138 @@ function handleGeoApi(request) {
   }
   return new Response(JSON.stringify({ country }), { headers });
 }
+
+// ---- Daily quiz leaderboard (mirror of functions/api/quiz.js) ----
+// Keep in sync with that file: it holds the documented design notes and the
+// unit-tested reference implementation.
+const QUIZ_BLOCKED_INITIALS = new Set([
+  'ASS', 'SEX', 'FUK', 'FUC', 'FCK', 'FKU', 'CUM', 'TIT', 'DIK', 'DIC',
+  'DCK', 'COK', 'KOK', 'FAG', 'FGT', 'NIG', 'NGR', 'KKK', 'NAZ', 'VAG',
+  'HOE', 'WTF', 'XXX', 'KYS', 'DIE', 'PIS', 'CNT', 'TWA', 'JIZ', 'PNS',
+]);
+const QUIZ_MAX_STORED_SCORES = 5000;
+const QUIZ_MAX_TOP = 25;
+const QUIZ_COOKIE = 'cmq_day';
+const quizIpHits = new Map();
+
+function quizRateLimited(ip) {
+  const now = Date.now();
+  const bucket = quizIpHits.get(ip);
+  if (!bucket || now > bucket.reset) {
+    quizIpHits.set(ip, { count: 1, reset: now + 60 * 60 * 1000 });
+    return false;
+  }
+  bucket.count += 1;
+  return bucket.count > 60;
+}
+
+function quizUtcToday() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function quizJson(request, status, body, extraHeaders) {
+  const headers = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Vary': 'Origin' };
+  const origin = request.headers.get('Origin');
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  return new Response(JSON.stringify(body), { status, headers: Object.assign(headers, extraHeaders || {}) });
+}
+
+async function quizLoadBoard(env, day) {
+  const raw = await env.QUIZ_KV.get('board:' + day);
+  if (!raw) return { count: 0, scores: [], top: [] };
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      count: parsed.count || 0,
+      scores: Array.isArray(parsed.scores) ? parsed.scores : [],
+      top: Array.isArray(parsed.top) ? parsed.top : [],
+    };
+  } catch (e) {
+    return { count: 0, scores: [], top: [] };
+  }
+}
+
+function quizBeats(a, b) {
+  if (a.s !== b.s) return a.s > b.s;
+  return a.t < b.t;
+}
+
+async function handleQuizApi(request, env) {
+  if (request.method === 'OPTIONS') {
+    return quizJson(request, 204, null, { 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
+  }
+  if (!env.QUIZ_KV) return quizJson(request, 503, { error: 'leaderboard unavailable' });
+
+  if (request.method === 'GET') {
+    const url = new URL(request.url);
+    const day = url.searchParams.get('day') || quizUtcToday();
+    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(day)) return quizJson(request, 400, { error: 'bad day' });
+    const board = await quizLoadBoard(env, day);
+    return quizJson(request, 200, { day, count: board.count, top: board.top.slice(0, 10) });
+  }
+
+  if (request.method !== 'POST') return quizJson(request, 405, { error: 'method not allowed' });
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (quizRateLimited(ip)) return quizJson(request, 429, { error: 'slow down' });
+
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return quizJson(request, 400, { error: 'bad json' });
+  }
+
+  const today = quizUtcToday();
+  const day = body && body.day;
+  const score = body && body.score;
+  const timeMs = body && body.timeMs;
+  let initials = body && body.initials;
+
+  if (day !== today) return quizJson(request, 400, { error: "not today's puzzle" });
+  if (!Number.isInteger(score) || score < 0 || score > 5) return quizJson(request, 400, { error: 'bad score' });
+  if (!Number.isInteger(timeMs) || timeMs < 2000 * 5 || timeMs > 60 * 60 * 1000) return quizJson(request, 400, { error: 'implausible time' });
+  if (initials != null) {
+    if (typeof initials !== 'string' || !/^[A-Z]{3}$/.test(initials) || QUIZ_BLOCKED_INITIALS.has(initials)) {
+      return quizJson(request, 400, { error: 'bad initials' });
+    }
+  } else {
+    initials = null;
+  }
+
+  const cookies = request.headers.get('Cookie') || '';
+  const cookieMatch = cookies.match(new RegExp(QUIZ_COOKIE + '=([\\\\d-]+)'));
+  if (cookieMatch && cookieMatch[1] === today) return quizJson(request, 409, { error: 'already submitted today' });
+
+  const board = await quizLoadBoard(env, day);
+  const entry = { s: score, t: timeMs };
+  const beaten = board.scores.filter((row) => quizBeats(entry, { s: row[0], t: row[1] })).length;
+  const percentile = board.scores.length === 0 ? 100 : Math.round((beaten / board.scores.length) * 100);
+
+  board.count += 1;
+  if (board.scores.length < QUIZ_MAX_STORED_SCORES) board.scores.push([score, timeMs]);
+
+  let rank = null;
+  if (initials) {
+    board.top.push({ i: initials, s: score, t: timeMs });
+    board.top.sort((a, b) => (quizBeats(a, b) ? -1 : 1));
+    board.top = board.top.slice(0, QUIZ_MAX_TOP);
+    const idx = board.top.findIndex((e) => e.i === initials && e.s === score && e.t === timeMs);
+    if (idx !== -1) rank = idx + 1;
+  }
+
+  await env.QUIZ_KV.put('board:' + day, JSON.stringify(board), { expirationTtl: 60 * 60 * 24 * 14 });
+
+  return quizJson(
+    request,
+    200,
+    { accepted: true, count: board.count, percentile, rank, top: board.top.slice(0, 10) },
+    { 'Set-Cookie': QUIZ_COOKIE + '=' + today + '; Path=/api/quiz; Max-Age=172800; HttpOnly; Secure; SameSite=Lax' },
+  );
+}
 `;
 
 // Read the existing worker
@@ -151,6 +283,9 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   }
   if (reqUrl.pathname === '/api/geo' || reqUrl.pathname === '/api/geo/') {
     return handleGeoApi(${reqParam});
+  }
+  if (reqUrl.pathname === '/api/quiz' || reqUrl.pathname === '/api/quiz/') {
+    return handleQuizApi(${reqParam}, ${envParam});
   }
 `;
   workerContent = workerContent.replace(originalExport, wrappedExport);

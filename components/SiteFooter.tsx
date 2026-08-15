@@ -71,6 +71,9 @@ export default function SiteFooter() {
           <Link href="/tools/sleep" className="hover:text-foreground underline underline-offset-4">
             Sleep Calculator
           </Link>
+          <Link href="/tools/quiz" className="hover:text-foreground underline underline-offset-4">
+            Daily Time Quiz
+          </Link>
           <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
             All Tools
           </Link>
