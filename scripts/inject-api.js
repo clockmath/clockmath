@@ -278,6 +278,11 @@ if (match) {
 var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   // Route injected API requests before falling through to Next.js assets
   const reqUrl = new URL(${reqParam}.url);
+  // Canonical-host redirect: www serves this same Pages project, so 301 it
+  // to the apex before anything else (crawl-budget fix, Aug 2026 GSC audit).
+  if (reqUrl.hostname === 'www.clockmath.com') {
+    return Response.redirect('https://clockmath.com' + reqUrl.pathname + reqUrl.search, 301);
+  }
   if (reqUrl.pathname === '/api/places' || reqUrl.pathname === '/api/places/') {
     return handlePlacesApi(${reqParam}, ${envParam});
   }
