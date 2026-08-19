@@ -211,7 +211,11 @@ async function handleQuizApi(request, env) {
 
   let body;
   try {
-    body = await request.json();
+    // A legitimate submission is <200 bytes; cap well above that so junk
+    // payloads are rejected before JSON parsing. (Mirror of functions/api/quiz.js.)
+    const raw = await request.text();
+    if (raw.length > 1024) return quizJson(request, 400, { error: 'body too large' });
+    body = JSON.parse(raw);
   } catch (e) {
     return quizJson(request, 400, { error: 'bad json' });
   }
