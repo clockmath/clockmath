@@ -4,6 +4,7 @@
  * Tailwind classes are optional—remove if you're not using Tailwind.
  */
 import Link from 'next/link';
+import FeedbackForm from '@/components/FeedbackForm';
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
@@ -41,8 +42,7 @@ export default function SiteFooter() {
           >
             hello@clockmath.com
           </a>
-          <span className="mx-2">·</span>
-          <a href="https://clockmath.com" className="hover:text-foreground">clockmath.com</a>
+          <FeedbackForm />
         </div>
 
         {/* Tools — every tool reachable from every page via plain HTML links */}

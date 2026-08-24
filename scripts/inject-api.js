@@ -267,6 +267,94 @@ async function handleQuizApi(request, env) {
     { 'Set-Cookie': QUIZ_COOKIE + '=' + today + '; Path=/api/quiz; Max-Age=172800; HttpOnly; Secure; SameSite=Lax' },
   );
 }
+
+// ---- Feedback form (mirror of functions/api/feedback.js) ----
+// Keep in sync with that file: it holds the documented design notes.
+const fbIpHits = new Map();
+function fbRateLimited(ip) {
+  const now = Date.now();
+  const bucket = fbIpHits.get(ip);
+  if (!bucket || now > bucket.reset) {
+    fbIpHits.set(ip, { count: 1, reset: now + 3600000 });
+    return false;
+  }
+  bucket.count += 1;
+  return bucket.count > 5;
+}
+
+async function fbSendEmailCopy(env, entry) {
+  if (!env.EMAIL_SEND_TOKEN || !env.CF_ACCOUNT_ID) return;
+  const label = entry.topic === 'feature' ? 'Feature request' : 'Feedback';
+  const payload = {
+    to: 'hello@clockmath.com',
+    from: { address: 'feedback@clockmath.com', name: 'ClockMath Feedback' },
+    subject: 'ClockMath ' + label.toLowerCase() + ': ' + entry.message.slice(0, 60).replace(/\\s+/g, ' '),
+    text: [label + ' from clockmath.com', '', entry.message, '', '—',
+      'Reply-to: ' + (entry.email || 'not provided'),
+      'Country: ' + entry.country + '  ·  ' + entry.ts].join('\\n'),
+  };
+  if (entry.email) payload.reply_to = entry.email;
+  await fetch('https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/email/sending/send', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + env.EMAIL_SEND_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+async function handleFeedbackApi(request, env) {
+  if (request.method === 'OPTIONS') {
+    return quizJson(request, 204, null, { 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
+  }
+  if (request.method !== 'POST') return quizJson(request, 405, { error: 'method not allowed' });
+  if (!env.QUIZ_KV) return quizJson(request, 503, { error: 'unavailable' });
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (fbRateLimited(ip)) return quizJson(request, 429, { error: 'slow down' });
+
+  let body;
+  try {
+    const raw = await request.text();
+    if (raw.length > 8192) return quizJson(request, 400, { error: 'too large' });
+    body = JSON.parse(raw);
+  } catch (e) {
+    return quizJson(request, 400, { error: 'bad json' });
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return quizJson(request, 400, { error: 'bad body' });
+
+  const message = body.message, email = body.email, topic = body.topic, website = body.website, elapsedMs = body.elapsedMs;
+
+  // Honeypot filled or implausibly fast → pretend success, store nothing.
+  if (website || typeof elapsedMs !== 'number' || elapsedMs < 3000) {
+    return quizJson(request, 200, { ok: true });
+  }
+
+  if (typeof message !== 'string') return quizJson(request, 400, { error: 'bad message' });
+  const trimmed = message.trim();
+  if (trimmed.length < 10 || trimmed.length > 4000) return quizJson(request, 400, { error: 'message length' });
+
+  let replyEmail = null;
+  if (email != null && email !== '') {
+    if (typeof email !== 'string' || email.length > 200 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+      return quizJson(request, 400, { error: 'bad email' });
+    }
+    replyEmail = email.trim();
+  }
+
+  const entry = {
+    message: trimmed,
+    email: replyEmail,
+    topic: topic === 'feature' ? 'feature' : 'feedback',
+    country: (request.cf && request.cf.country) || request.headers.get('CF-IPCountry') || 'XX',
+    ts: new Date().toISOString(),
+  };
+
+  const key = 'feedback:' + entry.ts + '-' + Math.random().toString(36).slice(2, 8);
+  await env.QUIZ_KV.put(key, JSON.stringify(entry), { expirationTtl: 90 * 24 * 3600 });
+
+  try { await fbSendEmailCopy(env, entry); } catch (e) { /* KV copy is the durable record */ }
+
+  return quizJson(request, 200, { ok: true });
+}
 `;
 
 // Read the existing worker
@@ -295,6 +383,9 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   }
   if (reqUrl.pathname === '/api/quiz' || reqUrl.pathname === '/api/quiz/') {
     return handleQuizApi(${reqParam}, ${envParam});
+  }
+  if (reqUrl.pathname === '/api/feedback' || reqUrl.pathname === '/api/feedback/') {
+    return handleFeedbackApi(${reqParam}, ${envParam});
   }
 `;
   workerContent = workerContent.replace(originalExport, wrappedExport);
