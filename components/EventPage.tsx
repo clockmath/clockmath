@@ -19,6 +19,8 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Christmas', href: '/countdown/christmas/' },
   { title: 'Spider-Man: Brand New Day', href: '/countdown/spider-man-brand-new-day/' },
   { title: 'Halloween', href: '/countdown/halloween/' },
+  { title: 'Thanksgiving', href: '/countdown/thanksgiving/' },
+  { title: 'Black Friday', href: '/countdown/black-friday/' },
   { title: 'New Year', href: '/countdown/new-year/' },
   { title: 'The Weekend', href: '/countdown/weekend/' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/' },
@@ -43,6 +45,8 @@ export interface EventPageProps {
   recurring?: { month: number; day: number };
   /** Recurring weekly event ({ weekday: 0-indexed, 0 = Sun }). */
   weekly?: { weekday: number; spanDays?: number };
+  /** Recurring nth-weekday-of-month event (see EventCountdown). */
+  nthWeekday?: { month: number; weekday: number; n: number; offsetDays?: number };
   /** Title used inside the timer ("Until {countdownTitle}"). */
   countdownTitle?: string;
   /** Heading shown once the event arrives (e.g. "It's Christmas! 🎄"). */
@@ -75,6 +79,7 @@ export default function EventPage({
   target,
   recurring,
   weekly,
+  nthWeekday,
   countdownTitle,
   arrivedLabel,
   disclaimer,
@@ -153,6 +158,7 @@ export default function EventPage({
           target={target}
           recurring={recurring}
           weekly={weekly}
+          nthWeekday={nthWeekday}
           title={countdownTitle ?? breadcrumb}
           arrivedLabel={arrivedLabel}
           disclaimer={disclaimer}
