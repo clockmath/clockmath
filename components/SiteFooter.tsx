@@ -74,6 +74,9 @@ export default function SiteFooter() {
           <Link href="/tools/quiz" className="hover:text-foreground underline underline-offset-4">
             Daily Time Quiz
           </Link>
+          <Link href="/tools/overtime" className="hover:text-foreground underline underline-offset-4">
+            Overtime Calculator
+          </Link>
           <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
             All Tools
           </Link>
