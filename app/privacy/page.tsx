@@ -109,7 +109,7 @@ export default function PrivacyPage() {
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
 
-            <h2 className="text-2xl font-semibold mb-4">4. Google Analytics & Search Console</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. Analytics Services (Google & Microsoft Clarity)</h2>
             <p className="mb-4">
               ClockMath uses Google Analytics and Search Console to track and analyze website traffic. We have enabled the following baseline features:
             </p>
@@ -130,6 +130,22 @@ export default function PrivacyPage() {
                 className="text-primary hover:text-primary/80 underline"
               >
                 Google Analytics Opt-Out Browser Add-On
+              </a>.
+            </p>
+
+            <p className="mb-6">
+              We also use Microsoft Clarity to understand how visitors interact with our
+              tools through anonymized session replays and heatmaps (where you click,
+              scroll, and move on a page). Clarity masks sensitive content and follows
+              the same consent choice you make in our cookie banner — declining analytics
+              disables it. For details, see{" "}
+              <a
+                href="https://privacy.microsoft.com/privacystatement"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 underline"
+              >
+                Microsoft&apos;s privacy statement
               </a>.
             </p>
 
