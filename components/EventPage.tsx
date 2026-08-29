@@ -8,6 +8,7 @@ import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { Toaster } from '@/components/ui/toaster';
+import { Trophy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
 
@@ -176,6 +177,19 @@ export default function EventPage({
           </svg>
           Share this countdown
         </button>
+      </div>
+
+      {/* Quiz nudge — countdown visitors are the site's most time-curious
+          audience; this is the quiz's main internal discovery surface. */}
+      <div className="flex justify-center mb-6">
+        <Link
+          href="/tools/quiz"
+          onClick={() => gaEvent({ action: 'quiz_nudge_click', params: { from: pathname ?? 'countdown' } })}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm border border-border dark:border-slate-600 bg-card dark:bg-slate-800 text-muted-foreground dark:text-slate-400 hover:text-foreground hover:border-emerald-600/40 transition-colors"
+        >
+          <Trophy className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+          While you wait — today&apos;s 60-second time quiz
+        </Link>
       </div>
 
       {facts && facts.length > 0 && (
