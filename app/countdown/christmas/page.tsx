@@ -5,8 +5,8 @@ import EventPage from '@/components/EventPage';
 export default function ChristmasCountdownPage() {
   return (
     <EventPage
-      heading={'Christmas Countdown'}
-      tagline="How many days until Christmas?"
+      heading={'How Many Days Until Christmas?'}
+      tagline="Live countdown to December 25 — days, hours, minutes, and seconds"
       lastUpdated="2026-08-03"
       breadcrumb="Christmas"
       recurring={{ month: 11, day: 25 }}
@@ -25,6 +25,11 @@ export default function ChristmasCountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until Christmas?',
+          answer:
+            'Christmas Day is December 25 every year — the live counter at the top of this page shows the exact number of days, hours, and minutes remaining right now. Christmas 2026 falls on a Friday.',
+        },
         {
           question: 'What day of the week is Christmas 2026?',
           answer:

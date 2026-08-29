@@ -5,8 +5,8 @@ import EventPage from '@/components/EventPage';
 export default function July4thCountdownPage() {
   return (
     <EventPage
-      heading={'4th of July Countdown'}
-      tagline="How many days until Independence Day?"
+      heading={'How Many Days Until the 4th of July?'}
+      tagline="Live countdown to July 4 — days, hours, minutes, and seconds"
       lastUpdated="2026-08-03"
       breadcrumb="4th of July"
       recurring={{ month: 6, day: 4 }}
@@ -25,6 +25,11 @@ export default function July4thCountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until the 4th of July?',
+          answer:
+            'Independence Day is July 4 every year — the live counter at the top of this page shows exactly how many days, hours, and minutes are left until the next one.',
+        },
         {
           question: 'What day of the week is July 4th, 2027?',
           answer:

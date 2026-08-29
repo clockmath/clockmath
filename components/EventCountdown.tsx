@@ -139,6 +139,29 @@ export function EventCountdown({
     });
   }, [targetMs]);
 
+  // Plain-sentence answer to "how many days until X?" — the query these
+  // pages rank for. Fixed targets render a real number at build time (SSR
+  // uses build-day "now"; suppressHydrationWarning lets the client correct
+  // it), so crawlers see an answer without executing JS.
+  const totalDays = useMemo(() => {
+    // Recurring/weekly targets resolve on mount for the tiles, but the answer
+    // sentence can compute the next occurrence at render time too — at build
+    // (SSR) that uses the build date, which suppressHydrationWarning lets the
+    // client correct. Crawlers get a real number either way.
+    const t =
+      targetMs ??
+      (recurring
+        ? nextOccurrence(recurring.month, recurring.day)
+        : weekly
+          ? nextWeekday(weekly.weekday, weekly.spanDays)
+          : null);
+    if (t === null) return null;
+    const n = nowMs ?? Date.now();
+    if (t <= n) return null;
+    return Math.ceil((t - n) / 86400000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays]);
+
   return (
     <div
       className={`bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center ${className}`}
@@ -146,9 +169,22 @@ export function EventCountdown({
       <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
         {isPast ? (arrivedLabel ?? `${title} has released!`) : `Until ${title}`}
       </h2>
-      <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6" suppressHydrationWarning>
+      <p className="text-sm text-muted-foreground dark:text-slate-400 mb-4" suppressHydrationWarning>
         {dateLabel}
       </p>
+
+      {totalDays !== null && (
+        <p
+          className="text-base sm:text-lg text-foreground dark:text-slate-200 mb-6"
+          suppressHydrationWarning
+        >
+          There {totalDays === 1 ? 'is' : 'are'}{' '}
+          <strong className="text-emerald-700 dark:text-emerald-400">
+            {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
+          </strong>{' '}
+          until {title}.
+        </p>
+      )}
 
       {/* 5 tiles fit one row at 390px with min-w-56 (min-w-64 overflowed by
           exactly one tile, orphaning SECONDS); 6 tiles (year+ events) wrap as

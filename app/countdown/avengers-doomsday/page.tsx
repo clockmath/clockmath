@@ -9,7 +9,7 @@ const RELEASE = new Date(2026, 11, 18);
 export default function AvengersDoomsdayCountdownPage() {
   return (
     <EventPage
-      heading={'Avengers: Doomsday'}
+      heading={'How Many Days Until Avengers: Doomsday?'}
       tagline="Time until Avengers: Doomsday hits theaters"
       lastUpdated="2026-07-31"
       breadcrumb="Avengers: Doomsday"
@@ -35,6 +35,11 @@ export default function AvengersDoomsdayCountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until Avengers: Doomsday?',
+          answer:
+            'Avengers: Doomsday is scheduled for December 18, 2026 — the live counter at the top of this page shows exactly how many days, hours, and minutes remain right now.',
+        },
         {
           question: 'When does Avengers: Doomsday come out?',
           answer:
