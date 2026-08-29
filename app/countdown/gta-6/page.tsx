@@ -10,7 +10,7 @@ const GTA6_RELEASE = new Date(2026, 10, 19);
 export default function Gta6CountdownPage() {
   return (
     <EventPage
-      heading={'GTA 6 Countdown'}
+      heading={'How Many Days Until GTA 6?'}
       tagline="Time until Grand Theft Auto VI releases"
       lastUpdated="2026-08-04"
       breadcrumb="GTA 6"
@@ -32,6 +32,11 @@ export default function Gta6CountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until GTA 6 comes out?',
+          answer:
+            "The live counter at the top of this page shows exactly how many days remain until GTA 6's announced release date, updating every second. Check the FAQ below for the current official date.",
+        },
         {
           question: 'When does GTA 6 come out?',
           answer:

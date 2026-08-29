@@ -8,7 +8,7 @@ const LA28_OPENING = new Date(2028, 6, 14);
 export default function Olympics2028CountdownPage() {
   return (
     <EventPage
-      heading={'LA 2028 Olympics Countdown'}
+      heading={'How Many Days Until the 2028 Olympics?'}
       tagline="Time until the 2028 Summer Olympics"
       lastUpdated="2026-08-04"
       breadcrumb="LA 2028 Olympics"
@@ -29,6 +29,11 @@ export default function Olympics2028CountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until the 2028 Olympics?',
+          answer:
+            'The LA 2028 opening ceremony is scheduled for July 14, 2028 — the live counter at the top of this page shows exactly how many days remain right now.',
+        },
         {
           question: 'When do the 2028 Olympics start?',
           answer: 'The Los Angeles 2028 Summer Olympics are scheduled to open on July 14, 2028.',

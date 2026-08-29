@@ -5,8 +5,8 @@ import EventPage from '@/components/EventPage';
 export default function NewYearCountdownPage() {
   return (
     <EventPage
-      heading={'New Year Countdown'}
-      tagline="How many days until the New Year?"
+      heading={'How Many Days Until New Year?'}
+      tagline="Live countdown to midnight, January 1 — down to the second"
       lastUpdated="2026-08-03"
       breadcrumb="New Year"
       recurring={{ month: 0, day: 1 }}
@@ -25,6 +25,11 @@ export default function NewYearCountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until New Year?',
+          answer:
+            "New Year's Day is January 1 — the live counter at the top of this page counts down to midnight with the exact days, hours, minutes, and seconds remaining right now.",
+        },
         {
           question: 'What day of the week is New Year’s Day 2027?',
           answer:

@@ -5,8 +5,8 @@ import EventPage from '@/components/EventPage';
 export default function CanadaDayCountdownPage() {
   return (
     <EventPage
-      heading={'Canada Day Countdown'}
-      tagline="How many days until Canada Day?"
+      heading={'How Many Days Until Canada Day?'}
+      tagline="Live countdown to July 1 — days, hours, minutes, and seconds"
       lastUpdated="2026-08-03"
       breadcrumb="Canada Day"
       recurring={{ month: 6, day: 1 }}
@@ -25,6 +25,11 @@ export default function CanadaDayCountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until Canada Day?',
+          answer:
+            'Canada Day is July 1 every year — the live counter at the top of this page shows exactly how many days, hours, and minutes remain until the next one.',
+        },
         {
           question: 'What day of the week is Canada Day 2027?',
           answer:

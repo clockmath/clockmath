@@ -5,8 +5,8 @@ import EventPage from '@/components/EventPage';
 export default function HalloweenCountdownPage() {
   return (
     <EventPage
-      heading={'Halloween Countdown'}
-      tagline="How many days until Halloween?"
+      heading={'How Many Days Until Halloween?'}
+      tagline="Live countdown to October 31 — days, hours, minutes, and seconds"
       lastUpdated="2026-08-03"
       breadcrumb="Halloween"
       recurring={{ month: 9, day: 31 }}
@@ -25,6 +25,11 @@ export default function HalloweenCountdownPage() {
         </>
       }
       faqs={[
+        {
+          question: 'How many days until Halloween?',
+          answer:
+            'Halloween is October 31 every year — the live counter at the top of this page shows exactly how many days, hours, and minutes are left right now. Halloween 2026 falls on a Saturday.',
+        },
         {
           question: 'What day of the week is Halloween 2026?',
           answer:
