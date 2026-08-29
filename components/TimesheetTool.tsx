@@ -6,6 +6,8 @@ import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { RollingNumber } from '@/components/RollingNumber';
+import { computeOvertime } from '@/lib/overtime';
+import Link from 'next/link';
 
 interface TimesheetToolProps {
   className?: string;
@@ -159,6 +161,10 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   const [rate, setRate] = useState('');
   const [saved, setSaved] = useState<SavedTimesheet[]>([]);
   const [saveName, setSaveName] = useState('');
+  // Optional weekly overtime split — reuses the standalone /tools/overtime engine.
+  const [otEnabled, setOtEnabled] = useState(false);
+  const [otThreshold, setOtThreshold] = useState('40');
+  const [otMultiplier, setOtMultiplier] = useState(1.5);
   const [seq, setSeq] = useState(2);
   const [loaded, setLoaded] = useState(false);
 
@@ -191,12 +197,22 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     try {
       const raw = window.localStorage.getItem(DRAFT_KEY);
       if (raw) {
-        const d: { shifts?: SavedShift[]; rate?: string; name?: string } = JSON.parse(raw);
+        const d: {
+          shifts?: SavedShift[];
+          rate?: string;
+          name?: string;
+          otEnabled?: boolean;
+          otThreshold?: string;
+          otMultiplier?: number;
+        } = JSON.parse(raw);
         if (d && Array.isArray(d.shifts) && d.shifts.length) {
           setShifts(d.shifts.map(deserializeShift));
           setRate(d.rate || '');
           setSaveName(d.name || '');
           setSeq(d.shifts.length + 2);
+          if (d.otEnabled) setOtEnabled(true);
+          if (d.otThreshold) setOtThreshold(d.otThreshold);
+          if (d.otMultiplier === 1.5 || d.otMultiplier === 2) setOtMultiplier(d.otMultiplier);
           restored = true;
         }
       }
@@ -215,12 +231,19 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     try {
       window.localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ shifts: shifts.map(serializeShift), rate, name: saveName }),
+        JSON.stringify({
+          shifts: shifts.map(serializeShift),
+          rate,
+          name: saveName,
+          otEnabled,
+          otThreshold,
+          otMultiplier,
+        }),
       );
     } catch {
       /* ignore */
     }
-  }, [loaded, shifts, rate, saveName]);
+  }, [loaded, shifts, rate, saveName, otEnabled, otThreshold, otMultiplier]);
 
   const totalMins = useMemo(() => shifts.reduce((sum, s) => sum + shiftMinutes(s), 0), [shifts]);
 
@@ -239,7 +262,24 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   }, [totalMins, shifts.length]);
 
   const rateNum = parseFloat(rate);
-  const gross = rate.trim() && !Number.isNaN(rateNum) && rateNum > 0 ? (totalMins / 60) * rateNum : null;
+  const flatGross = rate.trim() && !Number.isNaN(rateNum) && rateNum > 0 ? (totalMins / 60) * rateNum : null;
+
+  // Weekly overtime split (optional). Pay comes from the OT engine so it
+  // matches /tools/overtime penny for penny; per-shift pay stays at base
+  // rate since overtime applies to the period total, not a single shift.
+  const otSplit = useMemo(() => {
+    if (!otEnabled || totalMins <= 0) return null;
+    const threshold = otThreshold.trim() === '' ? 40 : parseFloat(otThreshold);
+    if (Number.isNaN(threshold) || threshold < 0) return null;
+    return computeOvertime({
+      hoursWorked: totalMins / 60,
+      threshold,
+      multiplier: otMultiplier,
+      rate: flatGross != null ? rateNum : null,
+    });
+  }, [otEnabled, totalMins, otThreshold, otMultiplier, flatGross, rateNum]);
+
+  const gross = otSplit && otSplit.totalPay != null ? otSplit.totalPay : flatGross;
 
   const formatClock = useCallback(
     (t: string): string => {
@@ -325,7 +365,16 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
       );
     });
     lines.push(`Total: ${decimalHours(totalMins)} h (${hhmm(totalMins)})`);
-    if (gross != null) lines.push(`Gross: $${gross.toFixed(2)} (at $${rateNum.toFixed(2)}/h)`);
+    if (otSplit) {
+      lines.push(`Regular: ${otSplit.regularHours} h · Overtime: ${otSplit.overtimeHours} h at ${otMultiplier}×`);
+    }
+    if (gross != null) {
+      lines.push(
+        otSplit && otSplit.totalPay != null
+          ? `Gross: $${gross.toFixed(2)} (at $${rateNum.toFixed(2)}/h + overtime)`
+          : `Gross: $${gross.toFixed(2)} (at $${rateNum.toFixed(2)}/h)`,
+      );
+    }
     const text = lines.join('\n');
 
     gaEvent({ action: 'timesheet_exported', params: { device: getDevice(), shifts: shifts.length, format: 'text' } });
@@ -335,7 +384,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     } catch {
       toast({ title: 'Copy this summary', description: text });
     }
-  }, [saveName, shifts, totalMins, gross, rateNum, formatClock]);
+  }, [saveName, shifts, totalMins, gross, rateNum, formatClock, otSplit, otMultiplier]);
 
   const handleDownloadCsv = useCallback(() => {
     const csvEscape = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
@@ -358,7 +407,18 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     const totalRow = ['Total', '', '', '', decimalHours(totalMins)];
     if (gross != null) totalRow.push(gross.toFixed(2));
 
-    const csv = [headers, ...rows, totalRow].map((r) => r.map(csvEscape).join(',')).join('\r\n');
+    // With the overtime split on, per-shift Pay stays at base rate while the
+    // Total reflects overtime — these rows make the difference auditable.
+    const otRows: string[][] = [];
+    if (otSplit) {
+      const reg = ['Regular', '', '', '', String(otSplit.regularHours)];
+      const ot = [`Overtime (${otMultiplier}x)`, '', '', '', String(otSplit.overtimeHours)];
+      if (otSplit.regularPay != null) reg.push(otSplit.regularPay.toFixed(2));
+      if (otSplit.overtimePay != null) ot.push(otSplit.overtimePay.toFixed(2));
+      otRows.push(reg, ot);
+    }
+
+    const csv = [headers, ...rows, ...otRows, totalRow].map((r) => r.map(csvEscape).join(',')).join('\r\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -371,7 +431,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
     gaEvent({ action: 'timesheet_exported', params: { device: getDevice(), shifts: shifts.length, format: 'csv' } });
     toast({ title: 'CSV downloaded', description: 'Open it in Excel or Google Sheets.' });
-  }, [shifts, totalMins, gross, rateNum, saveName, formatClock]);
+  }, [shifts, totalMins, gross, rateNum, saveName, formatClock, otSplit, otMultiplier]);
 
   return (
     <div className={className}>
@@ -501,6 +561,54 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           </div>
         </div>
 
+        {/* Optional weekly overtime split */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-muted-foreground dark:text-slate-400">
+            <input
+              type="checkbox"
+              checked={otEnabled}
+              onChange={(e) => {
+                setOtEnabled(e.target.checked);
+                gaEvent({ action: 'timesheet_overtime_toggled', params: { enabled: e.target.checked } });
+              }}
+              className="w-4 h-4 rounded border-border accent-emerald-600"
+            />
+            Split overtime
+          </label>
+          {otEnabled && (
+            <>
+              <span className="text-muted-foreground dark:text-slate-400">after</span>
+              <div className="relative w-20">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={otThreshold}
+                  onChange={(e) => setOtThreshold(e.target.value)}
+                  aria-label="Overtime threshold in hours"
+                  className="w-full pl-2.5 pr-6 py-1.5 rounded-lg bg-background dark:bg-slate-900/60 border border-border dark:border-slate-700 text-foreground text-sm outline-none focus:ring-2 focus:ring-emerald-500/50"
+                />
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">h</span>
+              </div>
+              <select
+                value={otMultiplier}
+                onChange={(e) => setOtMultiplier(Number(e.target.value))}
+                aria-label="Overtime rate multiplier"
+                className="py-1.5 px-2 rounded-lg bg-background dark:bg-slate-900/60 border border-border dark:border-slate-700 text-foreground text-sm outline-none focus:ring-2 focus:ring-emerald-500/50"
+              >
+                <option value={1.5}>at 1.5×</option>
+                <option value={2}>at 2×</option>
+              </select>
+              <Link
+                href="/tools/overtime"
+                className="text-xs text-muted-foreground dark:text-slate-400 underline underline-offset-2 hover:text-foreground"
+              >
+                Overtime calculator
+              </Link>
+            </>
+          )}
+        </div>
+
         {/* Breakdown — stacked cards on mobile */}
         <div className="sm:hidden space-y-2">
           {shifts.map((s) => {
@@ -589,6 +697,36 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             </tfoot>
           </table>
         </div>
+
+        {/* Overtime split summary — applies to the period total, not per shift */}
+        {otSplit && (
+          <div className="mt-3 rounded-xl border border-emerald-600/30 bg-emerald-600/5 dark:bg-emerald-500/10 px-3 py-2.5 text-sm text-left">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <span className="text-muted-foreground dark:text-slate-400">
+                Regular{' '}
+                <strong className="text-foreground tabular-nums">{otSplit.regularHours} h</strong>
+                {otSplit.regularPay != null && (
+                  <span className="tabular-nums"> · ${otSplit.regularPay.toFixed(2)}</span>
+                )}
+              </span>
+              <span className="text-muted-foreground dark:text-slate-400">
+                Overtime{' '}
+                <strong className="text-emerald-700 dark:text-emerald-400 tabular-nums">
+                  {otSplit.overtimeHours} h
+                </strong>{' '}
+                at {otMultiplier}×
+                {otSplit.overtimePay != null && (
+                  <span className="tabular-nums"> · ${otSplit.overtimePay.toFixed(2)}</span>
+                )}
+              </span>
+            </div>
+            {otSplit.overtimeHours > 0 && gross != null && (
+              <p className="text-xs text-muted-foreground dark:text-slate-400 mt-1">
+                Per-shift pay above uses the base rate — overtime is applied to the period total.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Name + actions */}
         <div className="mt-4 flex flex-wrap items-end gap-2">
