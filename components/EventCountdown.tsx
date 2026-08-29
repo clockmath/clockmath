@@ -18,6 +18,13 @@ interface EventCountdownProps {
    * (0 = Sunday … 6 = Saturday). Resolves to the next occurrence client-side.
    */
   weekly?: { weekday: number; spanDays?: number };
+  /**
+   * Recurring nth-weekday-of-month event (e.g. Thanksgiving = 4th Thursday
+   * of November → { month: 10, weekday: 4, n: 4 }). `offsetDays` shifts the
+   * result (Black Friday = same rule with offsetDays: 1). Month and weekday
+   * are 0-indexed like the other recurrences.
+   */
+  nthWeekday?: { month: number; weekday: number; n: number; offsetDays?: number };
   title: string;
   className?: string;
   /** Heading shown once the target has arrived. Defaults to `${title} has released!`. */
@@ -68,11 +75,31 @@ function nextWeekday(weekday: number, spanDays = 1): number {
   return today.getTime();
 }
 
+// The nth `weekday` of `month` in `year`, plus `offsetDays`, at midnight.
+function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: number, offsetDays = 0): Date {
+  const first = new Date(year, month, 1);
+  const firstOccurrence = 1 + ((weekday - first.getDay() + 7) % 7);
+  return new Date(year, month, firstOccurrence + (n - 1) * 7 + offsetDays, 0, 0, 0, 0);
+}
+
+// Next upcoming nth-weekday occurrence, rolling to next year only once the
+// day has fully ended (same convention as nextOccurrence).
+function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 0): number {
+  const now = new Date();
+  const thisYear = nthWeekdayOfMonth(now.getFullYear(), month, weekday, n, offsetDays);
+  const endOfDay = new Date(thisYear.getFullYear(), thisYear.getMonth(), thisYear.getDate(), 23, 59, 59, 999);
+  if (now.getTime() > endOfDay.getTime()) {
+    return nthWeekdayOfMonth(now.getFullYear() + 1, month, weekday, n, offsetDays).getTime();
+  }
+  return thisYear.getTime();
+}
+
 // Display-only live countdown to a fixed or recurring target (event pages).
 export function EventCountdown({
   target,
   recurring,
   weekly,
+  nthWeekday,
   title,
   className = '',
   arrivedLabel,
@@ -82,7 +109,7 @@ export function EventCountdown({
   // directly. Recurring/weekly targets must be resolved on the client (current
   // date dependent), so they start null and fill in on mount.
   const [targetMs, setTargetMs] = useState<number | null>(
-    recurring || weekly ? null : (target ? target.getTime() : null),
+    recurring || weekly || nthWeekday ? null : (target ? target.getTime() : null),
   );
   const [nowMs, setNowMs] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -90,6 +117,7 @@ export function EventCountdown({
   useEffect(() => {
     if (recurring) setTargetMs(nextOccurrence(recurring.month, recurring.day));
     else if (weekly) setTargetMs(nextWeekday(weekly.weekday, weekly.spanDays));
+    else if (nthWeekday) setTargetMs(nextNthWeekday(nthWeekday.month, nthWeekday.weekday, nthWeekday.n, nthWeekday.offsetDays));
     setNowMs(Date.now());
     setMounted(true);
     const id = setInterval(() => setNowMs(Date.now()), 1000);
@@ -97,7 +125,7 @@ export function EventCountdown({
     // `recurring`/`weekly` are fresh object literals each render; depend on
     // their parts so the effect doesn't re-run on every parent render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays]);
+  }, [recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
 
   const ready = mounted && targetMs !== null && nowMs !== null;
   const isPast = ready && (targetMs as number) < (nowMs as number);
@@ -154,13 +182,15 @@ export function EventCountdown({
         ? nextOccurrence(recurring.month, recurring.day)
         : weekly
           ? nextWeekday(weekly.weekday, weekly.spanDays)
-          : null);
+          : nthWeekday
+            ? nextNthWeekday(nthWeekday.month, nthWeekday.weekday, nthWeekday.n, nthWeekday.offsetDays)
+            : null);
     if (t === null) return null;
     const n = nowMs ?? Date.now();
     if (t <= n) return null;
     return Math.ceil((t - n) / 86400000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays]);
+  }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
 
   return (
     <div
