@@ -14,6 +14,7 @@ import {
   Percent,
   Bed,
   Trophy,
+  AlarmClockPlus,
   LayoutGrid,
   ChevronDown,
 } from 'lucide-react'
@@ -98,6 +99,13 @@ const moreItems: NavItem[] = [
     shortLabel: 'Quiz',
     href: '/tools/quiz',
     icon: <Trophy className="w-4 h-4 shrink-0" />,
+  },
+  {
+    id: 'overtime',
+    label: 'Overtime Calculator',
+    shortLabel: 'Overtime',
+    href: '/tools/overtime',
+    icon: <AlarmClockPlus className="w-4 h-4 shrink-0" />,
   },
 ]
 

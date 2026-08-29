@@ -17,6 +17,7 @@ import {
   Percent,
   Bed,
   Trophy,
+  AlarmClockPlus,
   BookOpen,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
@@ -67,6 +68,12 @@ const TILES = [
     title: 'Countdown Timer',
     description: 'Count down to any date — then share it with a link',
     icon: Hourglass,
+  },
+  {
+    href: '/tools/overtime',
+    title: 'Overtime Calculator',
+    description: 'Regular vs overtime split, and what time and a half really pays',
+    icon: AlarmClockPlus,
   },
   {
     href: '/tools/quiz',
@@ -133,7 +140,7 @@ export default function ToolsHub() {
       <header className="text-center mb-8 sm:mb-section">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
-          Eight free tools. No signup, no ads in your way — everything runs in your browser.
+          Nine free tools. No signup, no ads in your way — everything runs in your browser.
         </p>
         <nav className="text-sm text-muted-foreground mt-4">
           <Link href="/" className="hover:text-primary transition-colors">

@@ -70,7 +70,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/work-hours-calculator',
     category: 'calculator',
     priority: 5,
-    relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
+    relatedTools: ['/tools/timesheet', '/tools/overtime'],
   },
   {
     title: 'Sleep Hours Calculator',
@@ -86,7 +86,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/overtime-hours-calculator',
     category: 'calculator',
     priority: 4,
-    relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
+    relatedTools: ['/tools/overtime', '/tools/timesheet', '/tools/decimal-hours'],
   },
   {
     title: 'Study Time Calculator',
@@ -165,6 +165,13 @@ export const TOOL_LINKS: ToolLink[] = [
     description: 'Live open/closed status for major exchanges in your timezone',
     href: '/tools/market-hours',
     category: 'timezone',
+    priority: 4,
+  },
+  {
+    title: 'Overtime Calculator',
+    description: 'Regular vs overtime split with time-and-a-half pay',
+    href: '/tools/overtime',
+    category: 'calculator',
     priority: 4,
   },
   {
