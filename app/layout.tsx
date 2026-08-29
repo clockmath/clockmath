@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Metadata, Viewport } from "next";
 import Analytics from "@/components/Analytics";
+import ClarityAnalytics from "@/components/ClarityAnalytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import WebVitals from "@/components/WebVitals";
 
@@ -64,6 +65,7 @@ export default function RootLayout({
           }}
         />
         <Analytics />
+        <ClarityAnalytics />
         <WebVitals />
         {children}
         <ConsentBanner />

@@ -53,11 +53,21 @@ export const getStoredConsent = (): ConsentChoice | null => {
   }
 };
 
+// Fired on window whenever the visitor makes a consent choice, so consumers
+// beyond gtag (e.g. Clarity) can react in the same tab — localStorage
+// "storage" events only fire in OTHER tabs.
+export const CONSENT_CHANGED_EVENT = "cm-consent-changed";
+
 export const storeConsent = (choice: ConsentChoice) => {
   try {
     window.localStorage.setItem(CONSENT_STORAGE_KEY, choice);
   } catch {
     /* storage unavailable — choice simply won't persist */
+  }
+  try {
+    window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: choice }));
+  } catch {
+    /* CustomEvent unavailable — consumers fall back to their initial gate */
   }
 };
 
