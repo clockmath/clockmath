@@ -8,6 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'A new five-question time quiz every day: elapsed time, clock math, decimal hours, and payroll shifts. Same puzzle for everyone, arcade-style leaderboard, free practice mode. No signup.',
   path: '/tools/quiz',
+  ogImage: '/og-quiz.png',
   keywords:
     'time quiz, clock math quiz, elapsed time practice, telling time quiz, duration quiz, decimal hours quiz, daily quiz, time math game',
 });
