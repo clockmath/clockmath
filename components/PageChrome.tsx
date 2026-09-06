@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ToolsNavigation from '@/components/ToolsNavigation';
+import AnnouncementBanner from '@/components/AnnouncementBanner';
 
 interface PageChromeProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ export default function PageChrome({ currentTool, children, className = '', onTo
   return (
     <div className={`relative min-h-screen bg-gradient-to-br from-background via-background to-muted/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800/20 ${className}`}>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(5,150,105,0.12),transparent_55%)] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(5,150,105,0.18),transparent_55%)]" />
+      <AnnouncementBanner />
       <main className="relative max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
         <div className="mb-8 sm:mb-section">
           <div className="flex items-center gap-2 sm:gap-3 mb-6">
