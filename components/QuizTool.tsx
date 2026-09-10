@@ -164,6 +164,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
   // Percentile recomputed by the server against everyone who has played so
   // far — unlike stored.percentile, which is frozen at submit time.
   const [livePercentile, setLivePercentile] = useState<number | null>(null);
+  const [livePosition, setLivePosition] = useState<number | null>(null);
   // Milliseconds until the next puzzle (next UTC midnight), ticking.
   const [nextPuzzleMs, setNextPuzzleMs] = useState<number | null>(null);
   // Interrupted run to offer resuming (null = start fresh).
@@ -264,6 +265,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
         if (cancelled) return;
         setBoard({ count: data.count, top: data.top || [] });
         if (typeof data.percentile === 'number') setLivePercentile(data.percentile);
+        if (typeof data.position === 'number') setLivePosition(data.position);
       })
       .catch(() => {
         if (!cancelled) setBoardDown(true);
@@ -688,7 +690,13 @@ export function QuizTool({ className = '' }: { className?: string }) {
             )}
             {typeof (livePercentile ?? stored.percentile) === 'number' && board && board.count > 1 && (
               <p className="text-sm font-medium text-foreground mb-3">
-                You beat {livePercentile ?? stored.percentile}% of today&apos;s players so far.
+                You beat {livePercentile ?? stored.percentile}% of today&apos;s players so far
+                {livePosition !== null && board.count > 0 ? (
+                  <span className="text-muted-foreground font-normal">
+                    {' '}— #{livePosition} of {board.count} today
+                  </span>
+                ) : null}
+                .
               </p>
             )}
             <div className="flex flex-col gap-2.5">

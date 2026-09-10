@@ -131,6 +131,7 @@ export async function onRequestGet(context) {
   // FAR — the fix for submit-time percentiles going stale as later players
   // arrive. Self-comparison is excluded by discounting one matching entry.
   let percentile = null;
+  let position = null;
   const s = url.searchParams.get("s");
   const t = url.searchParams.get("t");
   if (s !== null && t !== null) {
@@ -141,13 +142,19 @@ export async function onRequestGet(context) {
       Number.isInteger(timeMs) && timeMs > 0 && timeMs <= 3600000;
     if (valid && board.scores.length > 0) {
       let beaten = 0;
+      let better = 0;
       let self = 0;
       for (const [os, ot] of board.scores) {
         if (score > os || (score === os && timeMs < ot)) beaten += 1;
         else if (score === os && timeMs === ot) self += 1;
+        else better += 1;
       }
       const others = board.scores.length - (self > 0 ? 1 : 0);
       percentile = others > 0 ? Math.round((beaten / others) * 100) : 100;
+      // Competition ranking: 1 + players strictly better. Ties on both
+      // score and time share the position (we can't know which tied entry
+      // is asking, and shared rank is the standard convention anyway).
+      position = better + 1;
     }
   }
 
@@ -156,6 +163,7 @@ export async function onRequestGet(context) {
     count: board.count,
     top: board.top.slice(0, 10),
     ...(percentile !== null ? { percentile } : {}),
+    ...(position !== null ? { position } : {}),
   });
 }
 
