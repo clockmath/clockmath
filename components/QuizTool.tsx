@@ -29,6 +29,52 @@ import {
   type QuizQuestion,
 } from '@/lib/quiz';
 
+/**
+ * Minimal analog dial for clock-reading questions. The accessible label
+ * states the time — a screen-reader user can't inspect hand angles, so the
+ * label IS their clock face.
+ */
+function ClockFace({ h, m }: { h: number; m: number }) {
+  const minuteAngle = m * 6;
+  const hourAngle = (h % 12) * 30 + m * 0.5;
+  const hand = (angle: number, length: number, width: number) => {
+    const rad = ((angle - 90) * Math.PI) / 180;
+    return { x2: 60 + length * Math.cos(rad), y2: 60 + length * Math.sin(rad), width };
+  };
+  const hour = hand(hourAngle, 26, 5);
+  const minute = hand(minuteAngle, 38, 3);
+  const label = `Clock face showing ${h === 0 ? 12 : h}:${String(m).padStart(2, '0')}`;
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-6"
+      role="img"
+      aria-label={label}
+    >
+      <circle cx="60" cy="60" r="56" className="fill-background dark:fill-slate-900/60 stroke-border dark:stroke-slate-600" strokeWidth="2.5" />
+      {Array.from({ length: 12 }, (_, i) => {
+        const a = ((i * 30 - 90) * Math.PI) / 180;
+        const inner = i % 3 === 0 ? 46 : 49;
+        return (
+          <line
+            key={i}
+            x1={60 + inner * Math.cos(a)}
+            y1={60 + inner * Math.sin(a)}
+            x2={60 + 53 * Math.cos(a)}
+            y2={60 + 53 * Math.sin(a)}
+            className="stroke-muted-foreground"
+            strokeWidth={i % 3 === 0 ? 3 : 1.5}
+            strokeLinecap="round"
+          />
+        );
+      })}
+      <line x1="60" y1="60" x2={hour.x2} y2={hour.y2} className="stroke-foreground" strokeWidth={hour.width} strokeLinecap="round" />
+      <line x1="60" y1="60" x2={minute.x2} y2={minute.y2} className="stroke-emerald-600 dark:stroke-emerald-400" strokeWidth={minute.width} strokeLinecap="round" />
+      <circle cx="60" cy="60" r="3.5" className="fill-foreground" />
+    </svg>
+  );
+}
+
 /** 26_625_000 → "7h 23m 45s" (used for the next-puzzle countdown). */
 function fmtHMS(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -126,6 +172,8 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const [boardView, setBoardView] = useState<'today' | 'yesterday'>('today');
   const [yBoard, setYBoard] = useState<BoardState | null>(null);
   const [yBoardDown, setYBoardDown] = useState(false);
+  // Last 7 completed days' winners (null champion = day had no initials).
+  const [champions, setChampions] = useState<Array<{ day: string; champion: BoardEntry | null; count: number }> | null>(null);
   const [initials, setInitials] = useState<string[]>(['', '', '']);
   const [initialsError, setInitialsError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -257,6 +305,23 @@ export function QuizTool({ className = '' }: { className?: string }) {
       cancelled = true;
     };
   }, [boardView, yBoard, yBoardDown, quiz]);
+
+  // This week's daily champions — one fetch per result-screen visit.
+  useEffect(() => {
+    if (phase !== 'done' || champions !== null) return;
+    let cancelled = false;
+    fetch('/api/quiz?week=1')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data.days)) setChampions(data.days);
+      })
+      .catch(() => {
+        /* strip simply doesn't render */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, champions]);
 
   const startDaily = useCallback(() => {
     const seed = resumable;
@@ -583,6 +648,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             </span>
           </div>
           <p className="text-lg sm:text-xl font-semibold text-foreground mb-6">{question.prompt}</p>
+          {question.clock && <ClockFace h={question.clock.h} m={question.clock.m} />}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {question.options.map((_, i) => optionButton(question, i, answered, answerDaily))}
           </div>
@@ -815,6 +881,33 @@ export function QuizTool({ className = '' }: { className?: string }) {
             {boardView === 'yesterday' && !yBoard && !yBoardDown && (
               <p className="text-sm text-muted-foreground">Loading yesterday&apos;s board…</p>
             )}
+
+            {champions && champions.some((c) => c.champion) && (
+              <div className="mt-6 pt-4 border-t border-border/50 dark:border-slate-700/50">
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  This week&apos;s daily champions
+                </h3>
+                <ul className="space-y-2 text-sm tabular-nums">
+                  {champions
+                    .filter((c) => c.champion)
+                    .map((c) => {
+                      const [yy, mm, dd] = c.day.split('-').map(Number);
+                      const weekday = new Date(Date.UTC(yy, mm - 1, dd)).toLocaleDateString(undefined, {
+                        weekday: 'short',
+                        timeZone: 'UTC',
+                      });
+                      return (
+                        <li key={c.day} className="flex items-center gap-3 text-muted-foreground">
+                          <span className="w-9">{weekday}</span>
+                          <span className="font-bold tracking-widest text-foreground">{c.champion!.i}</span>
+                          <span className="ml-auto">{c.champion!.s}/{QUIZ_QUESTION_COUNT}</span>
+                          <span className="w-12 text-right">{fmtMMSS(c.champion!.t)}</span>
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -831,6 +924,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             </span>
           </div>
           <p className="text-lg sm:text-xl font-semibold text-foreground mb-6">{practiceQ.prompt}</p>
+          {practiceQ.clock && <ClockFace h={practiceQ.clock.h} m={practiceQ.clock.m} />}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {practiceQ.options.map((_, i) => optionButton(practiceQ, i, practiceAnswered, answerPractice))}
           </div>

@@ -27,7 +27,7 @@ const FAQS = [
   {
     question: 'What kind of questions are asked?',
     answer:
-      'The five daily questions always cover the same real-world skills: elapsed time between two clock times, durations that cross midnight, adding hours and minutes to a time, converting hours and minutes to decimal hours, and working out paid hours on a shift with an unpaid break.',
+      'Daily questions draw from real-world time skills: elapsed time between two clock times, durations that cross midnight, adding hours and minutes to a time, converting hours and minutes to decimal hours, paid hours on a shift with an unpaid break — and, on some days, reading an analog clock face or converting between 12-hour and 24-hour time. The exact mix varies by day, but it is always the same five for everyone.',
   },
   {
     question: 'Do I need an account to play or join the leaderboard?',
