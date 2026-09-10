@@ -102,10 +102,37 @@ export async function onRequestGet(context) {
   }
 
   const board = await loadBoard(env, day);
+
+  // Optional live percentile: pass the caller's own score (s) and time (t)
+  // and the response says how they stand against everyone who has played SO
+  // FAR — the fix for submit-time percentiles going stale as later players
+  // arrive. Self-comparison is excluded by discounting one matching entry.
+  let percentile = null;
+  const s = url.searchParams.get("s");
+  const t = url.searchParams.get("t");
+  if (s !== null && t !== null) {
+    const score = Number(s);
+    const timeMs = Number(t);
+    const valid =
+      Number.isInteger(score) && score >= 0 && score <= 5 &&
+      Number.isInteger(timeMs) && timeMs > 0 && timeMs <= 3600000;
+    if (valid && board.scores.length > 0) {
+      let beaten = 0;
+      let self = 0;
+      for (const [os, ot] of board.scores) {
+        if (score > os || (score === os && timeMs < ot)) beaten += 1;
+        else if (score === os && timeMs === ot) self += 1;
+      }
+      const others = board.scores.length - (self > 0 ? 1 : 0);
+      percentile = others > 0 ? Math.round((beaten / others) * 100) : 100;
+    }
+  }
+
   return json(request, 200, {
     day,
     count: board.count,
     top: board.top.slice(0, 10),
+    ...(percentile !== null ? { percentile } : {}),
   });
 }
 

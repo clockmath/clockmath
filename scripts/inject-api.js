@@ -201,7 +201,34 @@ async function handleQuizApi(request, env) {
     const day = url.searchParams.get('day') || quizUtcToday();
     if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(day)) return quizJson(request, 400, { error: 'bad day' });
     const board = await quizLoadBoard(env, day);
-    return quizJson(request, 200, { day, count: board.count, top: board.top.slice(0, 10) });
+
+    // Optional live percentile (mirror of functions/api/quiz.js): caller's
+    // own s/t compared against everyone who has played so far, excluding one
+    // matching entry as self.
+    let livePercentile = null;
+    const qs = url.searchParams.get('s');
+    const qt = url.searchParams.get('t');
+    if (qs !== null && qt !== null) {
+      const score = Number(qs);
+      const timeMs = Number(qt);
+      const valid = Number.isInteger(score) && score >= 0 && score <= 5 &&
+        Number.isInteger(timeMs) && timeMs > 0 && timeMs <= 3600000;
+      if (valid && board.scores.length > 0) {
+        let beaten = 0;
+        let self = 0;
+        for (const pair of board.scores) {
+          if (score > pair[0] || (score === pair[0] && timeMs < pair[1])) beaten += 1;
+          else if (score === pair[0] && timeMs === pair[1]) self += 1;
+        }
+        const others = board.scores.length - (self > 0 ? 1 : 0);
+        livePercentile = others > 0 ? Math.round((beaten / others) * 100) : 100;
+      }
+    }
+
+    return quizJson(request, 200, Object.assign(
+      { day, count: board.count, top: board.top.slice(0, 10) },
+      livePercentile !== null ? { percentile: livePercentile } : {},
+    ));
   }
 
   if (request.method !== 'POST') return quizJson(request, 405, { error: 'method not allowed' });
