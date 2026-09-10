@@ -226,6 +226,7 @@ async function handleQuizApi(request, env) {
     // own s/t compared against everyone who has played so far, excluding one
     // matching entry as self.
     let livePercentile = null;
+    let livePosition = null;
     const qs = url.searchParams.get('s');
     const qt = url.searchParams.get('t');
     if (qs !== null && qt !== null) {
@@ -235,19 +236,24 @@ async function handleQuizApi(request, env) {
         Number.isInteger(timeMs) && timeMs > 0 && timeMs <= 3600000;
       if (valid && board.scores.length > 0) {
         let beaten = 0;
+        let better = 0;
         let self = 0;
         for (const pair of board.scores) {
           if (score > pair[0] || (score === pair[0] && timeMs < pair[1])) beaten += 1;
           else if (score === pair[0] && timeMs === pair[1]) self += 1;
+          else better += 1;
         }
         const others = board.scores.length - (self > 0 ? 1 : 0);
         livePercentile = others > 0 ? Math.round((beaten / others) * 100) : 100;
+        // Competition ranking: ties share the position.
+        livePosition = better + 1;
       }
     }
 
     return quizJson(request, 200, Object.assign(
       { day, count: board.count, top: board.top.slice(0, 10) },
       livePercentile !== null ? { percentile: livePercentile } : {},
+      livePosition !== null ? { position: livePosition } : {},
     ));
   }
 
