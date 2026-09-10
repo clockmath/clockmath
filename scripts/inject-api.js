@@ -144,6 +144,7 @@ const QUIZ_MAX_STORED_SCORES = 5000;
 const QUIZ_MAX_TOP = 25;
 const QUIZ_COOKIE = 'cmq_day';
 const quizIpHits = new Map();
+const quizChampionCache = new Map();
 
 function quizRateLimited(ip) {
   const now = Date.now();
@@ -198,6 +199,25 @@ async function handleQuizApi(request, env) {
 
   if (request.method === 'GET') {
     const url = new URL(request.url);
+
+    // ?week=1 → champions of the last 7 completed days (mirror of
+    // functions/api/quiz.js; finished boards are immutable → cacheable).
+    if (url.searchParams.get('week') === '1') {
+      const now = new Date();
+      const days = [];
+      for (let i = 1; i <= 7; i++) {
+        const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - i)).toISOString().slice(0, 10);
+        let cached = quizChampionCache.get(d);
+        if (cached === undefined) {
+          const b = await quizLoadBoard(env, d);
+          cached = { champion: b.top[0] || null, count: b.count };
+          quizChampionCache.set(d, cached);
+        }
+        days.push({ day: d, champion: cached.champion, count: cached.count });
+      }
+      return quizJson(request, 200, { days });
+    }
+
     const day = url.searchParams.get('day') || quizUtcToday();
     if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(day)) return quizJson(request, 400, { error: 'bad day' });
     const board = await quizLoadBoard(env, day);

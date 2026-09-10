@@ -34,6 +34,8 @@ const COOKIE_NAME = "cmq_day";
 // fine: it only exists to blunt dumb spam loops, not determined abuse).
 // Generous so a classroom behind one NAT isn't locked out.
 const ipHits = new Map();
+// Finished-day champion lookups (immutable once a day ends).
+const championCache = new Map();
 function rateLimited(ip) {
   const now = Date.now();
   const bucket = ipHits.get(ip);
@@ -96,6 +98,27 @@ export async function onRequestGet(context) {
   if (!env.QUIZ_KV) return json(request, 503, { error: "leaderboard unavailable" });
 
   const url = new URL(request.url);
+
+  // ?week=1 → champions of the last 7 COMPLETED days (yesterday backward).
+  // Finished boards are immutable, so the per-isolate cache is safe.
+  if (url.searchParams.get("week") === "1") {
+    const now = new Date();
+    const days = [];
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - i))
+        .toISOString()
+        .slice(0, 10);
+      let cached = championCache.get(d);
+      if (cached === undefined) {
+        const b = await loadBoard(env, d);
+        cached = { champion: b.top[0] || null, count: b.count };
+        championCache.set(d, cached);
+      }
+      days.push({ day: d, champion: cached.champion, count: cached.count });
+    }
+    return json(request, 200, { days });
+  }
+
   const day = url.searchParams.get("day") || utcToday();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
     return json(request, 400, { error: "bad day" });

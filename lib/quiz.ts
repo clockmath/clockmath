@@ -13,6 +13,8 @@
 export interface QuizQuestion {
   /** Question text, e.g. "How much time passes from 9:20 AM to 3:45 PM?" */
   prompt: string;
+  /** When set, the component renders an analog clock face showing h:m. */
+  clock?: { h: number; m: number };
   /** Exactly four answer options, pre-shuffled deterministically. */
   options: string[];
   correctIndex: number;
@@ -244,6 +246,64 @@ function genShiftWithBreak(rand: Rand): QuizQuestion {
   };
 }
 
+/** "2:45"-style label on a 12-hour dial (no AM/PM — a clock face has none). */
+function fmtDial(v: number): string {
+  const mod = ((v % 720) + 720) % 720;
+  const h = Math.floor(mod / 60) === 0 ? 12 : Math.floor(mod / 60);
+  return `${h}:${String(mod % 60).padStart(2, '0')}`;
+}
+
+/** Minutes-of-day → "17:30" (24-hour). */
+function fmt24(v: number): string {
+  const mod = ((v % 1440) + 1440) % 1440;
+  return `${String(Math.floor(mod / 60)).padStart(2, '0')}:${String(mod % 60).padStart(2, '0')}`;
+}
+
+/** V2 — read an analog clock face (rendered from `clock` by the component). */
+function genClockFace(rand: Rand): QuizQuestion {
+  const h = randInt(rand, 1, 12);
+  const m = randInt(rand, 0, 11) * 5;
+  const value = h * 60 + m; // 60..779, always positive for buildOptions
+  const { options, correctIndex } = buildOptions(rand, value, [5, -5, 60, -60, 30, -30, 15, -15], fmtDial);
+  return {
+    prompt: 'What time does this clock show?',
+    clock: { h, m },
+    options,
+    correctIndex,
+    explanation: `The short hand marks the hour (${h}), the long hand points at ${m} minutes — ${fmtDial(value)}.`,
+    toolHref: '/',
+    toolLabel: 'Time Duration Calculator',
+  };
+}
+
+/** V2 — 12-hour ↔ 24-hour conversion (afternoon/evening, where it's non-trivial). */
+function gen24Hour(rand: Rand): QuizQuestion {
+  const h24 = randInt(rand, 13, 23);
+  const m = randInt(rand, 0, 11) * 5;
+  const value = h24 * 60 + m;
+  const deltas = [60, -60, 720, -720, 30, -30, 5, -5]; // ±12h = the classic AM/PM slip
+  if (rand() < 0.5) {
+    const { options, correctIndex } = buildOptions(rand, value, deltas, fmtClock);
+    return {
+      prompt: `A schedule says ${fmt24(value)}. What time is that on a 12-hour clock?`,
+      options,
+      correctIndex,
+      explanation: `${h24} is past noon, so subtract 12: ${h24} − 12 = ${h24 - 12}, minutes unchanged — ${fmtClock(value)}.`,
+      toolHref: '/',
+      toolLabel: 'Time Duration Calculator',
+    };
+  }
+  const { options, correctIndex } = buildOptions(rand, value, deltas, fmt24);
+  return {
+    prompt: `It's ${fmtClock(value)}. What is that in 24-hour time?`,
+    options,
+    correctIndex,
+    explanation: `PM times add 12 to the hour: ${h24 - 12} + 12 = ${h24}, minutes unchanged — ${fmt24(value)}.`,
+    toolHref: '/',
+    toolLabel: 'Time Duration Calculator',
+  };
+}
+
 const GENERATORS = [
   genDurationSameDay,
   genCrossMidnight,
@@ -252,6 +312,14 @@ const GENERATORS = [
   genShiftWithBreak,
 ];
 
+/**
+ * Days on or after this date may swap two slots for the v2 question types
+ * (clock face, 24-hour). Date-gated so a mid-day deploy can NEVER change a
+ * live day's puzzle: the gate compares against the puzzle's own day, and
+ * every pre-gate day consumes the PRNG in exactly the historical order.
+ */
+export const QUESTION_MIX_V2_FROM = '2026-09-15';
+
 /** The shared daily puzzle for a given UTC day. */
 export function generateDailyQuiz(day: string): DailyQuiz {
   const rand = mulberry32(seedFromDay(day));
@@ -259,18 +327,31 @@ export function generateDailyQuiz(day: string): DailyQuiz {
   rand();
   rand();
   rand();
+  let gens = GENERATORS;
+  if (day >= QUESTION_MIX_V2_FROM) {
+    // Two variety slots, each swapped on a deterministic coin flip. The
+    // flips draw from the same seeded stream, so the whole world still
+    // agrees on the day's mix.
+    const g = [...GENERATORS];
+    if (rand() < 0.5) g[0] = genClockFace;
+    if (rand() < 0.5) g[2] = gen24Hour;
+    gens = g;
+  }
   return {
     day,
     number: getPuzzleNumber(day),
-    questions: GENERATORS.map((g) => g(rand)),
+    questions: gens.map((g) => g(rand)),
   };
 }
+
+/** Practice draws from every type immediately — no fairness gate needed. */
+const PRACTICE_GENERATORS = [...GENERATORS, genClockFace, gen24Hour];
 
 /** One random practice question (any type), non-deterministic seed OK. */
 export function generatePracticeQuestion(seed: number): QuizQuestion {
   const rand = mulberry32(seed);
   rand();
-  return pick(rand, GENERATORS)(rand);
+  return pick(rand, PRACTICE_GENERATORS)(rand);
 }
 
 /**
