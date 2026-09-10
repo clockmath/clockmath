@@ -59,6 +59,10 @@ interface BoardState {
 }
 
 const RESULT_KEY_PREFIX = 'clockmath-quiz-result-';
+// In-progress daily run: answers so far + banked ms. Survives reloads and
+// mobile interruptions; index resumes at r.length (an answered question's
+// feedback is skipped on resume rather than double-counted).
+const PROGRESS_KEY_PREFIX = 'clockmath-quiz-progress-';
 const STREAK_KEY = 'clockmath-quiz-streak';
 const INITIALS_KEY = 'clockmath-quiz-initials';
 
@@ -116,6 +120,12 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const [livePercentile, setLivePercentile] = useState<number | null>(null);
   // Milliseconds until the next puzzle (next UTC midnight), ticking.
   const [nextPuzzleMs, setNextPuzzleMs] = useState<number | null>(null);
+  // Interrupted run to offer resuming (null = start fresh).
+  const [resumable, setResumable] = useState<{ r: boolean[]; ms: number } | null>(null);
+  // Which day's board the leaderboard card shows.
+  const [boardView, setBoardView] = useState<'today' | 'yesterday'>('today');
+  const [yBoard, setYBoard] = useState<BoardState | null>(null);
+  const [yBoardDown, setYBoardDown] = useState(false);
   const [initials, setInitials] = useState<string[]>(['', '', '']);
   const [initialsError, setInitialsError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -144,6 +154,28 @@ export function QuizTool({ className = '' }: { className?: string }) {
       setStreak(readJSON<{ last: string; streak: number }>(STREAK_KEY)?.streak ?? 0);
       setPhase('done');
     } else {
+      const progress = readJSON<{ r: boolean[]; ms: number }>(PROGRESS_KEY_PREFIX + day);
+      if (progress && Array.isArray(progress.r) && progress.r.length > 0 && progress.r.length < QUIZ_QUESTION_COUNT) {
+        setResumable({ r: progress.r.map(Boolean), ms: Math.max(0, Number(progress.ms) || 0) });
+      } else if (progress && Array.isArray(progress.r) && progress.r.length >= QUIZ_QUESTION_COUNT) {
+        // They answered the last question but never saw the result screen
+        // (left during Q5 feedback) — finalize the run instead of restarting.
+        const r = progress.r.slice(0, QUIZ_QUESTION_COUNT).map(Boolean);
+        const finalized: StoredResult = {
+          day,
+          score: r.filter(Boolean).length,
+          timeMs: Math.round(Math.max(0, Number(progress.ms) || 0)),
+          results: r,
+          initials: null,
+          percentile: null,
+        };
+        writeJSON(RESULT_KEY_PREFIX + day, finalized);
+        try { localStorage.removeItem(PROGRESS_KEY_PREFIX + day); } catch { /* ignore */ }
+        setStored(finalized);
+        setStreak(bumpStreak(day));
+        setPhase('done');
+        return;
+      }
       setPhase('intro');
     }
     const savedInitials = localStorage.getItem(INITIALS_KEY);
@@ -155,11 +187,20 @@ export function QuizTool({ className = '' }: { className?: string }) {
   // Live timer — only ticks while a question awaits an answer.
   useEffect(() => {
     if (phase !== 'playing' || answered !== null) return;
+    let lastPersistedSec = -1;
     const id = setInterval(() => {
-      setElapsedMs(accumulatedRef.current + (performance.now() - questionStartRef.current));
+      const total = accumulatedRef.current + (performance.now() - questionStartRef.current);
+      setElapsedMs(total);
+      // Persist banked time about once a second so a reload mid-question
+      // keeps the clock honest instead of resetting it.
+      const sec = Math.floor(total / 1000);
+      if (quiz && sec !== lastPersistedSec) {
+        lastPersistedSec = sec;
+        writeJSON(PROGRESS_KEY_PREFIX + quiz.day, { r: results, ms: Math.round(total) });
+      }
     }, 250);
     return () => clearInterval(id);
-  }, [phase, answered, questionIndex]);
+  }, [phase, answered, questionIndex, quiz, results]);
 
   // Fetch the board on the intro (social-proof preview) and result screens.
   // On the result screen the caller's own score/time ride along so the
@@ -198,15 +239,35 @@ export function QuizTool({ className = '' }: { className?: string }) {
     return () => clearInterval(id);
   }, [phase]);
 
+  // Fetch yesterday's final board on demand (boards live in KV for 14 days).
+  useEffect(() => {
+    if (boardView !== 'yesterday' || yBoard !== null || yBoardDown || !quiz) return;
+    const [y, m, d] = quiz.day.split('-').map(Number);
+    const yesterday = new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10);
+    let cancelled = false;
+    fetch(`/api/quiz?day=${yesterday}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((data) => {
+        if (!cancelled) setYBoard({ count: data.count, top: data.top || [] });
+      })
+      .catch(() => {
+        if (!cancelled) setYBoardDown(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [boardView, yBoard, yBoardDown, quiz]);
+
   const startDaily = useCallback(() => {
-    accumulatedRef.current = 0;
+    const seed = resumable;
+    accumulatedRef.current = seed ? seed.ms : 0;
     questionStartRef.current = performance.now();
-    setElapsedMs(0);
-    setResults([]);
-    setQuestionIndex(0);
+    setElapsedMs(seed ? seed.ms : 0);
+    setResults(seed ? seed.r : []);
+    setQuestionIndex(seed ? seed.r.length : 0);
     setAnswered(null);
     setPhase('playing');
-  }, []);
+  }, [resumable]);
 
   const finishDaily = useCallback(
     (finalResults: boolean[], timeMs: number) => {
@@ -221,6 +282,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
         percentile: null,
       };
       writeJSON(RESULT_KEY_PREFIX + quiz.day, result);
+      try { localStorage.removeItem(PROGRESS_KEY_PREFIX + quiz.day); } catch { /* ignore */ }
       setStored(result);
       setStreak(bumpStreak(quiz.day));
       setPhase('done');
@@ -236,13 +298,15 @@ export function QuizTool({ className = '' }: { className?: string }) {
       setElapsedMs(accumulatedRef.current);
       setAnswered(optionIndex);
       const correct = optionIndex === quiz.questions[questionIndex].correctIndex;
-      setResults((prev) => [...prev, correct]);
+      const nextResults = [...results, correct];
+      setResults(nextResults);
+      writeJSON(PROGRESS_KEY_PREFIX + quiz.day, { r: nextResults, ms: Math.round(accumulatedRef.current) });
       if (!firedToolUsed.current) {
         firedToolUsed.current = true;
         toolUsed('quiz');
       }
     },
-    [quiz, answered, questionIndex],
+    [quiz, answered, questionIndex, results],
   );
 
   const nextDaily = useCallback(() => {
@@ -492,7 +556,9 @@ export function QuizTool({ className = '' }: { className?: string }) {
               className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
             >
               <Trophy className="w-4 h-4" aria-hidden="true" />
-              Play today&apos;s quiz
+              {resumable
+                ? `Resume today's quiz — question ${resumable.r.length + 1} of ${QUIZ_QUESTION_COUNT}`
+                : "Play today's quiz"}
             </button>
             <button
               onClick={startPractice}
@@ -561,18 +627,18 @@ export function QuizTool({ className = '' }: { className?: string }) {
             )}
             <div className="flex flex-col gap-2.5">
               <button
-                onClick={share}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
-              >
-                {shareCopied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Share2 className="w-4 h-4" aria-hidden="true" />}
-                {shareCopied ? 'Copied!' : 'Share result'}
-              </button>
-              <button
                 onClick={startPractice}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-emerald-600/60 dark:border-emerald-500/60 text-emerald-700 dark:text-emerald-400 text-sm font-semibold hover:bg-emerald-600/10 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
               >
                 <GraduationCap className="w-4 h-4" aria-hidden="true" />
                 Keep practicing — unlimited random questions
+              </button>
+              <button
+                onClick={share}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-emerald-600/60 dark:border-emerald-500/60 text-emerald-700 dark:text-emerald-400 text-sm font-semibold hover:bg-emerald-600/10 transition-colors"
+              >
+                {shareCopied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Share2 className="w-4 h-4" aria-hidden="true" />}
+                {shareCopied ? 'Copied!' : 'Share result'}
               </button>
             </div>
             {shareFallback && (
@@ -607,16 +673,36 @@ export function QuizTool({ className = '' }: { className?: string }) {
 
           {/* Leaderboard card */}
           <div className={cardClass}>
-            <h2 className="text-lg font-bold text-foreground mb-3">Today&apos;s leaderboard</h2>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h2 className="text-lg font-bold text-foreground">
+                {boardView === 'today' ? "Today's leaderboard" : "Yesterday's final board"}
+              </h2>
+              <div className="flex gap-1 text-xs" role="group" aria-label="Board day">
+                {(['today', 'yesterday'] as const).map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setBoardView(v)}
+                    aria-pressed={boardView === v}
+                    className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
+                      boardView === v
+                        ? 'bg-emerald-600 text-white'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {v === 'today' ? 'Today' : 'Yesterday'}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-            {boardDown && (
+            {boardView === 'today' && boardDown && (
               <p className="text-sm text-muted-foreground">
                 The leaderboard is unreachable right now — your score is saved on this device, and
                 sharing still works.
               </p>
             )}
 
-            {!boardDown && stored.percentile === null && (
+            {boardView === 'today' && !boardDown && stored.percentile === null && (
               <div className="mb-6">
                 <p className="text-sm text-muted-foreground mb-3">
                   Enter three letters, arcade style, to put your score on today&apos;s board:
@@ -664,7 +750,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
               </div>
             )}
 
-            {!boardDown && board && board.top.length > 0 && (
+            {boardView === 'today' && !boardDown && board && board.top.length > 0 && (
               <ol className="space-y-2" aria-label="Top ten scores today">
                 {board.top.map((entry, i) => (
                   <li
@@ -684,16 +770,50 @@ export function QuizTool({ className = '' }: { className?: string }) {
               </ol>
             )}
 
-            {!boardDown && board && board.top.length === 0 && stored.percentile !== null && (
+            {boardView === 'today' && !boardDown && board && board.top.length === 0 && stored.percentile !== null && (
               <p className="text-sm text-muted-foreground">
                 No initials on the board yet — yours could be first.
               </p>
             )}
 
-            {!boardDown && board && board.count > 0 && (
+            {boardView === 'today' && !boardDown && board && board.count > 0 && (
               <p className="text-xs text-muted-foreground mt-4 tabular-nums">
                 {board.count} player{board.count === 1 ? '' : 's'} so far today.
               </p>
+            )}
+
+            {boardView === 'yesterday' && yBoardDown && (
+              <p className="text-sm text-muted-foreground">
+                Yesterday&apos;s board is unavailable right now.
+              </p>
+            )}
+            {boardView === 'yesterday' && yBoard && yBoard.top.length > 0 && (
+              <>
+                <ol className="space-y-2" aria-label="Top ten scores yesterday">
+                  {yBoard.top.map((entry, i) => (
+                    <li
+                      key={`${entry.i}-${i}`}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm tabular-nums bg-background dark:bg-slate-900/40"
+                    >
+                      <span className="w-6 text-muted-foreground">{i + 1}.</span>
+                      <span className="font-bold tracking-widest text-foreground">{entry.i}</span>
+                      <span className="ml-auto text-foreground">{entry.s}/{QUIZ_QUESTION_COUNT}</span>
+                      <span className="w-12 text-right text-muted-foreground">{fmtMMSS(entry.t)}</span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="text-xs text-muted-foreground mt-4 tabular-nums">
+                  Final standings — {yBoard.count} player{yBoard.count === 1 ? '' : 's'} played.
+                </p>
+              </>
+            )}
+            {boardView === 'yesterday' && yBoard && yBoard.top.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No initials made yesterday&apos;s board.
+              </p>
+            )}
+            {boardView === 'yesterday' && !yBoard && !yBoardDown && (
+              <p className="text-sm text-muted-foreground">Loading yesterday&apos;s board…</p>
             )}
           </div>
         </div>

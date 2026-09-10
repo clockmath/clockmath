@@ -96,11 +96,21 @@ export default function QuizPage() {
 
       <QuizTool className="mb-section" />
 
-      {/* Explanation */}
+      {/* Explanation — collapsed like the FAQ; content stays prerendered */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
-          Why practice time math?
-        </h2>
+        <details className="group bg-card dark:bg-slate-800 rounded-2xl border border-border/50 dark:border-slate-700/50">
+          <summary className="flex items-center justify-between gap-3 cursor-pointer select-none list-none px-4 sm:px-5 py-3 [&::-webkit-details-marker]:hidden">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground dark:text-slate-100">
+              Why practice time math?
+            </h2>
+            <span
+              aria-hidden="true"
+              className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+            >
+              ▾
+            </span>
+          </summary>
+          <div className="px-4 sm:px-5 pb-4">
         <p className="text-muted-foreground mb-3">
           Elapsed-time math shows up everywhere adults actually do arithmetic: reading a
           timesheet, checking a night-shift schedule, working out whether a 7:45 AM start and a
@@ -130,6 +140,8 @@ export default function QuizPage() {
           a classroom of shared devices, and everyone gets the same daily puzzle to compare
           against.
         </p>
+          </div>
+        </details>
       </section>
 
       {/* FAQ — mirrors the FAQPage JSON-LD above */}
