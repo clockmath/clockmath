@@ -137,12 +137,23 @@ export default function QuizPage() {
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-6">
           Frequently asked questions
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-3">
           {FAQS.map((faq) => (
-            <div key={faq.question}>
-              <h3 className="font-semibold text-foreground dark:text-slate-100 mb-2">{faq.question}</h3>
-              <p className="text-muted-foreground text-sm sm:text-base">{faq.answer}</p>
-            </div>
+            <details
+              key={faq.question}
+              className="group bg-card dark:bg-slate-800 rounded-2xl border border-border/50 dark:border-slate-700/50"
+            >
+              <summary className="flex items-center justify-between gap-3 cursor-pointer select-none list-none px-4 sm:px-5 py-3 font-semibold text-foreground dark:text-slate-100 [&::-webkit-details-marker]:hidden">
+                <h3 className="text-base font-semibold">{faq.question}</h3>
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                >
+                  ▾
+                </span>
+              </summary>
+              <p className="px-4 sm:px-5 pb-4 text-muted-foreground text-sm sm:text-base">{faq.answer}</p>
+            </details>
           ))}
         </div>
       </section>

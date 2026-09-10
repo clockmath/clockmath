@@ -29,6 +29,15 @@ import {
   type QuizQuestion,
 } from '@/lib/quiz';
 
+/** 26_625_000 → "7h 23m 45s" (used for the next-puzzle countdown). */
+function fmtHMS(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return `${h}h ${m}m ${s}s`;
+}
+
 interface StoredResult {
   day: string;
   score: number;
@@ -102,6 +111,11 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const [streak, setStreak] = useState(0);
   const [board, setBoard] = useState<BoardState | null>(null);
   const [boardDown, setBoardDown] = useState(false);
+  // Percentile recomputed by the server against everyone who has played so
+  // far — unlike stored.percentile, which is frozen at submit time.
+  const [livePercentile, setLivePercentile] = useState<number | null>(null);
+  // Milliseconds until the next puzzle (next UTC midnight), ticking.
+  const [nextPuzzleMs, setNextPuzzleMs] = useState<number | null>(null);
   const [initials, setInitials] = useState<string[]>(['', '', '']);
   const [initialsError, setInitialsError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -147,14 +161,20 @@ export function QuizTool({ className = '' }: { className?: string }) {
     return () => clearInterval(id);
   }, [phase, answered, questionIndex]);
 
-  // Fetch the board when the result screen shows.
+  // Fetch the board on the intro (social-proof preview) and result screens.
+  // On the result screen the caller's own score/time ride along so the
+  // server returns a LIVE percentile that stays honest as later players
+  // arrive.
   useEffect(() => {
-    if (phase !== 'done' || !quiz) return;
+    if ((phase !== 'done' && phase !== 'intro') || !quiz) return;
     let cancelled = false;
-    fetch(`/api/quiz?day=${quiz.day}`)
+    const own = phase === 'done' && stored ? `&s=${stored.score}&t=${stored.timeMs}` : '';
+    fetch(`/api/quiz?day=${quiz.day}${own}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((data) => {
-        if (!cancelled) setBoard({ count: data.count, top: data.top || [] });
+        if (cancelled) return;
+        setBoard({ count: data.count, top: data.top || [] });
+        if (typeof data.percentile === 'number') setLivePercentile(data.percentile);
       })
       .catch(() => {
         if (!cancelled) setBoardDown(true);
@@ -162,7 +182,21 @@ export function QuizTool({ className = '' }: { className?: string }) {
     return () => {
       cancelled = true;
     };
-  }, [phase, quiz]);
+  }, [phase, quiz, stored]);
+
+  // Countdown to the next puzzle (next UTC midnight), ticking each second
+  // while the result screen is visible.
+  useEffect(() => {
+    if (phase !== 'done') return;
+    const tick = () => {
+      const now = new Date();
+      const nextMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+      setNextPuzzleMs(nextMidnight - now.getTime());
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [phase]);
 
   const startDaily = useCallback(() => {
     accumulatedRef.current = 0;
@@ -430,10 +464,28 @@ export function QuizTool({ className = '' }: { className?: string }) {
             </h2>
             <span className="text-sm text-muted-foreground tabular-nums">{quiz.day}</span>
           </div>
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="text-sm text-muted-foreground mb-4">
             Five quick questions on elapsed time, clock math, and payroll hours — the same five
             for everyone today. Answer fast: the leaderboard breaks ties on time, arcade style.
           </p>
+          {board && board.count > 0 && (
+            <p className="text-sm mb-4 flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+              <span className="text-muted-foreground">
+                <span className="font-semibold text-foreground tabular-nums">{board.count}</span>{' '}
+                {board.count === 1 ? 'player has' : 'players have'} taken today&apos;s quiz
+                {board.top.length > 0 && (
+                  <>
+                    {' '}— the score to beat is{' '}
+                    <span className="font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
+                      {board.top[0].i} · {board.top[0].s}/{QUIZ_QUESTION_COUNT} in {fmtMMSS(board.top[0].t)}
+                    </span>
+                  </>
+                )}
+                .
+              </span>
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={startDaily}
@@ -502,25 +554,25 @@ export function QuizTool({ className = '' }: { className?: string }) {
                 🔥 {streak}-day streak — nice consistency.
               </p>
             )}
-            {typeof stored.percentile === 'number' && board && board.count > 1 && (
+            {typeof (livePercentile ?? stored.percentile) === 'number' && board && board.count > 1 && (
               <p className="text-sm font-medium text-foreground mb-3">
-                You beat {stored.percentile}% of today&apos;s players.
+                You beat {livePercentile ?? stored.percentile}% of today&apos;s players so far.
               </p>
             )}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col gap-2.5">
               <button
                 onClick={share}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
               >
                 {shareCopied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Share2 className="w-4 h-4" aria-hidden="true" />}
                 {shareCopied ? 'Copied!' : 'Share result'}
               </button>
               <button
                 onClick={startPractice}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border dark:border-slate-600 text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-emerald-600/60 dark:border-emerald-500/60 text-emerald-700 dark:text-emerald-400 text-sm font-semibold hover:bg-emerald-600/10 transition-colors"
               >
                 <GraduationCap className="w-4 h-4" aria-hidden="true" />
-                Keep practicing
+                Keep practicing — unlimited random questions
               </button>
             </div>
             {shareFallback && (
@@ -538,8 +590,18 @@ export function QuizTool({ className = '' }: { className?: string }) {
                 />
               </div>
             )}
-            <p className="text-xs text-muted-foreground mt-4">
-              New puzzle at midnight UTC. Your result is saved on this device.
+            <p className="text-xs text-muted-foreground mt-4" aria-live="off">
+              {nextPuzzleMs !== null ? (
+                <>
+                  Next puzzle in{' '}
+                  <span className="font-medium text-foreground tabular-nums">
+                    <RollingNumber value={fmtHMS(nextPuzzleMs)} />
+                  </span>
+                  . Your result is saved on this device.
+                </>
+              ) : (
+                'New puzzle at midnight UTC. Your result is saved on this device.'
+              )}
             </p>
           </div>
 
