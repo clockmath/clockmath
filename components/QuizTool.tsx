@@ -185,6 +185,8 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const [practiceQ, setPracticeQ] = useState<QuizQuestion | null>(null);
   const [practiceAnswered, setPracticeAnswered] = useState<number | null>(null);
   const [practiceScore, setPracticeScore] = useState({ right: 0, total: 0 });
+  // "Why?" disclosure on a wrong answer — reset for each new question.
+  const [whyOpen, setWhyOpen] = useState(false);
 
   const questionStartRef = useRef(0);
   const accumulatedRef = useRef(0);
@@ -383,6 +385,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
     } else {
       setQuestionIndex((i) => i + 1);
       setAnswered(null);
+      setWhyOpen(false);
       questionStartRef.current = performance.now();
     }
   }, [quiz, questionIndex, results, finishDaily]);
@@ -462,6 +465,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const startPractice = useCallback(() => {
     setPracticeQ(generatePracticeQuestion(Math.floor(Math.random() * 2 ** 31)));
     setPracticeAnswered(null);
+    setWhyOpen(false);
     setPhase('practice');
   }, []);
 
@@ -484,7 +488,26 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const nextPractice = useCallback(() => {
     setPracticeQ(generatePracticeQuestion(Math.floor(Math.random() * 2 ** 31)));
     setPracticeAnswered(null);
+    setWhyOpen(false);
   }, []);
+
+  // Correct answers auto-advance — the green option IS the feedback, so a
+  // required "Next" click would just be reading time. Wrong answers wait for
+  // the player (that's the teaching moment).
+  useEffect(() => {
+    if (phase !== 'playing' || answered === null || !quiz) return;
+    if (answered !== quiz.questions[questionIndex].correctIndex) return;
+    const t = setTimeout(() => nextDaily(), 900);
+    return () => clearTimeout(t);
+  }, [phase, answered, questionIndex, quiz, nextDaily]);
+
+  useEffect(() => {
+    if (phase !== 'practice' || practiceAnswered === null || !practiceQ) return;
+    if (practiceAnswered !== practiceQ.correctIndex) return;
+    const t = setTimeout(() => nextPractice(), 900);
+    return () => clearTimeout(t);
+  }, [phase, practiceAnswered, practiceQ, nextPractice]);
+
 
   const handleInitialChange = (index: number, raw: string) => {
     const ch = raw.replace(/[^a-zA-Z]/g, '').slice(-1).toUpperCase();
@@ -552,17 +575,25 @@ export function QuizTool({ className = '' }: { className?: string }) {
     );
   };
 
+  // Feedback is color-first: the option grid already shows right/wrong, so
+  // a correct answer needs one word (and auto-advances), and a wrong answer
+  // needs zero required reading — the method waits behind "Why?".
   const feedbackPanel = (q: QuizQuestion, picked: number, onNext: () => void, nextLabel: string) => {
     const correct = picked === q.correctIndex;
-    return (
-      <div
-        className="mt-4 pt-4 border-t border-border/50 dark:border-slate-700/50"
-        aria-live="polite"
-      >
-        <p className={`text-sm font-semibold mb-2 ${correct ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-          {correct ? 'Correct!' : `Not quite — it's ${q.options[q.correctIndex]}.`}
+    if (correct) {
+      return (
+        <p
+          className="mt-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"
+          aria-live="polite"
+        >
+          <Check className="w-4 h-4" aria-hidden="true" />
+          Correct
         </p>
-        <p className="text-sm text-muted-foreground mb-3">{q.explanation}</p>
+      );
+    }
+    return (
+      <div className="mt-4 pt-4 border-t border-border/50 dark:border-slate-700/50" aria-live="polite">
+        <span className="sr-only">{`Not quite — the answer is ${q.options[q.correctIndex]}.`}</span>
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={onNext}
@@ -571,15 +602,26 @@ export function QuizTool({ className = '' }: { className?: string }) {
             {nextLabel}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
-          {!correct && (
+          {!whyOpen && (
+            <button
+              onClick={() => setWhyOpen(true)}
+              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              Why?
+            </button>
+          )}
+        </div>
+        {whyOpen && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            {q.explanation}{' '}
             <Link
               href={q.toolHref}
-              className="text-sm text-emerald-700 dark:text-emerald-400 underline underline-offset-4 hover:text-emerald-600"
+              className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4 hover:text-emerald-600"
             >
               Practice with the {q.toolLabel}
             </Link>
-          )}
-        </div>
+          </p>
+        )}
       </div>
     );
   };
@@ -596,8 +638,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             <span className="text-sm text-muted-foreground tabular-nums">{quiz.day}</span>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Five quick questions on elapsed time, clock math, and payroll hours — the same five
-            for everyone today. Answer fast: the leaderboard breaks ties on time, arcade style.
+            The same five questions for everyone today. Fastest time breaks ties.
           </p>
           {board && board.count > 0 && (
             <p className="text-sm mb-4 flex items-center gap-2">
