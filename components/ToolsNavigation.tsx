@@ -72,43 +72,110 @@ const primaryTabs: NavItem[] = [
   },
 ]
 
-const moreItems: NavItem[] = [
+/**
+ * The "All tools" panel: every tool, grouped by the job the visitor is
+ * trying to do. Tools already in the tab bar are repeated here on purpose —
+ * the panel is the complete map, not the leftovers drawer.
+ */
+const TOOL_GROUPS: Array<{ title: string; items: NavItem[] }> = [
   {
-    id: 'countdown',
-    label: 'Countdown Timer',
-    shortLabel: 'Countdown',
-    href: '/tools/countdown',
-    icon: <Hourglass className="w-4 h-4 shrink-0" />,
+    title: 'Durations',
+    items: [
+      {
+        id: 'calculator',
+        label: 'Time Duration',
+        shortLabel: 'Duration',
+        href: '/',
+        icon: <Clock className="w-4 h-4 shrink-0" />,
+      },
+      {
+        id: 'countdown',
+        label: 'Countdown Timer',
+        shortLabel: 'Countdown',
+        href: '/tools/countdown',
+        icon: <Hourglass className="w-4 h-4 shrink-0" />,
+      },
+      {
+        id: 'sleep',
+        label: 'Sleep Calculator',
+        shortLabel: 'Sleep',
+        href: '/tools/sleep',
+        icon: <Bed className="w-4 h-4 shrink-0" />,
+      },
+    ],
   },
   {
-    id: 'decimal-hours',
-    label: 'Decimal Hours',
-    shortLabel: 'Decimal',
-    href: '/tools/decimal-hours',
-    icon: <Percent className="w-4 h-4 shrink-0" />,
+    title: 'Work & payroll',
+    items: [
+      {
+        id: 'timesheet',
+        label: 'Work Hours',
+        shortLabel: 'Shifts',
+        href: '/tools/timesheet',
+        icon: <ClipboardList className="w-4 h-4 shrink-0" />,
+      },
+      {
+        id: 'overtime',
+        label: 'Overtime Pay',
+        shortLabel: 'Overtime',
+        href: '/tools/overtime',
+        icon: <AlarmClockPlus className="w-4 h-4 shrink-0" />,
+      },
+      {
+        id: 'decimal-hours',
+        label: 'Decimal Hours',
+        shortLabel: 'Decimal',
+        href: '/tools/decimal-hours',
+        icon: <Percent className="w-4 h-4 shrink-0" />,
+      },
+    ],
   },
   {
-    id: 'sleep',
-    label: 'Sleep Calculator',
-    shortLabel: 'Sleep',
-    href: '/tools/sleep',
-    icon: <Bed className="w-4 h-4 shrink-0" />,
+    title: 'Time zones',
+    items: [
+      {
+        id: 'timezone',
+        label: 'Timezone Converter',
+        shortLabel: 'Zones',
+        href: '/tools/timezone',
+        icon: <Globe className="w-4 h-4 shrink-0" />,
+      },
+      {
+        id: 'market-hours',
+        label: 'Stock Market Hours',
+        shortLabel: 'Markets',
+        href: '/tools/market-hours',
+        icon: <CandlestickChart className="w-4 h-4 shrink-0" />,
+      },
+    ],
   },
   {
-    id: 'articles',
-    label: 'Guides',
-    shortLabel: 'Guides',
-    href: '/articles',
-    icon: <BookOpen className="w-4 h-4 shrink-0" />,
-  },
-  {
-    id: 'overtime',
-    label: 'Overtime Calculator',
-    shortLabel: 'Overtime',
-    href: '/tools/overtime',
-    icon: <AlarmClockPlus className="w-4 h-4 shrink-0" />,
+    title: 'Learn & play',
+    items: [
+      {
+        id: 'quiz',
+        label: 'Daily Time Quiz',
+        shortLabel: 'Quiz',
+        href: '/tools/quiz',
+        icon: <Trophy className="w-4 h-4 shrink-0" />,
+      },
+      {
+        id: 'articles',
+        label: 'Guides',
+        shortLabel: 'Guides',
+        href: '/articles',
+        icon: <BookOpen className="w-4 h-4 shrink-0" />,
+      },
+    ],
   },
 ]
+
+// Ids that only live in the panel — used for the button's active state.
+const PANEL_ONLY_IDS = new Set(
+  TOOL_GROUPS.flatMap((g) => g.items.map((i) => i.id)).filter(
+    (id) => !primaryTabs.some((t) => t.id === id),
+  ),
+)
 
 interface ToolsNavigationProps {
   currentTool?: string
@@ -174,7 +241,7 @@ export default function ToolsNavigation({
     pathname.startsWith('/countdown') ? 'countdown' :
     'calculator'
   )
-  const moreActive = moreItems.some((item) => item.id === activeToolId) || activeToolId === 'tools'
+  const moreActive = PANEL_ONLY_IDS.has(activeToolId) || activeToolId === 'tools'
 
   const tabClass = (active: boolean) =>
     `flex-1 min-w-0 px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
@@ -210,41 +277,50 @@ export default function ToolsNavigation({
             onClick={() => setMoreOpen((prev) => !prev)}
             aria-expanded={moreOpen}
             aria-haspopup="true"
-            aria-label="More tools"
+            aria-label="All tools"
             className={`w-full h-full ${tabClass(moreActive)}`}
           >
             <ChevronDown
               className={`w-5 h-5 lg:w-4 lg:h-4 shrink-0 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
             />
-            <span className="text-[11px] leading-tight lg:text-sm">More</span>
+            <span className="text-[11px] leading-tight lg:text-sm">All tools</span>
           </button>
 
           <div
-            className={`${moreOpen ? '' : 'hidden'} absolute right-0 top-full mt-2 z-50 w-56 bg-card dark:bg-slate-800 rounded-xl shadow-sm border border-border/50 dark:border-slate-700/50 p-1.5`}
+            className={`${moreOpen ? '' : 'hidden'} absolute right-0 top-full mt-2 z-50 w-[min(16rem,calc(100vw-2rem))] sm:w-[34rem] bg-card dark:bg-slate-800 rounded-xl shadow-sm border border-border/50 dark:border-slate-700/50 p-3`}
           >
-            {moreItems.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                onClick={() => setMoreOpen(false)}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  activeToolId === item.id
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium'
-                    : 'text-foreground hover:bg-muted/50'
-                }`}
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            ))}
-            <div className="border-t border-border/50 dark:border-slate-700/50 mt-1 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-3">
+              {TOOL_GROUPS.map((group) => (
+                <div key={group.title}>
+                  <h3 className="px-2 mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {group.title}
+                  </h3>
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      onClick={() => setMoreOpen(false)}
+                      className={`flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm transition-colors ${
+                        activeToolId === item.id
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium'
+                          : 'text-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-border/50 dark:border-slate-700/50 mt-2 pt-2">
               <Link
                 href="/tools"
                 onClick={() => setMoreOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-muted/50 transition-colors"
+                className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-muted/50 transition-colors"
               >
                 <LayoutGrid className="w-4 h-4 shrink-0" />
-                View all tools
+                Compare all tools on one page
               </Link>
             </div>
           </div>

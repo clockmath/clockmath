@@ -34,7 +34,30 @@ export default function SiteFooter() {
           Buy Me a Coffee
         </a>
 
-        {/* Contact + site links */}
+        {/* One link row — the nav's All tools panel carries every tool on
+            every page, so listing all nine here again was pure clutter. */}
+        <nav
+          aria-label="Site"
+          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-3"
+        >
+          <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
+            All tools
+          </Link>
+          <Link href="/articles" className="hover:text-foreground underline underline-offset-4">
+            Guides
+          </Link>
+          <Link href="/contact" className="hover:text-foreground underline underline-offset-4">
+            Contact
+          </Link>
+          <Link href="/terms" className="hover:text-foreground underline underline-offset-4">
+            Terms
+          </Link>
+          <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">
+            Privacy
+          </Link>
+        </nav>
+
+        {/* Contact */}
         <div className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-2">
           <a
             href="mailto:hello@clockmath.com?subject=Clock%20Math%20feedback"
@@ -43,71 +66,6 @@ export default function SiteFooter() {
             hello@clockmath.com
           </a>
           <FeedbackForm />
-        </div>
-
-        {/* Tools — every tool reachable from every page via plain HTML links */}
-        <nav
-          aria-label="ClockMath tools"
-          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-3"
-        >
-          <Link href="/" className="hover:text-foreground underline underline-offset-4">
-            Time Duration Calculator
-          </Link>
-          <Link href="/tools/timesheet" className="hover:text-foreground underline underline-offset-4">
-            Work Hours Calculator
-          </Link>
-          <Link href="/tools/timezone" className="hover:text-foreground underline underline-offset-4">
-            Timezone Converter
-          </Link>
-          <Link href="/tools/countdown" className="hover:text-foreground underline underline-offset-4">
-            Countdown Timer
-          </Link>
-          <Link href="/tools/market-hours" className="hover:text-foreground underline underline-offset-4">
-            Stock Market Hours
-          </Link>
-          <Link href="/tools/decimal-hours" className="hover:text-foreground underline underline-offset-4">
-            Decimal Hours Converter
-          </Link>
-          <Link href="/tools/sleep" className="hover:text-foreground underline underline-offset-4">
-            Sleep Calculator
-          </Link>
-          <Link href="/tools/quiz" className="hover:text-foreground underline underline-offset-4">
-            Daily Time Quiz
-          </Link>
-          <Link href="/tools/overtime" className="hover:text-foreground underline underline-offset-4">
-            Overtime Calculator
-          </Link>
-          <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
-            All Tools
-          </Link>
-        </nav>
-
-        {/* Site + legal links */}
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground dark:text-slate-400 mb-2">
-          <a
-            href="/articles"
-            className="hover:text-foreground underline underline-offset-4"
-          >
-            Guides
-          </a>
-          <a
-            href="/contact"
-            className="hover:text-foreground underline underline-offset-4"
-          >
-            Contact
-          </a>
-          <a
-            href="/terms"
-            className="hover:text-foreground underline underline-offset-4"
-          >
-            Terms of Service
-          </a>
-          <a
-            href="/privacy"
-            className="hover:text-foreground underline underline-offset-4"
-          >
-            Privacy Policy
-          </a>
         </div>
 
         {/* Copyright */}
