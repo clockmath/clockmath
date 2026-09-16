@@ -31,8 +31,9 @@ interface NavItem {
 }
 
 // Visible tabs: the three highest-traffic tools, Markets (with its live
-// open-dot), and Guides. Everything else lives in the More menu, which is
-// where future tools (pomodoro, sleep, …) get added without touching the bar.
+// open-dot), and the Daily Quiz (the engagement loop earns the slot; Guides
+// moved to More, Sep 2026). Everything else lives in the More menu, which is
+// where future tools get added without touching the bar.
 const primaryTabs: NavItem[] = [
   {
     id: 'calculator',
@@ -63,11 +64,11 @@ const primaryTabs: NavItem[] = [
     icon: <CandlestickChart className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
-    id: 'articles',
-    label: 'Guides',
-    shortLabel: 'Guides',
-    href: '/articles',
-    icon: <BookOpen className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
+    id: 'quiz',
+    label: 'Daily Quiz',
+    shortLabel: 'Quiz',
+    href: '/tools/quiz',
+    icon: <Trophy className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
 ]
 
@@ -94,11 +95,11 @@ const moreItems: NavItem[] = [
     icon: <Bed className="w-4 h-4 shrink-0" />,
   },
   {
-    id: 'quiz',
-    label: 'Daily Time Quiz',
-    shortLabel: 'Quiz',
-    href: '/tools/quiz',
-    icon: <Trophy className="w-4 h-4 shrink-0" />,
+    id: 'articles',
+    label: 'Guides',
+    shortLabel: 'Guides',
+    href: '/articles',
+    icon: <BookOpen className="w-4 h-4 shrink-0" />,
   },
   {
     id: 'overtime',
@@ -167,6 +168,7 @@ export default function ToolsNavigation({
     pathname.startsWith('/tools/market-hours') ? 'market-hours' :
     pathname.startsWith('/tools/decimal-hours') ? 'decimal-hours' :
     pathname.startsWith('/tools/sleep') ? 'sleep' :
+    pathname.startsWith('/tools/quiz') ? 'quiz' :
     pathname === '/tools' ? 'tools' :
     pathname.startsWith('/articles') ? 'articles' :
     pathname.startsWith('/countdown') ? 'countdown' :
