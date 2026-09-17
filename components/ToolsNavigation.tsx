@@ -19,6 +19,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { MARKETS, getMarketStatus } from '@/lib/markets'
+import { navClick, navPanelOpen } from '@/lib/gtag'
 
 interface NavItem {
   id: string
@@ -209,6 +210,13 @@ export default function ToolsNavigation({
     return () => clearInterval(id)
   }, [])
 
+  // Report panel opens from the state transition rather than the click
+  // handler: keeps the updater pure (StrictMode double-invokes updaters) and
+  // can't misfire on a stale closure value.
+  useEffect(() => {
+    if (moreOpen) navPanelOpen()
+  }, [moreOpen])
+
   // Close the More menu on outside click or Escape
   useEffect(() => {
     if (!moreOpen) return
@@ -254,7 +262,13 @@ export default function ToolsNavigation({
     <div className={`bg-card dark:bg-slate-800 rounded-2xl p-1 shadow-sm border border-border/50 dark:border-slate-700/50 ${className}`}>
       <div className="flex items-stretch min-h-[3rem]">
         {primaryTabs.map((tab) => (
-          <Link key={tab.id} href={tab.href} aria-label={tab.label} className={tabClass(activeToolId === tab.id)}>
+          <Link
+            key={tab.id}
+            href={tab.href}
+            aria-label={tab.label}
+            onClick={() => navClick(tab.id, 'tab')}
+            className={tabClass(activeToolId === tab.id)}
+          >
             <span className="relative inline-flex">
               {tab.icon}
               {tab.id === 'market-hours' && marketsOpen > 0 && (
@@ -299,7 +313,10 @@ export default function ToolsNavigation({
                     <Link
                       key={item.id}
                       href={item.href}
-                      onClick={() => setMoreOpen(false)}
+                      onClick={() => {
+                        navClick(item.id, 'panel', { group: group.title })
+                        setMoreOpen(false)
+                      }}
                       className={`flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm transition-colors ${
                         activeToolId === item.id
                           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium'
@@ -316,7 +333,10 @@ export default function ToolsNavigation({
             <div className="border-t border-border/50 dark:border-slate-700/50 mt-2 pt-2">
               <Link
                 href="/tools"
-                onClick={() => setMoreOpen(false)}
+                onClick={() => {
+                  navClick('tools-hub', 'panel_hub')
+                  setMoreOpen(false)
+                }}
                 className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-muted/50 transition-colors"
               >
                 <LayoutGrid className="w-4 h-4 shrink-0" />
@@ -328,7 +348,10 @@ export default function ToolsNavigation({
 
         {showHistory && (
           <button
-            onClick={onHistoryClick}
+            onClick={() => {
+              navClick('history', 'history')
+              onHistoryClick?.()
+            }}
             className={`${tabClass(currentTool === 'history')} !flex-none`}
           >
             <History className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />
