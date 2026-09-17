@@ -57,10 +57,46 @@ export const pageview = (url: string) => {
 
 export const event = ({ action, params = {} }: GtagEvent) => {
   if (isAnalyticsBlocked()) {
+    // Nothing is sent from localhost/dev — but log it there so event wiring
+    // can be verified without polluting production analytics. `log` is a
+    // no-op outside development, so this changes nothing in prod.
+    log(`event suppressed (analytics off here): ${action} ${JSON.stringify(params)}`);
     return;
   }
   window.gtag?.("event", action, params);
   log(`event sent: ${action}`);
+};
+
+/**
+ * Navigation usage. `surface` is what was clicked, so one report answers
+ * both "does anyone open the All tools panel?" and "which route into a
+ * tool actually gets used?":
+ *   tab        — a primary tab in the bar
+ *   panel      — an item inside the All tools panel
+ *   panel_hub  — the "compare all tools" link at the panel's foot
+ */
+export const navClick = (
+  item: string,
+  surface: "tab" | "panel" | "panel_hub" | "history",
+  extra: Record<string, unknown> = {},
+) => {
+  event({
+    action: "nav_click",
+    params: {
+      item,
+      surface,
+      from: typeof window === "undefined" ? "" : window.location.pathname,
+      ...extra,
+    },
+  });
+};
+
+/** Fired when the All tools panel is opened (not on close). */
+export const navPanelOpen = () => {
+  event({
+    action: "nav_panel_open",
+    params: { from: typeof window === "undefined" ? "" : window.location.pathname },
+  });
 };
 
 // Unified tool-usage event so tool popularity is comparable in one report.
