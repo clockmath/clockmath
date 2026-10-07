@@ -31,10 +31,13 @@ interface NavItem {
   icon: React.ReactNode
 }
 
-// Visible tabs: the three highest-traffic tools, Markets (with its live
-// open-dot), and the Daily Quiz (the engagement loop earns the slot; Guides
-// moved to More, Sep 2026). Everything else lives in the More menu, which is
-// where future tools get added without touching the bar.
+// Visible tabs: the highest-traffic tools plus the Daily Quiz (the
+// engagement loop earns its slot; Guides moved to the panel, Sep 2026).
+// Sleep took Markets' slot in Oct 2026 — GA4 had /tools/sleep as the #2
+// page sitewide while it was panel-only, and Markets was the least-visited
+// tab. Markets keeps its live open-dot, just in the panel now.
+// Everything else lives in the All tools panel, which is where future
+// tools get added without touching the bar.
 const primaryTabs: NavItem[] = [
   {
     id: 'calculator',
@@ -58,11 +61,11 @@ const primaryTabs: NavItem[] = [
     icon: <ClipboardList className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
-    id: 'market-hours',
-    label: 'Markets',
-    shortLabel: 'Markets',
-    href: '/tools/market-hours',
-    icon: <CandlestickChart className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
+    id: 'sleep',
+    label: 'Sleep',
+    shortLabel: 'Sleep',
+    href: '/tools/sleep',
+    icon: <Bed className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
   {
     id: 'quiz',
@@ -198,7 +201,8 @@ export default function ToolsNavigation({
   const [marketsOpen, setMarketsOpen] = useState(0)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // Live green dot on the Markets tab while any exchange is open.
+  // Live green dot on the Markets entry in the All tools panel while any
+  // exchange is open.
   // Computed after hydration only (the server can't know the visitor's "now").
   useEffect(() => {
     const compute = () => {
@@ -252,7 +256,7 @@ export default function ToolsNavigation({
   const moreActive = PANEL_ONLY_IDS.has(activeToolId) || activeToolId === 'tools'
 
   const tabClass = (active: boolean) =>
-    `flex-1 min-w-0 px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
+    `flex-1 min-w-0 overflow-hidden px-1 sm:px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
       active
         ? 'bg-emerald-600 text-white shadow-sm'
         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -269,16 +273,8 @@ export default function ToolsNavigation({
             onClick={() => navClick(tab.id, 'tab')}
             className={tabClass(activeToolId === tab.id)}
           >
-            <span className="relative inline-flex">
-              {tab.icon}
-              {tab.id === 'market-hours' && marketsOpen > 0 && (
-                <span
-                  className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white dark:ring-slate-800"
-                  title={`${marketsOpen} market${marketsOpen === 1 ? '' : 's'} open now`}
-                />
-              )}
-            </span>
-            <span className="text-[11px] leading-tight lg:text-sm">
+            {tab.icon}
+            <span className="text-[10px] leading-tight lg:text-sm">
               <span className="lg:hidden">{tab.shortLabel}</span>
               <span className="hidden lg:inline">{tab.label}</span>
             </span>
@@ -286,18 +282,24 @@ export default function ToolsNavigation({
         ))}
 
         {/* More menu — items are always in the DOM (crawlable), visibility is CSS */}
+        {/* No overflow-hidden on this wrapper: it is the positioning ancestor
+            for the absolute panel below, so clipping it would clip the panel.
+            The label is clipped on the button instead. */}
         <div className="relative flex-1 min-w-0" ref={menuRef}>
           <button
             onClick={() => setMoreOpen((prev) => !prev)}
             aria-expanded={moreOpen}
             aria-haspopup="true"
             aria-label="All tools"
-            className={`w-full h-full ${tabClass(moreActive)}`}
+            className={`w-full h-full overflow-hidden ${tabClass(moreActive)}`}
           >
             <ChevronDown
               className={`w-5 h-5 lg:w-4 lg:h-4 shrink-0 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
             />
-            <span className="text-[11px] leading-tight lg:text-sm">All tools</span>
+            <span className="text-[10px] leading-tight lg:text-sm">
+              <span className="lg:hidden">Tools</span>
+              <span className="hidden lg:inline">All tools</span>
+            </span>
           </button>
 
           <div
@@ -323,7 +325,15 @@ export default function ToolsNavigation({
                           : 'text-foreground hover:bg-muted/50'
                       }`}
                     >
-                      {item.icon}
+                      <span className="relative inline-flex">
+                        {item.icon}
+                        {item.id === 'market-hours' && marketsOpen > 0 && (
+                          <span
+                            className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white dark:ring-slate-800"
+                            title={`${marketsOpen} market${marketsOpen === 1 ? '' : 's'} open now`}
+                          />
+                        )}
+                      </span>
                       {item.label}
                     </Link>
                   ))}

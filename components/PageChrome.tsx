@@ -17,7 +17,7 @@ export default function PageChrome({ currentTool, children, className = '', onTo
       <AnnouncementBanner />
       <main className="relative max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
         <div className="mb-8 sm:mb-section">
-          <div className="flex items-center gap-2 sm:gap-3 mb-6">
+          <div className="flex items-center gap-1.5 sm:gap-3 mb-6">
             {/* Persistent brand — anchors identity and links home */}
             <Link
               href="/"
