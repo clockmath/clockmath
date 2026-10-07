@@ -256,7 +256,7 @@ export default function ToolsNavigation({
   const moreActive = PANEL_ONLY_IDS.has(activeToolId) || activeToolId === 'tools'
 
   const tabClass = (active: boolean) =>
-    `flex-1 min-w-0 px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
+    `flex-1 min-w-0 overflow-hidden px-1 sm:px-2 lg:px-3 py-2 lg:py-3 text-sm font-medium rounded-xl transition-all duration-200 flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-0.5 lg:gap-2 whitespace-nowrap min-h-[2.5rem] ${
       active
         ? 'bg-emerald-600 text-white shadow-sm'
         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -274,7 +274,7 @@ export default function ToolsNavigation({
             className={tabClass(activeToolId === tab.id)}
           >
             {tab.icon}
-            <span className="text-[11px] leading-tight lg:text-sm">
+            <span className="text-[10px] leading-tight lg:text-sm">
               <span className="lg:hidden">{tab.shortLabel}</span>
               <span className="hidden lg:inline">{tab.label}</span>
             </span>
@@ -282,18 +282,24 @@ export default function ToolsNavigation({
         ))}
 
         {/* More menu — items are always in the DOM (crawlable), visibility is CSS */}
+        {/* No overflow-hidden on this wrapper: it is the positioning ancestor
+            for the absolute panel below, so clipping it would clip the panel.
+            The label is clipped on the button instead. */}
         <div className="relative flex-1 min-w-0" ref={menuRef}>
           <button
             onClick={() => setMoreOpen((prev) => !prev)}
             aria-expanded={moreOpen}
             aria-haspopup="true"
             aria-label="All tools"
-            className={`w-full h-full ${tabClass(moreActive)}`}
+            className={`w-full h-full overflow-hidden ${tabClass(moreActive)}`}
           >
             <ChevronDown
               className={`w-5 h-5 lg:w-4 lg:h-4 shrink-0 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
             />
-            <span className="text-[11px] leading-tight lg:text-sm">All tools</span>
+            <span className="text-[10px] leading-tight lg:text-sm">
+              <span className="lg:hidden">Tools</span>
+              <span className="hidden lg:inline">All tools</span>
+            </span>
           </button>
 
           <div
