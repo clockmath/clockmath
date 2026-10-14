@@ -73,14 +73,6 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     relatedTools: ['/tools/timesheet', '/tools/overtime'],
   },
   {
-    title: 'Sleep Hours Calculator',
-    description: 'Track your sleep duration and patterns',
-    href: '/articles/sleep-hours-calculator',
-    category: 'calculator',
-    priority: 4,
-    relatedTools: ['/tools/sleep', '/'],
-  },
-  {
     title: 'How to Calculate Overtime Hours and Pay',
     description: 'The 40-hour rule, daily overtime states, and time-and-a-half math',
     href: '/articles/overtime-hours-calculator',

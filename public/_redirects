@@ -1,3 +1,9 @@
+# NOT APPLIED. This site deploys in Cloudflare Pages Advanced Mode (_worker.js),
+# which ignores this file, just as it ignores functions/. Every rule below
+# 404'd in production until Oct 2026. Redirects now live in
+# scripts/inject-api.js (EXACT_REDIRECTS / PREFIX_REDIRECTS) — edit them there.
+# This file is kept only as a record of the original rules.
+#
 # Cloudflare Pages redirect rules for ClockMath.com
 # Note: Cloudflare Pages does not support the ! syntax
 

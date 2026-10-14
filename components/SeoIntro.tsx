@@ -61,7 +61,7 @@ export default function SeoIntro() {
           </Link>
           , workout and study session lengths, travel legs, and{' '}
           <Link
-            href="/articles/sleep-hours-calculator"
+            href="/tools/sleep"
             className="text-primary hover:text-primary/80 font-semibold"
           >
             how long you slept

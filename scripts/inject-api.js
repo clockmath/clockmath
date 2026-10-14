@@ -408,6 +408,46 @@ async function handleFeedbackApi(request, env) {
 
   return quizJson(request, 200, { ok: true });
 }
+
+// ---- Path redirects ----------------------------------------------------
+// Cloudflare Pages Advanced Mode ignores public/_redirects exactly as it
+// ignores functions/, so every rule that used to live there 404'd in
+// production (found Oct 2026). This table is the only place a redirect
+// takes effect. Matching ignores a trailing slash; targets carry one.
+const EXACT_REDIRECTS = {
+  // Merged into the tool (Oct 2026): 82% of the article's GSC queries also
+  // showed the tool, and the tool page's content was a superset.
+  '/articles/sleep-hours-calculator': '/tools/sleep/',
+  // Legacy URLs carried over from the old _redirects file.
+  '/timezone-converter': '/tools/timezone/',
+  '/time-calculator': '/',
+  '/calculator': '/',
+};
+const PREFIX_REDIRECTS = [
+  ['/article/', '/articles/'],
+  ['/tool/', '/tools/'],
+  ['/blog/', '/articles/'],
+];
+function resolveRedirect(pathname) {
+  const p = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  if (Object.prototype.hasOwnProperty.call(EXACT_REDIRECTS, p)) return EXACT_REDIRECTS[p];
+  const withSlash = p + '/';
+  for (const [from, to] of PREFIX_REDIRECTS) {
+    if (withSlash.startsWith(from)) return to + withSlash.slice(from.length);
+  }
+  return null;
+}
+// Follow chains (e.g. /blog/sleep-hours-calculator -> article -> tool) so
+// a visitor or crawler gets a single hop.
+function redirectTarget(pathname) {
+  let target = resolveRedirect(pathname);
+  for (let hops = 0; target && hops < 3; hops++) {
+    const next = resolveRedirect(target);
+    if (!next || next === target) break;
+    target = next;
+  }
+  return target;
+}
 `;
 
 // Read the existing worker
@@ -426,7 +466,12 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   // Canonical-host redirect: www serves this same Pages project, so 301 it
   // to the apex before anything else (crawl-budget fix, Aug 2026 GSC audit).
   if (reqUrl.hostname === 'www.clockmath.com') {
-    return Response.redirect('https://clockmath.com' + reqUrl.pathname + reqUrl.search, 301);
+    const target = redirectTarget(reqUrl.pathname) || reqUrl.pathname;
+    return Response.redirect('https://clockmath.com' + target + reqUrl.search, 301);
+  }
+  const redirectTo = redirectTarget(reqUrl.pathname);
+  if (redirectTo) {
+    return Response.redirect('https://clockmath.com' + redirectTo + reqUrl.search, 301);
   }
   if (reqUrl.pathname === '/api/places' || reqUrl.pathname === '/api/places/') {
     return handlePlacesApi(${reqParam}, ${envParam});
