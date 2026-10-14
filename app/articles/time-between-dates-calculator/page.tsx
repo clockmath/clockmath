@@ -3,22 +3,30 @@ import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
 
+// This guide used to be titled "Time Between Two Dates Calculator – Free
+// Online Tool", which pitted it against the homepage (the actual tool) for
+// the same query; GSC had it as "Crawled – currently not indexed" (Oct 2026).
+// It now targets the how-to intent and hands tool-seekers to the homepage.
+const TITLE = "How to Calculate the Time Between Two Dates | ClockMath";
+const DESCRIPTION =
+  "Count the days between two dates by hand: month lengths, leap years, inclusive vs. exclusive counting, and crossing into a new year — with worked examples.";
+
 export const metadata: Metadata = {
-  title: "Time Between Two Dates Calculator – Free Online Tool",
-  description: "Quickly calculate the time between two dates in days, hours, and minutes. ClockMath makes planning deadlines and events easy.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "https://clockmath.com/articles/time-between-dates-calculator/",
   },
   openGraph: {
-    title: "Time Between Two Dates Calculator – Free Online Tool",
-    description: "Quickly calculate the time between two dates in days, hours, and minutes. ClockMath makes planning deadlines and events easy.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/time-between-dates-calculator/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Time Between Two Dates Calculator – Free Online Tool",
-    description: "Quickly calculate the time between two dates in days, hours, and minutes. ClockMath makes planning deadlines and events easy.",
+    title: TITLE,
+    description: DESCRIPTION,
     images: ["/og-v2.png"],
   },
   robots: {
@@ -30,60 +38,84 @@ export const metadata: Metadata = {
 export default function TimeBetweenDatesCalculatorPage() {
   return (
     <ArticleLayout
-      title="Time Between Two Dates: Fast & Accurate"
-      description="Need to know how much time until your next vacation, project deadline, or special event? Calculating the time between two dates is simple with the right tool."
-      publishDate="2025"
+      title="How to Calculate the Time Between Two Dates"
+      description="The counting method behind date math — so you can check a result, or work one out on paper."
+      publishDate="2026-10-14"
       category="calculator"
       currentPath="/articles/time-between-dates-calculator"
     >
-      <h2>Introduction</h2>
       <p>
-        Need to know how much time until your next vacation, project deadline, or special event? Calculating the time between two dates is simple with the right tool. Whether you're planning ahead or tracking progress, accurate date calculations help you stay organized and prepared.
+        If you just need the answer, the <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> gives
+        it instantly, times of day included. This guide shows how the counting actually works, so you can check a
+        result or do it without a computer.
       </p>
 
-      <h2>The Problem</h2>
-      <p>
-        Counting days by hand or using spreadsheets takes time and is prone to errors. Leap years, different month lengths, and time zones can complicate manual calculations. What seems like a simple subtraction becomes complex when you need precision.
-      </p>
-
-      <h2>The Solution</h2>
-      <p>
-        With our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time between two dates calculator</Link>, you can instantly see the difference in days, hours, and minutes. The tool handles all the complexity of calendar math automatically, giving you accurate results every time.
-      </p>
+      <h2>The method: count to the end of each month</h2>
+      <ol>
+        <li><strong>Days left in the starting month:</strong> that month's length minus the start day.</li>
+        <li><strong>Full months in between:</strong> add each one's length.</li>
+        <li><strong>The ending month:</strong> add the end day's number.</li>
+      </ol>
 
       <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
-        <h3 className="font-bold text-lg mb-3">Example Date Calculation</h3>
+        <h3 className="font-bold text-lg mb-3">Example: March 1 to April 15, 2025</h3>
         <div className="space-y-2 text-sm">
-          <div><strong>From:</strong> March 1, 2025</div>
-          <div><strong>To:</strong> April 15, 2025</div>
+          <div>March has 31 days, so 31 − 1 = <strong>30</strong> days left in March</div>
+          <div>No full months in between</div>
+          <div>April 15 adds <strong>15</strong></div>
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-            <strong>➡ Total = 45 days</strong>
+            <strong>30 + 15 = 45 days</strong>
           </div>
         </div>
       </div>
 
-      <h2>Common Use Cases</h2>
+      <h2>Month lengths and leap years</h2>
+      <p>
+        April, June, September, and November have 30 days. February has 28 — or 29 in a leap year. Every other
+        month has 31.
+      </p>
+      <p>
+        A year is a leap year if it divides by 4, except century years, which must also divide by 400. So 2024 and
+        2028 are leap years, 2000 was one, and 1900 was not. Getting this wrong is the most common mistake in hand
+        counting, and it only bites when your span includes the end of February.
+      </p>
+      <p>
+        January 15 to March 10 is <strong>55 days</strong> in 2024 (16 + 29 + 10) but <strong>54 days</strong> in
+        2025 (16 + 28 + 10).
+      </p>
+
+      <h2>Inclusive or exclusive?</h2>
+      <p>
+        The method above counts the gap between two dates, which is what "how long until" usually means. If both the
+        first and last day count — a three-day conference running March 1 to March 3, say — add one. March 1 to
+        April 15 is 45 days apart, but 46 days if you count both ends.
+      </p>
+
+      <h2>Crossing into a new year</h2>
+      <p>
+        Nothing changes; December just has 31 days. December 20, 2025 to January 5, 2026 is 31 − 20 = 11 days left in
+        December, plus 5, for <strong>16 days</strong>.
+      </p>
+
+      <h2>Turning days into weeks and hours</h2>
+      <p>
+        Divide by 7 for weeks: 45 days is 6 weeks and 3 days. Multiply by 24 for hours: 45 days is 1,080 hours. One
+        caveat — if the span crosses a daylight-saving change, the real elapsed time is an hour more or less than
+        days × 24.
+      </p>
+
+      <h2>Where this comes up</h2>
       <ul>
-        <li><strong>Project deadlines:</strong> How many working days until delivery?</li>
-        <li><strong>Event planning:</strong> Time remaining until your wedding or conference</li>
-        <li><strong>Travel planning:</strong> Days until your vacation starts</li>
-        <li><strong>Age calculations:</strong> Exact age in years, months, and days</li>
-        <li><strong>Contract terms:</strong> Time remaining on agreements or subscriptions</li>
+        <li><strong>Deadlines:</strong> days until a project is due</li>
+        <li><strong>Events:</strong> how long until a wedding, trip, or conference</li>
+        <li><strong>Ages:</strong> exact age in years, months, and days</li>
+        <li><strong>Contracts:</strong> time left on an agreement or subscription</li>
       </ul>
 
-      <h2>Business Applications</h2>
       <p>
-        Accurate date calculations are crucial for business planning. Use our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">duration calculator</Link> to track project timelines, calculate service periods, or determine contract durations. Precision in date math prevents misunderstandings and missed deadlines.
-      </p>
-
-      <h2>Planning Made Simple</h2>
-      <p>
-        Whether you're counting down to a special event or calculating how much time you have for a project, our calculator removes the guesswork. Get instant, accurate results that you can trust for important decisions and planning.
-      </p>
-
-      <h2>Conclusion</h2>
-      <p>
-        Whether for planning, projects, or curiosity, ClockMath makes it easy to measure any time span. Stop counting on your fingers or wrestling with calendar apps—get precise date calculations instantly with our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time between dates calculator</Link>.
+        For spans that include times of day, or when you'd rather not count, the <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> gives
+        a calendar-accurate breakdown. To watch the days tick down to a future date, use
+        the <Link href="/tools/countdown" className="text-emerald-600 hover:text-emerald-500 font-medium">countdown timer</Link>.
       </p>
     </ArticleLayout>
   );
