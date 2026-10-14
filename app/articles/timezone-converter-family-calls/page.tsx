@@ -52,15 +52,17 @@ export default function FamilyCallsTimezoneConverterPage() {
         <div className="bg-muted/50 dark:bg-slate-800/50 rounded-lg p-6 my-8">
           <h3 className="text-lg font-semibold mb-4">Example Call Time Conversion</h3>
           <p className="mb-3">
-            <strong>You're in Vancouver (PST), your family is in Sydney (AEDT)</strong>
+            <strong>You're in Vancouver (UTC−7), your family is in Sydney (AEDT), October to April</strong>
           </p>
           <ul className="space-y-2">
-            <li><strong>7:00 PM PST =</strong> 2:00 PM next day in Sydney</li>
-            <li><strong>8:00 AM PST =</strong> 3:00 AM next day in Sydney (too early!)</li>
-            <li><strong>6:00 PM PST =</strong> 1:00 PM next day in Sydney (perfect lunch time)</li>
+            <li><strong>7:00 PM in Vancouver =</strong> 1:00 PM next day in Sydney</li>
+            <li><strong>8:00 AM in Vancouver =</strong> 2:00 AM next day in Sydney (too early!)</li>
+            <li><strong>6:00 PM in Vancouver =</strong> 12:00 PM next day in Sydney (perfect lunch time)</li>
           </ul>
           <p className="text-sm text-muted-foreground mt-3">
-            This 19-hour time difference means your evening is their afternoon the next day.
+            This 18-hour time difference means your evening is their afternoon the next day. British Columbia stopped
+            changing its clocks in 2026 and now stays on UTC−7 all year, so the gap only moves when Sydney changes its
+            clocks: 18 hours from October to April, 17 hours the rest of the year.
           </p>
         </div>
 
