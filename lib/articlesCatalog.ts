@@ -81,8 +81,8 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     relatedTools: ['/tools/sleep', '/'],
   },
   {
-    title: 'Overtime Hours Calculator',
-    description: 'Calculate overtime pay and hours worked',
+    title: 'How to Calculate Overtime Hours and Pay',
+    description: 'The 40-hour rule, daily overtime states, and time-and-a-half math',
     href: '/articles/overtime-hours-calculator',
     category: 'calculator',
     priority: 4,
