@@ -3,22 +3,37 @@ import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
 
+// This guide used to be titled "Shift Work Hours Calculator – Track Overnight
+// & Rotating Shifts", competing with /tools/timesheet for the same query while
+// linking only to the homepage duration calculator — and crediting that
+// calculator with break deduction it doesn't have. It now covers the method
+// for overnight shifts and hands tool-seekers to /tools/timesheet.
+//
+// Note: /tools/timesheet measures clock time (overnight = +24h) and is not
+// DST-aware, which is why the daylight-saving section tells readers to adjust
+// those two nights themselves.
+const TITLE = "How to Calculate Hours for Overnight and Night Shifts | ClockMath";
+const DESCRIPTION =
+  "Work out hours for shifts that cross midnight: the add-24-hours method, 12-hour shifts, which week the hours count toward, and the daylight-saving nights that run an hour long or short.";
+
+const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+
 export const metadata: Metadata = {
-  title: "Shift Work Hours Calculator – Track Overnight & Rotating Shifts",
-  description: "Calculate shift work hours across midnight, rotating schedules, and irregular patterns. Free tool for nurses, factory workers, and night shift employees.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "https://clockmath.com/articles/shift-work-hours-calculator/",
   },
   openGraph: {
-    title: "Shift Work Hours Calculator – Track Overnight & Rotating Shifts",
-    description: "Calculate shift work hours across midnight, rotating schedules, and irregular patterns. Free tool for nurses, factory workers, and night shift employees.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/shift-work-hours-calculator/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shift Work Hours Calculator – Track Overnight & Rotating Shifts",
-    description: "Calculate shift work hours across midnight, rotating schedules, and irregular patterns. Free tool for nurses, factory workers, and night shift employees.",
+    title: TITLE,
+    description: DESCRIPTION,
     images: ["/og-v2.png"],
   },
   robots: {
@@ -30,66 +45,76 @@ export const metadata: Metadata = {
 export default function ShiftWorkHoursCalculatorPage() {
   return (
     <ArticleLayout
-      title="How to Calculate Shift Work Hours"
-      description="Shift workers face unique challenges when tracking hours—overnight shifts, rotating schedules, and irregular patterns make manual calculations error-prone."
-      publishDate="2025"
+      title="How to Calculate Hours for Overnight and Night Shifts"
+      description="Why ordinary subtraction fails after midnight, and the one-step fix."
+      publishDate="2026-10-14"
       category="calculator"
       currentPath="/articles/shift-work-hours-calculator"
     >
-      <h2>Introduction</h2>
       <p>
-        Millions of workers operate outside the traditional 9-to-5 schedule. Nurses, factory workers, security guards, retail employees, and emergency responders often work shifts that cross midnight, rotate weekly, or follow irregular patterns. Calculating hours for these schedules manually is confusing and often leads to mistakes.
+        The <Link href="/tools/timesheet" className={LINK}>work hours calculator</Link> handles shifts that cross
+        midnight automatically. This guide shows the method behind it, plus the two nights a year when the clock gives
+        the wrong answer.
       </p>
 
-      <h2>The Challenge of Overnight Shifts</h2>
+      <h2>Why subtraction breaks after midnight</h2>
       <p>
-        When your shift starts at 11:00 PM and ends at 7:00 AM, simple subtraction doesn't work. You're crossing from one day into the next, which confuses traditional time tracking methods. Add rotating schedules into the mix—where you might work days one week and nights the next—and keeping accurate records becomes even more difficult.
+        A shift from 11:00 PM to 7:30 AM is 23:00 to 7:30 in 24-hour time. Subtract the usual way and you get a negative
+        number, because the end time is on the next day.
       </p>
 
-      <h2>The Solution</h2>
+      <h2>The fix: add 24 hours to the end time</h2>
       <p>
-        Our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> handles overnight shifts automatically. Simply enter your start and end times, and the calculator correctly determines the hours worked—even when your shift crosses midnight. No mental math required.
+        If the end time is earlier than the start, add 24 hours to it before subtracting. 7:30 becomes 31:30, and
+        31:30 − 23:00 is 8 hours 30 minutes. Then take off any unpaid break, exactly as for a day shift.
       </p>
 
       <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
-        <h3 className="font-bold text-lg mb-3">Night Shift Example</h3>
+        <h3 className="font-bold text-lg mb-3">Example: 11:00 PM to 7:30 AM, 30-minute break</h3>
         <div className="space-y-2 text-sm">
-          <div><strong>Start:</strong> 11:00 PM</div>
-          <div><strong>End:</strong> 7:30 AM (next day)</div>
-          <div><strong>Break:</strong> 30 minutes</div>
+          <div>End 7:30 + 24 = 31:30</div>
+          <div>31:30 − 23:00 = <strong>8 hours 30 minutes</strong></div>
+          <div>Minus the unpaid break: − 30 minutes</div>
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-            <strong>➡ Total Hours = 8 hours</strong>
+            <strong>Hours worked: 8 hours</strong>
           </div>
         </div>
       </div>
 
-      <h2>Common Shift Work Patterns</h2>
+      <h2>12-hour shifts</h2>
       <p>
-        Different industries use different shift structures. Here are some common patterns our calculator handles easily:
-      </p>
-      <ul>
-        <li><strong>12-hour shifts:</strong> Common in healthcare and manufacturing (e.g., 7 AM – 7 PM or 7 PM – 7 AM)</li>
-        <li><strong>8-hour rotating shifts:</strong> Day, swing, and night shifts that rotate weekly or bi-weekly</li>
-        <li><strong>Split shifts:</strong> Working morning and evening with a long break in between</li>
-        <li><strong>On-call shifts:</strong> Variable hours based on demand</li>
-      </ul>
-
-      <h2>Why Accurate Tracking Matters</h2>
-      <p>
-        Shift workers often qualify for differential pay—extra compensation for working nights, weekends, or holidays. Accurate time tracking ensures you're paid correctly for every hour worked. It also helps employers maintain compliance with labor laws regarding rest periods and maximum work hours.
+        A 7:00 PM to 7:00 AM shift is 12 hours on the clock: 7:00 + 24 = 31:00, and 31:00 − 19:00 = 12:00. With a
+        30-minute unpaid meal break, that's 11 hours 30 minutes, or 11.5 hours. Three of those in a week is 34.5 hours;
+        four is 46, which is 6 hours over the federal 40-hour overtime line.
       </p>
 
-      <h2>Features for Shift Workers</h2>
-      <ul>
-        <li><strong>Automatic midnight handling:</strong> Correctly calculates hours when shifts cross into the next day</li>
-        <li><strong>Break deduction:</strong> Subtract meal and rest breaks from your total</li>
-        <li><strong>Decimal output:</strong> Get hours in decimal format for easy payroll entry</li>
-        <li><strong>24-hour format:</strong> Switch between 12-hour and 24-hour time display</li>
-      </ul>
-
-      <h2>Conclusion</h2>
+      <h2>Which week the hours count toward</h2>
       <p>
-        Whether you're working the night shift at a hospital, rotating through factory shifts, or covering weekend security duty, accurate hour tracking shouldn't be complicated. Use ClockMath's <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">shift hours calculator</Link> to quickly and accurately track your work time, no matter when your shift starts or ends.
+        Under the US federal rule, hours count toward the workweek in which they're worked. If a night shift starts on
+        the last day of your workweek and ends on the first day of the next, the hours after midnight belong to the new
+        week. That matters for overtime, which is worked out one week at a time — see <Link href="/articles/overtime-hours-calculator" className={LINK}>how
+        to calculate overtime</Link>.
+      </p>
+
+      <h2>The two daylight-saving nights</h2>
+      <p>
+        On the night the clocks go back, a shift that spans 2:00 AM is an hour longer than the clock says. In the US
+        that's the first Sunday in November: a 10:00 PM to 6:00 AM shift on November 1, 2026 is 9 hours worked, not 8.
+        On the night the clocks go forward — the second Sunday in March — the same shift is 7 hours, as on March 14,
+        2027.
+      </p>
+      <p>
+        You're owed pay for the hours you actually worked, so it's worth checking your timesheet on those nights. The
+        work hours calculator measures clock time, so add or subtract that hour yourself. Places that don't change their
+        clocks — most of Arizona, Hawaii, and since 2026 British Columbia — have no adjustment to make.
+      </p>
+
+      <h2>Rotating schedules</h2>
+      <p>
+        On rotating shifts, work out each shift on its own and total the week in hours and minutes before converting to
+        decimal. <Link href="/articles/timesheet-calculator" className={LINK}>How to total a weekly timesheet</Link> covers
+        the weekly total, and the <Link href="/tools/timesheet" className={LINK}>work hours calculator</Link> takes a
+        mix of day and night shifts in one sheet.
       </p>
     </ArticleLayout>
   );

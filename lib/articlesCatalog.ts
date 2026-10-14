@@ -65,8 +65,8 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     relatedTools: ['/tools/market-hours', '/tools/timezone'],
   },
   {
-    title: 'Work Hours Calculator',
-    description: 'Track employee hours and payroll calculations',
+    title: 'How to Calculate Hours Worked, With Breaks',
+    description: 'Clock times to payroll-ready decimal hours, one day at a time',
     href: '/articles/work-hours-calculator',
     category: 'calculator',
     priority: 5,
@@ -113,8 +113,8 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     relatedTools: ['/tools/timesheet'],
   },
   {
-    title: 'Shift Work Hours Calculator',
-    description: 'Track overnight shifts and rotating schedules accurately',
+    title: 'How to Calculate Hours for Overnight and Night Shifts',
+    description: 'Crossing midnight, 12-hour shifts, and the daylight-saving nights',
     href: '/articles/shift-work-hours-calculator',
     category: 'calculator',
     priority: 4,
@@ -129,8 +129,8 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     relatedTools: ['/tools/timesheet', '/tools/decimal-hours'],
   },
   {
-    title: 'Timesheet Calculator',
-    description: 'Calculate weekly hours and decimal totals for payroll',
+    title: 'How to Total a Weekly Timesheet for Payroll',
+    description: 'Weekly totals, decimal hours, and US time-rounding rules',
     href: '/articles/timesheet-calculator',
     category: 'calculator',
     priority: 4,
