@@ -4,6 +4,7 @@ import ArticleAnalytics from "./ArticleAnalytics";
 import ArticleCtaLink from "./ArticleCtaLink";
 import SiteFooter from "./SiteFooter";
 import JsonLd, { getArticleSchema } from "./JsonLd";
+import { ARTICLE_LINKS, TOOL_LINKS } from "@/lib/articlesCatalog";
 
 interface ArticleLayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,18 @@ function formatPublishDate(publishDate: string): string {
   });
 }
 
+/**
+ * The tool an article's closing call-to-action points at: the first entry of
+ * its catalog `relatedTools`. This used to be hardcoded to the homepage
+ * duration calculator, so a timezone guide's main button skipped the timezone
+ * converter and a sleep guide's skipped the sleep calculator. Falls back to the
+ * homepage for an article with no catalog entry.
+ */
+function primaryToolFor(currentPath: string) {
+  const href = ARTICLE_LINKS.find((a) => a.href === currentPath)?.relatedTools?.[0] ?? "/";
+  return TOOL_LINKS.find((t) => t.href === href) ?? TOOL_LINKS[0];
+}
+
 export default function ArticleLayout({
   children,
   title,
@@ -34,6 +47,7 @@ export default function ArticleLayout({
   category = "calculator",
   currentPath = ""
 }: ArticleLayoutProps) {
+  const primaryTool = primaryToolFor(currentPath);
   return (
     // Articles share the site chrome (nav included) — they used to be
     // navigational dead ends with only a "Back to ClockMath" link.
@@ -77,12 +91,12 @@ export default function ArticleLayout({
           <div className="mt-section p-5 sm:p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
             <div className="text-center">
               <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                Try Our Free Time Calculator
+                {primaryTool.title}
               </h3>
               <p className="text-emerald-700 dark:text-emerald-300 mb-4">
-                Calculate time duration instantly with our easy-to-use tool
+                {primaryTool.description}
               </p>
-              <ArticleCtaLink href="/" title={title} />
+              <ArticleCtaLink href={primaryTool.href} title={title} />
             </div>
           </div>
         </article>
