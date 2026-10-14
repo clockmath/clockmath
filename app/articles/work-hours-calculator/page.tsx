@@ -3,22 +3,35 @@ import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
 
+// This guide used to be titled "Calculate Work Hours Instantly – Free Online
+// Tool", competing with /tools/timesheet (the actual work hours calculator)
+// for the same query, while linking only to the homepage duration calculator
+// — and promising that calculator a break-deduction feature it doesn't have.
+// It now covers the method for a single day and hands tool-seekers to
+// /tools/timesheet. Weekly totals: timesheet-calculator. Overnight shifts:
+// shift-work-hours-calculator.
+const TITLE = "How to Calculate Hours Worked, With Breaks | ClockMath";
+const DESCRIPTION =
+  "Work out a day's hours by hand: switch to 24-hour time, subtract, take off unpaid breaks, and convert to decimal hours for payroll — with worked examples.";
+
+const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+
 export const metadata: Metadata = {
-  title: "Calculate Work Hours Instantly – Free Online Tool",
-  description: "Enter your start and end times to calculate work hours fast. Try ClockMath's free time duration calculator for accurate results every time.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "https://clockmath.com/articles/work-hours-calculator/",
   },
   openGraph: {
-    title: "Calculate Work Hours Instantly – Free Online Tool",
-    description: "Enter your start and end times to calculate work hours fast. Try ClockMath's free time duration calculator for accurate results every time.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/work-hours-calculator/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculate Work Hours Instantly – Free Online Tool",
-    description: "Enter your start and end times to calculate work hours fast. Try ClockMath's free time duration calculator for accurate results every time.",
+    title: TITLE,
+    description: DESCRIPTION,
     images: ["/og-v2.png"],
   },
   robots: {
@@ -30,55 +43,79 @@ export const metadata: Metadata = {
 export default function WorkHoursCalculatorPage() {
   return (
     <ArticleLayout
-      title="How to Calculate Work Hours Quickly"
-      description="Add up hours worked — with lunch breaks, overnight shifts, and decimal totals for payroll."
-      publishDate="2025"
+      title="How to Calculate Hours Worked, With Breaks"
+      description="The four steps from clock-in and clock-out times to a number payroll can use."
+      publishDate="2026-10-14"
       category="calculator"
       currentPath="/articles/work-hours-calculator"
     >
-      <h2>Introduction</h2>
       <p>
-        Keeping track of work hours is essential whether you're an employee logging time, a freelancer tracking billable hours, or an employer calculating payroll. Doing the math by hand can be messy, especially when shifts cross midnight or include breaks.
+        If you just want the total, the <Link href="/tools/timesheet" className={LINK}>work hours calculator</Link> takes
+        start, end, and break times for each shift and gives hours, decimal hours, and pay. This guide shows the method
+        behind it for a single day.
       </p>
 
-      <h2>The Problem with Manual Math</h2>
+      <h2>Step 1: Switch to 24-hour time</h2>
       <p>
-        Calculating hours on paper often leads to mistakes. Converting minutes into decimals or subtracting times across AM/PM adds unnecessary complexity. When you're dealing with multiple employees or complex shift patterns, these small errors can add up to significant payroll discrepancies.
+        AM/PM is where most hand calculations go wrong. Add 12 to any PM hour except 12 PM itself: 5:45 PM becomes
+        17:45, while 9:15 AM stays 9:15.
       </p>
 
-      <h2>The Fast Solution</h2>
+      <h2>Step 2: Subtract start from end</h2>
       <p>
-        With our free <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link>, you can instantly find the total hours between a start and end time. Just enter your shift start, end, and any breaks, and you'll see the exact duration in hours, minutes, and decimal format.
+        Subtract the start time from the end time. 17:45 − 9:15 is 8 hours 30 minutes. If the minutes come out negative,
+        borrow an hour: 16:20 − 7:50 is 15:80 − 7:50, which is 8 hours 30 minutes.
+      </p>
+
+      <h2>Step 3: Take off unpaid breaks</h2>
+      <p>
+        Subtract only the breaks you aren't paid for. In the US, short rest breaks — roughly 5 to 20 minutes — generally
+        count as paid work time under federal law. A genuine meal break, usually 30 minutes or more with no work
+        expected, doesn't have to be paid. State rules and employment contracts can add to this, so check yours.
       </p>
 
       <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
-        <h3 className="font-bold text-lg mb-3">Example Calculation</h3>
+        <h3 className="font-bold text-lg mb-3">Example: 9:15 AM to 5:45 PM, 30-minute lunch</h3>
         <div className="space-y-2 text-sm">
-          <div><strong>Start:</strong> 9:15 AM</div>
-          <div><strong>End:</strong> 5:45 PM</div>
-          <div><strong>Break:</strong> 30 minutes</div>
+          <div>In 24-hour time: 17:45 − 9:15 = <strong>8 hours 30 minutes</strong></div>
+          <div>Minus the unpaid lunch: − 30 minutes</div>
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-            <strong>➡ Total Work Hours = 8 hours</strong>
+            <strong>Hours worked: 8 hours (8.00)</strong>
           </div>
         </div>
       </div>
 
-      <h2>Why Accuracy Matters</h2>
+      <h2>Step 4: Convert minutes to decimal hours</h2>
       <p>
-        Accurate time tracking isn't just about compliance—it's about fairness. Employees deserve to be paid for every minute they work, and employers need precise records for budgeting and labor law compliance. Using an <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator</Link> eliminates guesswork and ensures everyone is on the same page.
+        Payroll systems want decimal hours, so divide the leftover minutes by 60. 15 minutes is 0.25, 30 minutes is 0.5,
+        and 45 minutes is 0.75. The <Link href="/tools/decimal-hours" className={LINK}>decimal hours converter</Link> has
+        every minute from 1 to 60.
       </p>
 
-      <h2>Features That Save Time</h2>
+      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+        <h3 className="font-bold text-lg mb-3">Example: 7:50 AM to 4:20 PM, 45-minute lunch</h3>
+        <div className="space-y-2 text-sm">
+          <div>16:20 − 7:50 = <strong>8 hours 30 minutes</strong></div>
+          <div>Minus the unpaid lunch: − 45 minutes = 7 hours 45 minutes</div>
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+            <strong>In decimal: 7 + 45 ÷ 60 = 7.75 hours</strong>
+          </div>
+        </div>
+      </div>
+
+      <h2>Common mistakes</h2>
       <ul>
-        <li><strong>Automatic midnight handling:</strong> No confusion when shifts cross over to the next day</li>
-        <li><strong>Multiple time formats:</strong> See results in HH:MM:SS, decimal hours, and total minutes</li>
-        <li><strong>Break deduction:</strong> Easily subtract lunch breaks and other unpaid time</li>
-        <li><strong>Mobile-friendly:</strong> Calculate hours on any device, anywhere</li>
+        <li><strong>Writing 7:45 as 7.45.</strong> 7 hours 45 minutes is 7.75 hours. At $20/hour, that slip underpays $6.</li>
+        <li><strong>Subtracting paid breaks.</strong> Only unpaid time comes off.</li>
+        <li><strong>Mixing AM and PM.</strong> Convert to 24-hour time before you subtract.</li>
       </ul>
 
-      <h2>Conclusion</h2>
+      <h2>More than one day</h2>
       <p>
-        Stop wasting time on manual math and avoid costly calculation errors. Use ClockMath's <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator</Link> to log work shifts quickly and accurately. Whether you're tracking a single shift or managing multiple employees, our tool makes time calculation simple and reliable.
+        To total a week for payroll, see <Link href="/articles/timesheet-calculator" className={LINK}>how to total a
+        weekly timesheet</Link>. For shifts that run past midnight, see <Link href="/articles/shift-work-hours-calculator" className={LINK}>how
+        to calculate overnight shift hours</Link>. Or enter every shift in the <Link href="/tools/timesheet" className={LINK}>work
+        hours calculator</Link>, which handles breaks, overnight shifts, and pay together.
       </p>
     </ArticleLayout>
   );

@@ -3,22 +3,33 @@ import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
 
+// This guide used to be titled "Timesheet Calculator – Calculate Weekly Hours
+// for Payroll", competing with /tools/timesheet for the same query while
+// linking only to the homepage duration calculator. Its example week also
+// totalled hours without taking off lunch, then told readers they must. It now
+// covers totalling a week by hand and hands tool-seekers to /tools/timesheet.
+const TITLE = "How to Total a Weekly Timesheet for Payroll | ClockMath";
+const DESCRIPTION =
+  "Add up a week of shifts correctly: total minutes before converting, decimal hours, how US time-rounding rules work, and where overtime starts — with a worked example.";
+
+const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+
 export const metadata: Metadata = {
-  title: "Timesheet Calculator – Calculate Weekly Hours for Payroll",
-  description: "Calculate timesheet totals for weekly or bi-weekly pay periods. Get decimal hours for payroll systems and accurate totals every time.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "https://clockmath.com/articles/timesheet-calculator/",
   },
   openGraph: {
-    title: "Timesheet Calculator – Calculate Weekly Hours for Payroll",
-    description: "Calculate timesheet totals for weekly or bi-weekly pay periods. Get decimal hours for payroll systems and accurate totals every time.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/timesheet-calculator/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Timesheet Calculator – Calculate Weekly Hours for Payroll",
-    description: "Calculate timesheet totals for weekly or bi-weekly pay periods. Get decimal hours for payroll systems and accurate totals every time.",
+    title: TITLE,
+    description: DESCRIPTION,
     images: ["/og-v2.png"],
   },
   robots: {
@@ -30,73 +41,79 @@ export const metadata: Metadata = {
 export default function TimesheetCalculatorPage() {
   return (
     <ArticleLayout
-      title="How to Calculate Timesheet Hours for Payroll"
-      description="Whether you're filling out your own timesheet or processing payroll for others, accurate hour calculations are essential for correct compensation."
-      publishDate="2025"
+      title="How to Total a Weekly Timesheet for Payroll"
+      description="From five days of clock times to one weekly figure, without the rounding errors."
+      publishDate="2026-10-14"
       category="calculator"
       currentPath="/articles/timesheet-calculator"
     >
-      <h2>Introduction</h2>
       <p>
-        Timesheets are the bridge between work performed and wages paid. Getting them right matters—errors mean employees are either underpaid or overpaid, and neither situation is acceptable. Yet many people still struggle with converting clock times to total hours, especially when dealing with varying schedules.
+        The <Link href="/tools/timesheet" className={LINK}>work hours calculator</Link> totals a week of shifts for you,
+        with breaks, pay, and a CSV export. This guide explains how the total is worked out, so you can check a timesheet
+        before it goes to payroll.
       </p>
 
-      <h2>The Manual Calculation Problem</h2>
+      <h2>Work out each day first</h2>
       <p>
-        Converting each day's start and end times to hours worked seems simple until you try it. Subtract 8:45 AM from 5:15 PM, remember to remove the lunch break, convert minutes to decimals—the process is tedious and error-prone. Multiply this across five or more days and multiple employees, and mistakes become inevitable.
-      </p>
-
-      <h2>Calculate Each Day Quickly</h2>
-      <p>
-        Our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> eliminates the manual math. For each day on your timesheet, enter the start time and end time to instantly see the hours worked. The calculator handles all the conversion automatically and provides results in both standard (hours:minutes) and decimal formats.
+        For each shift, subtract start from end and take off unpaid breaks. <Link href="/articles/work-hours-calculator" className={LINK}>How
+        to calculate hours worked</Link> walks through a single day step by step.
       </p>
 
       <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
-        <h3 className="font-bold text-lg mb-3">Weekly Timesheet Example</h3>
+        <h3 className="font-bold text-lg mb-3">Example week, 30-minute unpaid lunch each day</h3>
         <div className="space-y-2 text-sm">
-          <div className="grid grid-cols-3 gap-2">
-            <span><strong>Monday:</strong></span><span>8:30 AM – 5:00 PM</span><span>8.5 hrs</span>
-            <span><strong>Tuesday:</strong></span><span>9:00 AM – 5:30 PM</span><span>8.5 hrs</span>
-            <span><strong>Wednesday:</strong></span><span>8:45 AM – 5:15 PM</span><span>8.5 hrs</span>
-            <span><strong>Thursday:</strong></span><span>8:30 AM – 5:00 PM</span><span>8.5 hrs</span>
-            <span><strong>Friday:</strong></span><span>9:00 AM – 4:00 PM</span><span>7.0 hrs</span>
-          </div>
+          <div><strong>Monday:</strong> 8:30 AM – 5:00 PM = 8h 30m − 30m = 8h 00m</div>
+          <div><strong>Tuesday:</strong> 9:00 AM – 5:30 PM = 8h 30m − 30m = 8h 00m</div>
+          <div><strong>Wednesday:</strong> 8:45 AM – 5:15 PM = 8h 30m − 30m = 8h 00m</div>
+          <div><strong>Thursday:</strong> 8:30 AM – 5:00 PM = 8h 30m − 30m = 8h 00m</div>
+          <div><strong>Friday:</strong> 9:00 AM – 4:00 PM = 7h 00m − 30m = 6h 30m</div>
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-            <strong>➡ Weekly Total = 41 hours</strong>
+            <strong>Week: 38 hours 30 minutes = 38.5 hours</strong>
           </div>
         </div>
       </div>
 
-      <h2>Decimal Hours for Payroll</h2>
+      <h2>Add up minutes, then convert once</h2>
       <p>
-        Most payroll systems require time in decimal format. Instead of 8 hours and 30 minutes, they need 8.5 hours. Our calculator automatically converts your time to decimals, making it easy to enter accurate figures into any payroll system.
+        Total the week in hours and minutes, and only then convert to decimal. Converting each day first and rounding
+        as you go lets small errors pile up.
       </p>
       <p>
-        Common conversions:
+        Five days of 7 hours 50 minutes is 39 hours 10 minutes, which is 39.17 hours. Round each day to 7.83 first and
+        the week comes out at 39.15 — a minute short. Across a team and a year, that adds up.
       </p>
+
+      <h2>Decimal hours</h2>
+      <p>
+        Divide the leftover minutes by 60: 15 minutes is 0.25, 30 is 0.5, 45 is 0.75. A common slip is writing
+        7 hours 45 minutes as 7.45 instead of 7.75. The <Link href="/tools/decimal-hours" className={LINK}>decimal hours
+        converter</Link> has every minute from 1 to 60.
+      </p>
+
+      <h2>Rounding clock times</h2>
+      <p>
+        Many employers round punch times. In the US, federal rules allow rounding to the nearest 5, 6, or 15 minutes, as
+        long as it evens out over time and doesn't consistently work against employees. With 15-minute rounding, 1 to 7
+        minutes past the quarter hour rounds down and 8 to 14 rounds up — so 8:07 is recorded as 8:00 and 8:08 as 8:15.
+        Rounding that only ever goes the employer's way isn't allowed.
+      </p>
+
+      <h2>Where overtime starts</h2>
+      <p>
+        Under the US federal rule, hours over 40 in a workweek are overtime, paid at 1.5 times the regular rate. Each
+        workweek is totalled on its own — a short week can't offset a long one. If your total goes past 40,
+        the <Link href="/tools/overtime" className={LINK}>overtime calculator</Link> splits regular and overtime pay,
+        and <Link href="/articles/overtime-hours-calculator" className={LINK}>how to calculate overtime</Link> covers
+        the rules, including states with daily overtime.
+      </p>
+
+      <h2>Before you submit</h2>
       <ul>
-        <li>15 minutes = 0.25 hours</li>
-        <li>30 minutes = 0.5 hours</li>
-        <li>45 minutes = 0.75 hours</li>
+        <li>Every day has a start and an end, and overnight shifts end on the next day</li>
+        <li>Only unpaid breaks are subtracted</li>
+        <li>The week was totalled in minutes before converting to decimal</li>
+        <li>The total matches the pay period your employer uses</li>
       </ul>
-
-      <h2>Handling Breaks and Deductions</h2>
-      <p>
-        Timesheets must account for unpaid breaks. Whether you clock out for lunch or have an automatic deduction, the final hours should reflect actual paid work time. Our calculator lets you subtract break time to get the true billable or payable hours.
-      </p>
-
-      <h2>Benefits for Employers and Employees</h2>
-      <ul>
-        <li><strong>For employees:</strong> Verify your hours are calculated correctly before submitting</li>
-        <li><strong>For managers:</strong> Quickly validate timesheet submissions</li>
-        <li><strong>For payroll:</strong> Get decimal-ready figures without manual conversion</li>
-        <li><strong>For compliance:</strong> Maintain accurate records for labor law requirements</li>
-      </ul>
-
-      <h2>Conclusion</h2>
-      <p>
-        Accurate timesheets protect both employers and employees. Use ClockMath's <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">timesheet calculator</Link> to quickly convert clock times to total hours, ensure decimal accuracy for payroll systems, and eliminate calculation errors from your weekly time tracking.
-      </p>
     </ArticleLayout>
   );
 }
