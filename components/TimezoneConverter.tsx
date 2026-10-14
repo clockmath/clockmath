@@ -19,6 +19,7 @@ import {
   parseDateTimeInZone,
   getTimezoneOffset,
   getOffsetLabel,
+  resolveTimeZone,
 } from '@/lib/time';
 import { ArrowLeftRight, MapPin, Globe } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
@@ -199,7 +200,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     if (result) {
       try {
         const fmt = new Intl.DateTimeFormat('sv-SE', {
-          timeZone: newFrom,
+          timeZone: resolveTimeZone(newFrom, result.targetDate),
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
@@ -301,7 +302,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     if (fromTZ) {
       // Get what time it currently is in the "from" timezone
       const formatter = new Intl.DateTimeFormat('sv-SE', {
-        timeZone: fromTZ,
+        timeZone: resolveTimeZone(fromTZ, now),
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',

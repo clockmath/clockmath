@@ -73,6 +73,46 @@ export function getAllTimeZones(): string[] {
 }
 
 /**
+ * British Columbia moved to permanent UTC−7: its last clock change was
+ * Mar 8 2026 and the Nov 1 2026 fall-back never happens (IANA tzdata 2026c;
+ * news.gov.bc.ca/releases/2026AG0013-000209). Browsers whose bundled tz data
+ * predates the change — Chrome 152 still did in Oct 2026 — keep applying
+ * PST (UTC−8) to America/Vancouver every winter, so Vancouver/Victoria would
+ * read an hour wrong.
+ *
+ * For instants on/after the cancelled fall-back, route Vancouver through a
+ * fixed UTC−7 zone instead (POSIX sign: Etc/GMT+7 is UTC−7). The check probes
+ * the browser itself, so it is self-healing: once the browser knows the new
+ * rule the probe reads −7 and this returns the zone unchanged.
+ */
+const BC_PERMANENT_FROM_MS = Date.UTC(2026, 10, 1, 9, 0, 0); // Nov 1 2026, 02:00 PDT — the fall-back that no longer happens
+const BC_PROBE = new Date(Date.UTC(2027, 0, 15, 12, 0, 0)); // a winter instant well inside the new rule
+let bcRuleStale: boolean | null = null;
+
+function browserHasStaleBCRule(): boolean {
+  if (bcRuleStale === null) {
+    // rawTimezoneOffset, not getTimezoneOffset — the latter calls back into this.
+    bcRuleStale = rawTimezoneOffset('America/Vancouver', BC_PROBE) === -480;
+  }
+  return bcRuleStale;
+}
+
+/**
+ * The zone to hand to Intl for `timeZone` at instant `at`. Identity for every
+ * zone except America/Vancouver on a browser that still has the old BC rule.
+ */
+export function resolveTimeZone(timeZone: string, at: Date): string {
+  if (
+    timeZone === 'America/Vancouver' &&
+    at.getTime() >= BC_PERMANENT_FROM_MS &&
+    browserHasStaleBCRule()
+  ) {
+    return 'Etc/GMT+7';
+  }
+  return timeZone;
+}
+
+/**
  * Get timezone offset label (e.g., "UTC-05:00" or "UTC+09:00")
  * Updated to use modern Intl API for better browser support
  */
@@ -80,7 +120,7 @@ export function getOffsetLabel(timeZone: string, at: Date = new Date()): string 
   try {
     // Use the modern Intl API for timezone offset formatting
     const formatter = new Intl.DateTimeFormat('en', {
-      timeZone: timeZone,
+      timeZone: resolveTimeZone(timeZone, at),
       timeZoneName: 'shortOffset',
       hour: '2-digit',
     });
@@ -109,6 +149,11 @@ export function getOffsetLabel(timeZone: string, at: Date = new Date()): string 
  * Get timezone offset in minutes from UTC
  */
 export function getTimezoneOffset(timeZone: string, date: Date): number {
+  return rawTimezoneOffset(resolveTimeZone(timeZone, date), date);
+}
+
+/** Offset in minutes exactly as this browser's Intl reports it — no BC correction. */
+function rawTimezoneOffset(timeZone: string, date: Date): number {
   try {
     // Create formatters for UTC and target timezone
     const utcFormatter = new Intl.DateTimeFormat('en', {
@@ -171,6 +216,7 @@ export function formatZoned(
 ): { time: string; date: string; weekday: string } {
   try {
     const hour12 = options?.hour12 ?? true;
+    timeZone = resolveTimeZone(timeZone, date);
     
     const timeFormatter = new Intl.DateTimeFormat('en-US', {
       timeZone,
