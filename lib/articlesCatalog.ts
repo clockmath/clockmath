@@ -97,8 +97,8 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     relatedTools: ['/'],
   },
   {
-    title: 'Time Between Dates Calculator',
-    description: 'Calculate duration between any two dates',
+    title: 'How to Calculate the Time Between Two Dates',
+    description: 'Month lengths, leap years, and inclusive counting, with worked examples',
     href: '/articles/time-between-dates-calculator',
     category: 'calculator',
     priority: 3,
