@@ -12,6 +12,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
+import InfoTip from '@/components/InfoTip';
 
 export const CYCLE_MIN = 90;
 export const FALL_ASLEEP_MIN = 15;
@@ -211,9 +212,6 @@ export function SleepTool({ className = '' }: SleepToolProps) {
               </>
             )}
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
-            Overnight is handled automatically — 11:00 PM to 6:30 AM counts as 7h 30m.
-          </p>
         </section>
 
         {/* Cycle planner */}
@@ -222,8 +220,12 @@ export function SleepTool({ className = '' }: SleepToolProps) {
           className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
         >
           <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-            <h2 id="planner-heading" className="text-lg font-bold text-foreground">
+            <h2 id="planner-heading" className="text-lg font-bold text-foreground inline-flex items-center gap-1.5">
               Sleep cycle planner
+              <InfoTip label="sleep cycles">
+                Based on ~90-minute sleep cycles plus {FALL_ASLEEP_MIN} minutes to fall asleep. Waking at the end of a
+                cycle tends to feel easier than waking mid-cycle.
+              </InfoTip>
             </h2>
             <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
               <button
@@ -297,10 +299,6 @@ export function SleepTool({ className = '' }: SleepToolProps) {
               </li>
             ))}
           </ul>
-          <p className="text-xs text-muted-foreground mt-3">
-            Based on ~90-minute sleep cycles plus {FALL_ASLEEP_MIN} minutes to fall asleep. Waking at
-            the end of a cycle tends to feel easier than mid-cycle.
-          </p>
         </section>
       </div>
     </div>

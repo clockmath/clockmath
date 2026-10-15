@@ -21,7 +21,7 @@ import {
   getOffsetLabel,
   resolveTimeZone,
 } from '@/lib/time';
-import { ArrowLeftRight, MapPin, Globe } from 'lucide-react';
+import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
 
@@ -580,11 +580,6 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           </div>
         </div>
         
-          {(!inputDate || !inputTime) && (
-            <p className="text-xs text-muted-foreground dark:text-slate-400 italic">
-              Leave empty to use current time
-            </p>
-          )}
 
           {/* Calculate Button */}
           <div className="mt-6 text-center">
@@ -653,12 +648,6 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         </div>
       )}
 
-      {/* DST Notice */}
-      <div className="text-center">
-        <p className="text-xs text-muted-foreground dark:text-slate-400">
-          <Globe className="inline w-3.5 h-3.5 -mt-0.5 mr-1" aria-hidden="true" />Handles Daylight Saving Time automatically
-        </p>
-      </div>
 
     </div>
   );

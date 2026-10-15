@@ -9,6 +9,7 @@ import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { buildDay } from '@/lib/buildDay';
+import InfoTip from '@/components/InfoTip';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
@@ -299,18 +300,15 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           </h2>
         )}
         {targetLabel && (
-          <p className="text-sm text-muted-foreground dark:text-slate-400 mb-1">{targetLabel}</p>
-        )}
-        {active && userTz ? (
-          <p className="text-xs text-muted-foreground/80 dark:text-slate-500 mb-6">
-            Based on your time zone ({userTz})
+          <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6 inline-flex items-center gap-1">
+            {targetLabel}
+            {userTz && (
+              <InfoTip label="time zone">
+                Counted on your own clock ({userTz.split('/').pop()?.replace(/_/g, ' ')} time). A shared link counts
+                down on each viewer&apos;s clock.
+              </InfoTip>
+            )}
           </p>
-        ) : (
-          !active && (
-            <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
-              Name your countdown and pick a date, then press Start countdown.
-            </p>
-          )
         )}
 
         <div className="flex flex-wrap justify-center gap-2 sm:gap-3">

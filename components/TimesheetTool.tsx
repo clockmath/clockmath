@@ -11,6 +11,7 @@ import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
 import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
 import { Coffee, X } from 'lucide-react';
+import InfoTip from '@/components/InfoTip';
 
 interface TimesheetToolProps {
   className?: string;
@@ -530,7 +531,12 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
       {/* Shifts (input) */}
       <div className="relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-foreground dark:text-slate-200">Shifts</h2>
+          <h2 className="text-sm font-semibold text-foreground dark:text-slate-200 inline-flex items-center gap-1">
+            Shifts
+            <InfoTip label="saving">
+              Saved automatically on this device, so your shifts are here when you come back. Nothing is uploaded.
+            </InfoTip>
+          </h2>
           <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
             <button
               onClick={() => setIs24h(false)}
@@ -625,12 +631,6 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           Add shift
         </button>
 
-        <p className="mt-3 text-xs text-muted-foreground/80 flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          Saved automatically on this device — your shifts are here when you come back.
-        </p>
       </div>
 
       {/* Result (this is what export/share captures) */}

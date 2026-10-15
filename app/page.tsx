@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
-import { Lightbulb } from "lucide-react"
+import InfoTip from "@/components/InfoTip"
 import { RollingNumber } from "@/components/RollingNumber"
 import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
@@ -597,15 +597,15 @@ export default function ClockMathPage() {
           <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-foreground dark:text-slate-100">
+                <h3 className="text-lg font-bold text-foreground dark:text-slate-100 inline-flex items-center gap-1.5">
                   Recent Calculations
+                  {history.length >= 2 && (
+                    <InfoTip label="adding up calculations">
+                      Tick two or more calculations and press Sum Selected to add them together, for example
+                      separate work sessions in a day.
+                    </InfoTip>
+                  )}
                 </h3>
-                {history.length >= 2 && selectedCalculations.size === 0 && (
-                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                    <Lightbulb className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
-                    <span>Tip: Select multiple calculations to sum them together</span>
-                  </p>
-                )}
               </div>
               <div className="flex items-center gap-2">
                 {selectedCalculations.size > 0 && (
@@ -788,7 +788,7 @@ export default function ClockMathPage() {
                 Sum of Selected Calculations
               </h3>
               <p className="text-xs text-blue-600 dark:text-blue-400 mb-4">
-                ✨ Great! You've successfully summed {selectedCalculations.size} calculation{selectedCalculations.size !== 1 ? 's' : ''}
+                Total of {selectedCalculations.size} calculation{selectedCalculations.size !== 1 ? 's' : ''}
               </p>
               
               {/* Main sum result - largest and centered */}
