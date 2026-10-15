@@ -33,7 +33,7 @@ const FAQS = [
   {
     question: 'Does the calculator compute overtime pay?',
     answer:
-      'Yes, optionally. Turn on “Split overtime” and the period total is split into regular and overtime hours at a threshold you set (40 by default), paid at 1.5× or 2×. Rules vary by country and state — US federal law generally requires 1.5× pay past 40 hours in a week, and some states add daily thresholds — so set the threshold to match yours.',
+      'Yes, optionally. Turn on “Split overtime” and the period total is split into regular and overtime hours at a threshold you set (40 by default), paid at 1.5× or 2×. Rules vary by country and state — US federal law generally requires 1.5× pay past 40 hours in a week, and some states add daily thresholds — so set the threshold to match yours. For a single week’s total, the Overtime Calculator does the same split on its own.',
   },
   {
     question: 'Is my timesheet data private?',
@@ -86,7 +86,7 @@ export default function TimesheetPage() {
     <PageChrome currentTool="timesheet" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd
         data={getSoftwareApplicationSchema({
-          name: 'ClockMath Work Hours & Timesheet Calculator',
+          name: 'ClockMath Work Hours Calculator',
           description:
             'Add up your shifts to get total work hours, decimal hours for payroll, and gross pay. Save timesheets and export a summary.',
           url: 'https://clockmath.com/tools/timesheet/',
@@ -102,7 +102,7 @@ export default function TimesheetPage() {
             ClockMath
           </Link>
           <span className="mx-2">›</span>
-          <span>Timesheet</span>
+          <span>Work Hours</span>
         </nav>
         <div className="flex items-center gap-3">
           <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
@@ -241,6 +241,18 @@ export default function TimesheetPage() {
               Time duration calculator
             </Link>{' '}
             — the exact time between any two times, including across midnight
+          </li>
+          <li>
+            <Link href="/tools/overtime" className="text-primary hover:text-primary/80 font-semibold">
+              Overtime calculator
+            </Link>{' '}
+            — regular vs overtime hours, and what time and a half pays
+          </li>
+          <li>
+            <Link href="/tools/decimal-hours" className="text-primary hover:text-primary/80 font-semibold">
+              Decimal hours converter
+            </Link>{' '}
+            — minutes to decimal and back, with the full chart
           </li>
           <li>
             <Link href="/articles/timesheet-calculator" className="text-primary hover:text-primary/80 font-semibold">

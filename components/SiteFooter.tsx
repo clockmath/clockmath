@@ -12,7 +12,7 @@ export default function SiteFooter() {
     <footer className="mt-8 sm:mt-section">
       <div className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 text-center">
         <p className="text-sm text-muted-foreground dark:text-slate-400 mb-4">
-          Find Clock Math useful? Support the development!
+          Find ClockMath useful? Support the development!
         </p>
 
         {/* Buy Me a Coffee button */}
@@ -21,7 +21,7 @@ export default function SiteFooter() {
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md mb-4"
-          aria-label="Support Clock Math on Buy Me a Coffee"
+          aria-label="Support ClockMath on Buy Me a Coffee"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M2 19h18v2H2v-2zM20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM20 8h-2V5h2v3zM4 5h12v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V5z" />
@@ -70,7 +70,7 @@ export default function SiteFooter() {
 
         {/* Copyright */}
         <div className="text-xs text-muted-foreground dark:text-slate-500 opacity-75">
-          © {year} Clock Math
+          © {year} ClockMath
         </div>
       </div>
     </footer>

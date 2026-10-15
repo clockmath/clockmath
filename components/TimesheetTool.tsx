@@ -9,6 +9,7 @@ import { RollingNumber } from '@/components/RollingNumber';
 import { computeOvertime } from '@/lib/overtime';
 import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
 import Link from 'next/link';
+import { buildDay } from '@/lib/buildDay';
 
 interface TimesheetToolProps {
   className?: string;
@@ -208,7 +209,7 @@ const shareOrCopy = async (url: string, title: string) => {
 };
 
 export function TimesheetTool({ className = '' }: TimesheetToolProps) {
-  const [shifts, setShifts] = useState<Shift[]>([newShift('row-1', new Date(2025, 0, 1))]);
+  const [shifts, setShifts] = useState<Shift[]>([newShift('row-1', buildDay())]);
   const [is24h, setIs24h] = useState(true);
   const [rate, setRate] = useState('');
   const [saved, setSaved] = useState<SavedTimesheet[]>([]);

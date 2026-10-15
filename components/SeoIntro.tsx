@@ -48,7 +48,7 @@ const FAQS = [
   {
     question: 'Can it calculate the duration between two dates?',
     answer:
-      'Yes — both ends take a date as well as a time, and the result breaks the duration down calendar-accurately into years, months, days, hours, minutes, and seconds.',
+      'Yes — both ends take a date as well as a time. The result breaks the span down calendar-accurately into years, months, days, hours and minutes, and Show details gives it as a total number of days, weeks or hours.',
   },
   {
     question: 'What are decimal hours?',
@@ -135,9 +135,15 @@ export default function SeoIntro() {
         <ul className="space-y-2 text-muted-foreground">
           <li>
             <Link href="/tools/timesheet" className="text-primary hover:text-primary/80 font-semibold">
-              Work hours &amp; timesheet calculator
+              Work hours calculator
             </Link>{' '}
             — total shifts with breaks, decimal hours, and gross pay
+          </li>
+          <li>
+            <Link href="/tools/overtime" className="text-primary hover:text-primary/80 font-semibold">
+              Overtime calculator
+            </Link>{' '}
+            — regular vs overtime hours, and what time and a half pays
           </li>
           <li>
             <Link href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">
@@ -168,6 +174,12 @@ export default function SeoIntro() {
               Countdown timer
             </Link>{' '}
             — count down to any date and share it
+          </li>
+          <li>
+            <Link href="/tools/quiz" className="text-primary hover:text-primary/80 font-semibold">
+              Daily time quiz
+            </Link>{' '}
+            — five clock-math questions a day, with a leaderboard
           </li>
           <li>
             <Link href="/articles" className="text-primary hover:text-primary/80 font-semibold">

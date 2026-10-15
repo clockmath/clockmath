@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import tzLookup from "tz-lookup";
 import { LocationSearch, type Place } from "./LocationSearch";
-import { getOffsetLabel } from "@/lib/time";
+import { getOffsetLabel, getTimeZoneDisplayName } from "@/lib/time";
 
 interface LocationTimezonePickerProps {
   label: string;
@@ -117,7 +117,7 @@ export function LocationTimezonePicker({
             ? 'text-primary dark:text-accent font-medium'
             : 'text-muted-foreground dark:text-slate-400'
         }`}>
-          {iana ? `${iana} (${getOffsetLabel(iana, new Date())})` : (defaultHint || "Search for a place to auto-detect timezone")}
+          {iana ? `${getTimeZoneDisplayName(iana)} time (${getOffsetLabel(iana, new Date())})` : (defaultHint || "Search for a place to auto-detect timezone")}
         </div>
 
         {displayLabel && iana && (

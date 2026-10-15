@@ -55,8 +55,8 @@ const primaryTabs: NavItem[] = [
   },
   {
     id: 'timesheet',
-    label: 'Timesheet',
-    shortLabel: 'Shifts',
+    label: 'Work Hours',
+    shortLabel: 'Hours',
     href: '/tools/timesheet',
     icon: <ClipboardList className="w-5 h-5 lg:w-4 lg:h-4 shrink-0" />,
   },
@@ -114,7 +114,7 @@ const TOOL_GROUPS: Array<{ title: string; items: NavItem[] }> = [
       {
         id: 'timesheet',
         label: 'Work Hours',
-        shortLabel: 'Shifts',
+        shortLabel: 'Hours',
         href: '/tools/timesheet',
         icon: <ClipboardList className="w-4 h-4 shrink-0" />,
       },

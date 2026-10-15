@@ -89,7 +89,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
             <p className="text-xs text-muted-foreground dark:text-slate-400 mt-1">
               Decimal hours — 46.5 means 46h 30m. Adding up shifts?{' '}
               <Link href="/tools/timesheet" className="underline underline-offset-2 hover:text-foreground">
-                Use the timesheet calculator
+                Use the work hours calculator
               </Link>
               .
             </p>

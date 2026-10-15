@@ -146,7 +146,7 @@ export const TOOL_LINKS: ToolLink[] = [
     priority: 5,
   },
   {
-    title: 'Work Hours & Timesheet Calculator',
+    title: 'Work Hours Calculator',
     description: 'Add up shifts with breaks, decimal hours, and gross pay',
     href: '/tools/timesheet',
     category: 'calculator',

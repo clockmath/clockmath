@@ -10,7 +10,7 @@ const links = [
   { href: "/", label: "Time Calculator", desc: "Time between two times" },
   { href: "/tools/timezone/", label: "Timezone Converter", desc: "Convert across timezones" },
   { href: "/tools/countdown/", label: "Countdown Timer", desc: "Count down to any date" },
-  { href: "/tools/timesheet/", label: "Timesheet", desc: "Add up your work hours" },
+  { href: "/tools/timesheet/", label: "Work Hours", desc: "Add up your shifts" },
   { href: "/tools/market-hours/", label: "Market Hours", desc: "Live stock market hours" },
 ];
 

@@ -53,7 +53,7 @@ export function clock(mins: number, hour12: boolean): string {
   return `${h12}:${mm} ${ampm}`;
 }
 
-const hm = (mins: number): string => `${Math.floor(mins / 60)}h ${mins % 60}m`;
+const hm = (mins: number): string => (mins % 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins / 60}h`);
 
 /** Sleep quality note against the widely used 7–9h adult guidance */
 export function durationNote(mins: number): string {

@@ -135,7 +135,7 @@ export default function ClockMathPage() {
     if (minutes) parts.push(`${minutes}m`)
     // Show seconds only for sub-day durations (avoids noise on long spans).
     if (seconds && !years && !months && !days) parts.push(`${seconds}s`)
-    return parts.length ? parts.join(", ") : "0s"
+    return parts.length ? parts.join(" ") : "0s"
   }, [])
 
   // Calendar-accurate duration between two datetimes (handles real month
@@ -581,34 +581,12 @@ export default function ClockMathPage() {
                   <p className="text-sm text-foreground m-0">
                     Adding up a work week?{" "}
                     <Link href="/tools/timesheet/" className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
-                      Total your shifts in the timesheet calculator
+                      Total your shifts in the work hours calculator
                     </Link>
                     {" "}— breaks, overnight shifts, and gross pay included.
                   </p>
                 </div>
 
-                {/* Contextual cross-promo: nudge engaged users toward the other tools */}
-                <div className="mt-4 bg-card dark:bg-slate-800 rounded-xl p-4 border border-border/50 dark:border-slate-700/50">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    <span className="font-medium text-foreground inline-flex items-center gap-1.5"><Lightbulb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />Did you know?</span> You can also use ClockMath to{" "}
-                    <Link href="/tools/timesheet/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
-                      add up your work hours
-                    </Link>
-                    ,{" "}
-                    <Link href="/tools/countdown/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
-                      create countdowns for events
-                    </Link>
-                    ,{" "}
-                    <Link href="/tools/timezone/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
-                      convert time between time zones
-                    </Link>
-                    , and{" "}
-                    <Link href="/tools/market-hours/" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
-                      check when stock markets open
-                    </Link>
-                    .
-                  </p>
-                </div>
               </div>
             )}
           </div>

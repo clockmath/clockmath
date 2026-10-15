@@ -34,7 +34,7 @@ const TILES = [
   },
   {
     href: '/tools/timesheet',
-    title: 'Work Hours & Timesheet',
+    title: 'Work Hours Calculator',
     description: 'Add up shifts with breaks; decimal hours and gross pay for payroll',
     icon: ClipboardList,
   },
@@ -140,7 +140,7 @@ export default function ToolsHub() {
       <header className="text-center mb-8 sm:mb-section">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
-          Nine free tools. No signup, no ads in your way — everything runs in your browser.
+          Nine free tools. No signup, no ads.
         </p>
         <nav className="text-sm text-muted-foreground mt-4">
           <Link href="/" className="hover:text-primary transition-colors">
