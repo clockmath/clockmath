@@ -365,21 +365,18 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     const diffMinutes = toOffset - fromOffset;
     const diffHours = diffMinutes / 60;
     
+    // A full sentence: "3 hours ahead" alone never said who was ahead.
+    const from = getFromZoneDisplayName();
+    const to = getToZoneDisplayName();
     if (diffHours === 0) {
-      return "Same time";
-    } else if (diffHours > 0) {
-      const hours = Math.floor(Math.abs(diffHours));
-      const minutes = Math.abs(diffMinutes) % 60;
-      return minutes === 0 
-        ? `${hours} hour${hours !== 1 ? 's' : ''} ahead`
-        : `${hours}h ${minutes}m ahead`;
-    } else {
-      const hours = Math.floor(Math.abs(diffHours));
-      const minutes = Math.abs(diffMinutes) % 60;
-      return minutes === 0 
-        ? `${hours} hour${hours !== 1 ? 's' : ''} behind`
-        : `${hours}h ${minutes}m behind`;
+      return `${to} and ${from} are on the same time`;
     }
+    const hours = Math.floor(Math.abs(diffHours));
+    const minutes = Math.abs(diffMinutes) % 60;
+    const amount = minutes === 0
+      ? `${hours} hour${hours !== 1 ? 's' : ''}`
+      : `${hours}h ${minutes}m`;
+    return `${to} is ${amount} ${diffHours > 0 ? 'ahead of' : 'behind'} ${from}`;
   };
 
   return (
@@ -530,7 +527,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-foreground dark:text-slate-200">
-              Date & Time (in {getFromZoneDisplayName()})
+              Date & Time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
             </h3>
             <div className="flex gap-2">
               <button
@@ -626,7 +623,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               <div className="text-xs text-muted-foreground dark:text-slate-400 mb-1">
                 Time Difference
               </div>
-              <div className="text-2xl sm:text-3xl font-bold text-primary dark:text-accent">
+              <div className="text-xl sm:text-2xl font-bold text-primary dark:text-accent">
                 {getTimeDifference()}
               </div>
             </div>
@@ -638,7 +635,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                     {getFromZoneDisplayName()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {fromTZ && `${fromTZ} (${getOffsetLabel(fromTZ, result.targetDate)})`}
+                    {fromTZ && getOffsetLabel(fromTZ, result.targetDate)}
                   </div>
                   <div>{result.from.weekday}, {result.from.date}</div>
                 </div>
@@ -647,7 +644,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                     {getToZoneDisplayName()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {toTZ && `${toTZ} (${getOffsetLabel(toTZ, result.targetDate)})`}
+                    {toTZ && getOffsetLabel(toTZ, result.targetDate)}
                   </div>
                   <div>{result.to.weekday}, {result.to.date}</div>
                 </div>

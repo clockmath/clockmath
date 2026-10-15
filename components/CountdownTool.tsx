@@ -8,6 +8,7 @@ import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { RollingNumber } from '@/components/RollingNumber';
+import { buildDay } from '@/lib/buildDay';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
@@ -64,7 +65,7 @@ const toWallClock = (date: Date): string =>
 
 export function CountdownTool({ className = '' }: CountdownToolProps) {
   // Draft inputs (the form) — only committed to `active` on Start countdown.
-  const [dateValue, setDateValue] = useState<Date>(() => new Date(2025, 0, 1));
+  const [dateValue, setDateValue] = useState<Date>(() => buildDay());
   const [timeStr, setTimeStr] = useState('00:00:00');
   const [title, setTitle] = useState('');
   const [is24h, setIs24h] = useState(true);

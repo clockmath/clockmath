@@ -52,7 +52,7 @@ const FAQS = [
   {
     question: 'How do I convert decimal hours back to minutes?',
     answer:
-      'Multiply the fraction by 60. For 7.75 hours: 0.75 × 60 = 45, so it’s 7 hours 45 minutes. The right-hand converter above handles any value, like 8.33 → 8h 20m.',
+      'Multiply the fraction by 60. For 7.75 hours: 0.75 × 60 = 45, so it’s 7 hours 45 minutes. The decimal-to-hours converter above handles any value, like 8.33 → 8h 20m.',
   },
 ];
 
@@ -141,7 +141,7 @@ export default function DecimalHoursPage() {
           Minutes to decimal hours chart
         </h2>
         <p className="text-muted-foreground mb-4">
-          Exact values rounded to two decimal places — the convention most timesheet software uses.
+          Values to two decimal places, the convention most timesheet software uses.
         </p>
         <div className="overflow-x-auto bg-card dark:bg-slate-800 rounded-2xl p-4 border border-border/50 dark:border-slate-700/50">
           <table className="w-full text-sm border-collapse">
@@ -176,7 +176,7 @@ export default function DecimalHoursPage() {
         </div>
         <p className="text-xs text-muted-foreground mt-3">
           Note: some payroll systems round punches to the nearest tenth of an hour (6-minute steps)
-          or quarter hour (15-minute steps) before converting — this chart shows unrounded values.
+          or quarter hour (15-minute steps) before converting — this chart shows the values before any such rounding.
         </p>
       </section>
 
@@ -206,7 +206,7 @@ export default function DecimalHoursPage() {
         <ul className="space-y-2 text-muted-foreground">
           <li>
             <Link href="/tools/timesheet" className="text-primary hover:text-primary/80 font-semibold">
-              Work hours &amp; timesheet calculator
+              Work hours calculator
             </Link>{' '}
             — add up shifts with breaks and see decimal totals and gross pay
           </li>

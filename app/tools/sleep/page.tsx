@@ -18,7 +18,7 @@ const FAQS = [
   {
     question: 'What is a sleep cycle?',
     answer:
-      'Sleep moves through light, deep, and REM stages in cycles averaging roughly 90 minutes. Waking at the end of a cycle tends to feel easier than being pulled out mid-cycle, which is why the planner suggests bedtimes in 90-minute steps rather than round hours.',
+      'Sleep moves through light, deep, and REM stages in cycles averaging roughly 90 minutes. That is why the planner suggests bedtimes in 90-minute steps rather than round hours.',
   },
   {
     question: 'What time should I go to bed if I wake at 6:30 AM?',
@@ -131,7 +131,7 @@ export default function SleepPage() {
         items={BEDTIMES}
       />
 
-      <QuickAnswers heading="How long did I sleep?" intro="Common nights, worked out:" items={NIGHTS} />
+      <QuickAnswers heading="Hours slept on common nights" items={NIGHTS} />
 
       {/* Explanation */}
       <section className="max-w-3xl mx-auto mb-section">
@@ -184,10 +184,10 @@ export default function SleepPage() {
             — the exact time between any two times
           </li>
           <li>
-            <Link href="/tools/countdown" className="text-primary hover:text-primary/80 font-semibold">
-              Countdown timer
+            <Link href="/articles/shift-work-hours-calculator" className="text-primary hover:text-primary/80 font-semibold">
+              Night shift hours guide
             </Link>{' '}
-            — count down to your alarm, or anything else
+            — working out hours for shifts that cross midnight
           </li>
         </ul>
       </section>

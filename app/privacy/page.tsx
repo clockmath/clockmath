@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import ManageConsentButton from "@/components/ManageConsentButton";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Clock Math",
+  title: "Privacy Policy | ClockMath",
   description: "Privacy Policy for ClockMath.com time duration calculator. Learn how we protect your privacy and handle data collection.",
   robots: {
     index: true,
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: "https://clockmath.com/privacy",
   },
   openGraph: {
-    title: "Privacy Policy — Clock Math",
+    title: "Privacy Policy | ClockMath",
     description: "Privacy Policy for ClockMath.com time duration calculator.",
     type: "website",
     url: "https://clockmath.com/privacy",

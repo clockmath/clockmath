@@ -89,7 +89,7 @@ export default function MarketHoursPage() {
           </span>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Stock Market Hours</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Is the market open? Every exchange, your timezone</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Is the market open? Major exchanges, in your timezone</p>
           </div>
         </div>
       </header>

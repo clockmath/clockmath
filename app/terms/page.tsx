@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Clock Math",
+  title: "Terms of Service | ClockMath",
   description: "Terms of Service for ClockMath.com — free time duration and timezone calculators. Learn about usage rights, limitations, and legal information.",
   robots: {
     index: true,
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     canonical: "https://clockmath.com/terms",
   },
   openGraph: {
-    title: "Terms of Service — Clock Math",
+    title: "Terms of Service | ClockMath",
     description: "Terms of Service for ClockMath.com — free time duration and timezone calculators.",
     type: "website",
     url: "https://clockmath.com/terms",
