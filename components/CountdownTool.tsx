@@ -15,6 +15,7 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'Christmas', href: '/countdown/christmas/', note: 'December 25' },
   { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
   { title: 'Halloween', href: '/countdown/halloween/', note: 'October 31' },
+  { title: 'Clocks change', href: '/countdown/daylight-saving-time/', note: 'Next clock change' },
   { title: '4th of July', href: '/countdown/july-4th/', note: 'July 4' },
   { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
   { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },

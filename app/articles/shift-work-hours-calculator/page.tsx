@@ -98,7 +98,8 @@ export default function ShiftWorkHoursCalculatorPage() {
       <h2>The two daylight-saving nights</h2>
       <p>
         On the night the clocks go back, a shift that spans 2:00 AM is an hour longer than the clock says. In the US
-        that's the first Sunday in November: a 10:00 PM to 6:00 AM shift on November 1, 2026 is 9 hours worked, not 8.
+        that's the first Sunday in November (see <Link href="/countdown/daylight-saving-time" className={LINK}>when
+        the clocks change</Link> for other countries): a 10:00 PM to 6:00 AM shift on November 1, 2026 is 9 hours worked, not 8.
         On the night the clocks go forward — the second Sunday in March — the same shift is 7 hours, as on March 14,
         2027.
       </p>

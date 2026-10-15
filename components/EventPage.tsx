@@ -20,6 +20,7 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Christmas', href: '/countdown/christmas/' },
   { title: 'Spider-Man: Brand New Day', href: '/countdown/spider-man-brand-new-day/' },
   { title: 'Halloween', href: '/countdown/halloween/' },
+  { title: 'Clocks change', href: '/countdown/daylight-saving-time/' },
   { title: 'Thanksgiving', href: '/countdown/thanksgiving/' },
   { title: 'Black Friday', href: '/countdown/black-friday/' },
   { title: 'New Year', href: '/countdown/new-year/' },
@@ -67,6 +68,11 @@ export interface EventPageProps {
   countdownSlot?: ReactNode;
   facts?: Array<{ label: string; value: string }>;
   intro: ReactNode;
+  /**
+   * Extra sections rendered after the intro and before the FAQ. The intro is
+   * wrapped in a <p>, so tables, headings, and lists must go here instead.
+   */
+  extraContent?: ReactNode;
   faqs: Array<{ question: string; answer: string }>;
 }
 
@@ -86,6 +92,7 @@ export default function EventPage({
   disclaimer,
   lastUpdated,
   countdownSlot,
+  extraContent,
   facts,
   intro,
   faqs,
@@ -220,6 +227,8 @@ export default function EventPage({
       <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <p className="text-foreground dark:text-slate-200 leading-relaxed">{intro}</p>
       </div>
+
+      {extraContent}
 
       <section className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">Frequently asked questions</h2>
