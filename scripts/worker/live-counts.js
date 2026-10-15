@@ -36,9 +36,11 @@ function liveDays(spec, nowMs, timeZone) {
   }
   const today = ymdInZone(nowMs, timeZone);
   if (spec.startsWith('d:')) {
-    for (const date of spec.slice(2).split(',')) {
-      if (date === today) return null; // the day itself: the page reads "arrived"
-      if (date > today) return Math.round((ymdToUtc(date) - ymdToUtc(today)) / DAY_MS);
+    // Entries are "YYYY-MM-DD" or "start/end" (inclusive, e.g. Hanukkah).
+    for (const entry of spec.slice(2).split(',')) {
+      const [start, end = start] = entry.split('/');
+      if (start > today) return Math.round((ymdToUtc(start) - ymdToUtc(today)) / DAY_MS);
+      if (end >= today) return null; // during the event: the page reads "arrived"
     }
     return null;
   }

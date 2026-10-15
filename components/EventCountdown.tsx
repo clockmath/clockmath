@@ -25,6 +25,13 @@ interface EventCountdownProps {
    * are 0-indexed like the other recurrences.
    */
   nthWeekday?: { month: number; weekday: number; n: number; offsetDays?: number };
+  /**
+   * Events on a calendar this code doesn't compute (Hanukkah: Hebrew calendar),
+   * as explicit date ranges, YYYY-MM-DD, inclusive. Counts to the next start;
+   * between start and end the event reads as arrived instead of jumping to
+   * next year.
+   */
+  dateRanges?: ReadonlyArray<{ start: string; end?: string }>;
   title: string;
   className?: string;
   /** Heading shown once the target has arrived. Defaults to `${title} has released!`. */
@@ -100,6 +107,16 @@ function weeksPhrase(days: number): string {
 const ymd = (d: Date): string =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+// Start (local midnight, ms) of the first range that hasn't ended yet — so
+// during the event it returns this year's start (reads as arrived).
+function nextRangeStart(ranges: ReadonlyArray<{ start: string; end?: string }>): number | null {
+  const today = ymd(new Date());
+  const r = ranges.find((x) => (x.end ?? x.start) >= today);
+  if (!r) return null;
+  const [y, m, d] = r.start.split('-').map(Number);
+  return new Date(y, m - 1, d).getTime();
+}
+
 // Next upcoming nth-weekday occurrence, rolling to next year only once the
 // day has fully ended (same convention as nextOccurrence).
 function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 0): number {
@@ -118,16 +135,20 @@ export function EventCountdown({
   recurring,
   weekly,
   nthWeekday,
+  dateRanges,
   title,
   className = '',
   arrivedLabel,
   disclaimer,
 }: EventCountdownProps) {
+  // Stable dependency for the dateRanges array (a fresh literal each render).
+  const rangesKey = dateRanges ? dateRanges.map((r) => `${r.start}/${r.end ?? ''}`).join(',') : '';
+
   // Fixed targets are stable across server/client, so they can seed state
   // directly. Recurring/weekly targets must be resolved on the client (current
   // date dependent), so they start null and fill in on mount.
   const [targetMs, setTargetMs] = useState<number | null>(
-    recurring || weekly || nthWeekday ? null : (target ? target.getTime() : null),
+    recurring || weekly || nthWeekday || dateRanges ? null : (target ? target.getTime() : null),
   );
   const [nowMs, setNowMs] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -136,6 +157,7 @@ export function EventCountdown({
     if (recurring) setTargetMs(nextOccurrence(recurring.month, recurring.day));
     else if (weekly) setTargetMs(nextWeekday(weekly.weekday, weekly.spanDays));
     else if (nthWeekday) setTargetMs(nextNthWeekday(nthWeekday.month, nthWeekday.weekday, nthWeekday.n, nthWeekday.offsetDays));
+    else if (dateRanges) setTargetMs(nextRangeStart(dateRanges));
     setNowMs(Date.now());
     setMounted(true);
     const id = setInterval(() => setNowMs(Date.now()), 1000);
@@ -143,7 +165,7 @@ export function EventCountdown({
     // `recurring`/`weekly` are fresh object literals each render; depend on
     // their parts so the effect doesn't re-run on every parent render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
+  }, [recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
 
   const ready = mounted && targetMs !== null && nowMs !== null;
   const isPast = ready && (targetMs as number) < (nowMs as number);
@@ -202,11 +224,13 @@ export function EventCountdown({
           ? nextWeekday(weekly.weekday, weekly.spanDays)
           : nthWeekday
             ? nextNthWeekday(nthWeekday.month, nthWeekday.weekday, nthWeekday.n, nthWeekday.offsetDays)
+            : dateRanges
+              ? nextRangeStart(dateRanges)
             : null);
     if (t === null) return null;
     const n = nowMs ?? Date.now();
     if (t <= n) return null;
-    if (recurring || weekly || nthWeekday) {
+    if (recurring || weekly || nthWeekday || dateRanges) {
       // Local-midnight targets: count calendar days. Dividing elapsed ms by
       // 24h is a day high in the last hour before midnight when a DST change
       // falls in between (and would disagree with the worker's count).
@@ -216,7 +240,7 @@ export function EventCountdown({
     }
     return Math.ceil((t - n) / 86400000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
+  }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
 
   // What the worker needs to recompute the answer sentence on every request
   // (scripts/worker/live-counts.js): the static HTML is built once, but the
@@ -224,6 +248,10 @@ export function EventCountdown({
   // the build day. "t:<ms>" fixed instant, "d:<dates>" the next few
   // occurrences of a recurring date, "w:<weekday>:<span>" a weekly event.
   const liveSpec = useMemo(() => {
+    if (dateRanges) {
+      // "start/end" entries; the worker treats a range like the day itself.
+      return `d:${dateRanges.map((r) => (r.end && r.end !== r.start ? `${r.start}/${r.end}` : r.start)).join(',')}`;
+    }
     if (recurring || nthWeekday) {
       const year = new Date().getFullYear();
       const dates: string[] = [];
@@ -238,8 +266,8 @@ export function EventCountdown({
     if (weekly) return `w:${weekly.weekday}:${weekly.spanDays ?? 1}`;
     return target ? `t:${target.getTime()}` : undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
-  const fixedTarget = !recurring && !weekly && !nthWeekday && target ? target.getTime() : undefined;
+  }, [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
+  const fixedTarget = !recurring && !weekly && !nthWeekday && !dateRanges && target ? target.getTime() : undefined;
 
   return (
     <div

@@ -24,6 +24,13 @@ assert.strictEqual(liveDays(thanksgiving, at('2026-11-26T03:00:00Z'), 'Australia
 assert.strictEqual(liveDays(thanksgiving, at('2026-10-15T12:00:00Z'), 'Not/AZone'), 42); // bad zone → UTC
 assert.strictEqual(liveDays('d:2026-11-26', at('2026-12-01T00:00:00Z'), NY), null); // list exhausted
 
+// Date ranges (Hanukkah 2026: first candle Dec 4, ends Dec 12).
+const hanukkah = 'd:2026-12-04/2026-12-12,2027-12-24/2028-01-01';
+assert.strictEqual(liveDays(hanukkah, at('2026-10-15T12:00:00-04:00'), NY), 50);
+assert.strictEqual(liveDays(hanukkah, at('2026-12-04T09:00:00-05:00'), NY), null); // first day
+assert.strictEqual(liveDays(hanukkah, at('2026-12-12T20:00:00-05:00'), NY), null); // last day
+assert.strictEqual(liveDays(hanukkah, at('2026-12-13T09:00:00-05:00'), NY), 376); // → Dec 24, 2027
+
 // Fixed instants: Math.ceil of the remaining time, like the client.
 const eclipse = `t:${Date.UTC(2028, 6, 22, 2, 55, 23)}`;
 assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 21, 2, 55, 24), NY), 1);
