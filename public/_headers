@@ -1,3 +1,8 @@
+# NOT APPLIED. This site deploys in Cloudflare Pages Advanced Mode (_worker.js),
+# which ignores this file (as it ignores _redirects and functions/). The security
+# headers actually served — including the Content-Security-Policy — are set in
+# scripts/inject-api.js (SECURITY_HEADERS). Edit them there.
+#
 # Cloudflare Pages headers for ClockMath.com
 
 /*
