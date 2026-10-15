@@ -104,6 +104,12 @@ interface BoardState {
   top: BoardEntry[];
 }
 
+// Crowd features (score to beat, percentile, champions) only appear once a
+// day has this many players. In Oct 2026 most days had none, so the result
+// screen spent half its width on an empty board; below the threshold it is
+// one focused card instead. They come back on their own as players do.
+const CROWD_MIN = 3;
+
 const RESULT_KEY_PREFIX = 'clockmath-quiz-result-';
 // In-progress daily run: answers so far + banked ms. Survives reloads and
 // mobile interruptions; index resumes at r.length (an answered question's
@@ -537,6 +543,14 @@ export function QuizTool({ className = '' }: { className?: string }) {
   }
 
   const question = quiz.questions[questionIndex];
+  const crowd = board !== null && board.count >= CROWD_MIN;
+  const [qy, qm, qd] = quiz.day.split('-').map(Number);
+  const dayLabel = new Date(Date.UTC(qy, qm - 1, qd)).toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 
   const optionButton = (
     q: QuizQuestion,
@@ -578,8 +592,11 @@ export function QuizTool({ className = '' }: { className?: string }) {
   // Feedback is color-first: the option grid already shows right/wrong, so
   // a correct answer needs one word (and auto-advances), and a wrong answer
   // needs zero required reading — the method waits behind "Why?".
-  const feedbackPanel = (q: QuizQuestion, picked: number, onNext: () => void, nextLabel: string) => {
+  // Practice passes explainNow: there the point is learning, not speed, so a
+  // wrong answer shows the method straight away instead of behind "Why?".
+  const feedbackPanel = (q: QuizQuestion, picked: number, onNext: () => void, nextLabel: string, explainNow = false) => {
     const correct = picked === q.correctIndex;
+    const showWhy = explainNow || whyOpen;
     if (correct) {
       return (
         <p
@@ -602,7 +619,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             {nextLabel}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
-          {!whyOpen && (
+          {!showWhy && (
             <button
               onClick={() => setWhyOpen(true)}
               className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
@@ -611,7 +628,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             </button>
           )}
         </div>
-        {whyOpen && (
+        {showWhy && (
           <p className="mt-3 text-sm text-muted-foreground">
             {q.explanation}{' '}
             <Link
@@ -631,51 +648,43 @@ export function QuizTool({ className = '' }: { className?: string }) {
       {/* ------------------------------------------------ intro */}
       {phase === 'intro' && (
         <div className={cardClass}>
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <h2 className="text-lg font-bold text-foreground">
-              ClockMath Daily #{quiz.number}
-            </h2>
-            <span className="text-sm text-muted-foreground tabular-nums">{quiz.day}</span>
-          </div>
-          <p className="text-sm text-muted-foreground mb-4">
-            The same five questions for everyone today. Fastest time breaks ties.
+          <p className="text-sm text-muted-foreground tabular-nums mb-1">
+            Daily #{quiz.number} · {dayLabel}
           </p>
-          {board && board.count > 0 && (
-            <p className="text-sm mb-4 flex items-center gap-2">
+          <p className="text-base text-foreground mb-5">
+            5 questions · about a minute · the same for everyone today
+          </p>
+          {crowd && board && board.top.length > 0 && (
+            <p className="text-sm mb-5 flex items-center gap-2 text-muted-foreground">
               <Trophy className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
-              <span className="text-muted-foreground">
-                <span className="font-semibold text-foreground tabular-nums">{board.count}</span>{' '}
-                {board.count === 1 ? 'player has' : 'players have'} taken today&apos;s quiz
-                {board.top.length > 0 && (
-                  <>
-                    {' '}— the score to beat is{' '}
-                    <span className="font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
-                      {board.top[0].i} · {board.top[0].s}/{QUIZ_QUESTION_COUNT} in {fmtMMSS(board.top[0].t)}
-                    </span>
-                  </>
-                )}
-                .
+              <span>
+                <span className="font-semibold text-foreground tabular-nums">{board.count}</span> players so far — the
+                score to beat is{' '}
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
+                  {board.top[0].i} · {board.top[0].s}/{QUIZ_QUESTION_COUNT} in {fmtMMSS(board.top[0].t)}
+                </span>
               </span>
             </p>
           )}
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={startDaily}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
-            >
-              <Trophy className="w-4 h-4" aria-hidden="true" />
-              {resumable
-                ? `Resume today's quiz — question ${resumable.r.length + 1} of ${QUIZ_QUESTION_COUNT}`
-                : "Play today's quiz"}
-            </button>
+          <button
+            onClick={startDaily}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-semibold transition-colors"
+          >
+            <Trophy className="w-5 h-5" aria-hidden="true" />
+            {resumable
+              ? `Resume — question ${resumable.r.length + 1} of ${QUIZ_QUESTION_COUNT}`
+              : "Play today's quiz"}
+          </button>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Not ready?{' '}
             <button
               onClick={startPractice}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl border border-border dark:border-slate-600 text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+              className="underline underline-offset-4 hover:text-foreground"
             >
-              <GraduationCap className="w-4 h-4" aria-hidden="true" />
-              Warm up first
-            </button>
-          </div>
+              Warm up with practice questions
+            </button>{' '}
+            — untimed, and they don&apos;t count.
+          </p>
         </div>
       )}
 
@@ -706,13 +715,88 @@ export function QuizTool({ className = '' }: { className?: string }) {
       )}
 
       {/* ------------------------------------------------ done */}
-      {phase === 'done' && stored && (
-        <div className="grid gap-6 lg:grid-cols-2 items-start">
-          {/* Result card */}
+      {phase === 'done' && stored && (() => {
+        const needsInitials = !boardDown && stored.percentile === null;
+        const yesterdayHadBoard = Boolean(champions && champions[0]?.champion);
+        const championDays = champions ? champions.filter((c) => c.champion) : [];
+        // Two columns only when the board has something worth a column.
+        const fullBoard = crowd || (board !== null && board.top.length >= CROWD_MIN) || yesterdayHadBoard;
+
+        const initialsForm = (
+          <div>
+            <p className="text-sm text-muted-foreground mb-3">
+              {board && board.top.length === 0
+                ? "Be the first on today's board — three letters, arcade style:"
+                : "Put your score on today's board — three letters, arcade style:"}
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="flex gap-2" role="group" aria-label="Your three initials">
+                {[0, 1, 2].map((i) => (
+                  <input
+                    key={i}
+                    ref={(el) => {
+                      initialsRefs.current[i] = el;
+                    }}
+                    type="text"
+                    inputMode="text"
+                    autoCapitalize="characters"
+                    value={initials[i]}
+                    onChange={(e) => handleInitialChange(i, e.target.value)}
+                    onKeyDown={(e) => handleInitialKeyDown(i, e)}
+                    onFocus={(e) => e.target.select()}
+                    aria-label={`Initial ${i + 1}`}
+                    className="w-12 h-14 text-center text-2xl font-bold uppercase rounded-xl border border-border dark:border-slate-600 bg-background dark:bg-slate-900/40 text-foreground tabular-nums"
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => submitScore(initials.join(''))}
+                disabled={submitting || initials.join('').length !== 3}
+                className="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+              >
+                {submitting ? 'Sending…' : 'Submit'}
+              </button>
+            </div>
+            {initialsError && (
+              <p className="text-sm text-red-600 dark:text-red-400 mt-2" role="alert">
+                {initialsError}
+              </p>
+            )}
+            <button
+              onClick={() => submitScore(null)}
+              disabled={submitting}
+              className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground mt-2"
+            >
+              {crowd ? 'Skip the board — just show my percentile' : 'Skip the board'}
+            </button>
+          </div>
+        );
+
+        const boardRows = (entries: BoardEntry[], highlightOwn: boolean, label: string) => (
+          <ol className="space-y-2" aria-label={label}>
+            {entries.map((entry, i) => (
+              <li
+                key={`${entry.i}-${i}`}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm tabular-nums ${
+                  highlightOwn && stored.initials === entry.i && stored.score === entry.s && stored.timeMs === entry.t
+                    ? 'bg-emerald-500/10 border border-emerald-500/40'
+                    : 'bg-background dark:bg-slate-900/40'
+                }`}
+              >
+                <span className="w-6 text-muted-foreground">{i + 1}.</span>
+                <span className="font-bold tracking-widest text-foreground">{entry.i}</span>
+                <span className="ml-auto text-foreground">{entry.s}/{QUIZ_QUESTION_COUNT}</span>
+                <span className="w-12 text-right text-muted-foreground">{fmtMMSS(entry.t)}</span>
+              </li>
+            ))}
+          </ol>
+        );
+
+        const resultCard = (
           <div className={cardClass}>
-            <h2 className="text-lg font-bold text-foreground mb-3">
-              ClockMath Daily #{quiz.number}
-            </h2>
+            <p className="text-sm text-muted-foreground tabular-nums mb-2">
+              Daily #{quiz.number} · {dayLabel}
+            </p>
             <div className="flex items-end gap-3 mb-2" aria-live="polite">
               <span className="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
                 <RollingNumber value={`${stored.score}/${QUIZ_QUESTION_COUNT}`} />
@@ -724,36 +808,32 @@ export function QuizTool({ className = '' }: { className?: string }) {
             <p className="text-xl mb-3 tracking-widest" aria-hidden="true">
               {stored.results.map((r) => (r ? '🟩' : '🟥')).join('')}
             </p>
-            {streak >= 2 && (
-              <p className="text-sm text-muted-foreground mb-3">
-                🔥 {streak}-day streak — nice consistency.
-              </p>
-            )}
-            {typeof (livePercentile ?? stored.percentile) === 'number' && board && board.count > 1 && (
-              <p className="text-sm font-medium text-foreground mb-3">
-                You beat {livePercentile ?? stored.percentile}% of today&apos;s players so far
-                {livePosition !== null && board.count > 0 ? (
-                  <span className="text-muted-foreground font-normal">
-                    {' '}— #{livePosition} of {board.count} today
+            {(streak >= 2 || (crowd && typeof (livePercentile ?? stored.percentile) === 'number')) && (
+              <p className="text-sm text-muted-foreground mb-4">
+                {streak >= 2 && <>🔥 {streak}-day streak</>}
+                {streak >= 2 && crowd && typeof (livePercentile ?? stored.percentile) === 'number' && ' · '}
+                {crowd && typeof (livePercentile ?? stored.percentile) === 'number' && (
+                  <span className="font-medium text-foreground">
+                    you beat {livePercentile ?? stored.percentile}% of today&apos;s players
+                    {livePosition !== null ? ` (#${livePosition} of ${board!.count})` : ''}
                   </span>
-                ) : null}
-                .
+                )}
               </p>
             )}
-            <div className="flex flex-col gap-2.5">
-              <button
-                onClick={startPractice}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
-              >
-                <GraduationCap className="w-4 h-4" aria-hidden="true" />
-                Keep practicing — unlimited random questions
-              </button>
+            <div className="flex flex-col sm:flex-row gap-2.5">
               <button
                 onClick={share}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-emerald-600/60 dark:border-emerald-500/60 text-emerald-700 dark:text-emerald-400 text-sm font-semibold hover:bg-emerald-600/10 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
               >
                 {shareCopied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Share2 className="w-4 h-4" aria-hidden="true" />}
-                {shareCopied ? 'Copied!' : 'Share result'}
+                {shareCopied ? 'Copied!' : 'Share your result'}
+              </button>
+              <button
+                onClick={startPractice}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border dark:border-slate-600 text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+              >
+                <GraduationCap className="w-4 h-4" aria-hidden="true" />
+                Keep practicing
               </button>
             </div>
             {shareFallback && (
@@ -771,7 +851,13 @@ export function QuizTool({ className = '' }: { className?: string }) {
                 />
               </div>
             )}
-            <p className="text-xs text-muted-foreground mt-4" aria-live="off">
+            {!fullBoard && (needsInitials || (board && board.top.length > 0)) && (
+              <div className="mt-5 pt-5 border-t border-border/50 dark:border-slate-700/50 space-y-4">
+                {needsInitials && initialsForm}
+                {!boardDown && board && board.top.length > 0 && boardRows(board.top, true, 'Scores today')}
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground mt-5" aria-live="off">
               {nextPuzzleMs !== null ? (
                 <>
                   Next puzzle in{' '}
@@ -785,161 +871,84 @@ export function QuizTool({ className = '' }: { className?: string }) {
               )}
             </p>
           </div>
+        );
 
-          {/* Leaderboard card */}
-          <div className={cardClass}>
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <h2 className="text-lg font-bold text-foreground">
-                {boardView === 'today' ? "Today's leaderboard" : "Yesterday's final board"}
-              </h2>
-              <div className="flex gap-1 text-xs" role="group" aria-label="Board day">
-                {(['today', 'yesterday'] as const).map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setBoardView(v)}
-                    aria-pressed={boardView === v}
-                    className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                      boardView === v
-                        ? 'bg-emerald-600 text-white'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {v === 'today' ? 'Today' : 'Yesterday'}
-                  </button>
-                ))}
-              </div>
-            </div>
+        if (!fullBoard) {
+          return <div className="max-w-xl mx-auto">{resultCard}</div>;
+        }
 
-            {boardView === 'today' && boardDown && (
-              <p className="text-sm text-muted-foreground">
-                The leaderboard is unreachable right now — your score is saved on this device, and
-                sharing still works.
-              </p>
-            )}
+        return (
+          <div className="grid gap-6 lg:grid-cols-2 items-start">
+            {resultCard}
 
-            {boardView === 'today' && !boardDown && stored.percentile === null && (
-              <div className="mb-6">
-                <p className="text-sm text-muted-foreground mb-3">
-                  Enter three letters, arcade style, to put your score on today&apos;s board:
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-2" role="group" aria-label="Your three initials">
-                    {[0, 1, 2].map((i) => (
-                      <input
-                        key={i}
-                        ref={(el) => {
-                          initialsRefs.current[i] = el;
-                        }}
-                        type="text"
-                        inputMode="text"
-                        autoCapitalize="characters"
-                        value={initials[i]}
-                        onChange={(e) => handleInitialChange(i, e.target.value)}
-                        onKeyDown={(e) => handleInitialKeyDown(i, e)}
-                        onFocus={(e) => e.target.select()}
-                        aria-label={`Initial ${i + 1}`}
-                        className="w-12 h-14 text-center text-2xl font-bold uppercase rounded-xl border border-border dark:border-slate-600 bg-background dark:bg-slate-900/40 text-foreground tabular-nums"
-                      />
+            {/* Leaderboard card — only once there is a board worth a column */}
+            <div className={cardClass}>
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <h2 className="text-lg font-bold text-foreground">
+                  {boardView === 'today' ? "Today's leaderboard" : "Yesterday's final board"}
+                </h2>
+                {yesterdayHadBoard && (
+                  <div className="flex gap-1 text-xs" role="group" aria-label="Board day">
+                    {(['today', 'yesterday'] as const).map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setBoardView(v)}
+                        aria-pressed={boardView === v}
+                        className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
+                          boardView === v
+                            ? 'bg-emerald-600 text-white'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {v === 'today' ? 'Today' : 'Yesterday'}
+                      </button>
                     ))}
                   </div>
-                  <button
-                    onClick={() => submitScore(initials.join(''))}
-                    disabled={submitting || initials.join('').length !== 3}
-                    className="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
-                  >
-                    {submitting ? 'Sending…' : 'Submit'}
-                  </button>
-                </div>
-                {initialsError && (
-                  <p className="text-sm text-red-600 dark:text-red-400 mt-2" role="alert">
-                    {initialsError}
-                  </p>
                 )}
-                <button
-                  onClick={() => submitScore(null)}
-                  disabled={submitting}
-                  className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground mt-2"
-                >
-                  Skip the board — just show my percentile
-                </button>
               </div>
-            )}
 
-            {boardView === 'today' && !boardDown && board && board.top.length > 0 && (
-              <ol className="space-y-2" aria-label="Top ten scores today">
-                {board.top.map((entry, i) => (
-                  <li
-                    key={`${entry.i}-${i}`}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm tabular-nums ${
-                      stored.initials === entry.i && stored.score === entry.s && stored.timeMs === entry.t
-                        ? 'bg-emerald-500/10 border border-emerald-500/40'
-                        : 'bg-background dark:bg-slate-900/40'
-                    }`}
-                  >
-                    <span className="w-6 text-muted-foreground">{i + 1}.</span>
-                    <span className="font-bold tracking-widest text-foreground">{entry.i}</span>
-                    <span className="ml-auto text-foreground">{entry.s}/{QUIZ_QUESTION_COUNT}</span>
-                    <span className="w-12 text-right text-muted-foreground">{fmtMMSS(entry.t)}</span>
-                  </li>
-                ))}
-              </ol>
-            )}
-
-            {boardView === 'today' && !boardDown && board && board.top.length === 0 && stored.percentile !== null && (
-              <p className="text-sm text-muted-foreground">
-                No initials on the board yet — yours could be first.
-              </p>
-            )}
-
-            {boardView === 'today' && !boardDown && board && board.count > 0 && (
-              <p className="text-xs text-muted-foreground mt-4 tabular-nums">
-                {board.count} player{board.count === 1 ? '' : 's'} so far today.
-              </p>
-            )}
-
-            {boardView === 'yesterday' && yBoardDown && (
-              <p className="text-sm text-muted-foreground">
-                Yesterday&apos;s board is unavailable right now.
-              </p>
-            )}
-            {boardView === 'yesterday' && yBoard && yBoard.top.length > 0 && (
-              <>
-                <ol className="space-y-2" aria-label="Top ten scores yesterday">
-                  {yBoard.top.map((entry, i) => (
-                    <li
-                      key={`${entry.i}-${i}`}
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm tabular-nums bg-background dark:bg-slate-900/40"
-                    >
-                      <span className="w-6 text-muted-foreground">{i + 1}.</span>
-                      <span className="font-bold tracking-widest text-foreground">{entry.i}</span>
-                      <span className="ml-auto text-foreground">{entry.s}/{QUIZ_QUESTION_COUNT}</span>
-                      <span className="w-12 text-right text-muted-foreground">{fmtMMSS(entry.t)}</span>
-                    </li>
-                  ))}
-                </ol>
-                <p className="text-xs text-muted-foreground mt-4 tabular-nums">
-                  Final standings — {yBoard.count} player{yBoard.count === 1 ? '' : 's'} played.
+              {boardView === 'today' && boardDown && (
+                <p className="text-sm text-muted-foreground">
+                  The leaderboard is unreachable right now — your score is saved on this device, and
+                  sharing still works.
                 </p>
-              </>
-            )}
-            {boardView === 'yesterday' && yBoard && yBoard.top.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No initials made yesterday&apos;s board.
-              </p>
-            )}
-            {boardView === 'yesterday' && !yBoard && !yBoardDown && (
-              <p className="text-sm text-muted-foreground">Loading yesterday&apos;s board…</p>
-            )}
+              )}
+              {boardView === 'today' && needsInitials && <div className="mb-6">{initialsForm}</div>}
+              {boardView === 'today' && !boardDown && board && board.top.length > 0 &&
+                boardRows(board.top, true, 'Top ten scores today')}
+              {boardView === 'today' && !boardDown && board && board.top.length === 0 && !needsInitials && (
+                <p className="text-sm text-muted-foreground">No initials on the board yet today.</p>
+              )}
+              {boardView === 'today' && !boardDown && crowd && (
+                <p className="text-xs text-muted-foreground mt-4 tabular-nums">
+                  {board!.count} players so far today.
+                </p>
+              )}
 
-            {champions && champions.some((c) => c.champion) && (
-              <div className="mt-6 pt-4 border-t border-border/50 dark:border-slate-700/50">
-                <h3 className="text-sm font-semibold text-foreground mb-2">
-                  This week&apos;s daily champions
-                </h3>
-                <ul className="space-y-2 text-sm tabular-nums">
-                  {champions
-                    .filter((c) => c.champion)
-                    .map((c) => {
+              {boardView === 'yesterday' && yBoardDown && (
+                <p className="text-sm text-muted-foreground">
+                  Yesterday&apos;s board is unavailable right now.
+                </p>
+              )}
+              {boardView === 'yesterday' && yBoard && yBoard.top.length > 0 && (
+                <>
+                  {boardRows(yBoard.top, false, 'Top ten scores yesterday')}
+                  <p className="text-xs text-muted-foreground mt-4 tabular-nums">
+                    Final standings — {yBoard.count} player{yBoard.count === 1 ? '' : 's'} played.
+                  </p>
+                </>
+              )}
+              {boardView === 'yesterday' && !yBoard && !yBoardDown && (
+                <p className="text-sm text-muted-foreground">Loading yesterday&apos;s board…</p>
+              )}
+
+              {championDays.length >= CROWD_MIN && (
+                <div className="mt-6 pt-4 border-t border-border/50 dark:border-slate-700/50">
+                  <h3 className="text-sm font-semibold text-foreground mb-2">
+                    This week&apos;s daily champions
+                  </h3>
+                  <ul className="space-y-2 text-sm tabular-nums">
+                    {championDays.map((c) => {
                       const [yy, mm, dd] = c.day.split('-').map(Number);
                       const weekday = new Date(Date.UTC(yy, mm - 1, dd)).toLocaleDateString(undefined, {
                         weekday: 'short',
@@ -954,12 +963,13 @@ export function QuizTool({ className = '' }: { className?: string }) {
                         </li>
                       );
                     })}
-                </ul>
-              </div>
-            )}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ------------------------------------------------ practice */}
       {phase === 'practice' && practiceQ && (
@@ -977,7 +987,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {practiceQ.options.map((_, i) => optionButton(practiceQ, i, practiceAnswered, answerPractice))}
           </div>
-          {practiceAnswered !== null && feedbackPanel(practiceQ, practiceAnswered, nextPractice, 'Another one')}
+          {practiceAnswered !== null && feedbackPanel(practiceQ, practiceAnswered, nextPractice, 'Another one', true)}
           <div className="mt-4 pt-4 border-t border-border/50 dark:border-slate-700/50">
             <button
               onClick={() => setPhase(stored ? 'done' : 'intro')}
