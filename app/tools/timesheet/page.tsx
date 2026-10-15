@@ -120,35 +120,6 @@ export default function TimesheetPage() {
       {/* Supporting content — static JSX, fully server-rendered for crawlers */}
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
-          How to use the work hours calculator
-        </h2>
-        <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-4">
-          <li>
-            <strong className="text-foreground">Add a shift</strong> — pick the date, start time, and
-            end time. Overnight shifts are detected automatically when the end time is earlier than
-            the start.
-          </li>
-          <li>
-            <strong className="text-foreground">Enter unpaid break minutes</strong> — a 30-minute
-            lunch on a 9:00–5:30 shift brings it from 8.5 down to 8.00 hours.
-          </li>
-          <li>
-            <strong className="text-foreground">Repeat for the pay period</strong> — daily, weekly,
-            or biweekly. Every shift shows hours two ways: h&nbsp;m and decimal.
-          </li>
-          <li>
-            <strong className="text-foreground">Add your hourly rate</strong> (optional) to see gross
-            pay, then save, share, or export the timesheet as text or CSV.
-          </li>
-        </ol>
-        <p className="text-muted-foreground">
-          Your timesheet saves automatically in this browser — nothing is uploaded — and it&apos;s
-          here when you come back.
-        </p>
-      </section>
-
-      <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
           A worked payroll example
         </h2>
         <p className="text-muted-foreground mb-3">

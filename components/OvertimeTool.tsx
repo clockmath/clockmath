@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { RollingNumber } from '@/components/RollingNumber';
 import { computeOvertime, decimalToHmLabel } from '@/lib/overtime';
 import { toolUsed } from '@/lib/gtag';
+import InfoTip from '@/components/InfoTip';
 
 const getDevice = (): 'mobile' | 'desktop' =>
   typeof window !== 'undefined' && window.innerWidth < 640 ? 'mobile' : 'desktop';
@@ -70,9 +71,18 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="ot-hours" className={labelClass}>
-              Hours worked this week
-            </label>
+            <span className="inline-flex items-center gap-1">
+              <label htmlFor="ot-hours" className={labelClass}>
+                Hours worked this week
+              </label>
+              <InfoTip label="hours worked">
+                In decimal hours: 46.5 means 46h 30m. Adding up shifts first?{' '}
+                <Link href="/tools/timesheet" className="underline underline-offset-2 hover:text-foreground">
+                  Use the work hours calculator
+                </Link>
+                .
+              </InfoTip>
+            </span>
             <input
               id="ot-hours"
               type="number"
@@ -86,13 +96,6 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
               }}
               className={inputClass}
             />
-            <p className="text-xs text-muted-foreground dark:text-slate-400 mt-1">
-              Decimal hours — 46.5 means 46h 30m. Adding up shifts?{' '}
-              <Link href="/tools/timesheet" className="underline underline-offset-2 hover:text-foreground">
-                Use the work hours calculator
-              </Link>
-              .
-            </p>
           </div>
           <div>
             <label htmlFor="ot-threshold" className={labelClass}>
