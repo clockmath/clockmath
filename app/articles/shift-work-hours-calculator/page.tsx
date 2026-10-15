@@ -9,9 +9,8 @@ import ArticleLayout from "../../../components/ArticleLayout";
 // calculator with break deduction it doesn't have. It now covers the method
 // for overnight shifts and hands tool-seekers to /tools/timesheet.
 //
-// Note: /tools/timesheet measures clock time (overnight = +24h) and is not
-// DST-aware, which is why the daylight-saving section tells readers to adjust
-// those two nights themselves.
+// /tools/timesheet counts real elapsed time across daylight-saving changes
+// (since Oct 2026), which the daylight-saving section relies on.
 const TITLE = "How to Calculate Hours for Overnight and Night Shifts | ClockMath";
 const DESCRIPTION =
   "Work out hours for shifts that cross midnight: the add-24-hours method, 12-hour shifts, which week the hours count toward, and the daylight-saving nights that run an hour long or short.";
@@ -105,8 +104,9 @@ export default function ShiftWorkHoursCalculatorPage() {
       </p>
       <p>
         You're owed pay for the hours you actually worked, so it's worth checking your timesheet on those nights. The
-        work hours calculator measures clock time, so add or subtract that hour yourself. Places that don't change their
-        clocks — most of Arizona, Hawaii, and since 2026 British Columbia — have no adjustment to make.
+        work hours calculator counts the real hours for you and marks the shift “+1h clock change” or “−1h clock
+        change.” Places that don't change their clocks — most of Arizona, Hawaii, and since 2026 British Columbia —
+        have no adjustment to make.
       </p>
 
       <h2>Rotating schedules</h2>
