@@ -23,7 +23,7 @@ const FAQS = [
   {
     question: 'Does it handle overnight shifts?',
     answer:
-      'Yes. When the end time is earlier than the start time, the shift is treated as crossing midnight — 11:00 PM to 7:30 AM counts as 8.5 hours and is marked “+1 day.”',
+      'Yes. When the end time is earlier than the start time, the shift is treated as crossing midnight — 11:00 PM to 7:30 AM counts as 8.5 hours and is marked “+1 day.” It also counts the hours you actually worked across a daylight-saving change: on the night the clocks go back, 10:00 PM to 6:00 AM is 9 hours, and on the night they go forward it is 7. Those shifts are marked “+1h clock change” or “−1h clock change.”',
   },
   {
     question: 'Why does payroll use decimal hours?',
@@ -33,7 +33,7 @@ const FAQS = [
   {
     question: 'Does the calculator compute overtime pay?',
     answer:
-      'It totals your hours and gross pay at one rate. It doesn’t split regular from overtime hours — overtime rules vary by country and state (US federal law generally requires 1.5× pay past 40 hours in a week; some states add daily thresholds). Total your hours here, then apply your local rule.',
+      'Yes, optionally. Turn on “Split overtime” and the period total is split into regular and overtime hours at a threshold you set (40 by default), paid at 1.5× or 2×. Rules vary by country and state — US federal law generally requires 1.5× pay past 40 hours in a week, and some states add daily thresholds — so set the threshold to match yours.',
   },
   {
     question: 'Is my timesheet data private?',
@@ -160,14 +160,15 @@ export default function TimesheetPage() {
           as easily.
         </p>
         <p className="text-muted-foreground">
-          Note the calculator totals hours at one rate and doesn&apos;t split out overtime — see the{' '}
+          To pay overtime, turn on <strong>Split overtime</strong>: the total is split at the threshold you set (40
+          hours by default) and the overtime hours are paid at 1.5× or 2×. The{' '}
           <Link
             href="/articles/overtime-hours-calculator"
             className="text-primary hover:text-primary/80 font-semibold"
           >
             overtime hours guide
           </Link>{' '}
-          for how time-and-a-half typically applies past 40 hours a week.
+          explains the rules, including states with daily overtime.
         </p>
       </section>
 

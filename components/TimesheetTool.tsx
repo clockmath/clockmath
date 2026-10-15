@@ -7,6 +7,7 @@ import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { computeOvertime } from '@/lib/overtime';
+import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
 import Link from 'next/link';
 
 interface TimesheetToolProps {
@@ -80,15 +81,66 @@ const isOvernight = (shift: { start: string; end: string }): boolean => {
   return s != null && e != null && e < s;
 };
 
-const shiftMinutes = (shift: { start: string; end: string; breakMins: number }): number => {
+/** Minutes between start and end as the clock reads them (overnight = +24h). */
+const clockMinutes = (shift: { start: string; end: string }): number => {
   const s = toMinutes(shift.start);
   const e = toMinutes(shift.end);
   if (s == null || e == null) return 0;
   let diff = e - s;
   if (diff < 0) diff += 1440; // overnight
-  diff -= shift.breakMins || 0;
-  return Math.max(0, diff);
+  return diff;
 };
+
+const nextDayYmd = (ymd: string): string => {
+  const [y, m, d] = ymd.split('-').map((n) => parseInt(n, 10));
+  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
+};
+
+/**
+ * Minutes actually elapsed, measured in the visitor's own timezone. A shift
+ * that spans a daylight-saving change is an hour longer or shorter than the
+ * clock says — 10 PM–6 AM is 9 hours on the fall-back night and 7 on the
+ * spring-forward night — and pay is owed for hours worked, not clock time.
+ *
+ * Goes through lib/time, so it also picks up the BC permanent-UTC−7
+ * correction for browsers with stale tz data. Falls back to clock time when
+ * the date is unusable or the result is implausible.
+ */
+const elapsedMinutes = (shift: { date: Date | string; start: string; end: string }): number => {
+  const clock = clockMinutes(shift);
+  if (clock === 0) return 0;
+  const startDay = typeof shift.date === 'string' ? shift.date : toDateInputValue(shift.date);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDay)) return clock;
+
+  // Fast path: no offset change anywhere from the start day through the next
+  // day means no DST transition can fall inside the shift. (The BC correction
+  // only ever removes transitions, so a browser that sees none is right.)
+  const [y, m, d] = startDay.split('-').map((n) => parseInt(n, 10));
+  if (new Date(y, m - 1, d).getTimezoneOffset() === new Date(y, m - 1, d + 2).getTimezoneOffset()) {
+    return clock;
+  }
+
+  const tz = getUserTimeZone();
+  const endDay = isOvernight(shift) ? nextDayYmd(startDay) : startDay;
+  const startAt = parseDateTimeInZone(startDay, shift.start, tz).getTime();
+  const endAt = parseDateTimeInZone(endDay, shift.end, tz).getTime();
+  const real = Math.round((endAt - startAt) / 60000);
+  if (!Number.isFinite(real) || real < 0 || Math.abs(real - clock) > 120) return clock;
+  return real;
+};
+
+/** Signed minutes a daylight-saving change adds to (+60) or removes from (−60) a shift. */
+const dstAdjustment = (shift: { date: Date | string; start: string; end: string }): number =>
+  elapsedMinutes(shift) - clockMinutes(shift);
+
+const dstLabel = (shift: { date: Date | string; start: string; end: string }): string => {
+  const adj = dstAdjustment(shift);
+  if (adj === 0) return '';
+  return `${adj > 0 ? '+' : '−'}${Math.abs(adj) / 60}h clock change`;
+};
+
+const shiftMinutes = (shift: { date: Date | string; start: string; end: string; breakMins: number }): number =>
+  Math.max(0, elapsedMinutes(shift) - (shift.breakMins || 0));
 
 const decimalHours = (mins: number): string => (mins / 60).toFixed(2);
 const hhmm = (mins: number): string => `${Math.floor(mins / 60)}h ${mins % 60}m`;
@@ -359,7 +411,8 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     lines.push(`Timesheet${saveName.trim() ? ` — ${saveName.trim()}` : ''}`);
     shifts.forEach((s) => {
       const mins = shiftMinutes(s);
-      const oc = isOvernight(s) ? ' (+1 day)' : '';
+      const dst = dstLabel(s);
+      const oc = `${isOvernight(s) ? ' (+1 day)' : ''}${dst ? ` (${dst})` : ''}`;
       lines.push(
         `${formatShiftDate(s.date)}: ${formatClock(s.start)}–${formatClock(s.end)}${oc} (−${s.breakMins}m) = ${decimalHours(mins)} h`,
       );
@@ -396,7 +449,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
       const row = [
         toDateInputValue(s.date),
         formatClock(s.start),
-        `${formatClock(s.end)}${isOvernight(s) ? ' (+1 day)' : ''}`,
+        `${formatClock(s.end)}${isOvernight(s) ? ' (+1 day)' : ''}${dstLabel(s) ? ` (${dstLabel(s)})` : ''}`,
         String(s.breakMins),
         decimalHours(mins),
       ];
@@ -499,6 +552,14 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                   <div className="text-xs text-muted-foreground mb-1 sm:mb-2">Hours</div>
                   <div className="font-bold tabular-nums text-emerald-700 dark:text-emerald-400"><RollingNumber value={decimalHours(mins)} /></div>
                   <div className="text-[11px] text-muted-foreground">{hhmm(mins)}</div>
+                  {dstLabel(shift) && (
+                    <div
+                      className="text-[10px] font-semibold text-amber-600 dark:text-amber-400"
+                      title="The clocks changed during this shift, so the hours worked differ from the clock difference."
+                    >
+                      {dstLabel(shift)}
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={() => removeShift(shift.id)}
@@ -628,6 +689,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                 <div className="mt-0.5 text-xs text-muted-foreground">
                   {formatClock(s.start)}–{formatClock(s.end)}
                   {isOvernight(s) && <span className="text-amber-600 dark:text-amber-400"> +1d</span>}
+                  {dstLabel(s) && <span className="text-amber-600 dark:text-amber-400"> · {dstLabel(s)}</span>}
                   {' · '}
                   {s.breakMins} min break
                   {pay != null && <span className="text-foreground"> · ${pay.toFixed(2)}</span>}
@@ -667,6 +729,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                     <td className="px-3 py-2 whitespace-nowrap">
                       {formatClock(s.start)}–{formatClock(s.end)}
                       {isOvernight(s) && <span className="text-amber-600 dark:text-amber-400 text-xs"> +1d</span>}
+                      {dstLabel(s) && <span className="text-amber-600 dark:text-amber-400 text-xs"> · {dstLabel(s)}</span>}
                     </td>
                     <td className="px-3 py-2 text-right whitespace-nowrap text-muted-foreground">
                       {s.breakMins} min
