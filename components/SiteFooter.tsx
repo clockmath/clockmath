@@ -1,77 +1,65 @@
 /**
  * components/SiteFooter.tsx
- * Minimal footer with email + BMC link. Server Component; no 'use client' needed.
- * Tailwind classes are optional—remove if you're not using Tailwind.
+ * Flat footer: one row of site links, contact + feedback, and a quiet
+ * Buy Me a Coffee text link. Server Component; no 'use client' needed.
+ *
+ * Until Oct 2026 this was a full card with an amber Buy Me a Coffee button —
+ * the only non-emerald accent on the site, so every page ended with its
+ * loudest element being a donation ask, competing with the page's own
+ * primary action. The link stays (it is the site's only monetization) but
+ * now reads like the other footer links.
  */
 import Link from 'next/link';
+import { Coffee } from 'lucide-react';
 import FeedbackForm from '@/components/FeedbackForm';
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-8 sm:mt-section">
-      <div className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 text-center">
-        <p className="text-sm text-muted-foreground dark:text-slate-400 mb-4">
-          Find ClockMath useful? Support the development!
-        </p>
+    <footer className="mt-8 sm:mt-section border-t border-border/60 dark:border-slate-700/60 pt-6 pb-2 text-center text-xs sm:text-sm text-muted-foreground dark:text-slate-400">
+      {/* One link row — the nav's All tools panel carries every tool on
+          every page, so listing all nine here again was pure clutter. */}
+      <nav aria-label="Site" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mb-3">
+        <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
+          All tools
+        </Link>
+        <Link href="/articles" className="hover:text-foreground underline underline-offset-4">
+          Guides
+        </Link>
+        <Link href="/contact" className="hover:text-foreground underline underline-offset-4">
+          Contact
+        </Link>
+        <Link href="/terms" className="hover:text-foreground underline underline-offset-4">
+          Terms
+        </Link>
+        <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">
+          Privacy
+        </Link>
+      </nav>
 
-        {/* Buy Me a Coffee button */}
+      {/* Contact */}
+      <div className="mb-3">
         <a
-          href="https://www.buymeacoffee.com/clockmath?utm_source=clockmath&utm_medium=site&utm_campaign=footer_button"
+          href="mailto:hello@clockmath.com?subject=ClockMath%20feedback"
+          className="underline underline-offset-4 hover:text-foreground"
+        >
+          hello@clockmath.com
+        </a>
+        <FeedbackForm />
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs">
+        <span className="opacity-75">© {year} ClockMath</span>
+        <span aria-hidden="true" className="opacity-50">·</span>
+        <a
+          href="https://www.buymeacoffee.com/clockmath?utm_source=clockmath&utm_medium=site&utm_campaign=footer_link"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md mb-4"
-          aria-label="Support ClockMath on Buy Me a Coffee"
+          className="inline-flex items-center gap-1 hover:text-foreground underline underline-offset-4"
         >
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M2 19h18v2H2v-2zM20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM20 8h-2V5h2v3zM4 5h12v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V5z" />
-            <path d="M7 3.5c0-.3.2-.5.5-.5s.5.2.5.5c0 .8-.2 1.2-.5 1.5-.3-.3-.5-.7-.5-1.5z" opacity="0.8" />
-            <path d="M10 2.8c0-.4.2-.8.5-.8s.5.4.5.8c0 1-.3 1.5-.5 1.8-.2-.3-.3-.5-.3-1.8 0-.4.1-.7.1-.7z" opacity="0.9" />
-            <path d="M13 3.2c0-.3.2-.7.5-.7s.5.4.5.7c0 .9-.2 1.3-.5 1.6-.3-.3-.5-.7-.5-1.6z" opacity="0.7" />
-            <path d="M8 1.8c.3 0 .5.3.5.7 0 .6-.1.9-.3 1.1-.2-.2-.3-.5-.3-1.1 0-.4.1-.7.1-.7z" opacity="0.6" />
-            <path d="M11.5 1.5c.2 0 .4.2.4.6 0 .7-.2 1-.4 1.2-.2-.2-.4-.5-.4-1.2 0-.4.2-.6.4-.6z" opacity="0.8" />
-          </svg>
-          Buy Me a Coffee
+          <Coffee className="w-3.5 h-3.5" aria-hidden="true" />
+          Buy me a coffee
         </a>
-
-        {/* One link row — the nav's All tools panel carries every tool on
-            every page, so listing all nine here again was pure clutter. */}
-        <nav
-          aria-label="Site"
-          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-3"
-        >
-          <Link href="/tools" className="hover:text-foreground underline underline-offset-4 font-medium">
-            All tools
-          </Link>
-          <Link href="/articles" className="hover:text-foreground underline underline-offset-4">
-            Guides
-          </Link>
-          <Link href="/contact" className="hover:text-foreground underline underline-offset-4">
-            Contact
-          </Link>
-          <Link href="/terms" className="hover:text-foreground underline underline-offset-4">
-            Terms
-          </Link>
-          <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">
-            Privacy
-          </Link>
-        </nav>
-
-        {/* Contact */}
-        <div className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-2">
-          <a
-            href="mailto:hello@clockmath.com?subject=Clock%20Math%20feedback"
-            className="underline underline-offset-4 hover:text-foreground"
-          >
-            hello@clockmath.com
-          </a>
-          <FeedbackForm />
-        </div>
-
-        {/* Copyright */}
-        <div className="text-xs text-muted-foreground dark:text-slate-500 opacity-75">
-          © {year} ClockMath
-        </div>
       </div>
     </footer>
   );
