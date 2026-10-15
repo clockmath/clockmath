@@ -82,6 +82,11 @@ function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: numb
   return new Date(year, month, firstOccurrence + (n - 1) * 7 + offsetDays, 0, 0, 0, 0);
 }
 
+// Calendar date as YYYY-MM-DD, from local fields (the dates above are built
+// with the local-time constructor, so these are the intended calendar days).
+const ymd = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
 // Next upcoming nth-weekday occurrence, rolling to next year only once the
 // day has fully ended (same convention as nextOccurrence).
 function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 0): number {
@@ -188,9 +193,40 @@ export function EventCountdown({
     if (t === null) return null;
     const n = nowMs ?? Date.now();
     if (t <= n) return null;
+    if (recurring || weekly || nthWeekday) {
+      // Local-midnight targets: count calendar days. Dividing elapsed ms by
+      // 24h is a day high in the last hour before midnight when a DST change
+      // falls in between (and would disagree with the worker's count).
+      const today = new Date(n);
+      const midnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+      return Math.round((t - midnight) / 86400000);
+    }
     return Math.ceil((t - n) / 86400000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
+
+  // What the worker needs to recompute the answer sentence on every request
+  // (scripts/worker/live-counts.js): the static HTML is built once, but the
+  // sentence is what crawlers and AI answers quote, so it must not freeze on
+  // the build day. "t:<ms>" fixed instant, "d:<dates>" the next few
+  // occurrences of a recurring date, "w:<weekday>:<span>" a weekly event.
+  const liveSpec = useMemo(() => {
+    if (recurring || nthWeekday) {
+      const year = new Date().getFullYear();
+      const dates: string[] = [];
+      for (let y = year; y <= year + 5; y++) {
+        const d = recurring
+          ? new Date(y, recurring.month, recurring.day)
+          : nthWeekdayOfMonth(y, nthWeekday!.month, nthWeekday!.weekday, nthWeekday!.n, nthWeekday!.offsetDays);
+        dates.push(ymd(d));
+      }
+      return `d:${dates.join(',')}`;
+    }
+    if (weekly) return `w:${weekly.weekday}:${weekly.spanDays ?? 1}`;
+    return target ? `t:${target.getTime()}` : undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays]);
+  const fixedTarget = !recurring && !weekly && !nthWeekday && target ? target.getTime() : undefined;
 
   return (
     <div
@@ -199,17 +235,25 @@ export function EventCountdown({
       <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
         {isPast ? (arrivedLabel ?? `${title} has released!`) : `Until ${title}`}
       </h2>
-      <p className="text-sm text-muted-foreground dark:text-slate-400 mb-4" suppressHydrationWarning>
+      <p
+        className="text-sm text-muted-foreground dark:text-slate-400 mb-4"
+        data-live-date={fixedTarget}
+        suppressHydrationWarning
+      >
         {dateLabel}
       </p>
 
       {totalDays !== null && (
         <p
           className="text-base sm:text-lg text-foreground dark:text-slate-200 mb-6"
+          data-days-until={liveSpec}
           suppressHydrationWarning
         >
-          There {totalDays === 1 ? 'is' : 'are'}{' '}
-          <strong className="text-emerald-700 dark:text-emerald-400">
+          There{' '}
+          <span data-live="verb" suppressHydrationWarning>
+            {totalDays === 1 ? 'is' : 'are'}
+          </span>{' '}
+          <strong className="text-emerald-700 dark:text-emerald-400" data-live="days" suppressHydrationWarning>
             {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
           </strong>{' '}
           until {title}.

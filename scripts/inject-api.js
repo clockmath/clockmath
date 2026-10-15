@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const workerPath = path.join(__dirname, '../.vercel/output/static/_worker.js/index.js');
+const liveCountsCode = fs.readFileSync(path.join(__dirname, 'worker/live-counts.js'), 'utf8');
 
 const apiHandlersCode = `
 // ---- Injected security headers ----
@@ -28,12 +29,14 @@ const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://*.clarity.ms; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests",
 };
 
-function withSecurityHeaders(res) {
+function withSecurityHeaders(res, pathname) {
   try {
     const headers = new Headers(res.headers);
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
       headers.set(key, value);
     }
+    const cacheControl = cacheControlFor(pathname, res);
+    if (cacheControl) headers.set('Cache-Control', cacheControl);
     return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
   } catch (e) {
     return res;
@@ -464,6 +467,7 @@ const match = workerContent.match(fetchPattern);
 if (match) {
   const [originalExport, varName, reqParam, envParam, ctxParam] = match;
   const wrappedExport = `${apiHandlersCode}
+${liveCountsCode}
 var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   // Route injected API requests before falling through to Next.js assets
   const reqUrl = new URL(${reqParam}.url);
@@ -492,8 +496,9 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
 `;
   workerContent = workerContent.replace(originalExport, wrappedExport);
 
-  // Wrap the default export so security headers are applied to every response
-  // (API responses above and all Next.js pages/assets below).
+  // Wrap the default export so every response (API responses above and all
+  // Next.js pages/assets below) gets the security headers and cache policy,
+  // and HTML gets today's countdown numbers (scripts/worker/live-counts.js).
   const exportPattern = new RegExp(`export\\{${varName} as default\\}`);
   if (!exportPattern.test(workerContent)) {
     console.error(`[inject-api] Could not find "export{${varName} as default}" — security headers NOT applied.`);
@@ -501,11 +506,11 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   }
   workerContent = workerContent.replace(
     exportPattern,
-    `var __securedDefault={async fetch(req,env,ctx){return withSecurityHeaders(await ${varName}.fetch(req,env,ctx));}};export{__securedDefault as default}`
+    `var __securedDefault={async fetch(req,env,ctx){const res=await ${varName}.fetch(req,env,ctx);return withSecurityHeaders(withLiveCounts(res,req),new URL(req.url).pathname);}};export{__securedDefault as default}`
   );
 
   fs.writeFileSync(workerPath, workerContent);
-  console.log('[inject-api] Injected /api/places + /api/geo handlers and security headers into worker.');
+  console.log('[inject-api] Injected API handlers, redirects, live countdown counts, security headers and cache policy into worker.');
 } else {
   console.error('[inject-api] Could not find fetch handler pattern in worker — API routes NOT injected.');
   process.exit(1);

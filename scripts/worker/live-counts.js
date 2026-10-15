@@ -1,0 +1,110 @@
+// ---- Live countdown answers + cache policy (injected into _worker.js) ----
+// Plain worker code, read and concatenated into the generated worker by
+// scripts/inject-api.js; scripts/worker/live-counts.test.js loads it in Node.
+
+// Countdown pages are static HTML built once per deploy, but their answer
+// sentence ("There are 42 days until Thanksgiving") is what crawlers index and
+// what Copilot quotes (7K+ citations for Thanksgiving alone, Oct 2026). Built
+// in, it is only right on deploy day. EventCountdown marks the sentence with
+// data-days-until (see the spec format there); this recomputes it per request
+// in the visitor's timezone (request.cf.timezone).
+
+const DAY_MS = 86400000;
+
+// Calendar date "YYYY-MM-DD" of instant `ms` in `timeZone` (UTC if unknown).
+function ymdInZone(ms, timeZone) {
+  let parts;
+  try {
+    parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(ms);
+  } catch (e) {
+    parts = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(ms);
+  }
+  const get = (type) => parts.find((p) => p.type === type).value;
+  return get('year') + '-' + get('month') + '-' + get('day');
+}
+
+const ymdToUtc = (s) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
+
+// Days until the event described by `spec`, or null once it has arrived —
+// matching EventCountdown's client-side maths (targets are local midnight,
+// so whole calendar days; fixed instants round up like Math.ceil there).
+function liveDays(spec, nowMs, timeZone) {
+  if (!spec) return null;
+  if (spec.startsWith('t:')) {
+    const diff = Number(spec.slice(2)) - nowMs;
+    return diff > 0 ? Math.ceil(diff / DAY_MS) : null;
+  }
+  const today = ymdInZone(nowMs, timeZone);
+  if (spec.startsWith('d:')) {
+    for (const date of spec.slice(2).split(',')) {
+      if (date === today) return null; // the day itself: the page reads "arrived"
+      if (date > today) return Math.round((ymdToUtc(date) - ymdToUtc(today)) / DAY_MS);
+    }
+    return null;
+  }
+  if (spec.startsWith('w:')) {
+    const [weekday, span] = spec.slice(2).split(':').map(Number);
+    const todayWeekday = new Date(ymdToUtc(today)).getUTCDay();
+    if ((todayWeekday - weekday + 7) % 7 < span) return null; // inside the event window
+    return (weekday - todayWeekday + 7) % 7 || 7;
+  }
+  return null;
+}
+
+function liveDateLabel(ms, timeZone) {
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  try {
+    return new Date(ms).toLocaleDateString('en-US', Object.assign({ timeZone }, opts));
+  } catch (e) {
+    return new Date(ms).toLocaleDateString('en-US', Object.assign({ timeZone: 'UTC' }, opts));
+  }
+}
+
+function withLiveCounts(res, request) {
+  const type = res.headers.get('Content-Type') || '';
+  if (!type.includes('text/html') || typeof HTMLRewriter === 'undefined') return res;
+  const timeZone = (request.cf && request.cf.timezone) || 'UTC';
+  const now = Date.now();
+  let days = null;
+  return new HTMLRewriter()
+    .on('[data-days-until]', {
+      element(el) {
+        days = liveDays(el.getAttribute('data-days-until'), now, timeZone);
+        if (days === null) el.remove();
+      },
+    })
+    .on('[data-live="verb"]', {
+      element(el) {
+        if (days !== null) el.setInnerContent(days === 1 ? 'is' : 'are');
+      },
+    })
+    .on('[data-live="days"]', {
+      element(el) {
+        if (days !== null) el.setInnerContent(days === 1 ? '1 day' : days.toLocaleString('en-US') + ' days');
+      },
+    })
+    .on('[data-live-date]', {
+      element(el) {
+        const ms = Number(el.getAttribute('data-live-date'));
+        if (ms) el.setInnerContent(liveDateLabel(ms, timeZone));
+      },
+    })
+    .transform(res);
+}
+
+// Cache-Control for every non-API response. public/_headers used to set
+// this, and although Advanced Mode ignores most of that file, its cache
+// rules were served on EVERY path — HTML included got
+// "public, max-age=31536000, immutable" (found Oct 2026), so browsers kept
+// pages for a year without asking. Pages must revalidate (deploys and the
+// live counts above change them); only content-hashed build files are
+// immutable.
+function cacheControlFor(pathname, res) {
+  if (pathname.startsWith('/api/') || res.status >= 300) return null;
+  if (pathname.startsWith('/_next/static/')) return 'public, max-age=31536000, immutable';
+  const type = res.headers.get('Content-Type') || '';
+  if (/text\/(html|x-component|plain|xml)|application\/xml/.test(type) || /\.(txt|xml)$/.test(pathname)) {
+    return 'public, max-age=0, must-revalidate';
+  }
+  return 'public, max-age=86400'; // icons, OG images, fonts in public/
+}
