@@ -10,6 +10,7 @@ import { computeOvertime } from '@/lib/overtime';
 import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
 import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
+import { Coffee, X } from 'lucide-react';
 
 interface TimesheetToolProps {
   className?: string;
@@ -52,6 +53,15 @@ interface ShareDoc {
 
 const SAVED_KEY = 'clockmath-saved-timesheets';
 const DRAFT_KEY = 'clockmath-timesheet-draft';
+
+// Support nudge (Oct 2026): the footer's Buy Me a Coffee button got no clicks
+// in months of being on every page, so the ask moves to the moment someone
+// has just got value — a copied, downloaded or shared timesheet. At most once
+// per visit; dismissing hides it for 30 days.
+const SUPPORT_SHOWN_KEY = 'clockmath-support-nudge-shown'; // sessionStorage
+const SUPPORT_DISMISSED_KEY = 'clockmath-support-nudge-dismissed'; // localStorage, ms
+const SUPPORT_SNOOZE_MS = 30 * 24 * 60 * 60 * 1000;
+const SUPPORT_URL = 'https://www.buymeacoffee.com/clockmath?utm_source=clockmath&utm_medium=site&utm_campaign=work_hours_nudge';
 
 const getDevice = (): 'mobile' | 'desktop' =>
   typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
@@ -396,10 +406,36 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
   const deleteSaved = useCallback((id: string) => persistSaved(saved.filter((t) => t.id !== id)), [saved, persistSaved]);
 
+  const [supportNudge, setSupportNudge] = useState(false);
+
+  const offerSupport = useCallback((trigger: 'copy' | 'csv' | 'share') => {
+    try {
+      const dismissed = Number(window.localStorage.getItem(SUPPORT_DISMISSED_KEY) || 0);
+      if (dismissed && Date.now() - dismissed < SUPPORT_SNOOZE_MS) return;
+      if (window.sessionStorage.getItem(SUPPORT_SHOWN_KEY)) return;
+      window.sessionStorage.setItem(SUPPORT_SHOWN_KEY, '1');
+    } catch {
+      return; // storage blocked (private mode etc.): skip the ask rather than repeat it
+    }
+    setSupportNudge(true);
+    gaEvent({ action: 'support_nudge_shown', params: { tool: 'timesheet', trigger, device: getDevice() } });
+  }, []);
+
+  const dismissSupport = useCallback(() => {
+    setSupportNudge(false);
+    try {
+      window.localStorage.setItem(SUPPORT_DISMISSED_KEY, String(Date.now()));
+    } catch {
+      /* ignore */
+    }
+    gaEvent({ action: 'support_nudge_dismissed', params: { tool: 'timesheet', device: getDevice() } });
+  }, []);
+
   const handleShare = useCallback(() => {
     gaEvent({ action: 'timesheet_shared', params: { device: getDevice(), shifts: shifts.length } });
     shareOrCopy(shareUrlFor(saveName, rate, shifts), saveName.trim() || 'Timesheet');
-  }, [saveName, rate, shifts]);
+    offerSupport('share');
+  }, [saveName, rate, shifts, offerSupport]);
 
   const shareSaved = useCallback((t: SavedTimesheet) => {
     const url = shareUrlFor(t.name, t.rate, t.shifts.map(deserializeShift));
@@ -435,10 +471,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     try {
       await navigator.clipboard.writeText(text);
       toast({ title: 'Copied to clipboard', description: 'Paste your timesheet anywhere.' });
+      offerSupport('copy');
     } catch {
       toast({ title: 'Copy this summary', description: text });
     }
-  }, [saveName, shifts, totalMins, gross, rateNum, formatClock, otSplit, otMultiplier]);
+  }, [saveName, shifts, totalMins, gross, rateNum, formatClock, otSplit, otMultiplier, offerSupport]);
 
   const handleDownloadCsv = useCallback(() => {
     const csvEscape = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
@@ -485,7 +522,8 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
     gaEvent({ action: 'timesheet_exported', params: { device: getDevice(), shifts: shifts.length, format: 'csv' } });
     toast({ title: 'CSV downloaded', description: 'Open it in Excel or Google Sheets.' });
-  }, [shifts, totalMins, gross, rateNum, saveName, formatClock, otSplit, otMultiplier]);
+    offerSupport('csv');
+  }, [shifts, totalMins, gross, rateNum, saveName, formatClock, otSplit, otMultiplier, offerSupport]);
 
   return (
     <div className={className}>
@@ -841,6 +879,33 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             CSV
           </button>
         </div>
+
+        {supportNudge && (
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-border/50 dark:border-slate-700/50 bg-muted/40 dark:bg-slate-900/40 px-3 py-2 text-sm text-muted-foreground">
+            <p className="flex items-center gap-1.5">
+              <Coffee className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>
+                Saved you some time?{' '}
+                <a
+                  href={SUPPORT_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => gaEvent({ action: 'support_nudge_click', params: { tool: 'timesheet', device: getDevice() } })}
+                  className="font-medium text-foreground underline underline-offset-4 hover:text-emerald-700 dark:hover:text-emerald-400"
+                >
+                  Buy me a coffee
+                </a>
+              </span>
+            </p>
+            <button
+              onClick={dismissSupport}
+              aria-label="Dismiss"
+              className="shrink-0 p-1 rounded-md hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <X className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Saved timesheets */}
