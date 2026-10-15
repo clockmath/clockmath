@@ -24,6 +24,8 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: 'December 18, 2026' },
   { title: 'GTA 6', href: '/countdown/gta-6/', note: 'November 19, 2026' },
   { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/', note: 'August 2, 2027' },
+  { title: '2028 annular eclipse', href: '/countdown/annular-eclipse-2028/', note: 'January 26, 2028' },
+  { title: '2028 solar eclipse', href: '/countdown/solar-eclipse-2028/', note: 'July 22, 2028' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
 ];
 

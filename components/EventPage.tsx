@@ -29,6 +29,8 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'The Weekend', href: '/countdown/weekend/' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/' },
   { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/' },
+  { title: '2028 annular eclipse', href: '/countdown/annular-eclipse-2028/' },
+  { title: '2028 solar eclipse', href: '/countdown/solar-eclipse-2028/' },
   { title: 'Retirement', href: '/countdown/retirement/' },
 ];
 
