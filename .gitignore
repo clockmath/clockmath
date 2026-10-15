@@ -74,3 +74,6 @@ jspm_packages/
 .wrangler/
 wrangler.toml
 wrangler.toml.bak*.tsbuildinfo
+
+# IndexNow: fingerprints of what was last submitted (local, per machine)
+.indexnow-state.json

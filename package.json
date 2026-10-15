@@ -6,11 +6,12 @@
     "build": "next build",
     "pages:build": "npx @cloudflare/next-on-pages && node scripts/inject-api.js",
     "preview": "npm run pages:build && wrangler pages dev",
-    "deploy": "npm run pages:build && wrangler pages deploy",
+    "deploy": "npm run pages:build && wrangler pages deploy && node scripts/indexnow.js",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "spacing:audit": "node scripts/spacing-audit.js"
+    "spacing:audit": "node scripts/spacing-audit.js",
+    "indexnow": "node scripts/indexnow.js"
   },
   "dependencies": {
     "@radix-ui/react-popover": "1.1.4",
