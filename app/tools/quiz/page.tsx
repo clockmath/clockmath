@@ -12,27 +12,22 @@ const FAQS = [
   {
     question: 'Is the daily quiz the same for everyone?',
     answer:
-      'Yes — each day has one shared five-question puzzle, generated from the date itself, so every player worldwide answers the same questions. That is what makes the daily leaderboard a fair comparison.',
-  },
-  {
-    question: 'When does a new quiz come out?',
-    answer:
-      'At midnight UTC, every day. The leaderboard resets with it, so each day is a fresh start no matter how yesterday went.',
+      'Yes. Each day has one five-question puzzle, generated from the date, so every player worldwide answers the same questions. A new one starts at midnight UTC.',
   },
   {
     question: 'How is the score calculated?',
     answer:
-      'One point per correct answer, out of five. The leaderboard ranks by score first and breaks ties by solving time — and the clock only runs while a question is on screen waiting for your answer, so reading the explanations costs nothing.',
+      'One point per correct answer, out of five. Ties on the leaderboard go to the faster time, and the clock only runs while a question is waiting for your answer, so reading an explanation costs nothing.',
   },
   {
     question: 'What kind of questions are asked?',
     answer:
-      'Daily questions draw from real-world time skills: elapsed time between two clock times, durations that cross midnight, adding hours and minutes to a time, converting hours and minutes to decimal hours, paid hours on a shift with an unpaid break — and, on some days, reading an analog clock face or converting between 12-hour and 24-hour time. The exact mix varies by day, but it is always the same five for everyone.',
+      'Everyday time math: the time between two clock times, durations across midnight, adding time to a clock, minutes to decimal hours, paid hours after an unpaid break, and on some days reading an analog clock or converting 12-hour and 24-hour time.',
   },
   {
-    question: 'Do I need an account to play or join the leaderboard?',
+    question: 'Do I need an account?',
     answer:
-      'No signup, ever. Your results and streak are saved on your device, and the leaderboard just takes three letters, arcade style. Practice mode is unlimited and free too.',
+      'No. Your results and streak are saved on your device, and the leaderboard only asks for three letters, arcade style. Practice mode is unlimited.',
   },
 ];
 
@@ -88,7 +83,7 @@ export default function QuizPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Daily Time Quiz</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Five questions, one shared puzzle a day — how fast is your clock math?
+              How fast is your clock math?
             </p>
           </div>
         </div>
@@ -96,78 +91,36 @@ export default function QuizPage() {
 
       <QuizTool className="mb-section" />
 
-      {/* Explanation — collapsed like the FAQ; content stays prerendered */}
+      {/* About — plain text, no accordions: the quiz is the page, this is
+          the small print. Mirrors the FAQPage JSON-LD above. */}
       <section className="max-w-3xl mx-auto mb-section">
-        <details className="group bg-card dark:bg-slate-800 rounded-2xl border border-border/50 dark:border-slate-700/50">
-          <summary className="flex items-center justify-between gap-3 cursor-pointer select-none list-none px-4 sm:px-5 py-3 [&::-webkit-details-marker]:hidden">
-            <h2 className="text-lg sm:text-xl font-bold text-foreground dark:text-slate-100">
-              Why practice time math?
-            </h2>
-            <span
-              aria-hidden="true"
-              className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
-            >
-              ▾
-            </span>
-          </summary>
-          <div className="px-4 sm:px-5 pb-4">
-        <p className="text-muted-foreground mb-3">
-          Elapsed-time math shows up everywhere adults actually do arithmetic: reading a
-          timesheet, checking a night-shift schedule, working out whether a 7:45 AM start and a
-          4:05 PM finish really adds up to eight paid hours. It is also one of the skills students
-          consistently find hardest, because clocks are base-60 while everything else they
-          practice is base-10 — the &ldquo;borrow&rdquo; step works differently.
-        </p>
-        <p className="text-muted-foreground mb-3">
-          Each daily question maps to a real ClockMath tool, and every explanation shows the
-          mental method: count up to the next full hour, add whole hours, then the leftover
-          minutes. Miss one and the quiz points you at the matching calculator —{' '}
+        <h2 className="text-lg sm:text-xl font-bold text-foreground dark:text-slate-100 mb-3">About the quiz</h2>
+        <p className="text-sm sm:text-base text-muted-foreground mb-6">
+          Time math is harder than it looks because clocks count in 60s while everything else counts in 10s. Each
+          question matches a ClockMath tool, and every explanation shows the mental method: count up to the next full
+          hour, add the whole hours, then the leftover minutes. Miss one and the quiz points you to the{' '}
           <Link href="/" className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4">
             duration
           </Link>
           ,{' '}
           <Link href="/tools/decimal-hours" className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4">
             decimal hours
-          </Link>
-          , or{' '}
+          </Link>{' '}
+          or{' '}
           <Link href="/tools/timesheet" className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4">
             work hours
           </Link>{' '}
-          — so you can check the same math with real numbers.
+          calculator. Teachers: practice mode is unlimited, untimed and needs no accounts, so it works on shared
+          classroom devices.
         </p>
-        <p className="text-muted-foreground">
-          Teachers: practice mode is unlimited, untimed, and needs no accounts — it works fine on
-          a classroom of shared devices, and everyone gets the same daily puzzle to compare
-          against.
-        </p>
-          </div>
-        </details>
-      </section>
-
-      {/* FAQ — mirrors the FAQPage JSON-LD above */}
-      <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-6">
-          Frequently asked questions
-        </h2>
-        <div className="space-y-3">
+        <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
           {FAQS.map((faq) => (
-            <details
-              key={faq.question}
-              className="group bg-card dark:bg-slate-800 rounded-2xl border border-border/50 dark:border-slate-700/50"
-            >
-              <summary className="flex items-center justify-between gap-3 cursor-pointer select-none list-none px-4 sm:px-5 py-3 font-semibold text-foreground dark:text-slate-100 [&::-webkit-details-marker]:hidden">
-                <h3 className="text-base font-semibold">{faq.question}</h3>
-                <span
-                  aria-hidden="true"
-                  className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
-                >
-                  ▾
-                </span>
-              </summary>
-              <p className="px-4 sm:px-5 pb-4 text-muted-foreground text-sm sm:text-base">{faq.answer}</p>
-            </details>
+            <div key={faq.question}>
+              <dt className="font-semibold text-foreground text-sm sm:text-base mb-1">{faq.question}</dt>
+              <dd className="text-sm text-muted-foreground">{faq.answer}</dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </section>
 
       <SiteFooter />
