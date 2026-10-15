@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
 import ClockChangeCountdown from '@/components/ClockChangeCountdown';
+import StackedTable from '@/components/StackedTable';
 
 // Every date and offset on this page was computed from IANA tzdata 2026c, not
 // written from memory (Oct 2026). The live countdown is per-visitor; the table
@@ -69,45 +70,24 @@ export default function DaylightSavingTimePage() {
         <>
           <section className={CARD}>
             <h2 className={H2}>Clock change dates for 2026–27</h2>
-            {/* Phones: stacked cards — a three-column table hid "Clocks go forward"
-                off-screen at 375px. Table from sm up. */}
-            <div className="sm:hidden space-y-3">
-              {DATES.map((d) => (
-                <div key={d.where} className="rounded-xl border border-border/50 dark:border-slate-700/50 p-3">
-                  <div className="font-medium text-foreground dark:text-slate-100">{d.where}</div>
-                  <div className="text-xs text-muted-foreground mb-2">{d.rule}</div>
-                  <div className="text-sm text-foreground dark:text-slate-200">
-                    <span className="text-muted-foreground">Back:</span> {d.back}
-                  </div>
-                  <div className="text-sm text-foreground dark:text-slate-200">
-                    <span className="text-muted-foreground">Forward:</span> {d.forward}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="hidden sm:block overflow-x-auto -mx-1">
-              <table className="w-full text-sm min-w-[34rem]">
-                <thead>
-                  <tr className="text-left text-muted-foreground border-b border-border/50 dark:border-slate-700/50">
-                    <th className="py-2 px-1 font-semibold">Where</th>
-                    <th className="py-2 px-1 font-semibold">Clocks go back</th>
-                    <th className="py-2 px-1 font-semibold">Clocks go forward</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40 dark:divide-slate-700/40">
-                  {DATES.map((d) => (
-                    <tr key={d.where} className="align-top">
-                      <td className="py-2.5 px-1">
-                        <div className="font-medium text-foreground dark:text-slate-100">{d.where}</div>
-                        <div className="text-xs text-muted-foreground">{d.rule}</div>
-                      </td>
-                      <td className="py-2.5 px-1 text-foreground dark:text-slate-200">{d.back}</td>
-                      <td className="py-2.5 px-1 text-foreground dark:text-slate-200">{d.forward}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {/* One table that stacks on phones (a three-column table hid "Clocks go
+                forward" off-screen at 375px; the old phone-only copy doubled every row). */}
+            <StackedTable
+              rows={DATES}
+              firstKey="where"
+              stack="lines"
+              minWidth="sm:min-w-[34rem]"
+              renderFirst={(d) => (
+                <>
+                  {d.where}
+                  <span className="block text-xs font-normal text-muted-foreground mb-1 sm:mb-0">{d.rule}</span>
+                </>
+              )}
+              columns={[
+                { key: 'back', header: 'Clocks go back', mobileLabel: 'Back:' },
+                { key: 'forward', header: 'Clocks go forward', mobileLabel: 'Forward:' },
+              ]}
+            />
             <p className={`${BODY} text-sm mt-3`}>
               Times are local. Because the US and Europe change on different dates, New York and London are four hours
               apart instead of five for about a week around the start of November and two weeks in March.

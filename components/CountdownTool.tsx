@@ -380,7 +380,8 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
               <span className="text-sm text-muted-foreground shrink-0">Popular:</span>
               <div className="relative flex-1 min-w-0 overflow-hidden marquee-mask">
                 <div className="flex w-max gap-2 animate-marquee hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] active:[animation-play-state:paused]">
-                  {[...POPULAR_COUNTDOWNS, ...POPULAR_COUNTDOWNS].map((item, i) => (
+                  {/* The loop's second copy is added after mount, so the static HTML lists each countdown once. */}
+                  {(mounted ? [...POPULAR_COUNTDOWNS, ...POPULAR_COUNTDOWNS] : POPULAR_COUNTDOWNS).map((item, i) => (
                     <Link
                       key={`${item.href}-${i}`}
                       href={item.href}

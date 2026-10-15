@@ -61,7 +61,11 @@ const NIGHTS: QuickAnswer[] = (
   const [wh, wm] = wake.split(':').map(Number);
   return {
     lead: `${clock(bh * 60 + bm, true)} to ${clock(wh * 60 + wm, true)}`,
-    rest: `is ${durationWords(mins)} of sleep${mins % 60 ? ` (${decimalHoursWords(mins)})` : ''} — ${durationNote(mins)}.`,
+    // The 7–9 hour guidance only where it says something (outside the range);
+    // repeated on every line it read like boilerplate.
+    rest: `is ${durationWords(mins)} of sleep${mins % 60 ? ` (${decimalHoursWords(mins)})` : ''}${
+      durationNote(mins).startsWith('within') ? '' : ` — ${durationNote(mins)}`
+    }.`,
   };
 });
 
@@ -148,8 +152,7 @@ export default function SleepPage() {
         <p className="text-muted-foreground">
           Worked example: waking at <strong className="text-foreground">6:30 AM</strong> with six
           cycles means 6 × 90 + 15 = 555 minutes — bed at{' '}
-          <strong className="text-foreground">9:15 PM</strong>. Five cycles puts bedtime at 10:45 PM
-          for 7.5 hours of sleep, still inside the 7–9 hours most adults need.
+          <strong className="text-foreground">9:15 PM</strong>.
         </p>
       </section>
 

@@ -175,8 +175,7 @@ export default function DecimalHoursPage() {
           </table>
         </div>
         <p className="text-xs text-muted-foreground mt-3">
-          Note: some payroll systems round punches to the nearest tenth of an hour (6-minute steps)
-          or quarter hour (15-minute steps) before converting — this chart shows the values before any such rounding.
+          Payroll systems that round punch times (to 6 or 15 minutes) do so before converting; this chart shows the values before that rounding.
         </p>
       </section>
 

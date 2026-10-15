@@ -38,7 +38,7 @@ const FAQS = [
   {
     question: 'How do I calculate the hours between two times?',
     answer:
-      'Enter a start and end time and press Calculate Duration. 9:00 AM to 5:30 PM is 8 hours 30 minutes — shown as h:m:s, total minutes, and 8.5 decimal hours.',
+      'Enter a start and end time and press Calculate Duration. The result shows hours and minutes, the total in minutes, and decimal hours for payroll.',
   },
   {
     question: 'Does it work across midnight?',
@@ -77,8 +77,7 @@ export default function SeoIntro() {
         <p className="text-muted-foreground mb-3">
           Enter any two times — or two full dates — and get the exact elapsed time between them:
           9:00 to 17:30 is 8 hours 30 minutes, shown as h:m:s, as total minutes (510), and as
-          decimal hours (8.5) for timesheets and payroll. Times that cross midnight are handled
-          automatically, so a 10:00 PM to 6:00 AM night shift correctly reads 8 hours.
+          decimal hours (8.5) for timesheets and payroll.
         </p>
         <p className="text-muted-foreground">
           Common uses: work shifts and{' '}
