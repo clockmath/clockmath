@@ -6,7 +6,7 @@ import { generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: 'Daily Time Quiz — Test Your Clock Math | ClockMath',
   description:
-    'A new five-question time quiz every day: elapsed time, clock math, decimal hours, and payroll shifts. Same puzzle for everyone, arcade-style leaderboard, free practice mode. No signup.',
+    'A new five-question time quiz every day: elapsed time, clock math, decimal hours and shifts. Same puzzle for everyone, with a daily leaderboard. No signup.',
   path: '/tools/quiz',
   ogImage: '/og-quiz.png',
   keywords:

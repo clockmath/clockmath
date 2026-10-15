@@ -13,7 +13,7 @@ import ArticleLayout from "../../../components/ArticleLayout";
 // (since Oct 2026), which the daylight-saving section relies on.
 const TITLE = "How to Calculate Hours for Overnight and Night Shifts | ClockMath";
 const DESCRIPTION =
-  "Work out hours for shifts that cross midnight: the add-24-hours method, 12-hour shifts, which week the hours count toward, and the daylight-saving nights that run an hour long or short.";
+  "Hours for shifts that cross midnight: the add-24-hours method, 12-hour shifts, which week the hours count toward, and daylight-saving nights.";
 
 const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
 

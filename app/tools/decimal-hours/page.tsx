@@ -7,16 +7,37 @@ import { DecimalHoursTool, minutesToDecimal } from '@/components/DecimalHoursToo
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
+import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
+
+// "15 minutes in decimal" alone drew 4.5K Copilot citations to this page in
+// 3 months (Bing AI Performance, Oct 2026) — answer each common one plainly.
+const dec = (minutes: number) => minutesToDecimal(minutes).toFixed(2);
+
+const COMMON: QuickAnswer[] = [
+  ...[5, 10, 15, 20].map((m) => ({ lead: `${m} minutes`, rest: `is ${dec(m)} hours (${m} ÷ 60).` })),
+  { lead: '30 minutes', rest: `(half an hour) is ${dec(30)} hours.` },
+  ...[40, 45, 50].map((m) => ({ lead: `${m} minutes`, rest: `is ${dec(m)} hours (${m} ÷ 60).` })),
+  { lead: '1 hour 30 minutes', rest: `is ${(1 + minutesToDecimal(30)).toFixed(2)} hours.` },
+  { lead: '7 hours 45 minutes', rest: `is ${(7 + minutesToDecimal(45)).toFixed(2)} hours — not 7.45.` },
+];
 
 const FAQS = [
+  {
+    question: 'What is 15 minutes in decimal?',
+    answer: `15 minutes is ${dec(15)} hours: 15 ÷ 60 = 0.25, a quarter of an hour. So 8 hours 15 minutes is 8.25 hours.`,
+  },
+  {
+    question: 'What is 45 minutes as a decimal?',
+    answer: `45 minutes is ${dec(45)} hours: 45 ÷ 60 = 0.75, three quarters of an hour. So 7 hours 45 minutes is 7.75 hours.`,
+  },
+  {
+    question: 'What is half an hour in decimal?',
+    answer: `Half an hour (30 minutes) is ${dec(30)} hours, usually written 0.5. So 7 hours 30 minutes is 7.5 hours.`,
+  },
   {
     question: 'How do I convert minutes to decimal hours?',
     answer:
       'Divide the minutes by 60. 45 minutes is 45 ÷ 60 = 0.75, so 7 hours 45 minutes is 7.75 decimal hours. The converter above does this instantly in both directions.',
-  },
-  {
-    question: 'What is 7 hours 30 minutes in decimal?',
-    answer: '7.5 hours — 30 minutes is half an hour (30 ÷ 60 = 0.50), so 7:30 becomes 7.50.',
   },
   {
     question: 'Why does payroll use decimal hours instead of hours and minutes?',
@@ -92,6 +113,8 @@ export default function DecimalHoursPage() {
       </header>
 
       <DecimalHoursTool className="mb-section" />
+
+      <QuickAnswers heading="Common minutes to decimal hours" items={COMMON} />
 
       {/* Explanation */}
       <section className="max-w-3xl mx-auto mb-section">

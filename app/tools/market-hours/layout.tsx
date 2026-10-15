@@ -6,7 +6,7 @@ import { generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: 'Stock Market Hours — Is the Market Open? | ClockMath',
   description:
-    'Live stock market hours in your timezone. See whether the NYSE, NASDAQ, LSE, Tokyo, and other major exchanges are open right now, with countdowns to the next open and close.',
+    'Live stock market hours in your timezone: whether the NYSE, NASDAQ, LSE, Tokyo and other exchanges are open now, and when they next open or close.',
   path: '/tools/market-hours',
   keywords:
     'stock market hours, is the stock market open, nyse hours, nasdaq hours, market open time, stock market open today, market hours in my timezone, when does the stock market open',

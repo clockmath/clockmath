@@ -37,6 +37,16 @@ export default function ThanksgivingCountdownPage() {
             'Thanksgiving 2026 is Thursday, November 26 — the fourth Thursday of the month. In 2027 it falls on November 25, and in 2028 on November 23.',
         },
         {
+          question: 'How many weeks until Thanksgiving?',
+          answer:
+            'The line at the top of this page gives the weeks and days left, updated daily. Thanksgiving 2026 is Thursday, November 26: from mid-October that is about six weeks away, and from the start of November about three and a half.',
+        },
+        {
+          question: 'What day is the day before Thanksgiving?',
+          answer:
+            'Always a Wednesday. In 2026 the day before Thanksgiving is Wednesday, November 25 — one of the busiest travel days of the year in the US.',
+        },
+        {
           question: 'Why does the Thanksgiving date change every year?',
           answer:
             'Since 1941, US federal law has fixed Thanksgiving to the fourth Thursday of November rather than a calendar date. Depending on which weekday November 1 lands on, that Thursday can be anywhere from November 22 to November 28.',

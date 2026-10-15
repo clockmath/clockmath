@@ -13,8 +13,8 @@ import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
 
-const CYCLE_MIN = 90;
-const FALL_ASLEEP_MIN = 15;
+export const CYCLE_MIN = 90;
+export const FALL_ASLEEP_MIN = 15;
 
 const getDevice = (): 'mobile' | 'desktop' =>
   typeof window !== 'undefined' && window.innerWidth < 640 ? 'mobile' : 'desktop';
@@ -43,7 +43,7 @@ export function sleepDuration(bed: string, wake: string): number | null {
 }
 
 /** Format minutes-since-midnight as a clock time (wraps across days) */
-function clock(mins: number, hour12: boolean): string {
+export function clock(mins: number, hour12: boolean): string {
   const m = ((mins % 1440) + 1440) % 1440;
   const h = Math.floor(m / 60);
   const mm = String(m % 60).padStart(2, '0');
@@ -56,7 +56,7 @@ function clock(mins: number, hour12: boolean): string {
 const hm = (mins: number): string => `${Math.floor(mins / 60)}h ${mins % 60}m`;
 
 /** Sleep quality note against the widely used 7–9h adult guidance */
-function durationNote(mins: number): string {
+export function durationNote(mins: number): string {
   const h = mins / 60;
   if (h < 7) return 'below the 7–9 hours most adults need';
   if (h <= 9) return 'within the 7–9 hours most adults need';

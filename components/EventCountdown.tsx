@@ -82,6 +82,17 @@ function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: numb
   return new Date(year, month, firstOccurrence + (n - 1) * 7 + offsetDays, 0, 0, 0, 0);
 }
 
+// " That's 6 weeks." / " That's 5 weeks and 3 days." — empty under a week
+// or beyond a year (nobody counts 91 weeks). Mirrored in
+// scripts/worker/live-counts.js; keep the two in step.
+function weeksPhrase(days: number): string {
+  if (days < 7 || days > 365) return '';
+  const weeks = Math.floor(days / 7);
+  const rest = days % 7;
+  const w = weeks === 1 ? '1 week' : `${weeks.toLocaleString()} weeks`;
+  return rest ? ` That's ${w} and ${rest === 1 ? '1 day' : `${rest} days`}.` : ` That's ${w}.`;
+}
+
 // Calendar date as YYYY-MM-DD, from local fields (the dates above are built
 // with the local-time constructor, so these are the intended calendar days).
 const ymd = (d: Date): string =>
@@ -257,6 +268,10 @@ export function EventCountdown({
             {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
           </strong>{' '}
           until {title}.
+          {/* "How many weeks until…" is a common phrasing; the worker keeps this current too. */}
+          <span data-live="weeks" suppressHydrationWarning>
+            {weeksPhrase(totalDays)}
+          </span>
         </p>
       )}
 
