@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
 import EclipseCountdown from '@/components/EclipseCountdown';
+import EclipseCityTable from '@/components/EclipseCityTable';
 import { TOTALITY, PARTIAL } from './eclipseData';
 
 // Eclipse facts: NASA GSFC eclipse catalogue (greatest eclipse 25.5°N 33.2°E,
@@ -15,52 +16,6 @@ const H2 = 'text-xl font-bold text-foreground dark:text-slate-100 mb-3';
 const BODY = 'text-muted-foreground dark:text-slate-400';
 const STRONG = 'text-foreground dark:text-slate-200';
 
-function CityTable({
-  rows,
-  timeHeader,
-  lastHeader,
-  lastKey,
-}: {
-  rows: ReadonlyArray<{ place: string; time: string } & Record<string, string>>;
-  timeHeader: string;
-  lastHeader: string;
-  lastKey: string;
-}) {
-  return (
-    <>
-      {/* Phones: stacked rows; table from sm up. */}
-      <div className="sm:hidden divide-y divide-border/40 dark:divide-slate-700/40">
-        {rows.map((r) => (
-          <div key={r.place} className="py-2.5">
-            <div className="font-medium text-foreground dark:text-slate-100">{r.place}</div>
-            <div className="text-sm text-foreground dark:text-slate-200">
-              {r.time} · <span className="text-muted-foreground">{r[lastKey]}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <table className="hidden sm:table w-full text-sm">
-        <thead>
-          <tr className="text-left text-muted-foreground border-b border-border/50 dark:border-slate-700/50">
-            <th className="py-2 px-1 font-semibold">Where</th>
-            <th className="py-2 px-1 font-semibold">{timeHeader}</th>
-            <th className="py-2 px-1 font-semibold text-right">{lastHeader}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border/40 dark:divide-slate-700/40">
-          {rows.map((r) => (
-            <tr key={r.place}>
-              <td className="py-2 px-1 font-medium text-foreground dark:text-slate-100">{r.place}</td>
-              <td className="py-2 px-1 text-foreground dark:text-slate-200">{r.time}</td>
-              <td className="py-2 px-1 text-right text-foreground dark:text-slate-200">{r[lastKey]}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-}
-
 export default function SolarEclipse2027Page() {
   return (
     <EventPage
@@ -68,7 +23,14 @@ export default function SolarEclipse2027Page() {
       tagline="Monday, August 2, 2027 — when totality reaches Spain, Morocco, Libya, Egypt and Saudi Arabia, in local time"
       lastUpdated="2026-10-15"
       breadcrumb="Solar eclipse 2027"
-      countdownSlot={<EclipseCountdown />}
+      countdownSlot={
+        <EclipseCountdown
+          peakMs={Date.UTC(2027, 7, 2, 10, 6, 37)}
+          title="the 2027 total solar eclipse"
+          arrivedLabel="The 2027 eclipse has passed — the next total eclipse is July 22, 2028"
+          where="near Luxor, Egypt"
+        />
+      }
       facts={[
         { label: 'Date', value: 'Monday, August 2, 2027' },
         { label: 'Longest totality', value: '6 min 23 s, near Luxor' },
@@ -90,7 +52,7 @@ export default function SolarEclipse2027Page() {
               Totality is visible from Morocco, Spain, Algeria, Libya, Egypt, Saudi Arabia, Yemen and Somalia. Local times
               for cities in the path, west to east:
             </p>
-            <CityTable rows={TOTALITY} timeHeader="Totality (local time)" lastHeader="Lasts" lastKey="duration" />
+            <EclipseCityTable rows={TOTALITY} columns={[{ key: 'time', header: 'Totality (local time)' }, { key: 'duration', header: 'Lasts', right: true }]} />
             <p className={`${BODY} text-sm mt-3`}>
               Times are shown to the minute, as a clock would read them. The exact seconds depend on your spot in the path — totality is longest
               along its centre line — and on small, still-uncertain changes in Earth&apos;s rotation.
@@ -99,7 +61,7 @@ export default function SolarEclipse2027Page() {
 
           <section className={CARD}>
             <h2 className={H2}>Partial eclipse: how much of the Sun is covered</h2>
-            <CityTable rows={PARTIAL} timeHeader="Peak (local time)" lastHeader="Sun covered" lastKey="covered" />
+            <EclipseCityTable rows={PARTIAL} columns={[{ key: 'time', header: 'Peak (local time)' }, { key: 'covered', header: 'Sun covered', right: true }]} />
             <p className={`${BODY} text-sm mt-3`}>
               Aswan and Seville sit just outside the path. Even 99.8% isn&apos;t totality: the sky doesn&apos;t go dark
               and it is never safe to look at the Sun without eclipse glasses.
