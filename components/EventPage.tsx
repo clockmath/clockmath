@@ -24,8 +24,11 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Thanksgiving', href: '/countdown/thanksgiving/' },
   { title: 'Black Friday', href: '/countdown/black-friday/' },
   { title: 'New Year', href: '/countdown/new-year/' },
+  { title: '4th of July', href: '/countdown/july-4th/' },
+  { title: 'Canada Day', href: '/countdown/canada-day/' },
   { title: 'The Weekend', href: '/countdown/weekend/' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/' },
+  { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/' },
   { title: 'Retirement', href: '/countdown/retirement/' },
 ];
 
@@ -246,8 +249,9 @@ export default function EventPage({
       <section className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
         <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">More countdowns</h2>
         <div className="flex flex-wrap gap-2">
+          {/* Every countdown, not a top-N slice: a .slice(0, 6) here left half the
+              event pages with no internal links at all, so Google never found them. */}
           {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, '')))
-            .slice(0, 6)
             .map((c) => (
               <Link
                 key={c.href}
