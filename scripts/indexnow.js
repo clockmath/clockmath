@@ -53,6 +53,9 @@ function fingerprint(url) {
   const main = html.slice(html.indexOf('<main'), html.lastIndexOf('</main>'));
   const text = main
     .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ')
+    // Countdown numbers and dates the worker rewrites per request
+    // (scripts/worker/live-counts.js): build-day values, not page changes.
+    .replace(/(<[^>]+\sdata-live(?:-date)?="[^"]*"[^>]*>)[^<]*/g, '$1')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
