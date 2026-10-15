@@ -43,7 +43,7 @@ export default function FreelancerTimeTrackingPage() {
 
       <h2>The Problem with Guessing</h2>
       <p>
-        Many freelancers underestimate the time they spend on projects. That quick email response, the brief revision, the unexpected client call—these small tasks add up. Without accurate tracking, you end up working more hours than you bill, effectively reducing your hourly rate. Studies suggest freelancers lose 10-20% of billable time to tasks they forget to track.
+        Many freelancers underestimate the time they spend on projects. That quick email response, the brief revision, the unexpected client call—these small tasks add up. Without accurate tracking, you end up working more hours than you bill, effectively reducing your hourly rate.
       </p>
 
       <h2>Calculate Time Per Task</h2>

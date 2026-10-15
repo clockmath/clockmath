@@ -50,7 +50,7 @@ export default function GamingTimezoneConverterPage() {
 
         <h2>The Problem</h2>
         <p>
-          Gamers often have to calculate release times manually: "If a game launches at midnight EST, what time is that here?" Small mistakes mean missing out on big moments like:
+          Gamers often have to calculate release times manually: "If a game launches at midnight ET, what time is that here?" Small mistakes mean missing out on big moments like:
         </p>
         <ul>
           <li>Highly anticipated game releases</li>
@@ -79,7 +79,7 @@ export default function GamingTimezoneConverterPage() {
         <h2>Common Gaming Timezone Scenarios</h2>
         <h3>1. Global Game Releases</h3>
         <p>
-          Major publishers often announce release times in EST or PST. Use our timezone converter to find out exactly when the game unlocks in your region, whether that's Steam, Epic Games Store, or console platforms.
+          Major publishers often announce release times in Eastern (ET) or Pacific (PT) time. Use our timezone converter to find out exactly when the game unlocks in your region, whether that's Steam, Epic Games Store, or console platforms.
         </p>
 
         <h3>2. Esports Tournament Schedules</h3>
