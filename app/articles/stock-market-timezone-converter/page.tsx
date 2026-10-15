@@ -73,15 +73,15 @@ export default function StockMarketTimezoneConverterPage() {
           <div className="space-y-3">
             <div>
               <strong>New York Stock Exchange (NYSE):</strong>
-              <p className="text-sm text-muted-foreground">Opens 9:30 AM EST, Closes 4:00 PM EST</p>
+              <p className="text-sm text-muted-foreground">Opens 9:30 AM, closes 4:00 PM Eastern time (ET)</p>
             </div>
             <div>
               <strong>London Stock Exchange (LSE):</strong>
-              <p className="text-sm text-muted-foreground">Opens 8:00 AM GMT, Closes 4:30 PM GMT</p>
+              <p className="text-sm text-muted-foreground">Opens 8:00 AM, closes 4:30 PM UK time (GMT in winter, BST in summer)</p>
             </div>
             <div>
               <strong>Tokyo Stock Exchange (TSE):</strong>
-              <p className="text-sm text-muted-foreground">Opens 9:00 AM JST, Closes 3:00 PM JST</p>
+              <p className="text-sm text-muted-foreground">Opens 9:00 AM, closes 3:30 PM JST, with a lunch break from 11:30 AM to 12:30 PM</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground mt-3">
@@ -124,12 +124,12 @@ export default function StockMarketTimezoneConverterPage() {
         <h2>Extended Hours Trading</h2>
         <h3>Pre-Market Trading</h3>
         <p>
-          Many exchanges offer pre-market trading sessions. For example, U.S. markets often allow trading from 4:00 AM EST. Use timezone conversion to determine when these extended sessions begin in your location.
+          Many exchanges offer pre-market trading sessions. For example, U.S. markets often allow trading from 4:00 AM ET. Use timezone conversion to determine when these extended sessions begin in your location.
         </p>
 
         <h3>After-Hours Trading</h3>
         <p>
-          Post-market sessions can continue until 8:00 PM EST for U.S. markets. These sessions often react to earnings reports and major news announcements.
+          Post-market sessions can continue until 8:00 PM ET for U.S. markets. These sessions often react to earnings reports and major news announcements.
         </p>
 
         <h2>Managing Daylight Saving Time</h2>
@@ -162,17 +162,23 @@ export default function StockMarketTimezoneConverterPage() {
         <h2>Popular Trading Timezone Combinations</h2>
         <h3>For U.S.-based Traders</h3>
         <ul>
-          <li><strong>London Open:</strong> 3:00 AM EST (8:00 AM GMT)</li>
-          <li><strong>New York Open:</strong> 9:30 AM EST</li>
-          <li><strong>Market Overlap:</strong> 9:30 AM - 11:30 AM EST (highest volume)</li>
+          <li><strong>London Open:</strong> 3:00 AM ET (8:00 AM UK time)</li>
+          <li><strong>New York Open:</strong> 9:30 AM ET</li>
+          <li><strong>Market Overlap:</strong> 9:30 AM - 11:30 AM ET (highest volume)</li>
         </ul>
 
         <h3>For European Traders</h3>
         <ul>
-          <li><strong>Tokyo Close:</strong> 7:00 AM GMT (3:00 PM JST)</li>
-          <li><strong>London Open:</strong> 8:00 AM GMT</li>
-          <li><strong>New York Open:</strong> 2:30 PM GMT (9:30 AM EST)</li>
+          <li><strong>Tokyo Close:</strong> 6:30 AM GMT in winter, 7:30 AM BST in summer (3:30 PM JST)</li>
+          <li><strong>London Open:</strong> 8:00 AM UK time</li>
+          <li><strong>New York Open:</strong> 2:30 PM UK time (9:30 AM ET)</li>
         </ul>
+
+        <p>
+          These times hold all year except for a few weeks in March and about a week around the start of November, when
+          the US and UK change their clocks on different dates. During those weeks London opens at 4:00 AM ET, the
+          overlap runs until 12:30 PM ET, and New York opens at 1:30 PM UK time.
+        </p>
 
         <h2>Conclusion</h2>
         <p>

@@ -50,7 +50,7 @@ export default function TimezoneConverterRemoteWorkPage() {
         <h2>Best Practices for Remote Meeting Scheduling</h2>
         <h3>1. Use a Consistent Reference Point</h3>
         <p>
-          Always specify the timezone when proposing meeting times. Instead of saying "Let's meet at 10 AM," say "Let's meet at 10 AM EST" or use UTC as a universal reference.
+          Always specify the timezone when proposing meeting times. Instead of saying "Let's meet at 10 AM," say "Let's meet at 10 AM ET" or use UTC as a universal reference.
         </p>
 
         <h3>2. Consider Everyone's Business Hours</h3>

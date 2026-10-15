@@ -261,7 +261,7 @@ export default function TimezoneConvertersHubPage() {
                 Always Include Timezone
               </h4>
               <p className="text-sm text-muted-foreground dark:text-slate-400">
-                When scheduling, always specify the timezone (e.g., "3 PM EST" not just "3 PM").
+                When scheduling, always specify the timezone (e.g., "3 PM ET" not just "3 PM").
               </p>
             </div>
             
