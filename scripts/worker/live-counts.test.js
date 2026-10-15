@@ -5,8 +5,8 @@ const path = require('path');
 const assert = require('assert');
 
 const code = fs.readFileSync(path.join(__dirname, 'live-counts.js'), 'utf8');
-const { liveDays, liveDateLabel, cacheControlFor } = new Function(
-  `${code}; return { liveDays, liveDateLabel, cacheControlFor };`,
+const { liveDays, liveDateLabel, cacheControlFor, weeksPhrase } = new Function(
+  `${code}; return { liveDays, liveDateLabel, cacheControlFor, weeksPhrase };`,
 )();
 
 const at = (iso) => Date.parse(iso);
@@ -39,6 +39,13 @@ assert.strictEqual(liveDays('w:6:2', at('2026-10-19T12:00:00-04:00'), NY), 5); /
 // Date label in the visitor's zone (the 2028 eclipse is a Friday in the Americas).
 assert.strictEqual(liveDateLabel(Date.UTC(2028, 6, 22, 2, 55, 23), NY), 'Friday, July 21, 2028');
 assert.strictEqual(liveDateLabel(Date.UTC(2028, 6, 22, 2, 55, 23), 'Australia/Sydney'), 'Saturday, July 22, 2028');
+
+// Weeks phrase.
+assert.strictEqual(weeksPhrase(42), " That's 6 weeks.");
+assert.strictEqual(weeksPhrase(43), " That's 6 weeks and 1 day.");
+assert.strictEqual(weeksPhrase(10), " That's 1 week and 3 days.");
+assert.strictEqual(weeksPhrase(6), '');
+assert.strictEqual(weeksPhrase(400), '');
 
 // Cache policy.
 const res = (type, status = 200) => ({ status, headers: new Map([['Content-Type', type]]) });

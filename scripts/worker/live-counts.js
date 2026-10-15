@@ -51,6 +51,15 @@ function liveDays(spec, nowMs, timeZone) {
   return null;
 }
 
+// Mirror of weeksPhrase in components/EventCountdown.tsx.
+function weeksPhrase(days) {
+  if (days < 7 || days > 365) return '';
+  const weeks = Math.floor(days / 7);
+  const rest = days % 7;
+  const w = weeks === 1 ? '1 week' : weeks + ' weeks';
+  return rest ? " That's " + w + ' and ' + (rest === 1 ? '1 day' : rest + ' days') + '.' : " That's " + w + '.';
+}
+
 function liveDateLabel(ms, timeZone) {
   const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   try {
@@ -81,6 +90,11 @@ function withLiveCounts(res, request) {
     .on('[data-live="days"]', {
       element(el) {
         if (days !== null) el.setInnerContent(days === 1 ? '1 day' : days.toLocaleString('en-US') + ' days');
+      },
+    })
+    .on('[data-live="weeks"]', {
+      element(el) {
+        if (days !== null) el.setInnerContent(weeksPhrase(days));
       },
     })
     .on('[data-live-date]', {

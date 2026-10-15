@@ -7,6 +7,32 @@
 
 import Link from 'next/link';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
+import QuickAnswers, { durationWords, decimalHoursWords, type QuickAnswer } from '@/components/QuickAnswers';
+
+// "9-530 is how many hours", "10 to 7 is how many hours", "hours difference":
+// the duration questions Copilot cites this page for (Bing AI Performance,
+// Oct 2026). Values computed, overnight wraps like the calculator.
+const label = (h: number, m: number) => `${h % 12 || 12}${m ? `:${String(m).padStart(2, '0')}` : ''} ${h < 12 ? 'AM' : 'PM'}`;
+const SHIFTS: QuickAnswer[] = (
+  [
+    [9, 0, 17, 0],
+    [9, 0, 17, 30],
+    [8, 0, 16, 30],
+    [8, 0, 17, 0],
+    [7, 0, 15, 30],
+    [10, 0, 19, 0],
+    [12, 0, 20, 0],
+    [6, 0, 14, 30],
+    [22, 0, 6, 0],
+    [19, 0, 7, 0],
+  ] as const
+).map(([sh, sm, eh, em]) => {
+  const mins = (eh * 60 + em - (sh * 60 + sm) + 1440) % 1440;
+  return {
+    lead: `${label(sh, sm)} to ${label(eh, em)}`,
+    rest: `is ${durationWords(mins)}${mins % 60 ? ` (${decimalHoursWords(mins)})` : ''}${eh < sh ? ', overnight' : ''}.`,
+  };
+});
 
 const FAQS = [
   {
@@ -68,7 +94,7 @@ export default function SeoIntro() {
           </Link>
           . For minutes-to-decimal conversions, see the{' '}
           <Link
-            href="/tools/timesheet#decimal-hours"
+            href="/tools/decimal-hours"
             className="text-primary hover:text-primary/80 font-semibold"
           >
             decimal hours table
@@ -76,6 +102,8 @@ export default function SeoIntro() {
           .
         </p>
       </section>
+
+      <QuickAnswers heading="How many hours is a shift?" intro="Common start and end times, worked out:" items={SHIFTS} />
 
       <section aria-labelledby="faq-heading" className="max-w-3xl mx-auto mb-section">
         <h2

@@ -10,7 +10,7 @@ import ArticleLayout from "../../../components/ArticleLayout";
 // It now targets the how-to intent and hands tool-seekers to /tools/overtime.
 const TITLE = "How to Calculate Overtime Hours and Pay | ClockMath";
 const DESCRIPTION =
-  "Work out overtime by hand: the 40-hour weekly rule, daily overtime in states like California, time-and-a-half math, and minutes to decimal hours — with worked examples.";
+  "Work out overtime by hand: the 40-hour rule, daily overtime in states like California, time-and-a-half pay and decimal hours, with worked examples.";
 
 const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
 

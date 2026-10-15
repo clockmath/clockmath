@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Bed } from 'lucide-react';
-import { SleepTool } from '@/components/SleepTool';
+import { SleepTool, CYCLE_MIN, FALL_ASLEEP_MIN, clock, sleepDuration, durationNote } from '@/components/SleepTool';
+import QuickAnswers, { durationWords, decimalHoursWords, type QuickAnswer } from '@/components/QuickAnswers';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
@@ -35,6 +36,34 @@ const FAQS = [
       'No — cycle lengths and sleep-need ranges are population averages, and your own rhythm may differ. If you have ongoing sleep problems, talk to a doctor or sleep specialist.',
   },
 ];
+
+// The questions Copilot cites this page for (Bing AI Performance, Oct 2026),
+// answered with the tool's own cycle maths.
+const bedtimeFor = (wakeMin: number, cycles: number) => clock(wakeMin - (cycles * CYCLE_MIN + FALL_ASLEEP_MIN), true);
+
+const BEDTIMES: QuickAnswer[] = [300, 330, 360, 390, 420, 450, 480].map((wake) => ({
+  lead: `Waking at ${clock(wake, true)}?`,
+  rest: `Go to bed at ${bedtimeFor(wake, 6)} (6 cycles, 9 hours of sleep) or ${bedtimeFor(wake, 5)} (5 cycles, 7.5 hours).`,
+}));
+
+const NIGHTS: QuickAnswer[] = (
+  [
+    ['22:00', '06:00'],
+    ['23:00', '07:00'],
+    ['23:30', '06:30'],
+    ['00:00', '07:30'],
+    ['01:00', '06:00'],
+    ['02:00', '09:00'],
+  ] as const
+).map(([bed, wake]) => {
+  const mins = sleepDuration(bed, wake)!;
+  const [bh, bm] = bed.split(':').map(Number);
+  const [wh, wm] = wake.split(':').map(Number);
+  return {
+    lead: `${clock(bh * 60 + bm, true)} to ${clock(wh * 60 + wm, true)}`,
+    rest: `is ${durationWords(mins)} of sleep${mins % 60 ? ` (${decimalHoursWords(mins)})` : ''} — ${durationNote(mins)}.`,
+  };
+});
 
 export default function SleepPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -95,6 +124,14 @@ export default function SleepPage() {
       </header>
 
       <SleepTool className="mb-section" />
+
+      <QuickAnswers
+        heading="What time should I go to bed?"
+        intro={<>Bedtimes that end on a full 90-minute cycle, including about {FALL_ASLEEP_MIN} minutes to fall asleep.</>}
+        items={BEDTIMES}
+      />
+
+      <QuickAnswers heading="How long did I sleep?" intro="Common nights, worked out:" items={NIGHTS} />
 
       {/* Explanation */}
       <section className="max-w-3xl mx-auto mb-section">

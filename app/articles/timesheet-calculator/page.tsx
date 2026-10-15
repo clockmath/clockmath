@@ -10,7 +10,7 @@ import ArticleLayout from "../../../components/ArticleLayout";
 // covers totalling a week by hand and hands tool-seekers to /tools/timesheet.
 const TITLE = "How to Total a Weekly Timesheet for Payroll | ClockMath";
 const DESCRIPTION =
-  "Add up a week of shifts correctly: total minutes before converting, decimal hours, how US time-rounding rules work, and where overtime starts — with a worked example.";
+  "Add up a week of shifts correctly: total the minutes first, convert to decimal hours, apply US rounding rules and spot where overtime starts.";
 
 const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
 

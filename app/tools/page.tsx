@@ -4,7 +4,7 @@ import { generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: 'All Tools — Free Time & Date Calculators | ClockMath',
   description:
-    'Every ClockMath tool in one place: time duration calculator, work hours and timesheet calculator, live stock market hours, timezone converter, decimal hours converter, and countdown timer. Free, no signup.',
+    'Every ClockMath tool in one place: time duration, timesheet, overtime, sleep, timezone, market hours, decimal hours and countdowns. Free, no signup.',
   path: '/tools',
   keywords:
     'time calculator tools, free time calculators, work hours tools, timesheet tools, time conversion tools',

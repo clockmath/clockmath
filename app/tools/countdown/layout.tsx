@@ -6,7 +6,7 @@ import { generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: 'Countdown Timer — Count Down to Any Date | ClockMath',
   description:
-    'Create a free live countdown to any date and time — days, hours, minutes, and seconds — then share it with a link. Perfect for holidays, events, exams, and trips.',
+    'Create a free live countdown to any date and time, in days, hours, minutes and seconds, and share it with a link. For holidays, events, exams and trips.',
   path: '/tools/countdown',
   keywords:
     'countdown timer, count down to date, days until, countdown clock, event countdown, time until',
