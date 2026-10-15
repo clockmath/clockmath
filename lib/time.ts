@@ -73,41 +73,55 @@ export function getAllTimeZones(): string[] {
 }
 
 /**
- * British Columbia moved to permanent UTC−7: its last clock change was
- * Mar 8 2026 and the Nov 1 2026 fall-back never happens (IANA tzdata 2026c;
- * news.gov.bc.ca/releases/2026AG0013-000209). Browsers whose bundled tz data
- * predates the change — Chrome 152 still did in Oct 2026 — keep applying
- * PST (UTC−8) to America/Vancouver every winter, so Vancouver/Victoria would
- * read an hour wrong.
+ * Two Canadian provinces stopped changing their clocks in 2026: neither falls
+ * back on Nov 1 2026 (IANA tzdata 2026c).
+ *   - British Columbia stays on UTC−7 (news.gov.bc.ca/releases/2026AG0013-000209)
+ *   - Alberta stays on UTC−6 (Bill 31, Royal Assent May 14 2026); tzdata also
+ *     applies this to America/Yellowknife, which is a link to Edmonton.
+ * Browsers whose bundled tz data predates a change keep applying the old
+ * winter offset, so those cities would read an hour wrong. (Chrome 152.0.7977.130
+ * still had BC's old rule in Oct 2026; .149 had both new rules.)
  *
- * For instants on/after the cancelled fall-back, route Vancouver through a
- * fixed UTC−7 zone instead (POSIX sign: Etc/GMT+7 is UTC−7). The check probes
- * the browser itself, so it is self-healing: once the browser knows the new
- * rule the probe reads −7 and this returns the zone unchanged.
+ * For instants on/after the cancelled fall-back, such a zone is routed through
+ * a fixed offset instead (POSIX sign: Etc/GMT+7 is UTC−7). Each rule probes the
+ * browser itself, so it is self-healing: once the browser knows the new rule
+ * the probe reads the new offset and the zone passes through unchanged.
  */
-const BC_PERMANENT_FROM_MS = Date.UTC(2026, 10, 1, 9, 0, 0); // Nov 1 2026, 02:00 PDT — the fall-back that no longer happens
-const BC_PROBE = new Date(Date.UTC(2027, 0, 15, 12, 0, 0)); // a winter instant well inside the new rule
-let bcRuleStale: boolean | null = null;
+interface PermanentTimeSwitch {
+  /** The fall-back instant that no longer happens. */
+  fromMs: number;
+  /** Fixed zone carrying the new year-round offset. */
+  fixedZone: string;
+  /** Winter offset (minutes) a browser with the OLD rule reports. */
+  staleWinterOffset: number;
+}
+const PERMANENT_TIME_SWITCHES: Record<string, PermanentTimeSwitch> = {
+  // Nov 1 2026, 02:00 PDT
+  'America/Vancouver': { fromMs: Date.UTC(2026, 10, 1, 9, 0, 0), fixedZone: 'Etc/GMT+7', staleWinterOffset: -480 },
+  // Nov 1 2026, 02:00 MDT
+  'America/Edmonton': { fromMs: Date.UTC(2026, 10, 1, 8, 0, 0), fixedZone: 'Etc/GMT+6', staleWinterOffset: -420 },
+  'America/Yellowknife': { fromMs: Date.UTC(2026, 10, 1, 8, 0, 0), fixedZone: 'Etc/GMT+6', staleWinterOffset: -420 },
+};
+const WINTER_PROBE = new Date(Date.UTC(2027, 0, 15, 12, 0, 0)); // well inside the new rules
+const staleRuleCache: Record<string, boolean> = {};
 
-function browserHasStaleBCRule(): boolean {
-  if (bcRuleStale === null) {
+function browserHasStaleRule(timeZone: string, rule: PermanentTimeSwitch): boolean {
+  if (!(timeZone in staleRuleCache)) {
     // rawTimezoneOffset, not getTimezoneOffset — the latter calls back into this.
-    bcRuleStale = rawTimezoneOffset('America/Vancouver', BC_PROBE) === -480;
+    staleRuleCache[timeZone] = rawTimezoneOffset(timeZone, WINTER_PROBE) === rule.staleWinterOffset;
   }
-  return bcRuleStale;
+  return staleRuleCache[timeZone];
 }
 
 /**
  * The zone to hand to Intl for `timeZone` at instant `at`. Identity for every
- * zone except America/Vancouver on a browser that still has the old BC rule.
+ * zone except one in PERMANENT_TIME_SWITCHES, on a browser that still has its
+ * old rule, at an instant after its cancelled fall-back.
  */
 export function resolveTimeZone(timeZone: string, at: Date): string {
-  if (
-    timeZone === 'America/Vancouver' &&
-    at.getTime() >= BC_PERMANENT_FROM_MS &&
-    browserHasStaleBCRule()
-  ) {
-    return 'Etc/GMT+7';
+  const rule = PERMANENT_TIME_SWITCHES[timeZone];
+  if (rule && at.getTime() >= rule.fromMs && browserHasStaleRule(timeZone, rule)) {
+    return rule.fixedZone;
   }
   return timeZone;
 }
