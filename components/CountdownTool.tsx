@@ -15,12 +15,15 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'Christmas', href: '/countdown/christmas/', note: 'December 25' },
   { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
   { title: 'Halloween', href: '/countdown/halloween/', note: 'October 31' },
+  { title: 'Thanksgiving', href: '/countdown/thanksgiving/', note: '4th Thursday in November' },
+  { title: 'Black Friday', href: '/countdown/black-friday/', note: 'Day after Thanksgiving' },
   { title: 'Clocks change', href: '/countdown/daylight-saving-time/', note: 'Next clock change' },
   { title: '4th of July', href: '/countdown/july-4th/', note: 'July 4' },
   { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
   { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: 'December 18, 2026' },
   { title: 'GTA 6', href: '/countdown/gta-6/', note: 'November 19, 2026' },
+  { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/', note: 'August 2, 2027' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
 ];
 
