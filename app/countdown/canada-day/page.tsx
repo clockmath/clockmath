@@ -1,13 +1,14 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import HolidayDatesTable, { sundayToMonday } from '@/components/HolidayDatesTable';
 
 export default function CanadaDayCountdownPage() {
   return (
     <EventPage
       heading={'How Many Days Until Canada Day?'}
       tagline="Live countdown to July 1 — days, hours, minutes, and seconds"
-      lastUpdated="2026-08-03"
+      lastUpdated="2026-10-15"
       breadcrumb="Canada Day"
       recurring={{ month: 6, day: 1 }}
       countdownTitle="Canada Day"
@@ -19,30 +20,35 @@ export default function CanadaDayCountdownPage() {
       ]}
       intro={
         <>
-          Counting down to <strong>Canada Day</strong> on <strong>July 1</strong>, Canada&apos;s national
-          holiday. The live timer above updates every second and automatically rolls over to next year&apos;s
-          July 1 once the day has passed.
+          Counting down to <strong>Canada Day</strong>, <strong>July 1</strong>, Canada&apos;s national
+          holiday, in your own timezone. Once the day has passed, the countdown moves on to next year&apos;s.
         </>
+      }
+      extraContent={
+        <HolidayDatesTable
+          name="Canada Day"
+          month={6}
+          day={1}
+          observed={sundayToMonday}
+          observedLabel="Holiday"
+          note="When July 1 falls on a Sunday, Canada Day is held on Monday, July 2."
+        />
       }
       faqs={[
         {
           question: 'How many days until Canada Day?',
           answer:
-            'Canada Day is July 1 every year — the live counter at the top of this page shows exactly how many days, hours, and minutes remain until the next one.',
+            'Canada Day is July 1. The line at the top of this page gives the days left until the next one, updated daily.',
         },
         {
           question: 'What day of the week is Canada Day 2027?',
           answer:
-            'July 1, 2027 falls on a Thursday. Canada Day is a statutory holiday nationwide, marking Confederation on July 1, 1867.',
+            'July 1, 2027 falls on a Thursday. In 2029 it is a Sunday, so the holiday moves to Monday, July 2.',
         },
         {
-          question: 'When is Canada Day?',
+          question: 'What does Canada Day celebrate?',
           answer:
-            'Canada Day is July 1 every year, and the live countdown above shows exactly how long remains until the next one, down to the second.',
-        },
-        {
-          question: 'Does this countdown reset each year?',
-          answer: 'Yes — once Canada Day passes, the countdown automatically targets next year’s July 1.',
+            'Confederation. On July 1, 1867, the British North America Act joined Nova Scotia, New Brunswick and the Province of Canada into one country, the Dominion of Canada. It is a statutory holiday across the country.',
         },
       ]}
     />

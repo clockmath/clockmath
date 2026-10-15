@@ -4,6 +4,8 @@ import EventPage from '@/components/EventPage';
 import { buildEventDisclaimer } from '@/components/EventCountdown';
 
 // Theatrical release of Avengers: Doomsday.
+// Dec 18, 2026 worldwide (Marvel/Disney listings, rechecked Oct 15, 2026); UK
+// opens Wed Dec 16 (MovieWeb, Sep 24, 2026, citing Digital Spy).
 const RELEASE = new Date(2026, 11, 18);
 
 export default function AvengersDoomsdayCountdownPage() {
@@ -11,7 +13,7 @@ export default function AvengersDoomsdayCountdownPage() {
     <EventPage
       heading={'How Many Days Until Avengers: Doomsday?'}
       tagline="Time until Avengers: Doomsday hits theaters"
-      lastUpdated="2026-07-31"
+      lastUpdated="2026-10-15"
       breadcrumb="Avengers: Doomsday"
       target={RELEASE}
       countdownTitle="Avengers: Doomsday"
@@ -43,7 +45,7 @@ export default function AvengersDoomsdayCountdownPage() {
         {
           question: 'When does Avengers: Doomsday come out?',
           answer:
-            'Avengers: Doomsday is scheduled to release in theaters on December 18, 2026.',
+            'Avengers: Doomsday is scheduled to release in theaters on Friday, December 18, 2026. In the UK it opens two days early, on Wednesday, December 16.',
         },
         {
           question: 'Who plays Doctor Doom in Avengers: Doomsday?',

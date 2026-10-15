@@ -12,7 +12,7 @@ export default function Gta6CountdownPage() {
     <EventPage
       heading={'How Many Days Until GTA 6?'}
       tagline="Time until Grand Theft Auto VI releases"
-      lastUpdated="2026-08-04"
+      lastUpdated="2026-10-15"
       breadcrumb="GTA 6"
       target={GTA6_RELEASE}
       countdownTitle="GTA 6"
@@ -35,7 +35,7 @@ export default function Gta6CountdownPage() {
         {
           question: 'How many days until GTA 6 comes out?',
           answer:
-            "The live counter at the top of this page shows exactly how many days remain until GTA 6's announced release date, updating every second. Check the FAQ below for the current official date.",
+            "GTA 6 releases on Thursday, November 19, 2026. The line at the top of this page gives the days and weeks left, updated daily, and the timer counts down to the second.",
         },
         {
           question: 'When does GTA 6 come out?',
@@ -45,6 +45,11 @@ export default function Gta6CountdownPage() {
         {
           question: 'What platforms is GTA 6 releasing on?',
           answer: 'GTA 6 launches on PlayStation 5 and Xbox Series X|S.',
+        },
+        {
+          question: 'What time does GTA 6 unlock?',
+          answer:
+            'Rockstar has not announced an unlock time yet. The countdown above runs to midnight at the start of November 19 in your own timezone.',
         },
         {
           question: 'Is there a GTA 6 PC release date?',

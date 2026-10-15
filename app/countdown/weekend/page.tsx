@@ -15,13 +15,13 @@ export default function WeekendCountdownPage() {
       facts={[
         { label: 'Counts to', value: 'Saturday' },
         { label: 'Resets', value: 'Every week' },
-        { label: 'Updates', value: 'Every second' },
+        { label: 'Weekend', value: 'Saturday and Sunday' },
       ]}
       intro={
         <>
-          Counting down to <strong>Saturday</strong> — the start of the weekend. The live timer above
-          updates every second and automatically resets to the next Saturday each week, so it&apos;s always
-          counting down to your next break.
+          Counting down to <strong>Saturday</strong>, the start of the weekend, in your own timezone. On
+          Saturday and Sunday it shows how long the weekend has been going; on Monday it starts counting to the
+          next one.
         </>
       }
       faqs={[

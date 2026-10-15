@@ -39,7 +39,7 @@ export default function RetirementCountdownPage() {
         },
         {
           question: 'Can I change my retirement date later?',
-          answer: 'Absolutely. Just pick a new date from the calendar and the countdown updates right away.',
+          answer: 'Yes. Pick a new date from the calendar and the countdown updates straight away.',
         },
       ]}
     />

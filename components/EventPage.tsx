@@ -218,7 +218,9 @@ export default function EventPage({
         </div>
       )}
 
-      {lastUpdated && (
+      {/* Only pages with event facts have anything to verify — a user-picked
+          date (retirement) does not. lastUpdated still feeds the sitemap. */}
+      {lastUpdated && facts && facts.length > 0 && (
         <p className="text-xs text-muted-foreground text-center mb-6">
           Event details last verified{' '}
           {new Date(`${lastUpdated}T12:00:00`).toLocaleDateString('en-US', {
