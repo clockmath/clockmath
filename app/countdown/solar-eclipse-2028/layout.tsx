@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: '2028 Total Solar Eclipse Countdown — Sydney, Australia & New Zealand Times | ClockMath',
+  title: '2028 Solar Eclipse Countdown: Sydney & New Zealand Times | ClockMath',
   description:
     'Countdown to the July 22, 2028 total solar eclipse: totality in Sydney at 1:59 PM AEST, with local times and coverage across Australia and New Zealand.',
   path: '/countdown/solar-eclipse-2028',

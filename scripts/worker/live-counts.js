@@ -127,6 +127,19 @@ function withLiveCounts(res, request) {
         if (days !== null) el.setInnerContent(weeksPhrase(days));
       },
     })
+    // Cloudflare's Email Address Obfuscation (zone setting, on by default)
+    // rewrote every mailto link to /cdn-cgi/l/email-protection, which 404s
+    // for crawlers — Bing Site Scan's only error (Oct 2026). Its documented
+    // opt-out is <!--email_off-->…<!--/email_off--> around the address; all
+    // of the site's addresses are inside mailto links, so wrap those. (Not
+    // Cache-Control: no-transform — that would also stop Cloudflare
+    // injecting the Web Analytics beacon.)
+    .on('a[href^="mailto:"]', {
+      element(el) {
+        el.before('<!--email_off-->', { html: true });
+        el.after('<!--/email_off-->', { html: true });
+      },
+    })
     .on('[data-live-date]', {
       element(el) {
         const ms = Number(el.getAttribute('data-live-date'));

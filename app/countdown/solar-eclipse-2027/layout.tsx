@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: '2027 Total Solar Eclipse Countdown — August 2 Times by City | ClockMath',
+  title: '2027 Solar Eclipse Countdown: August 2 Times by City | ClockMath',
   description:
     'Countdown to the August 2, 2027 total solar eclipse: local times of totality in Spain, Morocco, Libya, Egypt and Saudi Arabia, and coverage elsewhere.',
   path: '/countdown/solar-eclipse-2027',
