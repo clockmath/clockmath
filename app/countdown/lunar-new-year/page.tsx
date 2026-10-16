@@ -2,20 +2,7 @@
 
 import EventPage from '@/components/EventPage';
 import StackedTable from '@/components/StackedTable';
-
-// Lunar New Year (Spring Festival) by date in China (UTC+8). Matches
-// chinatravel.com and vclock.com tables, and an independent check: the
-// second new moon after the winter solstice in China time (Meeus algorithm).
-// Korea's official calendar (Korea Aerospace Administration) puts Seollal
-// 2027 on Feb 7: the new moon is at 23:56 in Beijing, 00:56 in Seoul.
-const YEARS = [
-  { start: '2027-02-06', animal: 'Goat' },
-  { start: '2028-01-26', animal: 'Monkey' },
-  { start: '2029-02-13', animal: 'Rooster' },
-  { start: '2030-02-03', animal: 'Dog' },
-  { start: '2031-01-23', animal: 'Pig' },
-  { start: '2032-02-11', animal: 'Rat' },
-] as const;
+import { LUNAR_NEW_YEAR as YEARS } from '@/lib/holidays';
 
 const label = (iso: string) => {
   const [y, m, d] = iso.split('-').map(Number);

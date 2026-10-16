@@ -2,18 +2,7 @@
 
 import EventPage from '@/components/EventPage';
 import StackedTable from '@/components/StackedTable';
-
-// Hanukkah (25 Kislev) by Gregorian date: the first candle is lit on the
-// evening of `start`; `end` is the eighth day. From the Hebcal API
-// (hebcal.com, "Chanukah: 1 Candle" … "8th Day"), fetched Oct 15, 2026.
-const HANUKKAH = [
-  { start: '2026-12-04', end: '2026-12-12' },
-  { start: '2027-12-24', end: '2028-01-01' },
-  { start: '2028-12-12', end: '2028-12-20' },
-  { start: '2029-12-01', end: '2029-12-09' },
-  { start: '2030-12-20', end: '2030-12-28' },
-  { start: '2031-12-09', end: '2031-12-17' },
-] as const;
+import { HANUKKAH } from '@/lib/holidays';
 
 const label = (iso: string) => {
   const [y, m, d] = iso.split('-').map(Number);
@@ -29,7 +18,7 @@ const label = (iso: string) => {
 const ROWS = HANUKKAH.map((h) => ({
   year: h.start.slice(0, 4),
   start: `${label(h.start)}, at sundown`,
-  end: label(h.end),
+  end: label(h.end ?? h.start),
 }));
 
 export default function HanukkahCountdownPage() {
