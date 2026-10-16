@@ -15,6 +15,7 @@ import { event as gaEvent } from '@/lib/gtag';
 // Cross-linked from every event page (minus the current one). Renders in
 // static HTML, so it also fixes pages otherwise orphaned from internal links.
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
+  { title: 'All holidays 2026–27', href: '/countdown/holidays/' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/' },
   { title: 'GTA 6', href: '/countdown/gta-6/' },
   { title: 'Christmas', href: '/countdown/christmas/' },

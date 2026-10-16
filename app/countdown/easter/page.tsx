@@ -2,18 +2,7 @@
 
 import EventPage from '@/components/EventPage';
 import StackedTable from '@/components/StackedTable';
-
-// Easter dates from the computus: the Anonymous Gregorian algorithm (Western)
-// and Meeus's Julian algorithm + 13 days (Orthodox), computed Oct 15, 2026.
-// Good Friday is two days before Western Easter.
-const YEARS = [
-  { year: '2027', easter: '2027-03-28', orthodox: '2027-05-02' },
-  { year: '2028', easter: '2028-04-16', orthodox: '2028-04-16' },
-  { year: '2029', easter: '2029-04-01', orthodox: '2029-04-08' },
-  { year: '2030', easter: '2030-04-21', orthodox: '2030-04-28' },
-  { year: '2031', easter: '2031-04-13', orthodox: '2031-04-13' },
-  { year: '2032', easter: '2032-03-28', orthodox: '2032-05-02' },
-] as const;
+import { EASTER as YEARS } from '@/lib/holidays';
 
 const fmt = (iso: string, offsetDays = 0) => {
   const [y, m, d] = iso.split('-').map(Number);

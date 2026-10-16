@@ -53,6 +53,21 @@ function liveDays(spec, nowMs, timeZone) {
   return null;
 }
 
+// Start date (YYYY-MM-DD) of the current-or-next entry in a "d:" spec — the
+// date a holidays-list row should show today. Null for other spec kinds.
+function liveNextDate(spec, nowMs, timeZone) {
+  if (!spec || !spec.startsWith('d:')) return null;
+  const today = ymdInZone(nowMs, timeZone);
+  for (const entry of spec.slice(2).split(',')) {
+    const [start, end = start] = entry.split('/');
+    if (end >= today) return start;
+  }
+  return null;
+}
+
+const ymdLabel = (s) =>
+  new Date(ymdToUtc(s)).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
 // Mirror of weeksPhrase in components/EventCountdown.tsx.
 function weeksPhrase(days) {
   if (days < 7 || days > 365) return '';
@@ -77,11 +92,23 @@ function withLiveCounts(res, request) {
   const timeZone = (request.cf && request.cf.timezone) || 'UTC';
   const now = Date.now();
   let days = null;
+  let nextDate = null;
+  let keep = false;
   return new HTMLRewriter()
     .on('[data-days-until]', {
       element(el) {
-        days = liveDays(el.getAttribute('data-days-until'), now, timeZone);
-        if (days === null) el.remove();
+        const spec = el.getAttribute('data-days-until');
+        days = liveDays(spec, now, timeZone);
+        nextDate = liveNextDate(spec, now, timeZone);
+        // data-keep (table rows): on the day itself show "Today" rather than
+        // removing the element, which would break the table.
+        keep = el.hasAttribute('data-keep');
+        if (days === null && !keep) el.remove();
+      },
+    })
+    .on('[data-live="next-date"]', {
+      element(el) {
+        if (nextDate) el.setInnerContent(ymdLabel(nextDate));
       },
     })
     .on('[data-live="verb"]', {
@@ -92,6 +119,7 @@ function withLiveCounts(res, request) {
     .on('[data-live="days"]', {
       element(el) {
         if (days !== null) el.setInnerContent(days === 1 ? '1 day' : days.toLocaleString('en-US') + ' days');
+        else if (keep && nextDate) el.setInnerContent('Today');
       },
     })
     .on('[data-live="weeks"]', {

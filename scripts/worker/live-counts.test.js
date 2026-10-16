@@ -5,8 +5,8 @@ const path = require('path');
 const assert = require('assert');
 
 const code = fs.readFileSync(path.join(__dirname, 'live-counts.js'), 'utf8');
-const { liveDays, liveDateLabel, cacheControlFor, weeksPhrase } = new Function(
-  `${code}; return { liveDays, liveDateLabel, cacheControlFor, weeksPhrase };`,
+const { liveDays, liveDateLabel, cacheControlFor, weeksPhrase, liveNextDate } = new Function(
+  `${code}; return { liveDays, liveDateLabel, cacheControlFor, weeksPhrase, liveNextDate };`,
 )();
 
 const at = (iso) => Date.parse(iso);
@@ -30,6 +30,13 @@ assert.strictEqual(liveDays(hanukkah, at('2026-10-15T12:00:00-04:00'), NY), 50);
 assert.strictEqual(liveDays(hanukkah, at('2026-12-04T09:00:00-05:00'), NY), null); // first day
 assert.strictEqual(liveDays(hanukkah, at('2026-12-12T20:00:00-05:00'), NY), null); // last day
 assert.strictEqual(liveDays(hanukkah, at('2026-12-13T09:00:00-05:00'), NY), 376); // → Dec 24, 2027
+
+// Next date for list rows: current range while it runs, else the next one.
+assert.strictEqual(liveNextDate(hanukkah, at('2026-10-15T12:00:00-04:00'), NY), '2026-12-04');
+assert.strictEqual(liveNextDate(hanukkah, at('2026-12-08T12:00:00-05:00'), NY), '2026-12-04'); // during
+assert.strictEqual(liveNextDate(hanukkah, at('2026-12-13T12:00:00-05:00'), NY), '2027-12-24');
+assert.strictEqual(liveNextDate(thanksgiving, at('2026-11-27T12:00:00-05:00'), NY), '2027-11-25');
+assert.strictEqual(liveNextDate('w:6:2', at('2026-10-15T12:00:00-04:00'), NY), null);
 
 // Fixed instants: Math.ceil of the remaining time, like the client.
 const eclipse = `t:${Date.UTC(2028, 6, 22, 2, 55, 23)}`;

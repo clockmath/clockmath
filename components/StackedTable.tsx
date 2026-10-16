@@ -17,6 +17,8 @@ export interface StackedColumn {
   mobileLabel?: string;
 }
 
+type CellRender<R> = (row: R) => ReactNode;
+
 type Row = Record<string, string>;
 
 export default function StackedTable<R extends Row>({
@@ -27,6 +29,8 @@ export default function StackedTable<R extends Row>({
   renderFirst,
   stack = 'inline',
   minWidth,
+  render,
+  rowAttrs,
 }: {
   rows: ReadonlyArray<R>;
   columns: StackedColumn[];
@@ -38,6 +42,10 @@ export default function StackedTable<R extends Row>({
   stack?: 'inline' | 'lines';
   /** Table-layout minimum width, e.g. 'sm:min-w-[34rem]'. */
   minWidth?: string;
+  /** Custom cell content per column key (defaults to row[key]). */
+  render?: Partial<Record<string, CellRender<R>>>;
+  /** Extra attributes for each <tr>, e.g. the worker's data-days-until. */
+  rowAttrs?: (row: R) => Record<string, string>;
 }) {
   return (
     <div className="sm:overflow-x-auto">
@@ -54,7 +62,7 @@ export default function StackedTable<R extends Row>({
         </thead>
         <tbody role="rowgroup" className="divide-y divide-border/40 dark:divide-slate-700/40">
           {rows.map((r) => (
-            <tr key={r[firstKey]} role="row" className="block sm:table-row py-2.5 sm:py-0 align-top">
+            <tr key={r[firstKey]} role="row" className="block sm:table-row py-2.5 sm:py-0 align-top" {...rowAttrs?.(r)}>
               <td role="cell" className="block sm:table-cell sm:py-2.5 sm:px-1 font-medium text-foreground dark:text-slate-100">
                 {renderFirst ? renderFirst(r) : r[firstKey]}
               </td>
@@ -76,7 +84,7 @@ export default function StackedTable<R extends Row>({
                     </span>
                   )}
                   {c.mobileLabel && <span className="sm:hidden text-muted-foreground">{c.mobileLabel} </span>}
-                  {r[c.key]}
+                  {render?.[c.key] ? render[c.key]!(r) : r[c.key]}
                 </td>
               ))}
             </tr>

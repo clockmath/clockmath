@@ -13,6 +13,7 @@ import InfoTip from '@/components/InfoTip';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
+  { title: 'All holidays', href: '/countdown/holidays/', note: 'Every upcoming holiday, with days left' },
   { title: 'Weekend', href: '/countdown/weekend/', note: 'Every Saturday' },
   { title: 'Christmas', href: '/countdown/christmas/', note: 'December 25' },
   { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
