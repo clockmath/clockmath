@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: '2028 Annular Solar Eclipse Countdown — January 26 Ring of Fire Times | ClockMath',
+  title: '2028 Annular Eclipse Countdown: Jan 26 Ring of Fire Times | ClockMath',
   description:
     'Countdown to the January 26, 2028 "ring of fire" eclipse, with local times for Ecuador, Peru, Brazil, Spain and Portugal and coverage elsewhere.',
   path: '/countdown/annular-eclipse-2028',
