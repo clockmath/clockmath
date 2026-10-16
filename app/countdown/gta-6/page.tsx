@@ -10,9 +10,11 @@ import StackedTable from '@/components/StackedTable';
 const GTA6_RELEASE = new Date(2026, 10, 19);
 
 // Rolling unlock: midnight on Nov 19 in each region, per the PlayStation
-// Store listing (reported by PCGamesN, Sep 21 2026). A region with several
-// timezones unlocks when its earliest one reaches midnight, so the whole US
-// goes with Eastern. Not confirmed by Rockstar; recheck before launch.
+// Store listings (reported by PCGamesN, Sep 21 2026; per-region UTC times
+// cross-checked against gtasix.org's read of the listings, Sep 20). Each
+// country gets one nationwide time — US and Canada at midnight Eastern,
+// Australia at midnight Sydney. Rockstar confirmed the date and the Nov 12
+// pre-load (press release, Jun 24 2026) but not the hour; recheck before launch.
 const UNLOCKS = [
   { place: 'New Zealand', utc: '2026-11-18T11:00Z', local: 'Midnight, Nov 19' },
   { place: 'Australia', note: 'Sydney, Melbourne; Brisbane 11 PM, Perth 9 PM Nov 18', utc: '2026-11-18T13:00Z', local: 'Midnight, Nov 19' },
@@ -20,7 +22,9 @@ const UNLOCKS = [
   { place: 'India', utc: '2026-11-18T18:30Z', local: 'Midnight, Nov 19' },
   { place: 'Central Europe', note: 'Paris, Berlin, Madrid, Rome', utc: '2026-11-18T23:00Z', local: 'Midnight, Nov 19' },
   { place: 'UK and Ireland', utc: '2026-11-19T00:00Z', local: 'Midnight, Nov 19' },
-  { place: 'United States', note: 'All states, with Eastern', utc: '2026-11-19T05:00Z', local: 'Midnight ET · 9 PM PT Nov 18' },
+  { place: 'Brazil, Argentina, Chile', utc: '2026-11-19T03:00Z', local: 'Midnight, Nov 19' },
+  { place: 'United States and Canada', note: 'One time nationwide', utc: '2026-11-19T05:00Z', local: 'Midnight ET · 9 PM PT Nov 18' },
+  { place: 'Mexico', utc: '2026-11-19T06:00Z', local: 'Midnight, Nov 19' },
 ];
 
 const timeIn = (iso: string, timeZone: string) => {
@@ -51,8 +55,9 @@ function UnlockTable() {
       <p className="text-muted-foreground dark:text-slate-400 mb-3">
         The PlayStation Store listing has GTA 6 unlocking at <strong className="text-foreground dark:text-slate-200">midnight
         local time</strong> on November 19, so it rolls around the world starting in New Zealand — 6 AM on Wednesday,
-        November 18 in New York. Countries with more than one timezone unlock together when the earliest reaches
-        midnight, which puts the whole US at midnight Eastern: 9 PM on November 18 on the West Coast.
+        November 18 in New York. Countries that span several timezones get one time for the whole country: the US
+        and Canada unlock at midnight Eastern, which is 9 PM on November 18 on the West Coast, and Australia at
+        midnight in Sydney.
       </p>
       <StackedTable
         rows={rows}
@@ -71,8 +76,9 @@ function UnlockTable() {
         ]}
       />
       <p className="text-muted-foreground dark:text-slate-400 text-sm mt-3">
-        Rockstar has not confirmed these times, and Xbox may differ. The countdown above runs to midnight in your
-        own timezone. Source: PlayStation Store listing, via PCGamesN.
+        Rockstar has confirmed the date but not the hour, and the Xbox store page shows only the date. Digital pre-orders
+        can pre-load from November 12, so the game is ready when it unlocks. The countdown above runs to midnight
+        in your own timezone. Source: PlayStation Store listings, via PCGamesN.
       </p>
     </section>
   );
@@ -121,7 +127,7 @@ export default function Gta6CountdownPage() {
         {
           question: 'What time does GTA 6 unlock?',
           answer:
-            'The PlayStation Store listing has it unlocking at midnight local time on November 19, starting in New Zealand at 6 AM on November 18 New York time. The US unlocks all at once at midnight Eastern — 9 PM Pacific on November 18. Rockstar has not confirmed the times.',
+            'The PlayStation Store listing has it unlocking at midnight local time on November 19, starting in New Zealand at 6 AM on November 18 New York time. The US and Canada unlock all at once at midnight Eastern — 9 PM Pacific on November 18. Rockstar has not confirmed the hour.',
         },
         {
           question: 'What time does GTA 6 come out in the UK?',
