@@ -7,7 +7,7 @@ export default function ThanksgivingCountdownPage() {
     <EventPage
       heading={'How Many Days Until Thanksgiving?'}
       tagline="Live countdown to the fourth Thursday of November"
-      lastUpdated="2026-08-29"
+      lastUpdated="2026-10-17"
       breadcrumb="Thanksgiving"
       nthWeekday={{ month: 10, weekday: 4, n: 4 }}
       countdownTitle="Thanksgiving"

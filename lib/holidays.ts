@@ -4,6 +4,8 @@
  * is inclusive. Rule-based holidays are computed; the rest are tables with
  * their sources noted.
  */
+import { buildDay } from '@/lib/buildDay';
+
 export type DateRange = { start: string; end?: string };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -95,3 +97,32 @@ export const EASTER: Array<{ year: string; easter: string; orthodox: string }> =
 export const US_CLOCK_CHANGES: DateRange[] = YEARS(2026, 2032)
   .flatMap((y) => [iso(nthWeekday(y, 2, 0, 2)), iso(nthWeekday(y, 10, 0, 1))])
   .map((start) => ({ start }));
+
+/**
+ * The next occurrence on or after the build day (lib/buildDay), for page
+ * titles and descriptions that name the year and date — "Thanksgiving 2026
+ * … Nov 26" — and move on by themselves at the next deploy after the day.
+ * Bing showed the yearless titles at position ~5 with a 0.2–0.6% click
+ * rate while the results around them carried the date (Oct 2026).
+ */
+export function nextOccurrence(dateFor: (year: number) => Date): Date {
+  const today = buildDay();
+  const t = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  const d = dateFor(today.getFullYear());
+  return d.getTime() >= t ? d : dateFor(today.getFullYear() + 1);
+}
+
+const fmtUTC = (d: Date, opts: Intl.DateTimeFormatOptions) => d.toLocaleDateString('en-US', { timeZone: 'UTC', ...opts });
+
+/** Title and description pieces for a countdown's next date. */
+export function seasonalSEO(name: string, dateFor: (year: number) => Date) {
+  const d = nextOccurrence(dateFor);
+  return {
+    year: d.getUTCFullYear(),
+    /** "Nov 26" */
+    short: fmtUTC(d, { month: 'short', day: 'numeric' }),
+    /** "Thursday, November 26" */
+    long: fmtUTC(d, { weekday: 'long', month: 'long', day: 'numeric' }),
+    title: `How Many Days Until ${name} ${d.getUTCFullYear()}? Countdown to ${fmtUTC(d, { month: 'short', day: 'numeric' })} | ClockMath`,
+  };
+}
