@@ -7,7 +7,7 @@ export default function BlackFridayCountdownPage() {
     <EventPage
       heading={'How Many Days Until Black Friday?'}
       tagline="Live countdown to the day after Thanksgiving"
-      lastUpdated="2026-08-29"
+      lastUpdated="2026-10-17"
       breadcrumb="Black Friday"
       nthWeekday={{ month: 10, weekday: 4, n: 4, offsetDays: 1 }}
       countdownTitle="Black Friday"
