@@ -139,7 +139,7 @@ const TOOL_GROUPS: Array<{ title: string; items: NavItem[] }> = [
     items: [
       {
         id: 'timezone',
-        label: 'Timezone Converter',
+        label: 'Time Zone Converter',
         shortLabel: 'Zones',
         href: '/tools/timezone',
         icon: <Globe className="w-4 h-4 shrink-0" />,

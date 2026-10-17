@@ -142,7 +142,7 @@ export default function CountdownPage() {
           </li>
           <li>
             <Link href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">
-              Timezone converter
+              Time zone converter
             </Link>{' '}
             — check what time an event happens where your friends are
           </li>

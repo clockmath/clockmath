@@ -106,8 +106,8 @@ export default function DecimalHoursPage() {
             <Percent className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
           </span>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Decimal Hours Converter</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Minutes to decimal and back, for timesheets and payroll</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Minutes to Decimal Converter</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Time to decimal hours and back, for timesheets and payroll</p>
           </div>
         </div>
       </header>

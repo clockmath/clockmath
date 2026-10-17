@@ -47,7 +47,7 @@ const TILES = [
   },
   {
     href: '/tools/timezone',
-    title: 'Timezone Converter',
+    title: 'Time Zone Converter',
     description: 'Any two places, with automatic daylight-saving handling',
     icon: Globe,
   },
