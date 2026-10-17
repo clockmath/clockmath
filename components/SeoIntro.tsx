@@ -146,7 +146,7 @@ export default function SeoIntro() {
           </li>
           <li>
             <Link href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">
-              Timezone converter
+              Time zone converter
             </Link>{' '}
             — any two places, with automatic daylight-saving handling
           </li>

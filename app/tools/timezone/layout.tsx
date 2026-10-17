@@ -4,12 +4,12 @@ import { generateSEOMetadata } from '@/lib/seo';
 // Metadata lives in this server-component layout because the timezone page
 // itself is a client component ("use client") and can't export metadata.
 export const metadata = generateSEOMetadata({
-  title: 'Timezone Converter | ClockMath',
+  title: 'Time Zone Converter: Time Difference Between Cities | ClockMath',
   description:
-    'Convert time between any two timezones instantly, with daylight saving handled automatically. For scheduling meetings, calls and events worldwide.',
+    'Convert a time between any two time zones or cities, with daylight saving handled for the date you pick. For meetings, calls and travel.',
   path: '/tools/timezone',
   keywords:
-    'timezone converter, time zone converter, convert time zones, meeting timezone converter, time difference calculator, what time is it in',
+    'time zone converter, timezone converter, time difference between cities, convert time zones, meeting timezone converter, time difference calculator, what time is it in',
 });
 
 export default function TimezoneLayout({ children }: { children: ReactNode }) {
