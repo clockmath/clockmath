@@ -18,7 +18,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * The next instant `timeZone` changes its UTC offset, within ~13 months.
  * Scans a day at a time, then narrows to the minute. Goes through lib/time's
  * getTimezoneOffset, so places that stopped changing clocks in 2026 (BC,
- * Alberta) correctly show no change even on browsers with stale tz data.
+ * Alberta, the Northwest Territories, Manitoba) correctly show no change even on browsers with stale tz data.
  */
 export function nextClockChange(timeZone: string, fromMs: number): ClockChange | null {
   let lo = fromMs;
@@ -67,6 +67,12 @@ const NO_CHANGE_NOTES: Record<string, string> = {
     'British Columbia stopped changing its clocks in 2026 and now stays on UTC−7 all year, so there is no change on November 1.',
   'America/Edmonton':
     'Alberta stopped changing its clocks in 2026 and now stays on UTC−6 all year, so there is no change on November 1.',
+  'America/Yellowknife':
+    'The Northwest Territories stopped changing their clocks in 2026 and now stay on UTC−6 all year, like Alberta, so there is no change on November 1.',
+  'America/Inuvik':
+    'The Northwest Territories stopped changing their clocks in 2026 and now stay on UTC−6 all year, like Alberta, so there is no change on November 1.',
+  'America/Winnipeg':
+    'Manitoba stopped changing its clocks in 2026 and now stays on UTC−5 all year, so there is no change on November 1.',
 };
 
 export default function ClockChangeCountdown() {

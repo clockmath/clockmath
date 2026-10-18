@@ -73,11 +73,15 @@ export function getAllTimeZones(): string[] {
 }
 
 /**
- * Two Canadian provinces stopped changing their clocks in 2026: neither falls
- * back on Nov 1 2026 (IANA tzdata 2026c).
+ * Canadian zones that stopped changing their clocks in 2026: none falls back
+ * on Nov 1 2026 (IANA tzdata 2026b–2026e).
  *   - British Columbia stays on UTC−7 (news.gov.bc.ca/releases/2026AG0013-000209)
- *   - Alberta stays on UTC−6 (Bill 31, Royal Assent May 14 2026); tzdata also
+ *   - Alberta stays on UTC−6 (Bill 31, in force Jun 18 2026); tzdata also
  *     applies this to America/Yellowknife, which is a link to Edmonton.
+ *   - Northwest Territories stays on UTC−6 (tzdata 2026d: America/Inuvik;
+ *     the rest of the territory is America/Edmonton/Yellowknife).
+ *   - Manitoba stays on UTC−5 (news.gov.mb.ca item 75397, Sep 17 2026;
+ *     tzdata 2026e: America/Winnipeg).
  * Browsers whose bundled tz data predates a change keep applying the old
  * winter offset, so those cities would read an hour wrong. (Chrome 152.0.7977.130
  * still had BC's old rule in Oct 2026; .149 had both new rules.)
@@ -101,6 +105,9 @@ const PERMANENT_TIME_SWITCHES: Record<string, PermanentTimeSwitch> = {
   // Nov 1 2026, 02:00 MDT
   'America/Edmonton': { fromMs: Date.UTC(2026, 10, 1, 8, 0, 0), fixedZone: 'Etc/GMT+6', staleWinterOffset: -420 },
   'America/Yellowknife': { fromMs: Date.UTC(2026, 10, 1, 8, 0, 0), fixedZone: 'Etc/GMT+6', staleWinterOffset: -420 },
+  'America/Inuvik': { fromMs: Date.UTC(2026, 10, 1, 8, 0, 0), fixedZone: 'Etc/GMT+6', staleWinterOffset: -420 },
+  // Nov 1 2026, 02:00 CDT
+  'America/Winnipeg': { fromMs: Date.UTC(2026, 10, 1, 7, 0, 0), fixedZone: 'Etc/GMT+5', staleWinterOffset: -360 },
 };
 const WINTER_PROBE = new Date(Date.UTC(2027, 0, 15, 12, 0, 0)); // well inside the new rules
 const staleRuleCache: Record<string, boolean> = {};

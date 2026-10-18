@@ -5,8 +5,9 @@ import EventPage from '@/components/EventPage';
 import ClockChangeCountdown from '@/components/ClockChangeCountdown';
 import StackedTable from '@/components/StackedTable';
 
-// Every date and offset on this page was computed from IANA tzdata 2026c, not
-// written from memory (Oct 2026). The live countdown is per-visitor; the table
+// Every date and offset on this page was computed from IANA tzdata 2026e, not
+// written from memory (Oct 2026). Canada changes per tzdata NEWS 2026b–2026e and
+// the BC (gov.bc.ca, Sep 17 2026) and Manitoba (news.gov.mb.ca, Sep 17 2026) pages. The live countdown is per-visitor; the table
 // is the 2026–27 season and needs a yearly refresh.
 const LINK = 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-medium';
 const CARD = 'bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6';
@@ -15,8 +16,8 @@ const BODY = 'text-muted-foreground dark:text-slate-400';
 
 const DATES: Array<{ where: string; rule: string; back: string; forward: string }> = [
   {
-    where: 'US and most of Canada',
-    rule: 'First Sunday in November · second Sunday in March',
+    where: 'US and eastern Canada',
+    rule: 'First Sunday in November · second Sunday in March · Ontario, Quebec, Atlantic Canada, Nunavut',
     back: 'Sun, Nov 1, 2026 · 2:00 → 1:00 AM',
     forward: 'Sun, Mar 14, 2027 · 2:00 → 3:00 AM',
   },
@@ -51,13 +52,13 @@ export default function DaylightSavingTimePage() {
     <EventPage
       heading="When Do the Clocks Change?"
       tagline="Live countdown to the next clock change where you are — with 2026–27 dates for the US, Canada, the UK, Europe, Australia and New Zealand"
-      lastUpdated="2026-10-15"
+      lastUpdated="2026-10-18"
       breadcrumb="Daylight saving time"
       countdownSlot={<ClockChangeCountdown />}
       facts={[
-        { label: 'US & Canada', value: '1st Sun Nov · 2nd Sun Mar' },
+        { label: 'US & eastern Canada', value: '1st Sun Nov · 2nd Sun Mar' },
         { label: 'UK & EU', value: 'Last Sun Oct · last Sun Mar' },
-        { label: 'New in 2026', value: 'BC and Alberta stop changing' },
+        { label: 'New in 2026', value: 'BC to Manitoba stop changing' },
       ]}
       intro={
         <>
@@ -112,23 +113,42 @@ export default function DaylightSavingTimePage() {
           </section>
 
           <section className={CARD}>
-            <h2 className={H2}>British Columbia and Alberta stopped changing their clocks</h2>
+            <h2 className={H2}>Western Canada stopped changing its clocks</h2>
             <p className={`${BODY} mb-3`}>
-              Two Canadian provinces dropped clock changes in 2026, so neither goes back on November 1.{' '}
-              <strong className="text-foreground dark:text-slate-200">British Columbia</strong> made its last change on
-              March 8, 2026 and now stays on UTC−7 all year.{' '}
-              <strong className="text-foreground dark:text-slate-200">Alberta</strong> stays on UTC−6 all year under
-              legislation passed in May 2026.
+              Three provinces and a territory dropped clock changes in 2026, so none of them goes back on November 1:
             </p>
+            <ul className={`${BODY} space-y-2 list-disc pl-5 mb-3`}>
+              <li>
+                <strong className="text-foreground dark:text-slate-200">British Columbia</strong> made its last change on
+                March 8, 2026 and now stays on UTC−7 all year. Two exceptions in the east of the province: the East
+                Kootenay (Cranbrook, Fernie, Invermere) stays with Alberta on UTC−6, and Golden goes back one last time
+                on November 1, to UTC−7, and stays there.
+              </li>
+              <li>
+                <strong className="text-foreground dark:text-slate-200">Alberta</strong> stays on UTC−6 all year, under a
+                law in force since June 18, 2026.
+              </li>
+              <li>
+                <strong className="text-foreground dark:text-slate-200">The Northwest Territories</strong> stay on UTC−6
+                all year, matching Alberta.
+              </li>
+              <li>
+                <strong className="text-foreground dark:text-slate-200">Manitoba</strong> stays on UTC−5 all year,
+                announced on September 17, 2026. Communities in northwestern Ontario that usually keep Manitoba&apos;s
+                time may decide differently — check locally.
+              </li>
+            </ul>
             <p className={`${BODY} mb-3`}>
-              From November to March, that puts Vancouver an hour ahead of Seattle, and Calgary and Edmonton an hour
-              ahead of Denver. In summer they line up again. Calgary stays an hour ahead of Vancouver all year.
+              From November to March, that puts Vancouver an hour ahead of Seattle, Calgary and Edmonton an hour ahead
+              of Denver, and Winnipeg an hour ahead of Chicago, on the same time as Toronto. In summer they line up with
+              their US neighbours again. Calgary stays an hour ahead of Vancouver, and Winnipeg an hour ahead of Calgary,
+              all year.
             </p>
             <p className={BODY}>
               Phones and computers that update their clocks automatically should get this right. An older device that
               hasn&apos;t received the update may still go back an hour on November 1 — worth checking against an
               up-to-date clock. To compare times across the border, use the{' '}
-              <Link href="/tools/timezone" className={LINK}>timezone converter</Link>.
+              <Link href="/tools/timezone" className={LINK}>time zone converter</Link>.
             </p>
           </section>
 
@@ -142,7 +162,8 @@ export default function DaylightSavingTimePage() {
               </li>
               <li>
                 <strong className="text-foreground dark:text-slate-200">Canada:</strong> most of Saskatchewan, Yukon
-                (since 2020), and from November 2026 British Columbia and Alberta
+                (since 2020), and from November 2026 most of British Columbia, Alberta, the Northwest Territories, and
+                Manitoba
               </li>
               <li>
                 <strong className="text-foreground dark:text-slate-200">Mexico:</strong> stopped in 2022, apart from some
@@ -164,12 +185,12 @@ export default function DaylightSavingTimePage() {
         {
           question: 'When do the clocks go back in 2026?',
           answer:
-            'In the US and most of Canada, on Sunday, November 1, 2026: at 2:00 AM local time the clocks go back to 1:00 AM. In the UK, Ireland, and the EU it is a week earlier, on Sunday, October 25, 2026.',
+            'In the US and eastern Canada (Ontario, Quebec, Atlantic Canada), on Sunday, November 1, 2026: at 2:00 AM local time the clocks go back to 1:00 AM. In the UK, Ireland, and the EU it is a week earlier, on Sunday, October 25, 2026.',
         },
         {
           question: 'When do the clocks go forward in 2027?',
           answer:
-            'In the US and most of Canada, on Sunday, March 14, 2027, when 2:00 AM jumps to 3:00 AM. In the UK, Ireland, and the EU, on Sunday, March 28, 2027.',
+            'In the US and eastern Canada, on Sunday, March 14, 2027, when 2:00 AM jumps to 3:00 AM. In the UK, Ireland, and the EU, on Sunday, March 28, 2027.',
         },
         {
           question: 'Do we gain or lose an hour?',
@@ -177,9 +198,9 @@ export default function DaylightSavingTimePage() {
             'You gain an hour when the clocks go back in the autumn, and lose one when they go forward in the spring. The countdown at the top of this page shows which comes next where you are.',
         },
         {
-          question: 'Do British Columbia and Alberta change their clocks on November 1, 2026?',
+          question: 'Do British Columbia, Alberta and Manitoba change their clocks on November 1, 2026?',
           answer:
-            'No. Both provinces stopped changing their clocks in 2026. British Columbia stays on UTC−7 and Alberta stays on UTC−6 all year, so from November to March Vancouver is an hour ahead of Seattle.',
+            'No. All three stopped changing their clocks in 2026, as did the Northwest Territories. British Columbia stays on UTC−7, Alberta and the NWT on UTC−6, and Manitoba on UTC−5 all year, so from November to March Vancouver is an hour ahead of Seattle. The exception is Golden, BC, which goes back one last time on November 1.',
         },
         {
           question: 'Does Arizona change its clocks?',
