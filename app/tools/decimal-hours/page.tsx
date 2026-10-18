@@ -8,6 +8,7 @@ import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
+import PrintChartButton from '@/components/PrintChartButton';
 
 // "15 minutes in decimal" alone drew 4.5K Copilot citations to this page in
 // 3 months (Bing AI Performance, Oct 2026) — answer each common one plainly.
@@ -137,11 +138,14 @@ export default function DecimalHoursPage() {
 
       {/* Full chart — static, server-rendered */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
-          Minutes to decimal hours chart
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100">
+            Minutes to decimal hours chart
+          </h2>
+          <PrintChartButton />
+        </div>
         <p className="text-muted-foreground mb-4">
-          Values to two decimal places, the convention most timesheet software uses.
+          Values to two decimal places, the convention most timesheet software uses. Print it on one page to keep by the time clock.
         </p>
         <div className="overflow-x-auto bg-card dark:bg-slate-800 rounded-2xl p-4 border border-border/50 dark:border-slate-700/50">
           <table className="w-full text-sm border-collapse">

@@ -101,7 +101,7 @@ export default function SolarEclipse2028Page() {
             <p className={`${BODY} text-sm mt-3`}>
               Even 99.97% isn&apos;t totality: the sky doesn&apos;t go dark and it is never safe to look at the Sun
               without eclipse glasses. It isn&apos;t visible from Hawaii or anywhere in the Americas. To see the peak in
-              your own time, use the <Link href="/tools/timezone" className={LINK}>timezone converter</Link>: it&apos;s
+              your own time, use the <Link href="/tools/timezone" className={LINK}>time zone converter</Link>: it&apos;s
               2:55 AM UTC.
             </p>
           </section>
