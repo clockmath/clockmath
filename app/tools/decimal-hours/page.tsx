@@ -11,13 +11,15 @@ import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
 import PrintChartButton from '@/components/PrintChartButton';
 
 // "15 minutes in decimal" alone drew 4.5K Copilot citations to this page in
-// 3 months (Bing AI Performance, Oct 2026) — answer each common one plainly.
+// 3 months (Bing AI Performance, Oct 2026), while "10/20/40/45 minutes in
+// decimal" (5K–10K citations each across all sites) barely cited it — only
+// 15 had an answer worded the way people ask. So each lead is the query.
 const dec = (minutes: number) => minutesToDecimal(minutes).toFixed(2);
 
 const COMMON: QuickAnswer[] = [
-  ...[5, 10, 15, 20].map((m) => ({ lead: `${m} minutes`, rest: `is ${dec(m)} hours (${m} ÷ 60).` })),
-  { lead: '30 minutes', rest: `(half an hour) is ${dec(30)} hours.` },
-  ...[40, 45, 50].map((m) => ({ lead: `${m} minutes`, rest: `is ${dec(m)} hours (${m} ÷ 60).` })),
+  ...[5, 10, 15, 20, 25].map((m) => ({ lead: `${m} minutes in decimal`, rest: `is ${dec(m)} hours (${m}\u00a0÷\u00a060).` })),
+  { lead: '30 minutes in decimal', rest: `(half an hour) is ${dec(30)} hours.` },
+  ...[35, 40, 45, 50].map((m) => ({ lead: `${m} minutes in decimal`, rest: `is ${dec(m)} hours (${m}\u00a0÷\u00a060).` })),
   { lead: '1 hour 30 minutes', rest: `is ${(1 + minutesToDecimal(30)).toFixed(2)} hours.` },
   { lead: '7 hours 45 minutes', rest: `is ${(7 + minutesToDecimal(45)).toFixed(2)} hours — not 7.45.` },
 ];
