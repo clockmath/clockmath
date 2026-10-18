@@ -297,3 +297,24 @@ a:focus-visible,
     animation: none;
   }
 }
+
+/* Print chart (components/PrintChartButton): while html.printing-chart is
+   set, print only the portal sheet, not the page around it. */
+#print-chart {
+  display: none;
+}
+@media print {
+  html.printing-chart body > *:not(#print-chart) {
+    display: none !important;
+  }
+  html.printing-chart #print-chart {
+    display: block;
+  }
+  html.printing-chart,
+  html.printing-chart body {
+    background: #fff !important;
+  }
+  @page {
+    margin: 15mm;
+  }
+}
