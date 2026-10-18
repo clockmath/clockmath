@@ -31,6 +31,11 @@ const FAQS = [
       'Pay is calculated as hours × rate, which needs hours as a decimal. 7 hours 45 minutes is 7.75 hours because 45 ÷ 60 = 0.75. The calculator shows both formats for every shift and for the total.',
   },
   {
+    question: 'How many working hours are in a year?',
+    answer:
+      'A full-time year at 40 hours a week is 2,080 hours (40 × 52), the figure most US employers use to turn a salary into an hourly rate: $52,000 a year is $25 an hour. At 37.5 hours a week it is 1,950. Paid holidays and vacation are counted in those totals, so the hours actually worked are usually lower.',
+  },
+  {
     question: 'Does the calculator compute overtime pay?',
     answer:
       'Yes, optionally. Turn on “Split overtime” and the period total is split into regular and overtime hours at a threshold you set (40 by default), paid at 1.5× or 2×. Rules vary by country and state — US federal law generally requires 1.5× pay past 40 hours in a week, and some states add daily thresholds — so set the threshold to match yours. For a single week’s total, the Overtime Calculator does the same split on its own.',
