@@ -1,4 +1,5 @@
 // lib/gtag.ts
+import { analyticsSafeUrl } from "@/lib/analyticsUrl";
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 
 type GtagEvent = {
@@ -39,6 +40,9 @@ const log = (message: string) => {
 // gtag() is the dataLayer shim defined by the inline init script. Calls made
 // before the GTM library finishes loading are queued in dataLayer and replayed
 // automatically, so there is no need to wait/poll for the library.
+// Cleaned URL of the previous page view, sent as page_referrer on the next.
+let lastLocation = "";
+
 export const pageview = (url: string) => {
   if (isAnalyticsBlocked()) {
     return;
@@ -47,10 +51,19 @@ export const pageview = (url: string) => {
   // GA4 tracks pages via the `page_view` event using `page_location`/`page_title`
   // (page_path is a legacy Universal Analytics param). Re-calling `config` per
   // navigation is a GA4 anti-pattern that can double-count, so send an event.
+  // `set` makes every later event on this page carry the same cleaned URL
+  // (GA otherwise attaches the raw address, visitor data and all), and the
+  // previous page as the referrer.
+  const location = analyticsSafeUrl(window.location.origin + url);
+  // Tidying visitor data out of the address (TimesheetTool's replaceState)
+  // re-runs the route effect; once cleaned it's the same page, not a new view.
+  if (location === lastLocation) return;
+  window.gtag?.("set", { page_location: location, ...(lastLocation ? { page_referrer: lastLocation } : {}) });
   window.gtag?.("event", "page_view", {
-    page_location: window.location.origin + url,
+    page_location: location,
     page_title: document.title,
   });
+  lastLocation = location;
 
   log(`pageview sent: ${url}`);
 };
