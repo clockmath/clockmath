@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { EventCountdown } from '@/components/EventCountdown';
 import { event as gaEvent } from '@/lib/gtag';
+import { storageGet, storageSet } from '@/lib/safeStorage';
 
 const getDevice = (): 'mobile' | 'desktop' =>
   typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
@@ -37,7 +38,7 @@ export function UserDateCountdown({
 
   useEffect(() => {
     let initial: Date | null = null;
-    const saved = localStorage.getItem(storageKey);
+    const saved = storageGet(storageKey);
     if (saved) {
       const ms = parseInt(saved, 10);
       if (!Number.isNaN(ms)) initial = new Date(ms);
@@ -53,7 +54,7 @@ export function UserDateCountdown({
   const handleChange = useCallback(
     (d: Date) => {
       setDate(d);
-      localStorage.setItem(storageKey, String(d.getTime()));
+      storageSet(storageKey, String(d.getTime()));
       // Fires only on a real user selection (not the initial default load).
       gaEvent({
         action: 'user_date_set',

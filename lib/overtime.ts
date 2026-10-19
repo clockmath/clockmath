@@ -29,7 +29,11 @@ export interface OvertimeResult {
   overtimeRate: number | null;
 }
 
-const round2 = (n: number): number => Math.round(n * 100) / 100;
+// Round half up to cents. Plain Math.round(n * 100) / 100 rounds 18.525
+// ($12.35 × 1.5) DOWN to 18.52, because 18.525 * 100 is 1852.4999999999998
+// in binary floating point; trimming to 12 significant digits first removes
+// that representation error before rounding.
+export const round2 = (n: number): number => Math.round(Number((n * 100).toPrecision(12))) / 100;
 
 export function computeOvertime({ hoursWorked, threshold, multiplier, rate }: OvertimeInput): OvertimeResult {
   const worked = Math.max(0, hoursWorked);
@@ -54,6 +58,35 @@ export function computeOvertime({ hoursWorked, threshold, multiplier, rate }: Ov
     overtimePay,
     totalPay: round2(regularPay + overtimePay),
     overtimeRate,
+  };
+}
+
+export interface WeeklyOvertimeResult extends OvertimeResult {
+  /** Number of workweeks the hours were split across. */
+  weeks: number;
+}
+
+/**
+ * Overtime for a timesheet that may span several workweeks. The FLSA
+ * threshold applies to each workweek on its own: 40 h + 40 h over two weeks
+ * is no overtime, not 40 h of it. Runs computeOvertime per week and adds the
+ * (already rounded) results, so each week's figures match /tools/overtime.
+ */
+export function computeWeeklyOvertime(
+  weeklyHours: number[],
+  { threshold, multiplier, rate }: Omit<OvertimeInput, 'hoursWorked'>,
+): WeeklyOvertimeResult {
+  const perWeek = weeklyHours.map((hoursWorked) => computeOvertime({ hoursWorked, threshold, multiplier, rate }));
+  const sum = (pick: (r: OvertimeResult) => number | null): number => round2(perWeek.reduce((t, r) => t + (pick(r) ?? 0), 0));
+  const paid = perWeek.length > 0 && perWeek[0].totalPay != null;
+  return {
+    weeks: perWeek.length,
+    regularHours: sum((r) => r.regularHours),
+    overtimeHours: sum((r) => r.overtimeHours),
+    regularPay: paid ? sum((r) => r.regularPay) : null,
+    overtimePay: paid ? sum((r) => r.overtimePay) : null,
+    totalPay: paid ? sum((r) => r.totalPay) : null,
+    overtimeRate: paid ? perWeek[0].overtimeRate : null,
   };
 }
 

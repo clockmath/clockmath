@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Hourglass } from 'lucide-react';
 import { CountdownTool } from '@/components/CountdownTool';
@@ -8,6 +7,7 @@ import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 const FAQS = [
   {
@@ -38,32 +38,10 @@ const FAQS = [
 ];
 
 export default function CountdownPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   return (
     <PageChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>

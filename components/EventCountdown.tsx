@@ -168,6 +168,10 @@ export function EventCountdown({
   }, [recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
 
   const ready = mounted && targetMs !== null && nowMs !== null;
+  // A date table whose last entry has passed (e.g. Super Bowl LXI, the only
+  // date listed, after Feb 14 2027). Without this the tiles sat at 0 0 0 0
+  // under "Until …" forever; say plainly that no next date is known yet.
+  const noUpcoming = mounted && !!dateRanges && targetMs === null;
   const isPast = ready && (targetMs as number) < (nowMs as number);
 
   const tiles = useMemo<Array<{ label: string; value: number }>>(() => {
@@ -274,15 +278,20 @@ export function EventCountdown({
       className={`bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl px-4 py-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center ${className}`}
     >
       <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
-        {isPast ? (arrivedLabel ?? `${title} has released!`) : `Until ${title}`}
+        {isPast ? (arrivedLabel ?? `${title} has released!`) : noUpcoming ? 'No date announced yet' : `Until ${title}`}
       </h2>
-      <p
+      {noUpcoming && (
+        <p className="text-foreground dark:text-slate-200">
+          This countdown starts again as soon as the next date is announced.
+        </p>
+      )}
+      {!noUpcoming && <p
         className="text-sm text-muted-foreground dark:text-slate-400 mb-4"
         data-live-date={fixedTarget}
         suppressHydrationWarning
       >
         {dateLabel}
-      </p>
+      </p>}
 
       {totalDays !== null && (
         <p
@@ -309,7 +318,7 @@ export function EventCountdown({
           more away) as one row of 5, 6 tiles (a year or more) as 3×2. A
           flex-wrap row of 5 broke at 375px — the row is ~300px and 5 × 56px
           min-width + gaps is 312px, so SECONDS wrapped alone (Oct 2026). */}
-      <div
+      {!noUpcoming && <div
         className={
           tiles.length > 5
             ? 'grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-3'
@@ -332,7 +341,7 @@ export function EventCountdown({
             </div>
           </div>
         ))}
-      </div>
+      </div>}
 
       {disclaimer && (
         <p className="text-[11px] leading-relaxed text-muted-foreground dark:text-slate-500 mt-6 max-w-2xl mx-auto">

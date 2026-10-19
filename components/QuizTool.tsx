@@ -28,11 +28,15 @@ import {
   type DailyQuiz,
   type QuizQuestion,
 } from '@/lib/quiz';
+import { storageGet } from '@/lib/safeStorage';
 
 /**
- * Minimal analog dial for clock-reading questions. The accessible label
- * states the time — a screen-reader user can't inspect hand angles, so the
- * label IS their clock face.
+ * Minimal analog dial for clock-reading questions. A screen-reader user
+ * can't see the hands, so the accessible label describes them the way a
+ * sighted player sees them ("hour hand between 3 and 4, minute hand pointing
+ * at 9") rather than stating the time — until Oct 2026 it read out the
+ * answer to "What time does this clock show?". Quiz minutes are multiples
+ * of 5, so the minute hand always points straight at a number.
  */
 function ClockFace({ h, m }: { h: number; m: number }) {
   const minuteAngle = m * 6;
@@ -43,7 +47,10 @@ function ClockFace({ h, m }: { h: number; m: number }) {
   };
   const hour = hand(hourAngle, 26, 5);
   const minute = hand(minuteAngle, 38, 3);
-  const label = `Clock face showing ${h === 0 ? 12 : h}:${String(m).padStart(2, '0')}`;
+  const hourNum = h % 12 || 12;
+  const hourHand = m === 0 ? `pointing at ${hourNum}` : `between ${hourNum} and ${(hourNum % 12) + 1}`;
+  const minuteNum = Math.round(m / 5) || 12;
+  const label = `Clock face: hour hand ${hourHand}, minute hand pointing at ${minuteNum}`;
   return (
     <svg
       viewBox="0 0 120 120"
@@ -235,7 +242,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
       }
       setPhase('intro');
     }
-    const savedInitials = localStorage.getItem(INITIALS_KEY);
+    const savedInitials = storageGet(INITIALS_KEY);
     if (savedInitials && /^[A-Z]{3}$/.test(savedInitials)) {
       setInitials(savedInitials.split(''));
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Percent } from 'lucide-react';
 import { DecimalHoursTool, minutesToDecimal } from '@/components/DecimalHoursTool';
@@ -9,6 +9,7 @@ import PageChrome from '@/components/PageChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
 import PrintChartButton from '@/components/PrintChartButton';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 // "15 minutes in decimal" alone drew 4.5K Copilot citations to this page in
 // 3 months (Bing AI Performance, Oct 2026), while "10/20/40/45 minutes in
@@ -60,28 +61,10 @@ const FAQS = [
 ];
 
 export default function DecimalHoursPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   return (
     <PageChrome currentTool="decimal-hours" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>

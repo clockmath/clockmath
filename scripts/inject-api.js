@@ -176,7 +176,9 @@ function quizJson(request, status, body, extraHeaders) {
     headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Credentials'] = 'true';
   }
-  return new Response(JSON.stringify(body), { status, headers: Object.assign(headers, extraHeaders || {}) });
+  // A 204 must have no body: new Response("null", { status: 204 }) throws,
+  // which made every CORS preflight to /api/quiz and /api/feedback a 500.
+  return new Response(status === 204 ? null : JSON.stringify(body), { status, headers: Object.assign(headers, extraHeaders || {}) });
 }
 
 async function quizLoadBoard(env, day) {

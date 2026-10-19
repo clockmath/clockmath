@@ -6,7 +6,7 @@ import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { RollingNumber } from '@/components/RollingNumber';
-import { computeOvertime } from '@/lib/overtime';
+import { computeWeeklyOvertime } from '@/lib/overtime';
 import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
 import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
@@ -328,20 +328,31 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   const rateNum = parseFloat(rate);
   const flatGross = rate.trim() && !Number.isNaN(rateNum) && rateNum > 0 ? (totalMins / 60) * rateNum : null;
 
-  // Weekly overtime split (optional). Pay comes from the OT engine so it
-  // matches /tools/overtime penny for penny; per-shift pay stays at base
-  // rate since overtime applies to the period total, not a single shift.
+  // Weekly overtime split (optional). The threshold applies to each
+  // Sunday–Saturday workweek on its own: until Oct 2026 it was applied to the
+  // whole sheet, so a two-week 40 h + 40 h sheet showed 40 h of overtime
+  // (FLSA: none). A shift counts in the week it starts. Pay comes from the OT
+  // engine so each week matches /tools/overtime penny for penny; per-shift
+  // pay stays at base rate since overtime belongs to the week, not a shift.
+  const weeklyMins = useMemo(() => {
+    const byWeek = new Map<string, number>();
+    for (const s of shifts) {
+      const sunday = new Date(s.date.getFullYear(), s.date.getMonth(), s.date.getDate() - s.date.getDay());
+      const key = toDateInputValue(sunday);
+      byWeek.set(key, (byWeek.get(key) ?? 0) + shiftMinutes(s));
+    }
+    return [...byWeek.values()].filter((m) => m > 0);
+  }, [shifts]);
+
   const otSplit = useMemo(() => {
     if (!otEnabled || totalMins <= 0) return null;
     const threshold = otThreshold.trim() === '' ? 40 : parseFloat(otThreshold);
     if (Number.isNaN(threshold) || threshold < 0) return null;
-    return computeOvertime({
-      hoursWorked: totalMins / 60,
-      threshold,
-      multiplier: otMultiplier,
-      rate: flatGross != null ? rateNum : null,
-    });
-  }, [otEnabled, totalMins, otThreshold, otMultiplier, flatGross, rateNum]);
+    return computeWeeklyOvertime(
+      weeklyMins.map((m) => m / 60),
+      { threshold, multiplier: otMultiplier, rate: flatGross != null ? rateNum : null },
+    );
+  }, [otEnabled, totalMins, weeklyMins, otThreshold, otMultiplier, flatGross, rateNum]);
 
   const gross = otSplit && otSplit.totalPay != null ? otSplit.totalPay : flatGross;
 
@@ -690,6 +701,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                 />
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">h</span>
               </div>
+              <span className="text-muted-foreground dark:text-slate-400">a week</span>
               <select
                 value={otMultiplier}
                 onChange={(e) => setOtMultiplier(Number(e.target.value))}
@@ -705,6 +717,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
               >
                 Overtime calculator
               </Link>
+              {otSplit && otSplit.weeks > 1 && (
+                <p className="basis-full text-xs text-muted-foreground dark:text-slate-400">
+                  Worked out separately for each of the {otSplit.weeks} weeks (Sunday to Saturday), as US overtime law requires.
+                </p>
+              )}
             </>
           )}
         </div>
@@ -800,7 +817,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           </table>
         </div>
 
-        {/* Overtime split summary — applies to the period total, not per shift */}
+        {/* Overtime split summary — per workweek, not per shift */}
         {otSplit && (
           <div className="mt-3 rounded-xl border border-emerald-600/30 bg-emerald-600/5 dark:bg-emerald-500/10 px-3 py-2.5 text-sm text-left">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -824,7 +841,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             </div>
             {otSplit.overtimeHours > 0 && gross != null && (
               <p className="text-xs text-muted-foreground dark:text-slate-400 mt-1">
-                Per-shift pay above uses the base rate — overtime is applied to the period total.
+                Per-shift pay above uses the base rate — overtime is applied to each week’s total.
               </p>
             )}
           </div>

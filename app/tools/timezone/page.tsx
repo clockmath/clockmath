@@ -2,7 +2,6 @@
 
 /* eslint-disable react/no-unescaped-entities */
 
-import { useState, useEffect, useCallback } from 'react';
 import { TimezoneConverter } from '@/components/TimezoneConverter';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
@@ -11,6 +10,7 @@ import { Globe } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 // Year-round differences, checked against tzdata for Oct 2026–Oct 2027 — stated
 // with their seasonal ranges so they stay true whatever day the page is read.
@@ -55,31 +55,10 @@ const FAQS = [
 
 
 export default function TimezonePage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem("clockmath-darkmode");
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === "true");
-    } else {
-      // Check system preference
-      setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    localStorage.setItem("clockmath-darkmode", newDarkMode.toString());
-  }, [isDarkMode]);
   return (
     <PageChrome currentTool="timezone" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd

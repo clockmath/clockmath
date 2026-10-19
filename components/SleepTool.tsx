@@ -13,6 +13,7 @@ import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
 import InfoTip from '@/components/InfoTip';
+import { storageGet } from '@/lib/safeStorage';
 
 export const CYCLE_MIN = 90;
 export const FALL_ASLEEP_MIN = 15;
@@ -78,7 +79,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
   const [nowMs, setNowMs] = useState<number | null>(null);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem('clockmath-hour12');
+    const saved = storageGet('clockmath-hour12');
     if (saved !== null) setHour12(saved === 'true');
     setNowMs(Date.now());
     const id = setInterval(() => setNowMs(Date.now()), 30_000);

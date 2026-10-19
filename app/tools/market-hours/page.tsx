@@ -2,7 +2,6 @@
 
 /* eslint-disable react/no-unescaped-entities */
 
-import { useState, useEffect, useCallback } from 'react';
 import { MarketHoursTool } from '@/components/MarketHoursTool';
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
@@ -10,6 +9,7 @@ import Link from 'next/link';
 import { CandlestickChart } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 const FAQS = [
   {
@@ -35,31 +35,10 @@ const FAQS = [
 ];
 
 export default function MarketHoursPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      // Check system preference
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    localStorage.setItem('clockmath-darkmode', newDarkMode.toString());
-  }, [isDarkMode]);
 
   return (
     <PageChrome currentTool="market-hours" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>

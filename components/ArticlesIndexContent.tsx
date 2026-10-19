@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import PageChrome from '@/components/PageChrome';
 import SiteFooter from '@/components/SiteFooter';
 import type { ArticleCategory, ArticleLink } from '@/lib/articlesCatalog';
 import {Search, Filter, Clock, Target, Users, Briefcase, BookOpen} from 'lucide-react';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 type GroupedArticles = Record<ArticleCategory, ArticleLink[]>;
 
@@ -17,35 +18,13 @@ interface ArticlesIndexContentProps {
 }
 
 export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexContentProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ArticleCategory | 'all'>('all');
   const [sortBy, setSortBy] = useState<'priority' | 'title' | 'category'>('priority');
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   // Flatten all articles for search and filtering
   const allArticles = useMemo(() => {
