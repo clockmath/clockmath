@@ -1,6 +1,6 @@
 import type React from "react";
 import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { GeistMono } from "./fonts";
 import "./globals.css";
 import { Metadata, Viewport } from "next";
 import Analytics from "@/components/Analytics";

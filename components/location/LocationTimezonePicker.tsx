@@ -1,8 +1,17 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
-import tzLookup from "tz-lookup";
 import { LocationSearch, type Place } from "./LocationSearch";
 import { getOffsetLabel, getTimeZoneDisplayName } from "@/lib/time";
+
+// tz-lookup's coordinates→zone dataset is ~29 KB gzipped and only needed once
+// a place is picked, so it loads on demand (Oct 2026 audit) — prefetched when
+// the field is hovered or focused, so selecting a place doesn't wait on it.
+type TzLookup = (lat: number, lon: number) => string;
+let tzLookupPromise: Promise<TzLookup> | null = null;
+const loadTzLookup = (): Promise<TzLookup> => {
+  if (!tzLookupPromise) tzLookupPromise = import("tz-lookup").then((m) => m.default as TzLookup);
+  return tzLookupPromise;
+};
 
 interface LocationTimezonePickerProps {
   label: string;
@@ -34,8 +43,8 @@ export function LocationTimezonePicker({
   const lastPresetRef = useRef<string>("");
 
   // When a place is selected from the dropdown
-  const handleSelect = (p: Place) => {
-    const zone = tzLookup(p.lat, p.lon);
+  const handleSelect = async (p: Place) => {
+    const zone = (await loadTzLookup())(p.lat, p.lon);
     if (zone) {
       setIana(zone);
       setDisplayLabel(p.name);
@@ -68,6 +77,9 @@ export function LocationTimezonePicker({
     if (key === lastPresetRef.current) return;
     lastPresetRef.current = key;
 
+    // Not cancelled on re-run: lastPresetRef already holds this key, so a
+    // re-run returns early and dropping this result would lose the preset.
+    void loadTzLookup().then((tzLookup) => {
     const zone = tzLookup(preset.lat, preset.lon);
     
     if (zone) {
@@ -87,10 +99,11 @@ export function LocationTimezonePicker({
       onTimezoneResolved(zone, placeName);
       // LocationSearch won't reopen because it re-opens only when focused && dirty
     }
+    });
   }, [preset, onTimezoneResolved, value, timeZone]);
 
   return (
-    <div className={className}>
+    <div className={className} onPointerEnter={() => void loadTzLookup()} onFocusCapture={() => void loadTzLookup()}>
       {label && (
         <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
           {label}
