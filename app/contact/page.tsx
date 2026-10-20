@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import PageChrome from '@/components/PageChrome';
 import SiteFooter from '@/components/SiteFooter';
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
 import { event as gaEvent } from '@/lib/gtag';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 export default function ContactPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,44 +21,12 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
-  // Anti-spam measures
+  // Anti-spam: a hidden field only bots fill in.
   const [honeypot, setHoneypot] = useState('');
-  const [startTime] = useState(Date.now());
-  const [hasInteracted, setHasInteracted] = useState(false);
-
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Track user interaction for anti-spam
-    if (!hasInteracted) {
-      setHasInteracted(true);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,42 +43,11 @@ export default function ContactPage() {
         return;
       }
 
-      // 2. Time-based check - too fast submissions are likely bots (minimum 3 seconds)
-      const timeTaken = Date.now() - startTime;
-      if (timeTaken < 3000) {
-        setSubmitStatus('error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 3. Basic interaction check
-      if (!hasInteracted) {
-        setSubmitStatus('error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 4. Content validation - check for spam patterns
-      const spamKeywords = ['bitcoin', 'crypto', 'seo service', 'link building', 'viagra', 'casino', 'loan', 'investment opportunity'];
-      const messageText = formData.message.toLowerCase();
-      const hasSpamContent = spamKeywords.some(keyword => messageText.includes(keyword));
-      
-      if (hasSpamContent) {
-        setSubmitStatus('error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 5. Check for excessive URLs (more than 2 URLs is suspicious)
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const urls = messageText.match(urlRegex) || [];
-      if (urls.length > 2) {
-        setSubmitStatus('error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 6. Email validation - check for valid email format and suspicious patterns
+      // The form only opens the visitor's own mail app (mailto:), so a bot
+      // can't send anything through it — content and timing "spam" checks
+      // here only blocked real people (an address like john.russell@… failed
+      // the old ".ru" test; a 5-minute lockout stopped retries when the mail
+      // app didn't open). Oct 2026 audit: keep the honeypot and a format check.
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
         setSubmitStatus('error');
@@ -117,29 +55,6 @@ export default function ContactPage() {
         return;
       }
 
-      // Check for suspicious email patterns
-      const suspiciousEmailPatterns = ['.ru', '.tk', '.ml', 'temp-mail', 'guerrillamail', '10minutemail'];
-      const emailLower = formData.email.toLowerCase();
-      const hasSuspiciousEmail = suspiciousEmailPatterns.some(pattern => emailLower.includes(pattern));
-      
-      if (hasSuspiciousEmail) {
-        setSubmitStatus('error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 7. Rate limiting - check localStorage for recent submissions
-      const lastSubmission = localStorage.getItem('last-contact-submission');
-      if (lastSubmission) {
-        const timeSinceLastSubmission = Date.now() - parseInt(lastSubmission);
-        const minInterval = 5 * 60 * 1000; // 5 minutes minimum between submissions
-        
-        if (timeSinceLastSubmission < minInterval) {
-          setSubmitStatus('error');
-          setIsSubmitting(false);
-          return;
-        }
-      }
       // Create mailto link
       const subject = encodeURIComponent(
         formData.category 
@@ -164,9 +79,6 @@ export default function ContactPage() {
           device: window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop'
         }
       });
-
-      // Store submission timestamp for rate limiting
-      localStorage.setItem('last-contact-submission', Date.now().toString());
 
       setSubmitStatus('success');
       

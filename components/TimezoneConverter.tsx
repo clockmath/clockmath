@@ -24,6 +24,7 @@ import {
 import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
+import { storageGet, storageSet } from '@/lib/safeStorage';
 
 interface TimezoneConverterProps {
   className?: string;
@@ -93,7 +94,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     setInputTime(now.toTimeString().slice(0, 5));
     
     // Load hour12 preference from localStorage
-    const saved12Hour = localStorage.getItem('clockmath-hour12');
+    const saved12Hour = storageGet('clockmath-hour12');
     if (saved12Hour !== null) {
       setHour12(saved12Hour === 'true');
     } else {
@@ -106,7 +107,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   // Save hour12 preference (only after hydration)
   useEffect(() => {
     if (isHydrated && typeof hour12 === 'boolean') {
-      localStorage.setItem('clockmath-hour12', hour12.toString());
+      storageSet('clockmath-hour12', hour12.toString());
     }
   }, [hour12, isHydrated]);
 

@@ -11,7 +11,8 @@
     "lint": "next lint",
     "start": "next start",
     "spacing:audit": "node scripts/spacing-audit.js",
-    "indexnow": "node scripts/indexnow.js"
+    "indexnow": "node scripts/indexnow.js",
+    "test": "node --test --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/*.test.ts && node scripts/worker/live-counts.test.js && node scripts/worker/stale-assets.test.js"
   },
   "dependencies": {
     "@radix-ui/react-popover": "1.1.4",

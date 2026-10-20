@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Clock,
@@ -24,6 +24,7 @@ import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd from '@/components/JsonLd';
 import { MARKETS, getMarketStatus } from '@/lib/markets';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 const TILES = [
   {
@@ -104,34 +105,16 @@ function getItemListSchema() {
 }
 
 export default function ToolsHub() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
   const [marketsOpen, setMarketsOpen] = useState<number | null>(null);
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
 
   useEffect(() => {
     const now = new Date();
     setMarketsOpen(MARKETS.filter((m) => getMarketStatus(m, now).state === 'open').length);
   }, []);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   return (
     <PageChrome currentTool="tools" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>

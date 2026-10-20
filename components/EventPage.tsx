@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useCallback, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { EventCountdown } from '@/components/EventCountdown';
@@ -11,6 +11,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Trophy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 // Cross-linked from every event page (minus the current one). Renders in
 // static HTML, so it also fixes pages otherwise orphaned from internal links.
@@ -111,26 +112,11 @@ export default function EventPage({
   intro,
   faqs,
 }: EventPageProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const saved = localStorage.getItem('clockmath-darkmode');
-    if (saved) setIsDarkMode(saved === 'true');
-    else setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-  }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   const handleShare = useCallback(async () => {
     const url = window.location.href;

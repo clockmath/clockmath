@@ -14,6 +14,8 @@ import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdow
 import { format, intervalToDuration, type Duration } from "date-fns"
 import { event as gaEvent, toolUsed } from "@/lib/gtag"
 import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSiteSchema } from "@/components/JsonLd"
+import { useDarkMode } from '@/hooks/use-dark-mode';
+import { storageRemove } from '@/lib/safeStorage';
 
 // Interface for calculator-specific data
 interface CalculationHistory {
@@ -51,7 +53,7 @@ export default function ClockMathPage() {
   const [endTime, setEndTime] = useState("17:30:00")
   const [result, setResult] = useState("")
   const [history, setHistory] = useState<CalculationHistory[]>([])
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isDarkMode, toggleTheme] = useDarkMode();
   const [isCalculating, setIsCalculating] = useState(false)
   const [expandedHistory, setExpandedHistory] = useState<Set<string>>(new Set());
   const [selectedCalculations, setSelectedCalculations] = useState<Set<string>>(new Set());
@@ -82,23 +84,7 @@ export default function ClockMathPage() {
   const toolUsedRef = useRef(false)
 
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem("clockmath-darkmode")
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === "true")
-    } else {
-      // Check system preference
-      setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches)
-    }
-  }, [])
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [isDarkMode])
 
   // Global time format for both start and end times
   const [is24HourFormat, setIs24HourFormat] = useState(true)
@@ -353,11 +339,6 @@ export default function ClockMathPage() {
     }, 300)
   }, [startDate, startTime, endDate, endTime, parseTimeToSeconds, formatDuration, formatDetailedDuration])
 
-  const toggleTheme = useCallback(() => {
-    const newTheme = !isDarkMode
-    setIsDarkMode(newTheme)
-    localStorage.setItem("clockmath-darkmode", newTheme.toString())
-  }, [isDarkMode])
 
   // Load history from localStorage
   useEffect(() => {
@@ -394,7 +375,7 @@ export default function ClockMathPage() {
         localStorage.setItem("clockmath-history", JSON.stringify(cleanedStorage))
       }
     } catch {
-      localStorage.removeItem("clockmath-history")
+      storageRemove("clockmath-history")
     }
   }, [])
 
@@ -630,7 +611,7 @@ export default function ClockMathPage() {
                 <button
                   onClick={() => {
                     setHistory([]);
-                    localStorage.removeItem("clockmath-history");
+                    storageRemove("clockmath-history");
                     setSelectedCalculations(new Set());
                     setSumResult(null);
                     gaEvent({

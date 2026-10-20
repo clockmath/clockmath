@@ -20,6 +20,7 @@ import {
 import { getUserTimeZone, formatZoned, getTimeZoneDisplayName } from '@/lib/time';
 import { RollingNumber } from '@/components/RollingNumber';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
+import { storageGet } from '@/lib/safeStorage';
 
 const PINNED_KEY = 'clockmath-pinned-markets';
 
@@ -81,7 +82,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
     }
 
     // Shared preference with the other tools
-    const saved12Hour = window.localStorage.getItem('clockmath-hour12');
+    const saved12Hour = storageGet('clockmath-hour12');
     if (saved12Hour !== null) setHour12(saved12Hour === 'true');
   }, []);
 

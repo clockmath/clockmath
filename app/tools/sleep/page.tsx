@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Bed } from 'lucide-react';
 import { SleepTool, CYCLE_MIN, FALL_ASLEEP_MIN, clock, sleepDuration, durationNote } from '@/components/SleepTool';
@@ -8,6 +7,7 @@ import QuickAnswers, { durationWords, decimalHoursWords, type QuickAnswer } from
 import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 const FAQS = [
   {
@@ -70,28 +70,10 @@ const NIGHTS: QuickAnswer[] = (
 });
 
 export default function SleepPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   return (
     <PageChrome currentTool="sleep" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ClipboardList } from 'lucide-react';
 import { TimesheetTool } from '@/components/TimesheetTool';
@@ -8,6 +7,7 @@ import SiteFooter from '@/components/SiteFooter';
 import PageChrome from '@/components/PageChrome';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
+import { useDarkMode } from '@/hooks/use-dark-mode';
 
 const FAQS = [
   {
@@ -38,7 +38,7 @@ const FAQS = [
   {
     question: 'Does the calculator compute overtime pay?',
     answer:
-      'Yes, optionally. Turn on “Split overtime” and the period total is split into regular and overtime hours at a threshold you set (40 by default), paid at 1.5× or 2×. Rules vary by country and state — US federal law generally requires 1.5× pay past 40 hours in a week, and some states add daily thresholds — so set the threshold to match yours. For a single week’s total, the Overtime Calculator does the same split on its own.',
+      'Yes, optionally. Turn on “Split overtime” and each week’s hours (Sunday to Saturday) are split into regular and overtime hours at a threshold you set (40 by default), paid at 1.5× or 2×. A two-week sheet with 40 hours each week has no overtime. Rules vary by country and state — US federal law generally requires 1.5× pay past 40 hours in a week, and some states add daily thresholds — so set the threshold to match yours. For a single week’s total, the Overtime Calculator does the same split on its own.',
   },
   {
     question: 'Is my timesheet data private?',
@@ -60,32 +60,10 @@ const DECIMAL_ROWS: Array<[string, string]> = [
 ];
 
 export default function TimesheetPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('clockmath-darkmode');
-    if (savedDarkMode) {
-      setIsDarkMode(savedDarkMode === 'true');
-    } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('clockmath-darkmode', next.toString());
-      return next;
-    });
-  }, []);
 
   return (
     <PageChrome currentTool="timesheet" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
@@ -136,7 +114,7 @@ export default function TimesheetPage() {
           as easily.
         </p>
         <p className="text-muted-foreground">
-          To pay overtime, turn on <strong>Split overtime</strong>: the total is split at the threshold you set (40
+          To pay overtime, turn on <strong>Split overtime</strong>: each week&apos;s total is split at the threshold you set (40
           hours by default) and the overtime hours are paid at 1.5× or 2×. The{' '}
           <Link
             href="/articles/overtime-hours-calculator"
