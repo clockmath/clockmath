@@ -133,6 +133,9 @@ export function resolveTimeZone(timeZone: string, at: Date): string {
   return timeZone;
 }
 
+// Cached per zone: the converter labels all ~400 zones on mount.
+const offsetLabelFormatters = new Map<string, Intl.DateTimeFormat>();
+
 /**
  * Get timezone offset label (e.g., "UTC-05:00" or "UTC+09:00")
  * Updated to use modern Intl API for better browser support
@@ -140,11 +143,12 @@ export function resolveTimeZone(timeZone: string, at: Date): string {
 export function getOffsetLabel(timeZone: string, at: Date = new Date()): string {
   try {
     // Use the modern Intl API for timezone offset formatting
-    const formatter = new Intl.DateTimeFormat('en', {
-      timeZone: resolveTimeZone(timeZone, at),
-      timeZoneName: 'shortOffset',
-      hour: '2-digit',
-    });
+    const zone = resolveTimeZone(timeZone, at);
+    let formatter = offsetLabelFormatters.get(zone);
+    if (!formatter) {
+      formatter = new Intl.DateTimeFormat('en', { timeZone: zone, timeZoneName: 'shortOffset', hour: '2-digit' });
+      offsetLabelFormatters.set(zone, formatter);
+    }
     
     const parts = formatter.formatToParts(at);
     const offsetPart = parts.find(part => part.type === 'timeZoneName');
@@ -173,55 +177,40 @@ export function getTimezoneOffset(timeZone: string, date: Date): number {
   return rawTimezoneOffset(resolveTimeZone(timeZone, date), date);
 }
 
+// One formatter per zone. Building two Intl.DateTimeFormat objects on every
+// call made the clock-change countdown's 400-day scan and the converter's
+// zone list measurably slow on phones (Oct 2026 audit). hourCycle 'h23'
+// (not hour12: false) because some engines report midnight as hour "24",
+// which Date.UTC would read as the next day.
+const offsetFormatters = new Map<string, Intl.DateTimeFormat>();
+function offsetFormatter(timeZone: string): Intl.DateTimeFormat {
+  let f = offsetFormatters.get(timeZone);
+  if (!f) {
+    f = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23',
+    });
+    offsetFormatters.set(timeZone, f);
+  }
+  return f;
+}
+
 /** Offset in minutes exactly as this browser's Intl reports it — no BC correction. */
 function rawTimezoneOffset(timeZone: string, date: Date): number {
   try {
-    // Create formatters for UTC and target timezone
-    const utcFormatter = new Intl.DateTimeFormat('en', {
-      timeZone: 'UTC',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-    
-    const targetFormatter = new Intl.DateTimeFormat('en', {
-      timeZone: timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-    
-    const utcParts = utcFormatter.formatToParts(date);
-    const targetParts = targetFormatter.formatToParts(date);
-
-    // Use UTC construction to avoid host locale/DST influencing the delta
-    const utcMs = Date.UTC(
-      parseInt(utcParts.find(p => p.type === 'year')?.value || '0'),
-      parseInt(utcParts.find(p => p.type === 'month')?.value || '0') - 1,
-      parseInt(utcParts.find(p => p.type === 'day')?.value || '0'),
-      parseInt(utcParts.find(p => p.type === 'hour')?.value || '0'),
-      parseInt(utcParts.find(p => p.type === 'minute')?.value || '0'),
-      parseInt(utcParts.find(p => p.type === 'second')?.value || '0')
-    );
-
-    const targetMs = Date.UTC(
-      parseInt(targetParts.find(p => p.type === 'year')?.value || '0'),
-      parseInt(targetParts.find(p => p.type === 'month')?.value || '0') - 1,
-      parseInt(targetParts.find(p => p.type === 'day')?.value || '0'),
-      parseInt(targetParts.find(p => p.type === 'hour')?.value || '0'),
-      parseInt(targetParts.find(p => p.type === 'minute')?.value || '0'),
-      parseInt(targetParts.find(p => p.type === 'second')?.value || '0')
-    );
-
-    return (targetMs - utcMs) / (1000 * 60);
+    const parts = offsetFormatter(timeZone).formatToParts(date);
+    const get = (type: Intl.DateTimeFormatPartTypes) => parseInt(parts.find((p) => p.type === type)?.value || '0', 10);
+    // Wall-clock time in the zone, read as if it were UTC, minus the instant
+    // itself (to the second, as the zone's wall clock has no milliseconds).
+    const wallMs = Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second'));
+    const utcMs = Math.floor(date.getTime() / 1000) * 1000;
+    return (wallMs - utcMs) / 60000;
   } catch {
     return 0;
   }
