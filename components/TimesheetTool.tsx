@@ -185,7 +185,15 @@ const encodeShareParam = (name: string, rate: string, shifts: Shift[]): string =
 };
 const decodeShareParam = (param: string): { name: string; rate: string; shifts: Shift[] } | null => {
   try {
-    const doc = JSON.parse(decodeURIComponent(param)) as ShareDoc;
+    // URLSearchParams.get already decodes once. Decoding again (as until Oct
+    // 2026) threw on any "%" in a name or rate, so the link wouldn't open;
+    // the second decode is only a fallback for a doubly-encoded param.
+    let doc: ShareDoc;
+    try {
+      doc = JSON.parse(param) as ShareDoc;
+    } catch {
+      doc = JSON.parse(decodeURIComponent(param)) as ShareDoc;
+    }
     if (!doc || !Array.isArray(doc.s) || doc.s.length === 0) return null;
     const shifts: Shift[] = doc.s.slice(0, 60).map((x, i) => ({
       id: `row-${i + 1}`,
@@ -253,6 +261,19 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
       setSaveName(decoded.name);
       setSeq(decoded.shifts.length + 2);
       gaEvent({ action: 'timesheet_opened_from_link', params: { device: getDevice(), shifts: decoded.shifts.length } });
+      // The shared shifts (names, pay, times) now live in the draft that
+      // auto-saves below, so take them out of the address bar: analytics
+      // and session recordings capture the URL. Only when storage works —
+      // otherwise a reload would lose the timesheet.
+      try {
+        window.localStorage.setItem('clockmath-ts-probe', '1');
+        window.localStorage.removeItem('clockmath-ts-probe');
+        const clean = new URL(window.location.href);
+        clean.searchParams.delete('d');
+        window.history.replaceState(window.history.state, '', clean.pathname + clean.search + clean.hash);
+      } catch {
+        /* storage blocked: keep the link so a reload still shows the timesheet */
+      }
       setLoaded(true);
       return;
     }

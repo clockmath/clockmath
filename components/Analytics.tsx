@@ -4,13 +4,14 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
 import { GA_MEASUREMENT_ID, pageview } from "@/lib/gtag";
-import { CONSENT_STORAGE_KEY, RESTRICTED_REGIONS } from "@/lib/consent";
+import { CONSENT_CHANGED_EVENT, CONSENT_STORAGE_KEY, RESTRICTED_REGIONS, analyticsAllowedNow } from "@/lib/consent";
+import { ANALYTICS_URL_SNIPPET } from "@/lib/analyticsUrl";
 
 function AnalyticsTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Fire page_view on route changes
+  // Fire page_view on route changes (pageview strips visitor data from the URL).
   useEffect(() => {
     if (!GA_MEASUREMENT_ID) return;
     const url = pathname + (searchParams?.toString() ? `?${searchParams}` : "");
@@ -20,17 +21,45 @@ function AnalyticsTracker() {
   return null;
 }
 
+/**
+ * Loads the gtag.js library only once analytics is allowed (lib/consent's
+ * analyticsAllowedNow, the same gate as Clarity): outside the EEA/UK/CH by
+ * default, inside them only after "Accept". Calls made before then wait in
+ * dataLayer and are sent once it loads; if it never loads, nothing is sent.
+ * Injected by hand rather than with <Script src>, which also preloaded the
+ * 180 KB library at high priority on every page (and in Early Hints).
+ */
+function GtagLoader() {
+  useEffect(() => {
+    let cancelled = false;
+    const load = () => {
+      if (cancelled || document.getElementById("ga4-src")) return;
+      const s = document.createElement("script");
+      s.id = "ga4-src";
+      s.async = true;
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+      document.head.appendChild(s);
+    };
+    analyticsAllowedNow().then((ok) => {
+      if (ok) load();
+    });
+    const onChange = (e: Event) => {
+      if ((e as CustomEvent).detail === "granted") load();
+    };
+    window.addEventListener(CONSENT_CHANGED_EVENT, onChange);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);
+    };
+  }, []);
+  return null;
+}
+
 export default function Analytics() {
   if (!GA_MEASUREMENT_ID) return null;
 
   return (
     <>
-      {/* GA base */}
-      <Script
-        id="ga4-src"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
       <Script id="ga4-init" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
@@ -58,11 +87,15 @@ export default function Analytics() {
             }));
           }
 
-          gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false${
+          // Every event inherits page_location/page_referrer from config;
+          // give it the cleaned URLs so visitor data never reaches GA.
+          ${ANALYTICS_URL_SNIPPET}
+          gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false, page_location: cmLoc, page_referrer: cmRef${
             process.env.NEXT_PUBLIC_GA_DEBUG === "true" ? ", debug_mode: true" : ""
           } });
         `}
       </Script>
+      <GtagLoader />
       <Suspense fallback={null}>
         <AnalyticsTracker />
       </Suspense>

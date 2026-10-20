@@ -16,13 +16,8 @@
  */
 
 import { useEffect } from 'react';
-import {
-  CONSENT_CHANGED_EVENT,
-  getStoredConsent,
-  detectCountry,
-  isRestrictedRegion,
-  isLikelyRestrictedByTimezone,
-} from '@/lib/consent';
+import { CONSENT_CHANGED_EVENT, analyticsAllowedNow } from '@/lib/consent';
+import { urlHasVisitorData } from '@/lib/analyticsUrl';
 
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || '';
 
@@ -36,6 +31,10 @@ declare global {
 
 function injectClarity() {
   if (document.getElementById('clarity-tag')) return;
+  // Clarity records the page URL and offers no way to clean it, so it never
+  // starts on a page whose address carries what a visitor typed (a shared
+  // countdown's title and date; a timesheet link before it is tidied away).
+  if (urlHasVisitorData()) return;
   window.clarity =
     window.clarity ||
     function (...args: unknown[]) {
@@ -62,17 +61,11 @@ export default function ClarityAnalytics() {
 
     let cancelled = false;
 
-    const gate = async () => {
-      const stored = getStoredConsent();
-      if (stored === 'granted') return injectClarity();
-      if (stored === 'denied') return;
-      // No choice yet: allowed unless the visitor is in an opt-in region.
-      const country = await detectCountry();
-      if (cancelled) return;
-      const restricted = country ? isRestrictedRegion(country) : isLikelyRestrictedByTimezone();
-      if (!restricted) injectClarity();
-    };
-    gate();
+    // Stored choice wins; with none, allowed unless the visitor is in an
+    // opt-in region (shared with GA4 — lib/consent analyticsAllowedNow).
+    analyticsAllowedNow().then((ok) => {
+      if (ok && !cancelled) injectClarity();
+    });
 
     const onChange = (e: Event) => {
       const choice = (e as CustomEvent).detail;

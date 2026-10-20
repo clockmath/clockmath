@@ -79,18 +79,40 @@ export const updateConsent = (choice: ConsentChoice) => {
 
 // Detect the visitor's country. Prefers the Cloudflare Pages geo endpoint;
 // falls back to a timezone heuristic when it's unavailable (e.g. local dev or
-// static hosting without the function).
-export const detectCountry = async (): Promise<string | null> => {
-  try {
-    const res = await fetch("/api/geo", { cache: "no-store" });
-    if (res.ok) {
-      const data: { country?: string } = await res.json();
-      if (data.country && data.country !== "XX") return data.country;
-    }
-  } catch {
-    /* fall through to heuristic */
+// static hosting without the function). One request per page load: the
+// banner, GA and Clarity each asked separately until Oct 2026.
+let countryPromise: Promise<string | null> | null = null;
+export const detectCountry = (): Promise<string | null> => {
+  if (!countryPromise) {
+    countryPromise = (async () => {
+      try {
+        const res = await fetch("/api/geo", { cache: "no-store" });
+        if (res.ok) {
+          const data: { country?: string } = await res.json();
+          if (data.country && data.country !== "XX") return data.country;
+        }
+      } catch {
+        /* fall through to heuristic */
+      }
+      return null;
+    })();
   }
-  return null;
+  return countryPromise;
+};
+
+/**
+ * Whether analytics (GA4 and Clarity) may load before any banner choice:
+ * a stored choice wins; with none, only outside the EEA/UK/CH. Neither tag
+ * loads at all in those regions until the visitor accepts — Consent Mode's
+ * "denied" defaults still sent cookieless pings (IP, user agent) before a
+ * choice, which some regulators treat as needing consent too.
+ */
+export const analyticsAllowedNow = async (): Promise<boolean> => {
+  const stored = getStoredConsent();
+  if (stored) return stored === "granted";
+  const country = await detectCountry();
+  const restricted = country ? isRestrictedRegion(country) : isLikelyRestrictedByTimezone();
+  return !restricted;
 };
 
 // Timezone-based heuristic used only when geo lookup fails. Returns true if the
