@@ -11,6 +11,18 @@ const path = require('path');
 const workerPath = path.join(__dirname, '../.vercel/output/static/_worker.js/index.js');
 const liveCountsCode = fs.readFileSync(path.join(__dirname, 'worker/live-counts.js'), 'utf8');
 const staleAssetsCode = fs.readFileSync(path.join(__dirname, 'worker/stale-assets.js'), 'utf8');
+// The daily quiz generator, compiled from the same lib/quiz.ts the page uses,
+// so the server can re-score a submission from the chosen answers instead
+// of trusting a posted score (Oct 2026 audit: anyone could post 5/5).
+const quizLibCode = require('esbuild').buildSync({
+  entryPoints: [path.join(__dirname, '../lib/quiz.ts')],
+  bundle: true,
+  format: 'iife',
+  globalName: '__cmQuiz',
+  target: 'es2020',
+  write: false,
+  logLevel: 'silent',
+}).outputFiles[0].text;
 
 const apiHandlersCode = `
 // ---- Injected security headers ----
@@ -23,6 +35,9 @@ const SECURITY_HEADERS = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self)',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  // No page here needs a handle on a window it opens or that opened it
+  // (sharing uses navigator.share; outbound links are noopener).
+  'Cross-Origin-Opener-Policy': 'same-origin',
   // Microsoft Clarity (added to the CSP Oct 2026 — it was blocked on every page from its Aug 2026 launch):
   // the tag at www.clarity.ms loads scripts.clarity.ms/<ver>/clarity.js, uploads to <letter>.clarity.ms/collect
   // (XHR/sendBeacon) and fires c.clarity.ms/c.gif. The upload host's letter varies, hence *.clarity.ms for
@@ -60,6 +75,24 @@ function buildCorsHeaders(request) {
   return headers;
 }
 
+// Best-effort per-IP limiter. Maps live per worker isolate, so this only
+// slows a burst hitting one location; real limits need a Cloudflare rate
+// limiting rule. Expired buckets are pruned so the Map can't grow forever.
+const placesIpHits = new Map();
+function rateLimited(map, ip, max, windowMs) {
+  const now = Date.now();
+  if (map.size > 5000) {
+    for (const [k, b] of map) if (now > b.reset) map.delete(k);
+  }
+  const bucket = map.get(ip);
+  if (!bucket || now > bucket.reset) {
+    map.set(ip, { count: 1, reset: now + windowMs });
+    return false;
+  }
+  bucket.count += 1;
+  return bucket.count > max;
+}
+
 async function handlePlacesApi(request, env) {
   const url = new URL(request.url);
   const query = url.searchParams.get('q');
@@ -73,6 +106,33 @@ async function handlePlacesApi(request, env) {
     return new Response(
       JSON.stringify({ error: 'Query parameter is required' }),
       { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+    );
+  }
+  // Place names are short; a cap stops junk queries spending Geoapify credits.
+  if (query.length > 100) {
+    return new Response(
+      JSON.stringify({ error: 'Query too long', results: [] }),
+      { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+    );
+  }
+
+  // Answers are cached at the edge for a day by lower-cased query, so the
+  // same search from many visitors costs one Geoapify request per location
+  // (Cache-Control alone only helped each browser). Oct 2026 audit.
+  const cacheKey = new Request('https://clockmath.com/__places-cache?q=' + encodeURIComponent(query.trim().toLowerCase()));
+  const edgeCache = typeof caches !== 'undefined' ? caches.default : null;
+  if (edgeCache) {
+    try {
+      const hit = await edgeCache.match(cacheKey);
+      if (hit) {
+        return new Response(hit.body, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600', ...corsHeaders } });
+      }
+    } catch (e) { /* cache unavailable — fall through to Geoapify */ }
+  }
+  if (rateLimited(placesIpHits, request.headers.get('CF-Connecting-IP') || 'unknown', 120, 3600000)) {
+    return new Response(
+      JSON.stringify({ error: 'Too many searches — try again later', results: [] }),
+      { status: 429, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
 
@@ -118,8 +178,14 @@ async function handlePlacesApi(request, env) {
       lon: item.lon,
     }));
 
+    const json = JSON.stringify({ results });
+    if (edgeCache) {
+      try {
+        await edgeCache.put(cacheKey, new Response(json, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' } }));
+      } catch (e) { /* not cached — fine */ }
+    }
     return new Response(
-      JSON.stringify({ results }),
+      json,
       { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600', ...corsHeaders } }
     );
   } catch (error) {
@@ -155,14 +221,7 @@ const quizIpHits = new Map();
 const quizChampionCache = new Map();
 
 function quizRateLimited(ip) {
-  const now = Date.now();
-  const bucket = quizIpHits.get(ip);
-  if (!bucket || now > bucket.reset) {
-    quizIpHits.set(ip, { count: 1, reset: now + 60 * 60 * 1000 });
-    return false;
-  }
-  bucket.count += 1;
-  return bucket.count > 60;
+  return rateLimited(quizIpHits, ip, 60, 60 * 60 * 1000);
 }
 
 function quizUtcToday() {
@@ -285,12 +344,23 @@ async function handleQuizApi(request, env) {
 
   const today = quizUtcToday();
   const day = body && body.day;
-  const score = body && body.score;
+  const picks = body && body.picks;
   const timeMs = body && body.timeMs;
   let initials = body && body.initials;
 
   if (day !== today) return quizJson(request, 400, { error: "not today's puzzle" });
-  if (!Number.isInteger(score) || score < 0 || score > 5) return quizJson(request, 400, { error: 'bad score' });
+  // Score from the chosen answers against today's quiz (generated from the
+  // date, exactly as the page does) — a posted "score" is ignored.
+  if (!Array.isArray(picks) || picks.length !== 5 || !picks.every((p) => Number.isInteger(p) && p >= 0 && p < 10)) {
+    return quizJson(request, 400, { error: 'answers required' });
+  }
+  let score;
+  try {
+    const quiz = __cmQuiz.generateDailyQuiz(day);
+    score = picks.reduce((n, p, i) => n + (p === quiz.questions[i].correctIndex ? 1 : 0), 0);
+  } catch (e) {
+    return quizJson(request, 503, { error: 'quiz unavailable' });
+  }
   if (!Number.isInteger(timeMs) || timeMs < 2000 * 5 || timeMs > 60 * 60 * 1000) return quizJson(request, 400, { error: 'implausible time' });
   if (initials != null) {
     if (typeof initials !== 'string' || !/^[A-Z]{3}$/.test(initials) || QUIZ_BLOCKED_INITIALS.has(initials)) {
@@ -321,12 +391,18 @@ async function handleQuizApi(request, env) {
     if (idx !== -1) rank = idx + 1;
   }
 
-  await env.QUIZ_KV.put('board:' + day, JSON.stringify(board), { expirationTtl: 60 * 60 * 24 * 14 });
+  // KV allows about one write per second per key; under a burst put() can
+  // throw (429). Answer cleanly instead of an uncaught 500.
+  try {
+    await env.QUIZ_KV.put('board:' + day, JSON.stringify(board), { expirationTtl: 60 * 60 * 24 * 14 });
+  } catch (e) {
+    return quizJson(request, 503, { error: 'leaderboard busy — try again in a moment' });
+  }
 
   return quizJson(
     request,
     200,
-    { accepted: true, count: board.count, percentile, rank, top: board.top.slice(0, 10) },
+    { accepted: true, score, count: board.count, percentile, rank, top: board.top.slice(0, 10) },
     { 'Set-Cookie': QUIZ_COOKIE + '=' + today + '; Path=/api/quiz; Max-Age=172800; HttpOnly; Secure; SameSite=Lax' },
   );
 }
@@ -335,14 +411,7 @@ async function handleQuizApi(request, env) {
 // Keep in sync with that file: it holds the documented design notes.
 const fbIpHits = new Map();
 function fbRateLimited(ip) {
-  const now = Date.now();
-  const bucket = fbIpHits.get(ip);
-  if (!bucket || now > bucket.reset) {
-    fbIpHits.set(ip, { count: 1, reset: now + 3600000 });
-    return false;
-  }
-  bucket.count += 1;
-  return bucket.count > 5;
+  return rateLimited(fbIpHits, ip, 5, 3600000);
 }
 
 async function fbSendEmailCopy(env, entry) {
@@ -412,7 +481,11 @@ async function handleFeedbackApi(request, env) {
   };
 
   const key = 'feedback:' + entry.ts + '-' + Math.random().toString(36).slice(2, 8);
-  await env.QUIZ_KV.put(key, JSON.stringify(entry), { expirationTtl: 90 * 24 * 3600 });
+  try {
+    await env.QUIZ_KV.put(key, JSON.stringify(entry), { expirationTtl: 90 * 24 * 3600 });
+  } catch (e) {
+    return quizJson(request, 503, { error: 'busy — try again in a moment' });
+  }
 
   try { await fbSendEmailCopy(env, entry); } catch (e) { /* KV copy is the durable record */ }
 
@@ -469,7 +542,8 @@ const match = workerContent.match(fetchPattern);
 
 if (match) {
   const [originalExport, varName, reqParam, envParam, ctxParam] = match;
-  const wrappedExport = `${apiHandlersCode}
+  const wrappedExport = `${quizLibCode}
+${apiHandlersCode}
 ${liveCountsCode}
 ${staleAssetsCode}
 var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
@@ -498,7 +572,9 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
     return handleFeedbackApi(${reqParam}, ${envParam});
   }
 `;
-  workerContent = workerContent.replace(originalExport, wrappedExport);
+  // A function replacement: a string one would expand "$&", "$1"… sequences
+  // inside the injected code.
+  workerContent = workerContent.replace(originalExport, () => wrappedExport);
 
   // Wrap the default export so every response (API responses above and all
   // Next.js pages/assets below) gets the security headers and cache policy,

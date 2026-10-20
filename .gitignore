@@ -73,7 +73,8 @@ jspm_packages/
 # Cloudflare
 .wrangler/
 wrangler.toml
-wrangler.toml.bak*.tsbuildinfo
+wrangler.toml.bak*
+*.tsbuildinfo
 
 # IndexNow: fingerprints of what was last submitted (local, per machine)
 .indexnow-state.json
