@@ -164,7 +164,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
     return (
       // min-height approximates the hydrated grid so the swap doesn't cause a
       // large layout shift (CLS) below the placeholder.
-      <div className={`bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 min-h-[640px] ${className}`}>
+      <div className={`bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 min-h-[640px] ${className}`}>
         <p className="text-center text-muted-foreground py-10">Loading live market hours…</p>
       </div>
     );
@@ -176,7 +176,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
   return (
     <div className={className}>
       {/* Summary bar */}
-      <div className="bg-card dark:bg-slate-800 rounded-2xl px-4 sm:px-6 py-4 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-card dark:bg-card rounded-2xl px-4 sm:px-6 py-4 shadow-sm border border-border/50 dark:border-border/50 mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-lg font-semibold text-foreground">
             {openCount === 0 ? 'No markets open right now' : `${openCount} of ${MARKETS.length} markets open`}
@@ -185,7 +185,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
             All times shown in your timezone — {getTimeZoneDisplayName(userTZ)}
           </p>
         </div>
-        <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
+        <div className="flex bg-muted/50 dark:bg-muted/50 rounded-lg p-1">
           <button
             onClick={() => setHourFormat(true)}
             aria-pressed={hour12}
@@ -232,7 +232,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
           return (
             <div
               key={market.id}
-              className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm border border-border/50 dark:border-slate-700/50"
+              className="bg-card dark:bg-card rounded-2xl p-4 sm:p-5 shadow-sm border border-border/50 dark:border-border/50"
             >
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2.5 min-w-0">

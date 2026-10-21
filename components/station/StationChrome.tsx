@@ -17,7 +17,9 @@ const TABS = [
 
 interface StationChromeProps {
   children: React.ReactNode
-  currentTool: (typeof TABS)[number]["id"]
+  /** A tab id; tools without a tab of their own (overtime, decimal hours,
+      market hours) light up "All tools". */
+  currentTool: string
   onToggleTheme: () => void
   isDarkMode: boolean
 }
@@ -36,6 +38,7 @@ function Mark() {
 }
 
 export default function StationChrome({ children, currentTool, onToggleTheme, isDarkMode }: StationChromeProps) {
+  const active = TABS.some((t) => t.id === currentTool) ? currentTool : "tools"
   return (
     <div className={`station ${Archivo.variable}`}>
       <header className="st-header">
@@ -46,7 +49,7 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
           </Link>
           <nav className="st-tabs" aria-label="Tools">
             {TABS.map((t) => (
-              <Link key={t.id} href={t.href} aria-current={t.id === currentTool ? "page" : undefined}>
+              <Link key={t.id} href={t.href} aria-current={t.id === active ? "page" : undefined}>
                 {t.label}
               </Link>
             ))}

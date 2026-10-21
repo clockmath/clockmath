@@ -51,7 +51,7 @@ export default function StackedTable<R extends Row>({
     <div className="sm:overflow-x-auto">
       <table role="table" className={`w-full text-sm ${minWidth ?? ''}`}>
         <thead role="rowgroup" className="hidden sm:table-header-group">
-          <tr role="row" className="text-left text-muted-foreground border-b border-border/50 dark:border-slate-700/50">
+          <tr role="row" className="text-left text-muted-foreground border-b border-border/50 dark:border-border/50">
             <th role="columnheader" className="py-2 px-1 font-semibold">{firstHeader}</th>
             {columns.map((c) => (
               <th key={c.key} role="columnheader" className={`py-2 px-1 font-semibold${c.right ? ' text-right' : ''}`}>
@@ -60,10 +60,10 @@ export default function StackedTable<R extends Row>({
             ))}
           </tr>
         </thead>
-        <tbody role="rowgroup" className="divide-y divide-border/40 dark:divide-slate-700/40">
+        <tbody role="rowgroup" className="divide-y divide-border/40 dark:divide-border/40">
           {rows.map((r) => (
             <tr key={r[firstKey]} role="row" className="block sm:table-row py-2.5 sm:py-0 align-top" {...rowAttrs?.(r)}>
-              <td role="cell" className="block sm:table-cell sm:py-2.5 sm:px-1 font-medium text-foreground dark:text-slate-100">
+              <td role="cell" className="block sm:table-cell sm:py-2.5 sm:px-1 font-medium text-foreground dark:text-foreground">
                 {renderFirst ? renderFirst(r) : r[firstKey]}
               </td>
               {columns.map((c, i) => (
@@ -74,8 +74,8 @@ export default function StackedTable<R extends Row>({
                     c.right ? 'sm:text-right ' : ''
                   }${
                     stack === 'inline' && i > 0
-                      ? 'text-muted-foreground sm:text-foreground dark:sm:text-slate-200'
-                      : 'text-foreground dark:text-slate-200'
+                      ? 'text-muted-foreground sm:text-foreground dark:sm:text-foreground'
+                      : 'text-foreground dark:text-foreground'
                   }`}
                 >
                   {stack === 'inline' && i > 0 && (

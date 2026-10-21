@@ -2,14 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { intervalToDuration, formatDistance } from 'date-fns';
+import { formatDistance } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
-import { RollingNumber } from '@/components/RollingNumber';
+import { StationBoard } from '@/components/station/StationBoard';
 import { buildDay } from '@/lib/buildDay';
-import InfoTip from '@/components/InfoTip';
 import { getDevice } from '@/lib/device';
 
 // Curated event countdowns (each is its own SEO landing page).
@@ -152,44 +151,11 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
   }, [mounted]);
 
   const activeMs = active?.ms ?? NaN;
-  const isPast = mounted && !Number.isNaN(activeMs) && activeMs < nowMs;
 
-  // Calendar-aware breakdown of the ACTIVE countdown.
-  const tiles = useMemo<Array<{ label: string; value: number }>>(() => {
-    // No active countdown: show a ready row of zeros.
-    if (Number.isNaN(activeMs)) {
-      return [
-        { label: 'Days', value: 0 },
-        { label: 'Hours', value: 0 },
-        { label: 'Minutes', value: 0 },
-        { label: 'Seconds', value: 0 },
-      ];
-    }
-    const start = isPast ? activeMs : nowMs;
-    const end = isPast ? nowMs : activeMs;
-    const d = intervalToDuration({ start, end });
-    const years = d.years ?? 0;
-    const months = d.months ?? 0;
-    const list: Array<{ label: string; value: number }> = [];
-    if (years > 0) list.push({ label: 'Years', value: years });
-    if (years > 0 || months > 0) list.push({ label: 'Months', value: months });
-    list.push({ label: 'Days', value: d.days ?? 0 });
-    list.push({ label: 'Hours', value: d.hours ?? 0 });
-    list.push({ label: 'Minutes', value: d.minutes ?? 0 });
-    list.push({ label: 'Seconds', value: d.seconds ?? 0 });
-    return list;
-  }, [activeMs, nowMs, isPast]);
-
-  const targetLabel = useMemo(() => {
+  // The board shows the date; the time it counts to goes in its note.
+  const targetTime = useMemo(() => {
     if (Number.isNaN(activeMs)) return '';
-    return new Date(activeMs).toLocaleString(undefined, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+    return new Date(activeMs).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   }, [activeMs]);
 
   const activeTitle = active?.title.trim() ?? '';
@@ -296,50 +262,26 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     <div className={className}>
       {/* Countdown display — only shown once a countdown is active */}
       {active && (
-      <div className="relative z-10 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center mb-6">
-        {activeTitle && (
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
-            {isPast ? 'Since' : 'Until'} {activeTitle}
-          </h2>
-        )}
-        {targetLabel && (
-          <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6 inline-flex items-center gap-1">
-            {targetLabel}
-            {userTz && (
-              <InfoTip label="time zone">
-                Counted on your own clock ({userTz.split('/').pop()?.replace(/_/g, ' ')} time). A shared link counts
-                down on each viewer&apos;s clock.
-              </InfoTip>
-            )}
-          </p>
-        )}
+      <div className="relative z-10 mb-6" style={{ '--board': '#1849a9', '--board-ink': '#ffffff' } as React.CSSProperties}>
+        {/* The same departures board as the event pages, in the site's blue */}
+        <StationBoard
+          key={activeMs}
+          target={new Date(activeMs)}
+          title={activeTitle || 'your date'}
+          arrivedLabel={`${activeTitle || 'Your date'} has passed`}
+          dateNote={
+            <>
+              At {targetTime}
+              {userTz && <>, on your own clock ({userTz.split('/').pop()?.replace(/_/g, ' ')} time); a shared link counts down on each viewer&apos;s clock</>}
+            </>
+          }
+        />
 
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-          {tiles.map((unit) => (
-            <div
-              key={unit.label}
-              className="flex-1 min-w-[64px] max-w-[120px] bg-white dark:bg-slate-900/60 rounded-xl py-4 sm:py-5 border border-slate-200 dark:border-slate-700/60 shadow-sm"
-            >
-              <div className="text-2xl sm:text-4xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">
-                <RollingNumber value={unit.value.toLocaleString()} />
-              </div>
-              <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mt-1">
-                {unit.label}
-              </div>
-            </div>
-          ))}
-        </div>
-        {active && isPast && (
-          <p className="text-sm text-muted-foreground dark:text-slate-400 mt-4">
-            This date has already passed.
-          </p>
-        )}
-
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+        <div className="st-cta">
           <button
             onClick={handleShare}
             disabled={!active}
-            className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-medium rounded-xl shadow-sm transition-all duration-200"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none text-primary-foreground font-medium rounded-xl shadow-sm transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -354,7 +296,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           <button
             onClick={handleSave}
             disabled={!active}
-            className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-medium rounded-xl shadow-sm transition-all duration-200"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none text-primary-foreground font-medium rounded-xl shadow-sm transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -371,7 +313,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
       )}
 
       {/* Configuration */}
-      <div className="relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+      <div className="relative z-20 bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50">
         <div className="mb-4">
           {/* Question label + auto-scrolling Popular marquee share one row;
               the marquee chips are duplicated for a seamless right-to-left loop. */}
@@ -391,7 +333,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
                       title={item.note}
                       aria-hidden={i >= POPULAR_COUNTDOWNS.length}
                       tabIndex={i >= POPULAR_COUNTDOWNS.length ? -1 : undefined}
-                      className="shrink-0 inline-flex items-center min-h-[44px] whitespace-nowrap px-4 py-2.5 text-sm font-medium rounded-lg border bg-white border-slate-300 text-slate-700 shadow-sm hover:border-emerald-500 hover:text-emerald-700 dark:bg-slate-700/60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white transition-colors"
+                      className="shrink-0 inline-flex items-center min-h-[44px] whitespace-nowrap px-4 py-2.5 text-sm font-medium rounded-lg border bg-background border-slate-300 text-slate-700 shadow-sm hover:border-primary hover:text-primary dark:bg-muted/60 dark:border-border dark:text-foreground dark:hover:bg-muted dark:hover:text-white transition-colors"
                     >
                       {item.title}
                     </Link>
@@ -408,13 +350,13 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. My vacation, Exam day, New Year"
             maxLength={80}
-            className="w-full px-4 py-2.5 rounded-xl bg-background dark:bg-slate-900/60 border border-border dark:border-slate-700 text-foreground outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className="w-full px-4 py-2.5 rounded-xl bg-background dark:bg-background/60 border border-border dark:border-border text-foreground outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
 
         <div className="flex items-center justify-between mb-2">
           <label className="block text-sm font-medium text-foreground">Target date &amp; time</label>
-          <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
+          <div className="flex bg-muted/50 dark:bg-muted/50 rounded-lg p-1">
             <button
               onClick={() => setIs24h(false)}
             aria-pressed={!is24h}
@@ -453,7 +395,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           <button
             onClick={startCountdown}
             disabled={Number.isNaN(draftTargetMs)}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+            className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
@@ -463,7 +405,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
           </button>
           <button
             onClick={handleClear}
-            className="px-5 py-4 bg-muted dark:bg-slate-700 hover:bg-muted/80 dark:hover:bg-slate-600 text-foreground font-medium rounded-xl border border-border/50 dark:border-slate-600 transition-all duration-200"
+            className="px-5 py-4 bg-muted dark:bg-muted hover:bg-muted/80 dark:hover:bg-muted text-foreground font-medium rounded-xl border border-border/50 dark:border-border transition-all duration-200"
           >
             Clear
           </button>
@@ -472,8 +414,8 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
 
       {/* Saved countdowns */}
       {saved.length > 0 && (
-        <div className="relative z-0 mt-6 bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <h3 className="text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
+        <div className="relative z-0 mt-6 bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50">
+          <h3 className="text-sm font-semibold text-foreground dark:text-foreground uppercase tracking-wide mb-3">
             Saved countdowns
           </h3>
           <ul className="space-y-2">
@@ -493,14 +435,14 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
               return (
                 <li
                   key={item.id}
-                  className="flex items-center gap-3 rounded-xl border border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40 px-3 sm:px-4 py-3"
+                  className="flex items-center gap-3 rounded-xl border border-border/50 dark:border-border/50 bg-background/60 dark:bg-background/40 px-3 sm:px-4 py-3"
                 >
                   <button onClick={() => loadSaved(item)} className="flex items-center gap-3 flex-1 text-left min-w-0">
                     <span
                       className={`shrink-0 grid place-items-center w-9 h-9 rounded-lg ${
                         itemPast
                           ? 'bg-muted text-muted-foreground'
-                          : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
+                          : 'bg-primary/10 text-primary  '
                       }`}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -522,7 +464,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
                       className={`hidden sm:inline-block shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${
                         itemPast
                           ? 'bg-muted text-muted-foreground'
-                          : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                          : 'bg-primary/10 text-primary  '
                       }`}
                     >
                       {relative}
@@ -531,7 +473,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
                   <button
                     onClick={() => deleteSaved(item.id)}
                     aria-label={`Delete ${item.title}`}
-                    className="shrink-0 p-2.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-muted/60 dark:hover:bg-slate-700/60 transition-colors"
+                    className="shrink-0 p-2.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-muted/60 dark:hover:bg-muted/60 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

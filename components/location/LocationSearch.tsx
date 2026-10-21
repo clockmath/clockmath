@@ -230,7 +230,7 @@ export function LocationSearch({
           setTimeout(() => setOpen(false), 100);
         }}
         placeholder={placeholder}
-        className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-input dark:bg-slate-700 border-2 border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-base sm:text-lg shadow-sm text-foreground dark:text-slate-100"
+        className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-input dark:bg-muted border-2 border-border dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-base sm:text-lg shadow-sm text-foreground dark:text-foreground"
         autoComplete="off"
         style={{ color: 'inherit' }}
       />
@@ -240,7 +240,7 @@ export function LocationSearch({
       {open && items.length > 0 && (
         <ul
           role="listbox"
-          className="absolute z-10 mt-1 w-full rounded-xl border border-border/50 bg-card dark:bg-slate-800 shadow-sm max-h-60 overflow-y-auto"
+          className="absolute z-10 mt-1 w-full rounded-xl border border-border/50 bg-card dark:bg-card shadow-sm max-h-60 overflow-y-auto"
         >
           {items.map((p) => (
             <li
@@ -250,7 +250,7 @@ export function LocationSearch({
                 e.preventDefault();
                 pick(p);
               }}
-              className="px-3 py-2 cursor-pointer text-sm hover:bg-muted/50 dark:hover:bg-slate-700/50 text-foreground dark:text-slate-200"
+              className="px-3 py-2 cursor-pointer text-sm hover:bg-muted/50 dark:hover:bg-muted/50 text-foreground dark:text-foreground"
               key={`${p.lat},${p.lon}`}
             >
               {p.name}

@@ -376,10 +376,10 @@ export function InlineTimePicker({
             }, 100);
           }
         }}
-        className={`w-full px-4 py-3 text-left bg-background dark:bg-slate-700 border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 border-border dark:border-slate-600 hover:border-primary/50`}
+        className={`w-full px-4 py-3 text-left bg-background dark:bg-muted border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 border-border dark:border-border hover:border-primary/50`}
       >
         <div className="flex items-center justify-between">
-          <span className="text-foreground dark:text-slate-100 font-mono">
+          <span className="text-foreground dark:text-foreground font-mono">
             {timeInput || formatDisplayTime()}
           </span>
           <svg aria-hidden="true" className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -400,11 +400,11 @@ export function InlineTimePicker({
               setIsOpen(false);
             }
           }}
-          className="absolute top-full left-0 right-0 mt-2 bg-background dark:bg-slate-800 border border-border dark:border-slate-700 rounded-xl shadow-xl z-[100] p-4 mb-4"
+          className="absolute top-full left-0 right-0 mt-2 bg-background dark:bg-card border border-border dark:border-border rounded-xl shadow-xl z-[100] p-4 mb-4"
         >
           {/* Time Display */}
           <div className="text-center mb-4">
-            <div className="text-2xl font-bold text-foreground dark:text-slate-100 font-mono">
+            <div className="text-2xl font-bold text-foreground dark:text-foreground font-mono">
               <input
                 type="text"
                 value={timeInput || formatDisplayTime()}
@@ -450,7 +450,7 @@ export function InlineTimePicker({
                   }
                 }}
                 aria-label="Type a time"
-                className="w-full text-center bg-transparent border-none outline-none focus:bg-muted/20 dark:focus:bg-slate-700/50 rounded-lg px-2 py-1"
+                className="w-full text-center bg-transparent border-none outline-none focus:bg-muted/20 dark:focus:bg-muted/50 rounded-lg px-2 py-1"
                 placeholder={is24h ? "09:00" : "9:00 AM"}
                 maxLength={is24h ? 5 : 8}
                 autoFocus
@@ -458,7 +458,7 @@ export function InlineTimePicker({
             </div>
             {!is24h && (
               <div className="flex justify-center mt-2">
-                <div className="flex bg-muted/50 dark:bg-slate-700 rounded-lg p-1">
+                <div className="flex bg-muted/50 dark:bg-muted rounded-lg p-1">
                   <button
                     onClick={() => setSelectedPeriod('AM')}
                     onMouseDown={(e) => e.preventDefault()}
@@ -498,7 +498,7 @@ export function InlineTimePicker({
                   onClick={() => handleHourChange(-1)}
                   onMouseDown={(e) => e.preventDefault()}
                   aria-label="Decrease hour"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
                 >
                   <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -531,7 +531,7 @@ export function InlineTimePicker({
                         }
                       }
                     }}
-                    className="w-full text-lg font-bold text-center bg-transparent border-none outline-none text-foreground dark:text-slate-100"
+                    className="w-full text-lg font-bold text-center bg-transparent border-none outline-none text-foreground dark:text-foreground"
                     min={is24h ? 0 : 1}
                     max={is24h ? 23 : 12}
                     step={1}
@@ -541,7 +541,7 @@ export function InlineTimePicker({
                   onClick={() => handleHourChange(1)}
                   onMouseDown={(e) => e.preventDefault()}
                   aria-label="Increase hour"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
                 >
                   <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -558,7 +558,7 @@ export function InlineTimePicker({
                   onClick={() => handleMinuteChange(-1)}
                   onMouseDown={(e) => e.preventDefault()}
                   aria-label="Decrease minute"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
                 >
                   <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -581,7 +581,7 @@ export function InlineTimePicker({
                         }
                       }
                     }}
-                    className="w-full text-lg font-bold text-center bg-transparent border-none outline-none text-foreground dark:text-slate-100"
+                    className="w-full text-lg font-bold text-center bg-transparent border-none outline-none text-foreground dark:text-foreground"
                     min={0}
                     max={59}
                     step={1}
@@ -591,7 +591,7 @@ export function InlineTimePicker({
                   onClick={() => handleMinuteChange(1)}
                   onMouseDown={(e) => e.preventDefault()}
                   aria-label="Increase minute"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-slate-700 hover:bg-muted dark:hover:bg-slate-600 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
                 >
                   <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -605,13 +605,13 @@ export function InlineTimePicker({
           <div className="flex gap-2 mt-4">
             <button
               onClick={() => setIsOpen(false)}
-              className="flex-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-lg transition-colors"
+              className="flex-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted dark:bg-muted/50 dark:hover:bg-muted rounded-lg transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
-              className="flex-1 px-3 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+              className="flex-1 px-3 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors"
             >
               Confirm
             </button>

@@ -44,6 +44,8 @@
   --popover-foreground: var(--text);
   --primary: var(--enamel);
   --primary-foreground: #ffffff;
+  --accent: var(--enamel);
+  --accent-foreground: var(--primary-foreground);
   --secondary: var(--wash);
   --muted: var(--wash);
   --muted-foreground: var(--quiet);
@@ -175,21 +177,53 @@
 .st-chips { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .st-chips a { font-size: 15px; }
 
-/* Pages' own extra sections (date tables, unlock times) are written as
-   "h2 + card": laid out here like .st-more, the card flattened to a ruled table */
-.st-extra section { max-width: none; margin: 0; padding: 52px 0 0; display: grid;
-                    grid-template-columns: 260px minmax(0, 1fr); gap: 0 48px; align-items: start; }
-.st-extra section > h2 { grid-column: 1; grid-row: 1 / span 20; margin: 0; color: var(--ink);
-                         font-size: 24px !important; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; }
-.st-extra section > :not(h2) { grid-column: 2; max-width: 72ch; }
-.st-extra .bg-card { background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
-                     padding-left: 0 !important; padding-right: 0 !important; border-top: 1px solid var(--rule) !important; }
-.st-extra section.bg-card { border-top: 0 !important; }
-.st-extra th { color: var(--quiet); font-weight: 600; }
+/* Content sections. Countdown pages' extra sections and the tool pages'
+   explainers are written as "h2 + content" (often a card or table inside):
+   laid out here like .st-more, heading left, cards flattened to ruled text.
+   One rule for both, so the pages needed no per-page markup changes. */
+.st-extra section, .station section.max-w-3xl.mx-auto {
+  max-width: none; margin: 0; padding: 52px 0 0; display: grid;
+  grid-template-columns: 260px minmax(0, 1fr); gap: 0 48px; align-items: start;
+}
+.st-extra section > h2, .station section.max-w-3xl.mx-auto > h2 {
+  grid-column: 1; grid-row: 1 / span 20; margin: 0; color: var(--ink);
+  font-size: 24px !important; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em;
+}
+.st-extra section > :not(h2), .station section.max-w-3xl.mx-auto > :not(h2) { grid-column: 2; max-width: 72ch; }
+.st-extra .bg-card, .station section.max-w-3xl.mx-auto .bg-card {
+  background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+}
+.st-extra .bg-card:has(table), .station section.max-w-3xl.mx-auto .bg-card:has(table) { border-top: 1px solid var(--rule) !important; }
+.st-extra section.bg-card { padding-top: 52px !important; }
+.station section.max-w-3xl.mx-auto .bg-card h3 { font-size: 18px; color: var(--ink); font-weight: 700; }
+.station section.max-w-3xl.mx-auto .bg-card p { font-size: inherit; }
+.st-extra th, .station section.max-w-3xl.mx-auto th { color: var(--quiet); font-weight: 600; }
 .st-extra td, .st-extra th { padding-left: 0 !important; }
 
+/* A tool's answer, set like the homepage's: condensed, heavy, in ink */
+.station .st-figure { font-family: inherit !important; font-stretch: 70%; font-weight: 900 !important; color: var(--ink) !important;
+                      font-size: clamp(48px, 7vw, 76px) !important; line-height: 0.95; letter-spacing: -0.02em; }
+
+/* Tool panels: flat, smaller corners; popovers keep their shadow */
+.station .shadow-sm, .station .shadow, .station .shadow-md, .station .shadow-inner,
+.station .hover\:shadow-md:hover, .station .hover\:shadow-sm:hover { box-shadow: none; }
+.station .rounded-2xl { border-radius: 10px; }
+.station .rounded-xl { border-radius: 7px; }
+
+/* The tools hub: a departures board, one ruled row per tool */
+.st-hub { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.st-hub li { border-bottom: 1px solid var(--rule); }
+.st-hub a { display: grid; grid-template-columns: 260px minmax(0, 1fr) auto; gap: 4px 48px; align-items: baseline;
+            padding: 18px 0; text-decoration: none; color: var(--text); }
+.st-hub-title { color: var(--ink); font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+.st-hub a:hover .st-hub-title { color: var(--enamel); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.st-hub-desc { max-width: 60ch; }
+.st-hub-live { font-size: 14px; color: var(--quiet); white-space: nowrap; }
+.st-hub-live i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--quiet); margin-right: 7px; }
+.st-hub-live i.open { background: #1f9d55; }
+
 /* SeoIntro and the footer, inside the station frame */
-.station .st-legacy section { max-width: none; }
 .station .st-legacy h2 { font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
 .station footer { border-top-color: var(--rule); }
 
@@ -245,9 +279,10 @@
   .st-big { font-size: 96px; }
   .st-big.long { font-size: 60px; white-space: normal; }
   .st-more { grid-template-columns: 1fr; gap: 14px; padding-top: 40px; }
-  .st-extra section { grid-template-columns: 1fr; padding-top: 40px; }
-  .st-extra section > h2 { grid-row: auto; margin-bottom: 14px; }
-  .st-extra section > :not(h2) { grid-column: 1; }
+  .st-extra section, .station section.max-w-3xl.mx-auto { grid-template-columns: 1fr; padding-top: 40px; }
+  .st-extra section > h2, .station section.max-w-3xl.mx-auto > h2 { grid-row: auto; margin-bottom: 14px; }
+  .st-extra section > :not(h2), .station section.max-w-3xl.mx-auto > :not(h2) { grid-column: 1; }
+  .st-hub a { grid-template-columns: 1fr; padding: 14px 0; }
   .st-board { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; border-radius: 8px; }
   .st-days { font-size: 150px; }
   .st-sentence { font-size: 18px; margin-bottom: 14px; }

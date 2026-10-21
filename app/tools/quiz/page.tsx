@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Trophy } from 'lucide-react';
 import { QuizTool } from '@/components/QuizTool';
 import SiteFooter from '@/components/SiteFooter';
-import PageChrome from '@/components/PageChrome';
+import StationChrome from '@/components/station/StationChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
@@ -38,7 +37,7 @@ export default function QuizPage() {
 
 
   return (
-    <PageChrome currentTool="quiz" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="quiz" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd
         data={getSoftwareApplicationSchema({
           name: 'ClockMath Daily Time Quiz',
@@ -49,47 +48,39 @@ export default function QuizPage() {
       />
       <JsonLd data={getFAQPageSchema(FAQS)} />
 
-      {/* Header — slim: brand lives in the nav; the page leads with what it is */}
-      <header className="mb-6 sm:mb-8">
-        <nav className="text-sm text-muted-foreground mb-3">
-          <Link href="/" className="hover:text-primary transition-colors">
-            ClockMath
-          </Link>
-          <span className="mx-2">›</span>
-          <span>Daily Quiz</span>
+      <div className="st-intro">
+
+        <nav className="st-crumbs" aria-label="Breadcrumb">
+
+          <Link href="/tools/">Tools</Link> / Daily Quiz
+
         </nav>
-        <div className="flex items-center gap-3">
-          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
-            <Trophy className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          </span>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Daily Time Quiz</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              How fast is your clock math?
-            </p>
-          </div>
-        </div>
-      </header>
+
+        <h1 className="st-h1">Daily Time Quiz</h1>
+
+        <p className="st-lede">How fast is your clock math?</p>
+
+      </div>
 
       <QuizTool className="mb-section" />
 
       {/* About — plain text, no accordions: the quiz is the page, this is
           the small print. Mirrors the FAQPage JSON-LD above. */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-lg sm:text-xl font-bold text-foreground dark:text-slate-100 mb-3">About the quiz</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-foreground dark:text-foreground mb-3">About the quiz</h2>
         <p className="text-sm sm:text-base text-muted-foreground mb-6">
           Time math is harder than it looks because clocks count in 60s while everything else counts in 10s. Each
           question matches a ClockMath tool, and every explanation shows the mental method: count up to the next full
           hour, add the whole hours, then the leftover minutes. Miss one and the quiz points you to the{' '}
-          <Link href="/" className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4">
+          <Link href="/" className="text-primary underline underline-offset-4">
             duration
           </Link>
           ,{' '}
-          <Link href="/tools/decimal-hours" className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4">
+          <Link href="/tools/decimal-hours" className="text-primary underline underline-offset-4">
             decimal hours
           </Link>{' '}
           or{' '}
-          <Link href="/tools/timesheet" className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4">
+          <Link href="/tools/timesheet" className="text-primary underline underline-offset-4">
             work hours
           </Link>{' '}
           calculator. Teachers: practice mode is unlimited, untimed and needs no accounts, so it works on shared
@@ -106,6 +97,6 @@ export default function QuizPage() {
       </section>
 
       <SiteFooter />
-    </PageChrome>
+    </StationChrome>
   );
 }

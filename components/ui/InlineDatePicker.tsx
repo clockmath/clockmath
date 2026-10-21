@@ -258,8 +258,8 @@ export function InlineDatePicker({
         className={`
           flex items-center justify-between gap-2
           w-full px-4 py-3
-          bg-background dark:bg-slate-700
-          border border-border dark:border-slate-600
+          bg-background dark:bg-muted
+          border border-border dark:border-border
           rounded-xl
           text-left font-medium
           hover:border-primary/50

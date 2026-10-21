@@ -18,11 +18,11 @@ export interface QuickAnswer {
 export default function QuickAnswers({ heading, intro, items }: { heading: string; intro?: ReactNode; items: QuickAnswer[] }) {
   return (
     <section className="max-w-3xl mx-auto mb-section">
-      <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">{heading}</h2>
+      <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">{heading}</h2>
       {intro && <p className="text-muted-foreground mb-4">{intro}</p>}
-      <ul className="grid sm:grid-cols-2 gap-x-6 bg-card dark:bg-slate-800 rounded-2xl px-4 sm:px-5 py-2 border border-border/50 dark:border-slate-700/50">
+      <ul className="grid sm:grid-cols-2 gap-x-6 bg-card dark:bg-card rounded-2xl px-4 sm:px-5 py-2 border border-border/50 dark:border-border/50">
         {items.map((item) => (
-          <li key={item.lead} className="py-2 border-b border-border/40 dark:border-slate-700/40 last:border-b-0 sm:[&:nth-last-child(2):nth-child(odd)]:border-b-0 text-muted-foreground">
+          <li key={item.lead} className="py-2 border-b border-border/40 dark:border-border/40 last:border-b-0 sm:[&:nth-last-child(2):nth-child(odd)]:border-b-0 text-muted-foreground">
             <strong className="text-foreground font-semibold">{item.lead}</strong> {item.rest}
           </li>
         ))}
