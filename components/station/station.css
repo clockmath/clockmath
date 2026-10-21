@@ -175,12 +175,26 @@
 .st-chips { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .st-chips a { font-size: 15px; }
 
+/* Pages' own extra sections (date tables, unlock times) are written as
+   "h2 + card": laid out here like .st-more, the card flattened to a ruled table */
+.st-extra section { max-width: none; margin: 0; padding: 52px 0 0; display: grid;
+                    grid-template-columns: 260px minmax(0, 1fr); gap: 0 48px; align-items: start; }
+.st-extra section > h2 { grid-column: 1; grid-row: 1 / span 20; margin: 0; color: var(--ink);
+                         font-size: 24px !important; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; }
+.st-extra section > :not(h2) { grid-column: 2; max-width: 72ch; }
+.st-extra .bg-card { background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+                     padding-left: 0 !important; padding-right: 0 !important; border-top: 1px solid var(--rule) !important; }
+.st-extra section.bg-card { border-top: 0 !important; }
+.st-extra th { color: var(--quiet); font-weight: 600; }
+.st-extra td, .st-extra th { padding-left: 0 !important; }
+
 /* SeoIntro and the footer, inside the station frame */
 .station .st-legacy section { max-width: none; }
 .station .st-legacy h2 { font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
 .station footer { border-top-color: var(--rule); }
 
 /* ---- Countdown board ---- */
+.st-intro-event { padding-bottom: 0; }
 .st-board { margin-top: 30px; background: var(--board); color: var(--board-ink); border-radius: 10px; padding: 30px 36px 28px;
             display: grid; grid-template-columns: auto 1fr; gap: 24px 64px; align-items: end; }
 .st-board h2 { grid-column: 1 / -1; margin: 0; font-size: 20px; font-weight: 700; color: var(--board-ink); }
@@ -189,7 +203,7 @@
 .st-sentence { font-size: 21px; line-height: 1.4; max-width: 32ch; margin: 0 0 20px; }
 .st-sentence strong { font-weight: 800; }
 .st-clock { display: flex; gap: 28px; margin: 0; }
-.st-clock div { border-top: 1px solid rgba(255, 255, 255, 0.4); padding-top: 8px; min-width: 76px; }
+.st-clock div { border-top: 1px solid color-mix(in srgb, var(--board-ink) 40%, transparent); padding-top: 8px; min-width: 76px; }
 .st-clock dd { margin: 0; font-size: 46px; font-weight: 800; font-stretch: 72%; line-height: 1; }
 .st-clock dt { font-size: 14px; opacity: 0.8; margin-top: 4px; }
 .st-board .st-disclaimer { grid-column: 1 / -1; font-size: 12px; opacity: 0.75; margin: 0; max-width: 80ch; }
@@ -200,6 +214,19 @@
 .st-seconds line.now { stroke: var(--signal); }
 .st-date { display: flex; flex-wrap: wrap; gap: 6px 40px; border-bottom: 1px solid var(--rule); padding: 12px 0; font-size: 15px; }
 .st-date b { color: var(--ink); font-weight: 600; }
+.st-board-note { margin: 14px 0 0; max-width: 72ch; }
+.st-board-note strong, .st-notice strong { color: inherit; }
+.st-notice { display: block; }
+.st-notice .st-sentence { max-width: 60ch; margin: 0; }
+.st-notice .st-sentence p { margin: 0 0 10px; }
+.st-notice .st-sentence p + p { font-size: 16px; opacity: 0.85; }
+.st-verified { font-size: 15px; margin: 12px 0 0; }
+/* Retirement: the visitor's own date, above the board */
+.st-picker { padding-top: 26px; border-top: 2px solid var(--ink); margin-top: 26px; }
+.st-picker > span { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.st-picker-field { max-width: 320px; }
+.st-picker-field button[aria-haspopup] { background: var(--wash) !important; border-color: transparent !important; border-radius: 6px !important; min-height: 52px; }
+.st-picker > p { font-size: 14px; color: var(--quiet); margin: 8px 0 0; }
 .st-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 
 @media (max-width: 760px) {
@@ -218,6 +245,9 @@
   .st-big { font-size: 96px; }
   .st-big.long { font-size: 60px; white-space: normal; }
   .st-more { grid-template-columns: 1fr; gap: 14px; padding-top: 40px; }
+  .st-extra section { grid-template-columns: 1fr; padding-top: 40px; }
+  .st-extra section > h2 { grid-row: auto; margin-bottom: 14px; }
+  .st-extra section > :not(h2) { grid-column: 1; }
   .st-board { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; border-radius: 8px; }
   .st-days { font-size: 150px; }
   .st-sentence { font-size: 18px; margin-bottom: 14px; }
@@ -225,3 +255,6 @@
   .st-clock div { min-width: 0; flex: 1; }
   .st-clock dd { font-size: 36px; }
 }
+
+/* A black or midnight board would sink into the dark dial: give it an edge */
+.dark .st-board { box-shadow: inset 0 0 0 1px var(--rule); }

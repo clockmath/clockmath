@@ -6,6 +6,7 @@ import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesT
 export default function NewYearCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#14234b', ink: '#f3c74f' }}
       heading={'How Many Days Until New Year?'}
       tagline="Live countdown to midnight, January 1 — down to the second"
       lastUpdated="2026-10-15"

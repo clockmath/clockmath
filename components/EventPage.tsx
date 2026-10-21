@@ -3,12 +3,11 @@
 import { useCallback, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { EventCountdown } from '@/components/EventCountdown';
+import { StationBoard } from '@/components/station/StationBoard';
+import StationChrome from '@/components/station/StationChrome';
 import SiteFooter from '@/components/SiteFooter';
-import PageChrome from '@/components/PageChrome';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { Toaster } from '@/components/ui/toaster';
-import { Trophy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -108,11 +107,17 @@ export interface EventPageProps {
    */
   extraContent?: ReactNode;
   faqs: Array<{ question: string; answer: string }>;
+  /**
+   * The event's own colour for the countdown board, and the numerals on it
+   * (white unless given). Pick one with at least 4.5:1 contrast to `ink`.
+   */
+  board?: { color: string; ink?: string };
 }
 
-// Shared scaffold for every event countdown landing page: dark-mode wiring,
-// chrome, header/breadcrumb, the live timer, facts, intro, FAQ (+ schema) and
-// a CTA back to the countdown tool. Pages supply only their content via props.
+// Shared scaffold for every event countdown landing page, in the station-
+// clock design (Oct 2026): heading, the countdown board in the event's own
+// colour, share/make-your-own, then facts, intro, FAQ (+ schema) and links to
+// the other countdowns as ruled sections. Pages supply only content via props.
 export default function EventPage({
   heading,
   tagline,
@@ -131,152 +136,125 @@ export default function EventPage({
   facts,
   intro,
   faqs,
+  board,
 }: EventPageProps) {
   const [isDarkMode, toggleDarkMode] = useDarkMode();
   const pathname = usePathname();
-
-
-
-
   const handleShare = useShareCountdown();
 
+  // Only pages with event facts have anything to verify — a user-picked
+  // date (retirement) does not. lastUpdated still feeds the sitemap.
+  const verified =
+    lastUpdated && facts && facts.length > 0
+      ? new Date(`${lastUpdated}T12:00:00`).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      : null;
+
   return (
-    <PageChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd data={getFAQPageSchema(faqs)} />
 
-      <header className="text-center mb-8 sm:mb-section">
-        <h1 className="text-3xl sm:text-4xl font-bold">{heading}</h1>
-        <p className="text-slate-700 dark:text-emerald-200 text-base sm:text-lg font-medium mt-1">{tagline}</p>
-        <nav className="text-sm text-muted-foreground mt-4">
-          <Link href="/" className="hover:text-primary transition-colors">
-            ClockMath
-          </Link>
-          <span className="mx-2">›</span>
-          <Link href="/tools/countdown/" className="hover:text-primary transition-colors">
-            Countdown
-          </Link>
-          <span className="mx-2">›</span>
-          <span>{breadcrumb}</span>
+      <div className="st-intro st-intro-event">
+        <nav className="st-crumbs" aria-label="Breadcrumb">
+          <Link href="/tools/countdown/">Countdowns</Link> / {breadcrumb}
         </nav>
-      </header>
+        <h1 className="st-h1">{heading}</h1>
+        <p className="st-lede">{tagline}</p>
+      </div>
 
-      {countdownSlot ? (
-        <div className="mb-6">{countdownSlot}</div>
-      ) : (
-        <EventCountdown
-          target={target}
-          recurring={recurring}
-          weekly={weekly}
-          nthWeekday={nthWeekday}
-          dateRanges={dateRanges}
-          title={countdownTitle ?? breadcrumb}
-          arrivedLabel={arrivedLabel}
-          disclaimer={disclaimer}
-          className="mb-6"
-        />
-      )}
+      {/* --board reaches custom countdowns (eclipses, clock change) too */}
+      <div
+        className="st-board-wrap"
+        style={board ? ({ '--board': board.color, '--board-ink': board.ink ?? '#ffffff' } as React.CSSProperties) : undefined}
+      >
+        {countdownSlot ?? (
+          <StationBoard
+            target={target}
+            recurring={recurring}
+            weekly={weekly}
+            nthWeekday={nthWeekday}
+            dateRanges={dateRanges}
+            title={countdownTitle ?? breadcrumb}
+            arrivedLabel={arrivedLabel}
+            disclaimer={disclaimer}
+            dateNote={verified && `Event details last verified ${verified}`}
+          />
+        )}
+      </div>
+      {countdownSlot && verified && <p className="st-verified">Event details last verified {verified}</p>}
 
-      <div className="flex justify-center mb-6">
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl shadow-sm transition-all duration-200"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-          </svg>
+      <div className="st-cta">
+        <button type="button" className="st-btn primary" onClick={handleShare}>
           Share this countdown
         </button>
-      </div>
-
-      {/* Quiz nudge — countdown visitors are the site's most time-curious
-          audience; this is the quiz's main internal discovery surface. */}
-      <div className="flex justify-center mb-6">
-        <Link
-          href="/tools/quiz"
-          onClick={() => gaEvent({ action: 'quiz_nudge_click', params: { from: pathname ?? 'countdown' } })}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm border border-border dark:border-slate-600 bg-card dark:bg-slate-800 text-muted-foreground dark:text-slate-400 hover:text-foreground hover:border-emerald-600/40 transition-colors"
-        >
-          <Trophy className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
-          While you wait — today&apos;s 60-second time quiz
-        </Link>
-      </div>
-
-      {facts && facts.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-3 mb-6">
-          {facts.map((f) => (
-            <div
-              key={f.label}
-              className="bg-card dark:bg-slate-800 rounded-2xl p-4 border border-border/50 dark:border-slate-700/50 text-center"
-            >
-              <div className="text-xs text-muted-foreground">{f.label}</div>
-              <div className="font-semibold text-foreground dark:text-slate-100 mt-1">{f.value}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Only pages with event facts have anything to verify — a user-picked
-          date (retirement) does not. lastUpdated still feeds the sitemap. */}
-      {lastUpdated && facts && facts.length > 0 && (
-        <p className="text-xs text-muted-foreground text-center mb-6">
-          Event details last verified{' '}
-          {new Date(`${lastUpdated}T12:00:00`).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
-      )}
-
-      <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
-        <p className="text-foreground dark:text-slate-200 leading-relaxed">{intro}</p>
-      </div>
-
-      {extraContent}
-
-      <section className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
-        <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">Frequently asked questions</h2>
-        <div className="space-y-4">
-          {faqs.map((faq) => (
-            <div key={faq.question}>
-              <h3 className="font-semibold text-foreground dark:text-slate-100">{faq.question}</h3>
-              <p className="text-muted-foreground dark:text-slate-400 mt-1">{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Cross-links between event pages (excludes the page you're on) */}
-      <section className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6">
-        <h2 className="text-xl font-bold text-foreground dark:text-slate-100 mb-4">More countdowns</h2>
-        <div className="flex flex-wrap gap-2">
-          {/* Every countdown, not a top-N slice: a .slice(0, 6) here left half the
-              event pages with no internal links at all, so Google never found them. */}
-          {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, '')))
-            .map((c) => (
-              <Link
-                key={c.href}
-                href={c.href}
-                className="px-3 py-1.5 rounded-full text-sm font-medium bg-muted/50 dark:bg-slate-700/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                {c.title}
-              </Link>
-            ))}
-        </div>
-      </section>
-
-      <div className="text-center mb-8">
-        <p className="text-sm text-muted-foreground mb-3">Want a countdown to your own event?</p>
-        <Link
-          href="/tools/countdown/"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition-all duration-200"
-        >
+        <Link href="/tools/countdown/" className="st-btn quiet">
           Make your own countdown
         </Link>
       </div>
+      {/* Quiz nudge — countdown visitors are the site's most time-curious
+          audience; this is the quiz's main internal discovery surface. */}
+      <p className="st-nudge">
+        While you wait,{' '}
+        <Link href="/tools/quiz" onClick={() => gaEvent({ action: 'quiz_nudge_click', params: { from: pathname ?? 'countdown' } })}>
+          try today&apos;s 60-second time quiz
+        </Link>
+        .
+      </p>
 
-      <SiteFooter />
+      {facts && facts.length > 0 && (
+        <section className="st-more">
+          <h2>Key facts</h2>
+          <div>
+            <ul className="st-list">
+              {facts.map((f) => (
+                <li key={f.label}>
+                  <span>{f.label}</span>
+                  <span>{f.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      <section className="st-more">
+        <h2>About this countdown</h2>
+        <div>
+          <p style={{ margin: 0 }}>{intro}</p>
+        </div>
+      </section>
+
+      {extraContent && <div className="st-extra">{extraContent}</div>}
+
+      <section className="st-more">
+        <h2>Questions</h2>
+        <div className="st-faq">
+          {faqs.map((faq) => (
+            <div key={faq.question}>
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Cross-links between event pages (excludes the page you're on). Every
+          countdown, not a top-N slice: a .slice(0, 6) here left half the event
+          pages with no internal links at all, so Google never found them. */}
+      <section className="st-more">
+        <h2>More countdowns</h2>
+        <div className="st-chips">
+          {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, ''))).map((c) => (
+            <Link key={c.href} href={c.href}>
+              {c.title}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div style={{ marginTop: 56 }}>
+        <SiteFooter />
+      </div>
       <Toaster />
-    </PageChrome>
+    </StationChrome>
   );
 }

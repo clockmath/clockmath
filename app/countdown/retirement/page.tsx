@@ -6,6 +6,7 @@ import { UserDateCountdown } from '@/components/UserDateCountdown';
 export default function RetirementCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#1f5c6b' }}
       heading={'Retirement Countdown'}
       tagline="How long until you retire?"
       lastUpdated="2026-08-03"

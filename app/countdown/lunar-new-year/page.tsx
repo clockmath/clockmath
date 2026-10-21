@@ -20,6 +20,7 @@ const RANGES = YEARS.map((y) => ({ start: y.start }));
 export default function LunarNewYearCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#b71c1c', ink: '#ffd36b' }}
       heading={'How Many Days Until Lunar New Year?'}
       tagline="Live countdown to Lunar New Year 2027 — Saturday, February 6, the Year of the Goat"
       lastUpdated="2026-10-15"

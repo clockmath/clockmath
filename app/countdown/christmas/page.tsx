@@ -6,6 +6,7 @@ import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesT
 export default function ChristmasCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#1f5f3f' }}
       heading={'How Many Days Until Christmas?'}
       tagline="Live countdown to December 25 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"

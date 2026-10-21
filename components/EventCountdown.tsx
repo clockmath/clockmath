@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { RollingNumber } from '@/components/RollingNumber';
 import { intervalToDuration } from 'date-fns';
 
-interface EventCountdownProps {
+export interface EventCountdownProps {
   /** Fixed one-off target (e.g. a game release). Ignored if `recurring` is set. */
   target?: Date;
   /**
@@ -268,103 +267,4 @@ export function useEventCountdown({ target, recurring, weekly, nthWeekday, dateR
   const fixedTarget = !recurring && !weekly && !nthWeekday && !dateRanges && target ? target.getTime() : undefined;
 
   return { ready, noUpcoming, isPast, tiles, dateLabel, totalDays, liveSpec, fixedTarget, targetMs, nowMs };
-}
-
-// Display-only live countdown to a fixed or recurring target (event pages).
-export function EventCountdown({
-  target,
-  recurring,
-  weekly,
-  nthWeekday,
-  dateRanges,
-  title,
-  className = '',
-  arrivedLabel,
-  disclaimer,
-}: EventCountdownProps) {
-  const { noUpcoming, isPast, tiles, dateLabel, totalDays, liveSpec, fixedTarget } = useEventCountdown({
-    target,
-    recurring,
-    weekly,
-    nthWeekday,
-    dateRanges,
-  });
-
-  return (
-    <div
-      className={`bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl px-4 py-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center ${className}`}
-    >
-      <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-1">
-        {isPast ? (arrivedLabel ?? `${title} has released!`) : noUpcoming ? 'No date announced yet' : `Until ${title}`}
-      </h2>
-      {noUpcoming && (
-        <p className="text-foreground dark:text-slate-200">
-          This countdown starts again as soon as the next date is announced.
-        </p>
-      )}
-      {!noUpcoming && <p
-        className="text-sm text-muted-foreground dark:text-slate-400 mb-4"
-        data-live-date={fixedTarget}
-        suppressHydrationWarning
-      >
-        {dateLabel}
-      </p>}
-
-      {totalDays !== null && (
-        <p
-          className="text-base sm:text-lg text-foreground dark:text-slate-200 mb-6"
-          data-days-until={liveSpec}
-          suppressHydrationWarning
-        >
-          There{' '}
-          <span data-live="verb" suppressHydrationWarning>
-            {totalDays === 1 ? 'is' : 'are'}
-          </span>{' '}
-          <strong className="text-emerald-700 dark:text-emerald-400" data-live="days" suppressHydrationWarning>
-            {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
-          </strong>{' '}
-          until {title}.
-          {/* "How many weeks until…" is a common phrasing; the worker keeps this current too. */}
-          <span data-live="weeks" suppressHydrationWarning>
-            {weeksPhrase(totalDays)}
-          </span>
-        </p>
-      )}
-
-      {/* Phones get a fixed grid so tiles never orphan: 5 tiles (a month or
-          more away) as one row of 5, 6 tiles (a year or more) as 3×2. A
-          flex-wrap row of 5 broke at 375px — the row is ~300px and 5 × 56px
-          min-width + gaps is 312px, so SECONDS wrapped alone (Oct 2026). */}
-      {!noUpcoming && <div
-        className={
-          tiles.length > 5
-            ? 'grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-3'
-            : tiles.length === 5
-              ? 'grid grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:justify-center sm:gap-3'
-              : 'flex flex-wrap justify-center gap-2 sm:gap-3'
-        }
-        aria-live="off"
-      >
-        {tiles.map((unit) => (
-          <div
-            key={unit.label}
-            className="flex-1 min-w-0 sm:min-w-[56px] sm:max-w-[120px] bg-white dark:bg-slate-900/60 rounded-xl py-4 sm:py-5 border border-slate-200 dark:border-slate-700/60 shadow-sm"
-          >
-            <div className="text-2xl sm:text-4xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400" suppressHydrationWarning>
-              <RollingNumber value={unit.value.toLocaleString()} />
-            </div>
-            <div className="text-[9px] min-[360px]:text-[11px] sm:text-xs font-semibold uppercase sm:tracking-wide text-slate-500 dark:text-slate-400 mt-1">
-              {unit.label}
-            </div>
-          </div>
-        ))}
-      </div>}
-
-      {disclaimer && (
-        <p className="text-[11px] leading-relaxed text-muted-foreground dark:text-slate-500 mt-6 max-w-2xl mx-auto">
-          {disclaimer}
-        </p>
-      )}
-    </div>
-  );
 }

@@ -6,6 +6,7 @@ import HolidayDatesTable from '@/components/HolidayDatesTable';
 export default function ValentinesDayCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#a3123a' }}
       heading={"How Many Days Until Valentine's Day?"}
       tagline="Live countdown to February 14 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"

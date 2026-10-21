@@ -12,6 +12,7 @@ const GAME_DAYS = [{ start: '2027-02-14' }];
 export default function SuperBowlCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#2f5d2a' }}
       heading={'Super Bowl LXI Countdown'}
       tagline="Sunday, February 14, 2027 — SoFi Stadium, Inglewood, California"
       lastUpdated="2026-10-15"

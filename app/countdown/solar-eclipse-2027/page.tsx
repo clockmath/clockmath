@@ -19,6 +19,7 @@ const STRONG = 'text-foreground dark:text-slate-200';
 export default function SolarEclipse2027Page() {
   return (
     <EventPage
+      board={{ color: '#10142b', ink: '#f5d76e' }}
       heading="2027 Total Solar Eclipse Countdown"
       tagline="Monday, August 2, 2027 — when totality reaches Spain, Morocco, Libya, Egypt and Saudi Arabia, in local time"
       lastUpdated="2026-10-15"

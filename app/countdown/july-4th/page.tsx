@@ -6,6 +6,7 @@ import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesT
 export default function July4thCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#1c2f6b' }}
       heading={'How Many Days Until the 4th of July?'}
       tagline="Live countdown to July 4 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"

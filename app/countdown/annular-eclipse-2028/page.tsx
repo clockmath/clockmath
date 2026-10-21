@@ -20,6 +20,7 @@ const STRONG = 'text-foreground dark:text-slate-200';
 export default function AnnularEclipse2028Page() {
   return (
     <EventPage
+      board={{ color: '#10142b', ink: '#ffb347' }}
       heading="2028 Annular Solar Eclipse Countdown"
       tagline="Wednesday, January 26, 2028 — a ring of fire across South America, then over Spain and Portugal at sunset"
       lastUpdated="2026-10-15"

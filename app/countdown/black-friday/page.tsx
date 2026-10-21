@@ -5,6 +5,7 @@ import EventPage from '@/components/EventPage';
 export default function BlackFridayCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#000000' }}
       heading={'How Many Days Until Black Friday?'}
       tagline="Live countdown to the day after Thanksgiving"
       lastUpdated="2026-10-17"
