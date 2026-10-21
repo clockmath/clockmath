@@ -1,5 +1,10 @@
+import { fileURLToPath } from 'node:url';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // This folder is the project root. Next 15.5 otherwise guesses from the
+  // nearest lockfile and can pick a stray one in a parent directory.
+  outputFileTracingRoot: fileURLToPath(new URL('.', import.meta.url)),
   eslint: {
     ignoreDuringBuilds: false,
   },

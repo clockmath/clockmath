@@ -96,6 +96,8 @@ interface StoredResult {
   score: number;
   timeMs: number;
   results: boolean[];
+  /** Option index chosen for each question — the server re-scores from these. */
+  picks?: number[];
   initials: string | null;
   percentile: number | null;
 }
@@ -167,6 +169,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answered, setAnswered] = useState<number | null>(null);
   const [results, setResults] = useState<boolean[]>([]);
+  const [picks, setPicks] = useState<number[]>([]);
   const [elapsedMs, setElapsedMs] = useState(0);
 
   // Done state
@@ -181,7 +184,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
   // Milliseconds until the next puzzle (next UTC midnight), ticking.
   const [nextPuzzleMs, setNextPuzzleMs] = useState<number | null>(null);
   // Interrupted run to offer resuming (null = start fresh).
-  const [resumable, setResumable] = useState<{ r: boolean[]; ms: number } | null>(null);
+  const [resumable, setResumable] = useState<{ r: boolean[]; p: number[]; ms: number } | null>(null);
   // Which day's board the leaderboard card shows.
   const [boardView, setBoardView] = useState<'today' | 'yesterday'>('today');
   const [yBoard, setYBoard] = useState<BoardState | null>(null);
@@ -218,9 +221,10 @@ export function QuizTool({ className = '' }: { className?: string }) {
       setStreak(readJSON<{ last: string; streak: number }>(STREAK_KEY)?.streak ?? 0);
       setPhase('done');
     } else {
-      const progress = readJSON<{ r: boolean[]; ms: number }>(PROGRESS_KEY_PREFIX + day);
+      const progress = readJSON<{ r: boolean[]; p?: number[]; ms: number }>(PROGRESS_KEY_PREFIX + day);
+      const savedPicks = (progress && Array.isArray(progress.p) ? progress.p : []).map((x) => Number(x));
       if (progress && Array.isArray(progress.r) && progress.r.length > 0 && progress.r.length < QUIZ_QUESTION_COUNT) {
-        setResumable({ r: progress.r.map(Boolean), ms: Math.max(0, Number(progress.ms) || 0) });
+        setResumable({ r: progress.r.map(Boolean), p: savedPicks, ms: Math.max(0, Number(progress.ms) || 0) });
       } else if (progress && Array.isArray(progress.r) && progress.r.length >= QUIZ_QUESTION_COUNT) {
         // They answered the last question but never saw the result screen
         // (left during Q5 feedback) — finalize the run instead of restarting.
@@ -230,6 +234,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           score: r.filter(Boolean).length,
           timeMs: Math.round(Math.max(0, Number(progress.ms) || 0)),
           results: r,
+          picks: savedPicks.length === QUIZ_QUESTION_COUNT ? savedPicks : undefined,
           initials: null,
           percentile: null,
         };
@@ -260,11 +265,11 @@ export function QuizTool({ className = '' }: { className?: string }) {
       const sec = Math.floor(total / 1000);
       if (quiz && sec !== lastPersistedSec) {
         lastPersistedSec = sec;
-        writeJSON(PROGRESS_KEY_PREFIX + quiz.day, { r: results, ms: Math.round(total) });
+        writeJSON(PROGRESS_KEY_PREFIX + quiz.day, { r: results, p: picks, ms: Math.round(total) });
       }
     }, 250);
     return () => clearInterval(id);
-  }, [phase, answered, questionIndex, quiz, results]);
+  }, [phase, answered, questionIndex, quiz, results, picks]);
 
   // Fetch the board on the intro (social-proof preview) and result screens.
   // On the result screen the caller's own score/time ride along so the
@@ -346,13 +351,16 @@ export function QuizTool({ className = '' }: { className?: string }) {
     questionStartRef.current = performance.now();
     setElapsedMs(seed ? seed.ms : 0);
     setResults(seed ? seed.r : []);
+    // Picks saved before Oct 2026 weren't recorded; such a run can't be
+    // re-scored by the server, so its score simply won't post.
+    setPicks(seed && seed.p.length === seed.r.length ? seed.p : []);
     setQuestionIndex(seed ? seed.r.length : 0);
     setAnswered(null);
     setPhase('playing');
   }, [resumable]);
 
   const finishDaily = useCallback(
-    (finalResults: boolean[], timeMs: number) => {
+    (finalResults: boolean[], finalPicks: number[], timeMs: number) => {
       if (!quiz) return;
       const score = finalResults.filter(Boolean).length;
       const result: StoredResult = {
@@ -360,6 +368,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
         score,
         timeMs: Math.round(timeMs),
         results: finalResults,
+        picks: finalPicks.length === QUIZ_QUESTION_COUNT ? finalPicks : undefined,
         initials: null,
         percentile: null,
       };
@@ -381,27 +390,29 @@ export function QuizTool({ className = '' }: { className?: string }) {
       setAnswered(optionIndex);
       const correct = optionIndex === quiz.questions[questionIndex].correctIndex;
       const nextResults = [...results, correct];
+      const nextPicks = [...picks, optionIndex];
       setResults(nextResults);
-      writeJSON(PROGRESS_KEY_PREFIX + quiz.day, { r: nextResults, ms: Math.round(accumulatedRef.current) });
+      setPicks(nextPicks);
+      writeJSON(PROGRESS_KEY_PREFIX + quiz.day, { r: nextResults, p: nextPicks, ms: Math.round(accumulatedRef.current) });
       if (!firedToolUsed.current) {
         firedToolUsed.current = true;
         toolUsed('quiz');
       }
     },
-    [quiz, answered, questionIndex, results],
+    [quiz, answered, questionIndex, results, picks],
   );
 
   const nextDaily = useCallback(() => {
     if (!quiz) return;
     if (questionIndex + 1 >= QUIZ_QUESTION_COUNT) {
-      finishDaily(results, accumulatedRef.current);
+      finishDaily(results, picks, accumulatedRef.current);
     } else {
       setQuestionIndex((i) => i + 1);
       setAnswered(null);
       setWhyOpen(false);
       questionStartRef.current = performance.now();
     }
-  }, [quiz, questionIndex, results, finishDaily]);
+  }, [quiz, questionIndex, results, picks, finishDaily]);
 
   const submitScore = useCallback(
     async (withInitials: string | null) => {
@@ -421,6 +432,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           body: JSON.stringify({
             day: quiz.day,
             score: stored.score,
+            picks: stored.picks,
             timeMs: stored.timeMs,
             initials: withInitials,
           }),
