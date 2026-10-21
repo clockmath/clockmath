@@ -501,6 +501,9 @@ const EXACT_REDIRECTS = {
   // Merged into the tool (Oct 2026): 82% of the article's GSC queries also
   // showed the tool, and the tool page's content was a superset.
   '/articles/sleep-hours-calculator': '/tools/sleep/',
+  // Retired Oct 2026 once every date had passed (theatrical Jul 31, digital
+  // Oct 6); its searchers are Marvel fans, so they go to the next release.
+  '/countdown/spider-man-brand-new-day': '/countdown/avengers-doomsday/',
   // Legacy URLs carried over from the old _redirects file.
   '/timezone-converter': '/tools/timezone/',
   '/time-calculator': '/',

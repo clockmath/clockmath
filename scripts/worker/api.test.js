@@ -93,6 +93,7 @@ const post = (url, body, headers = {}) =>
   assert.strictEqual(api.redirectTarget('/articles/sleep-hours-calculator'), '/tools/sleep/');
   assert.strictEqual(api.redirectTarget('/blog/sleep-hours-calculator/'), '/tools/sleep/');
   assert.strictEqual(api.redirectTarget('/tool/timezone/'), '/tools/timezone/');
+  assert.strictEqual(api.redirectTarget('/countdown/spider-man-brand-new-day/'), '/countdown/avengers-doomsday/');
   assert.strictEqual(api.redirectTarget('/tools/timezone/'), null);
   for (const p of ['//evil.com', '/blog//evil.com', '/tool/%2F%2Fevil.com']) {
     const t = api.redirectTarget(p);
