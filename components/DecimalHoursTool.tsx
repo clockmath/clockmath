@@ -10,9 +10,8 @@ import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
+import { getDevice } from '@/lib/device';
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.innerWidth < 640 ? 'mobile' : 'desktop';
 
 interface DecimalHoursToolProps {
   className?: string;

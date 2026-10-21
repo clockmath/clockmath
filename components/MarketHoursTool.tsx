@@ -21,11 +21,10 @@ import { getUserTimeZone, formatZoned, getTimeZoneDisplayName } from '@/lib/time
 import { RollingNumber } from '@/components/RollingNumber';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { storageGet } from '@/lib/safeStorage';
+import { getDevice } from '@/lib/device';
 
 const PINNED_KEY = 'clockmath-pinned-markets';
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.innerWidth < 640 ? 'mobile' : 'desktop';
 
 interface MarketHoursToolProps {
   className?: string;
