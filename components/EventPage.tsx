@@ -16,7 +16,7 @@ import { getDevice } from '@/lib/device';
 
 // Cross-linked from every event page (minus the current one). Renders in
 // static HTML, so it also fixes pages otherwise orphaned from internal links.
-const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
+export const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'All holidays 2026–27', href: '/countdown/holidays/' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/' },
   { title: 'GTA 6', href: '/countdown/gta-6/' },
@@ -41,6 +41,30 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Retirement', href: '/countdown/retirement/' },
 ];
 
+
+// Share sheet where there is one, else copy the link (with a toast saying so).
+export function useShareCountdown() {
+  return useCallback(async () => {
+    const url = window.location.href;
+    const shareTitle = document.title;
+    gaEvent({ action: 'event_countdown_shared', params: { device: getDevice(), page: window.location.pathname } });
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareTitle, url });
+        return;
+      } catch {
+        /* user dismissed or unsupported — fall through to copy */
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'Link copied!', description: 'Share this countdown anywhere.' });
+    } catch {
+      toast({ title: 'Copy this link', description: url });
+    }
+  }, []);
+}
 
 export interface EventPageProps {
   /** Styled headline, e.g. <><span>GTA 6</span> Countdown</> */
@@ -114,26 +138,7 @@ export default function EventPage({
 
 
 
-  const handleShare = useCallback(async () => {
-    const url = window.location.href;
-    const shareTitle = document.title;
-    gaEvent({ action: 'event_countdown_shared', params: { device: getDevice(), page: window.location.pathname } });
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: shareTitle, url });
-        return;
-      } catch {
-        /* user dismissed or unsupported — fall through to copy */
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      toast({ title: 'Link copied!', description: 'Share this countdown anywhere.' });
-    } catch {
-      toast({ title: 'Copy this link', description: url });
-    }
-  }, []);
+  const handleShare = useShareCountdown();
 
   return (
     <PageChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>

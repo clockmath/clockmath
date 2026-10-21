@@ -94,7 +94,7 @@ function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: numb
 // " That's 6 weeks." / " That's 5 weeks and 3 days." — empty under a week
 // or beyond a year (nobody counts 91 weeks). Mirrored in
 // scripts/worker/live-counts.js; keep the two in step.
-function weeksPhrase(days: number): string {
+export function weeksPhrase(days: number): string {
   if (days < 7 || days > 365) return '';
   const weeks = Math.floor(days / 7);
   const rest = days % 7;
@@ -129,18 +129,12 @@ function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 
   return thisYear.getTime();
 }
 
-// Display-only live countdown to a fixed or recurring target (event pages).
-export function EventCountdown({
-  target,
-  recurring,
-  weekly,
-  nthWeekday,
-  dateRanges,
-  title,
-  className = '',
-  arrivedLabel,
-  disclaimer,
-}: EventCountdownProps) {
+export type CountdownTarget = Pick<EventCountdownProps, 'target' | 'recurring' | 'weekly' | 'nthWeekday' | 'dateRanges'>;
+
+// The live state behind an event countdown: the resolved target, the tiles,
+// the answer sentence's day count, and the spec the worker uses to keep that
+// sentence current. Shared by EventCountdown and the station-clock board.
+export function useEventCountdown({ target, recurring, weekly, nthWeekday, dateRanges }: CountdownTarget) {
   // Stable dependency for the dateRanges array (a fresh literal each render).
   const rangesKey = dateRanges ? dateRanges.map((r) => `${r.start}/${r.end ?? ''}`).join(',') : '';
 
@@ -272,6 +266,29 @@ export function EventCountdown({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
   const fixedTarget = !recurring && !weekly && !nthWeekday && !dateRanges && target ? target.getTime() : undefined;
+
+  return { ready, noUpcoming, isPast, tiles, dateLabel, totalDays, liveSpec, fixedTarget, targetMs, nowMs };
+}
+
+// Display-only live countdown to a fixed or recurring target (event pages).
+export function EventCountdown({
+  target,
+  recurring,
+  weekly,
+  nthWeekday,
+  dateRanges,
+  title,
+  className = '',
+  arrivedLabel,
+  disclaimer,
+}: EventCountdownProps) {
+  const { noUpcoming, isPast, tiles, dateLabel, totalDays, liveSpec, fixedTarget } = useEventCountdown({
+    target,
+    recurring,
+    weekly,
+    nthWeekday,
+    dateRanges,
+  });
 
   return (
     <div

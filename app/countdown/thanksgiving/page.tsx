@@ -1,10 +1,11 @@
 'use client';
 
-import EventPage from '@/components/EventPage';
+import StationEventPage from '@/components/station/StationEventPage';
 
 export default function ThanksgivingCountdownPage() {
   return (
-    <EventPage
+    <StationEventPage
+      board={{ color: '#b5541c' }}
       heading={'How Many Days Until Thanksgiving?'}
       tagline="Live countdown to the fourth Thursday of November"
       lastUpdated="2026-10-17"

@@ -1,0 +1,227 @@
+/* ---------------------------------------------------------------------------
+   Station clock design (design/station-clock preview, Oct 2026).
+
+   A railway station clock: white dial, black hands, one red second hand.
+   Applied only inside .station (StationChrome), so pages that haven't moved
+   to it look exactly as before. .station redefines the site's colour tokens,
+   which is how the shared pieces inside it (pickers, FAQ, footer, history)
+   pick up the palette without their own changes.
+
+   Colour roles, each with one job:
+   - ink       numerals, headings, the span you entered
+   - signal    "now" and seconds only (the second hand)
+   - enamel    things you press or follow: buttons, links, the active tab
+   - daylight  the 24-hour ruler's sky, night → dawn → day → dusk
+   - board     an event's own colour on its countdown (set per page)
+   This file is unlayered, so it wins over Tailwind utilities; keep its
+   selectors to .station and st- classes.
+--------------------------------------------------------------------------- */
+
+.station {
+  --dial: #ffffff;
+  --ink: #000000;
+  --text: #3a3f46;
+  --quiet: #6b7178;
+  --rule: #dadde2;
+  --wash: #f2f4f7;
+  --signal: #d51f26;
+  --enamel: #1849a9;
+  --enamel-hover: #123a8a;
+  --enamel-wash: #e8eefb;
+  --night: #2b3270;
+  --dawn: #f0a531;
+  --day: #7cc0ec;
+  --dusk: #e0663a;
+  --board: #000000;
+  --board-ink: #ffffff;
+
+  /* The site tokens, re-pointed */
+  --background: var(--dial);
+  --foreground: var(--ink);
+  --card: var(--wash);
+  --card-foreground: var(--text);
+  --popover: var(--dial);
+  --popover-foreground: var(--text);
+  --primary: var(--enamel);
+  --primary-foreground: #ffffff;
+  --secondary: var(--wash);
+  --muted: var(--wash);
+  --muted-foreground: var(--quiet);
+  --border: var(--rule);
+  --input: var(--wash);
+  --ring: rgba(24, 73, 169, 0.45);
+  --radius: 0.375rem;
+
+  min-height: 100vh;
+  background: var(--dial);
+  color: var(--text);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+.dark .station {
+  --dial: #0f1216;
+  --ink: #f5f6f8;
+  --text: #c6cbd2;
+  --quiet: #8e959e;
+  --rule: #2c3139;
+  --wash: #1a1e24;
+  --signal: #ff5a52;
+  --enamel: #8fb0ff;
+  --enamel-hover: #b3caff;
+  --enamel-wash: #1b2640;
+  --night: #3a4290;
+  --board-ink: #ffffff;
+  --primary-foreground: #0f1216;
+  --ring: rgba(143, 176, 255, 0.5);
+}
+
+.station a { color: var(--enamel); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.station a:hover { color: var(--enamel-hover); }
+.station :focus-visible { outline: 2px solid var(--enamel); outline-offset: 2px; }
+/* Mono was for aligned digits; Archivo's tabular figures do that job. */
+.station .font-mono { font-family: inherit; font-stretch: 88%; font-weight: 600; }
+/* Shared cards inside (FAQ, history) sit flat on the wash, no shadow. */
+.station .bg-card, .dark .station .bg-card { background: var(--wash); box-shadow: none; }
+
+.st-wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ---- Header: wordmark and plain text tabs ---- */
+.st-header { border-bottom: 1px solid var(--rule); }
+.st-header .st-wrap { display: flex; align-items: center; gap: 36px; height: 64px; }
+.st-mark { display: flex; align-items: center; gap: 10px; flex-shrink: 0; text-decoration: none; color: var(--ink) !important;
+           font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+.st-mark svg { width: 28px; height: 28px; }
+.st-tabs { display: flex; gap: 26px; font-size: 15px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.st-tabs::-webkit-scrollbar { display: none; }
+.st-tabs a { white-space: nowrap; text-decoration: none; color: var(--quiet); padding: 20px 0 18px; border-bottom: 3px solid transparent; }
+.st-tabs a:hover { color: var(--ink); }
+.st-tabs a[aria-current] { color: var(--ink); border-bottom-color: var(--enamel); font-weight: 600; }
+.st-theme { flex-shrink: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--rule);
+            border-radius: 6px; background: none; color: var(--ink); cursor: pointer; }
+.st-theme:hover { border-color: var(--ink); }
+
+.st-main { padding-bottom: 40px; }
+.st-h1 { color: var(--ink); font-weight: 800; font-size: 44px; line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+.st-lede { margin: 10px 0 0; font-size: 19px; max-width: 64ch; }
+.st-crumbs { font-size: 14px; color: var(--quiet); margin-bottom: 10px; }
+.st-crumbs a { color: var(--quiet); }
+
+.st-btn { font: inherit; font-size: 15px; font-weight: 600; border-radius: 6px; padding: 11px 18px; cursor: pointer;
+          text-decoration: none !important; display: inline-flex; align-items: center; gap: 8px; line-height: 1.3; }
+.st-btn.primary { background: var(--enamel); color: var(--primary-foreground) !important; border: 1px solid var(--enamel); }
+.st-btn.primary:hover { background: var(--enamel-hover); border-color: var(--enamel-hover); }
+.st-btn.quiet { background: none; color: var(--ink) !important; border: 1px solid var(--rule); }
+.st-btn.quiet:hover { border-color: var(--ink); }
+
+/* ---- Homepage calculator: one ruled band, no card ---- */
+.st-intro { padding: 52px 0 28px; }
+.st-calc { border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 26px 0 30px; }
+.st-fields { display: grid; grid-template-columns: 1fr 1fr auto; gap: 20px; align-items: end; }
+.st-field > span { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.st-pair { display: grid; grid-template-columns: 1.15fr 1fr; gap: 8px; }
+/* The pickers' trigger buttons, restyled from outside */
+.st-pair button[aria-haspopup] {
+  background: var(--wash) !important; border-color: transparent !important; border-radius: 6px !important;
+  min-height: 52px; color: var(--ink);
+}
+.st-pair button[aria-haspopup]:hover { border-color: var(--rule) !important; }
+.st-pair .font-mono { font-size: 21px; font-weight: 700; font-stretch: 85%; color: var(--ink); }
+.st-seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; height: 52px; }
+.st-seg button { border: 0; background: none; padding: 0 16px; font: inherit; font-size: 15px; color: var(--quiet); cursor: pointer; }
+.st-seg button[aria-pressed="true"] { background: var(--ink); color: var(--dial); font-weight: 600; }
+
+.st-answer { padding: 34px 0 6px; display: grid; grid-template-columns: auto 1fr; gap: 14px 56px; align-items: end; }
+.st-big { font-stretch: 70%; font-weight: 900; color: var(--ink); line-height: 0.82; letter-spacing: -0.02em;
+          font-size: clamp(84px, 14vw, 176px); margin: 0; white-space: nowrap; }
+.st-big.long { font-size: clamp(64px, 9vw, 120px); }
+.st-big .u { font-size: 0.42em; font-weight: 700; letter-spacing: 0; margin: 0 0.2em 0 0.04em; }
+.st-big .u:last-child { margin-right: 0; }
+.st-error { font-size: 22px; color: var(--ink); font-weight: 600; margin: 0; }
+.st-also { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 36px; margin: 0; max-width: 440px; }
+.st-also div { border-top: 1px solid var(--rule); padding: 9px 0; }
+.st-also dt { font-size: 14px; color: var(--quiet); }
+.st-also dd { margin: 0; font-size: 26px; font-weight: 800; font-stretch: 80%; color: var(--ink); }
+.st-note { font-size: 15px; margin: 10px 0 0; color: var(--text); }
+.st-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.st-link-btn { font: inherit; font-size: 15px; background: none; border: 0; padding: 0; color: var(--enamel); cursor: pointer;
+               text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+/* 24-hour ruler */
+.st-ruler { margin-top: 44px; }
+.st-ruler svg { display: block; width: 100%; overflow: visible; }
+.st-ruler svg.bars { height: 50px; }
+.st-ruler svg.labels { height: 22px; }
+.st-ruler text { font-family: var(--font-archivo), sans-serif; font-size: 12px; fill: var(--quiet); }
+.st-now-label { position: absolute; top: -22px; font-size: 12px; line-height: 1; font-weight: 700; color: var(--signal); }
+.st-ruler-key { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 13px; color: var(--quiet); margin-top: 8px; }
+.st-ruler-key i { display: inline-block; width: 18px; height: 6px; border-radius: 1px; margin-right: 6px; vertical-align: middle; }
+
+.st-nudge { margin: 22px 0 0; font-size: 15px; }
+
+/* ---- Supporting sections: heading left, content right ---- */
+.st-more { padding: 52px 0 0; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 48px; }
+.st-more > h2 { color: var(--ink); font-size: 24px; line-height: 1.2; font-weight: 800; margin: 0; letter-spacing: -0.01em; }
+.st-more > div { max-width: 68ch; }
+.st-faq h3 { color: var(--ink); font-size: 18px; margin: 0 0 4px; font-weight: 700; }
+.st-faq p { margin: 0 0 22px; }
+.st-list { list-style: none; margin: 0; padding: 0; }
+.st-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; border-top: 1px solid var(--rule); padding: 10px 0; }
+.st-list li:last-child { border-bottom: 1px solid var(--rule); }
+.st-list li > :first-child { color: var(--text); }
+.st-list li > :last-child { color: var(--ink); font-weight: 700; text-align: right; }
+.st-chips { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.st-chips a { font-size: 15px; }
+
+/* SeoIntro and the footer, inside the station frame */
+.station .st-legacy section { max-width: none; }
+.station .st-legacy h2 { font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
+.station footer { border-top-color: var(--rule); }
+
+/* ---- Countdown board ---- */
+.st-board { margin-top: 30px; background: var(--board); color: var(--board-ink); border-radius: 10px; padding: 30px 36px 28px;
+            display: grid; grid-template-columns: auto 1fr; gap: 24px 64px; align-items: end; }
+.st-board h2 { grid-column: 1 / -1; margin: 0; font-size: 20px; font-weight: 700; color: var(--board-ink); }
+.st-days { margin: 0; font-weight: 900; font-stretch: 66%; line-height: 0.8; letter-spacing: -0.03em; font-size: clamp(140px, 22vw, 280px); }
+.st-days small { display: block; font-size: 22px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; line-height: 1.2; margin-top: 14px; }
+.st-sentence { font-size: 21px; line-height: 1.4; max-width: 32ch; margin: 0 0 20px; }
+.st-sentence strong { font-weight: 800; }
+.st-clock { display: flex; gap: 28px; margin: 0; }
+.st-clock div { border-top: 1px solid rgba(255, 255, 255, 0.4); padding-top: 8px; min-width: 76px; }
+.st-clock dd { margin: 0; font-size: 46px; font-weight: 800; font-stretch: 72%; line-height: 1; }
+.st-clock dt { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+.st-board .st-disclaimer { grid-column: 1 / -1; font-size: 12px; opacity: 0.75; margin: 0; max-width: 80ch; }
+.st-seconds { margin-top: 14px; }
+.st-seconds svg { display: block; width: 100%; height: 30px; }
+.st-seconds line { stroke: var(--rule); }
+.st-seconds line.past { stroke: var(--ink); }
+.st-seconds line.now { stroke: var(--signal); }
+.st-date { display: flex; flex-wrap: wrap; gap: 6px 40px; border-bottom: 1px solid var(--rule); padding: 12px 0; font-size: 15px; }
+.st-date b { color: var(--ink); font-weight: 600; }
+.st-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+@media (max-width: 760px) {
+  .station { font-size: 16px; }
+  .st-wrap { padding: 0 16px; }
+  .st-header .st-wrap { gap: 16px; height: 56px; }
+  .st-mark span { display: none; }
+  .st-tabs { gap: 18px; font-size: 14px; }
+  .st-tabs a { padding: 17px 0 15px; }
+  .st-intro { padding: 28px 0 20px; }
+  .st-h1 { font-size: 31px; }
+  .st-lede { font-size: 17px; }
+  .st-fields { grid-template-columns: 1fr; gap: 16px; }
+  .st-seg { justify-self: start; height: 44px; }
+  .st-answer { grid-template-columns: 1fr; gap: 10px; padding-top: 26px; }
+  .st-big { font-size: 96px; }
+  .st-big.long { font-size: 60px; white-space: normal; }
+  .st-more { grid-template-columns: 1fr; gap: 14px; padding-top: 40px; }
+  .st-board { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; border-radius: 8px; }
+  .st-days { font-size: 150px; }
+  .st-sentence { font-size: 18px; margin-bottom: 14px; }
+  .st-clock { gap: 16px; }
+  .st-clock div { min-width: 0; flex: 1; }
+  .st-clock dd { font-size: 36px; }
+}
