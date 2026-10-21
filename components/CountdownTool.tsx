@@ -10,6 +10,7 @@ import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { buildDay } from '@/lib/buildDay';
 import InfoTip from '@/components/InfoTip';
+import { getDevice } from '@/lib/device';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
@@ -54,10 +55,6 @@ interface ActiveCountdown {
 
 const SAVED_KEY = 'clockmath-saved-countdowns';
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
-    ? 'mobile'
-    : 'desktop';
 
 const toDateInputValue = (date: Date): string => {
   const y = date.getFullYear();

@@ -14,12 +14,11 @@ import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
 import InfoTip from '@/components/InfoTip';
 import { storageGet } from '@/lib/safeStorage';
+import { getDevice } from '@/lib/device';
 
 export const CYCLE_MIN = 90;
 export const FALL_ASLEEP_MIN = 15;
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.innerWidth < 640 ? 'mobile' : 'desktop';
 
 /** "HH:MM[:SS]" → minutes since midnight, or null */
 export function toMinutes(t: string): number | null {

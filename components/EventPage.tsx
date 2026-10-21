@@ -12,6 +12,7 @@ import { Trophy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
 import { useDarkMode } from '@/hooks/use-dark-mode';
+import { getDevice } from '@/lib/device';
 
 // Cross-linked from every event page (minus the current one). Renders in
 // static HTML, so it also fixes pages otherwise orphaned from internal links.
@@ -41,10 +42,6 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Retirement', href: '/countdown/retirement/' },
 ];
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
-    ? 'mobile'
-    : 'desktop';
 
 export interface EventPageProps {
   /** Styled headline, e.g. <><span>GTA 6</span> Countdown</> */

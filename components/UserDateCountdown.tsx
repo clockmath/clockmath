@@ -5,11 +5,8 @@ import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { EventCountdown } from '@/components/EventCountdown';
 import { event as gaEvent } from '@/lib/gtag';
 import { storageGet, storageSet } from '@/lib/safeStorage';
+import { getDevice } from '@/lib/device';
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
-    ? 'mobile'
-    : 'desktop';
 
 interface UserDateCountdownProps {
   /** localStorage key used to remember the user's chosen date. */

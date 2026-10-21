@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
 import { Coffee, X } from 'lucide-react';
 import InfoTip from '@/components/InfoTip';
+import { getDevice } from '@/lib/device';
 
 interface TimesheetToolProps {
   className?: string;
@@ -64,10 +65,6 @@ const SUPPORT_DISMISSED_KEY = 'clockmath-support-nudge-dismissed'; // localStora
 const SUPPORT_SNOOZE_MS = 30 * 24 * 60 * 60 * 1000;
 const SUPPORT_URL = 'https://www.buymeacoffee.com/clockmath?utm_source=clockmath&utm_medium=site&utm_campaign=work_hours_nudge';
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches
-    ? 'mobile'
-    : 'desktop';
 
 const toDateInputValue = (date: Date): string => {
   const y = date.getFullYear();

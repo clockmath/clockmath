@@ -14,8 +14,9 @@ import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdow
 import { format, intervalToDuration, type Duration } from "date-fns"
 import { event as gaEvent, toolUsed } from "@/lib/gtag"
 import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSiteSchema } from "@/components/JsonLd"
-import { useDarkMode } from '@/hooks/use-dark-mode';
-import { storageRemove } from '@/lib/safeStorage';
+import { useDarkMode } from "@/hooks/use-dark-mode"
+import { storageRemove } from "@/lib/safeStorage"
+import { getDevice } from "@/lib/device"
 
 // Interface for calculator-specific data
 interface CalculationHistory {
@@ -38,11 +39,6 @@ interface CalculationHistory {
   timestamp: Date
 }
 
-// Helper function for device detection
-function getDevice(): "mobile" | "desktop" {
-  if (typeof window === "undefined") return "desktop";
-  return window.matchMedia?.("(pointer: coarse)")?.matches ? "mobile" : "desktop";
-}
 
 type StoredCalculation = Omit<CalculationHistory, "timestamp"> & { timestamp: string };
 

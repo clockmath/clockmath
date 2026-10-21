@@ -11,9 +11,8 @@ import { RollingNumber } from '@/components/RollingNumber';
 import { computeOvertime, decimalToHmLabel } from '@/lib/overtime';
 import { toolUsed } from '@/lib/gtag';
 import InfoTip from '@/components/InfoTip';
+import { getDevice } from '@/lib/device';
 
-const getDevice = (): 'mobile' | 'desktop' =>
-  typeof window !== 'undefined' && window.innerWidth < 640 ? 'mobile' : 'desktop';
 
 const parseNum = (s: string): number => {
   const n = Number.parseFloat(s);
