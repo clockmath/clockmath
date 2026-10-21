@@ -275,6 +275,12 @@ export default function ClockMathPage() {
       endDateTime.setSeconds(endSeconds % 60)
       endDateTime.setMilliseconds(0)
 
+      // Same date with an earlier end time is an overnight span (22:00 → 06:00),
+      // as the FAQ promises: the end is the next day.
+      if (endDateTime < startDateTime && endDateTime.toDateString() === startDateTime.toDateString()) {
+        endDateTime.setDate(endDateTime.getDate() + 1)
+      }
+
       const diffMs = endDateTime.getTime() - startDateTime.getTime()
       const diffSeconds = Math.floor(diffMs / 1000)
 
