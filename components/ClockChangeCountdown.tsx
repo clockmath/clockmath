@@ -60,7 +60,8 @@ const shiftLabel = (minutes: number): string => {
   return `${m} minutes`;
 };
 
-const placeName = (tz: string): string => tz.split('/').pop()?.replace(/_/g, ' ') || tz;
+export const clockPlaceName = (tz: string): string => tz.split('/').pop()?.replace(/_/g, ' ') || tz;
+const placeName = clockPlaceName;
 
 const NO_CHANGE_NOTES: Record<string, string> = {
   'America/Vancouver':
@@ -75,16 +76,27 @@ const NO_CHANGE_NOTES: Record<string, string> = {
     'Manitoba stopped changing its clocks in 2026 and now stays on UTC−5 all year, so there is no change on November 1.',
 };
 
-export default function ClockChangeCountdown() {
-  const [state, setState] = useState<
-    { status: 'pending' } | { status: 'none'; tz: string } | { status: 'change'; tz: string; change: ClockChange }
-  >({ status: 'pending' });
+export type ClockChangeState =
+  | { status: 'pending' }
+  | { status: 'none'; tz: string }
+  | { status: 'change'; tz: string; change: ClockChange };
 
+/** The visitor's next clock change, resolved on the client (their timezone). */
+export function useNextClockChange(): ClockChangeState {
+  const [state, setState] = useState<ClockChangeState>({ status: 'pending' });
   useEffect(() => {
     const tz = getUserTimeZone();
     const change = nextClockChange(tz, Date.now());
     setState(change ? { status: 'change', tz, change } : { status: 'none', tz });
   }, []);
+  return state;
+}
+
+/** "back" when the offset drops (autumn), "forward" when it rises. */
+export const changeDirection = (change: ClockChange): 'back' | 'forward' => (change.after < change.before ? 'back' : 'forward');
+
+export default function ClockChangeCountdown() {
+  const state = useNextClockChange();
 
   if (state.status === 'pending') {
     // Stable skeleton until the visitor's own timezone is known (no hydration mismatch).
@@ -104,7 +116,7 @@ export default function ClockChangeCountdown() {
   }
 
   const { tz, change } = state;
-  const direction = change.after < change.before ? 'back' : 'forward';
+  const direction = changeDirection(change);
   const day = new Date(change.at).toLocaleDateString('en-US', {
     timeZone: tz,
     weekday: 'long',

@@ -1,19 +1,17 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable, { sundayToMonday } from '@/components/HolidayDatesTable';
 
 export default function CanadaDayCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#c8102e' }}
+      {...countdownProps('canada-day')}
       heading={'How Many Days Until Canada Day?'}
       tagline="Live countdown to July 1 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"
       breadcrumb="Canada Day"
-      recurring={{ month: 6, day: 1 }}
-      countdownTitle="Canada Day"
-      arrivedLabel="Happy Canada Day! 🍁"
       facts={[
         { label: 'Date', value: 'July 1' },
         { label: 'Country', value: 'Canada' },

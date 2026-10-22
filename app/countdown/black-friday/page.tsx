@@ -1,18 +1,16 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 
 export default function BlackFridayCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#000000' }}
+      {...countdownProps('black-friday')}
       heading={'How Many Days Until Black Friday?'}
       tagline="Live countdown to the day after Thanksgiving"
       lastUpdated="2026-10-17"
       breadcrumb="Black Friday"
-      nthWeekday={{ month: 10, weekday: 4, n: 4, offsetDays: 1 }}
-      countdownTitle="Black Friday"
-      arrivedLabel="It's Black Friday! 🛍️"
       facts={[
         { label: 'Black Friday 2026', value: 'Friday, November 27' },
         { label: 'Rule', value: 'Day after Thanksgiving' },

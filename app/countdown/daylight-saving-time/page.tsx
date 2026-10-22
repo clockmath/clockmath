@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import ClockChangeCountdown from '@/components/ClockChangeCountdown';
 import StackedTable from '@/components/StackedTable';
 
@@ -50,7 +51,7 @@ const DATES: Array<{ where: string; rule: string; back: string; forward: string 
 export default function DaylightSavingTimePage() {
   return (
     <EventPage
-      board={{ color: '#2b3270' }}
+      {...countdownProps('daylight-saving-time')}
       heading="When Do the Clocks Change?"
       tagline="Live countdown to the next clock change where you are — with 2026–27 dates for the US, Canada, the UK, Europe, Australia and New Zealand"
       lastUpdated="2026-10-18"

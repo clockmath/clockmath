@@ -1,6 +1,7 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import StackedTable from '@/components/StackedTable';
 import { HANUKKAH } from '@/lib/holidays';
 
@@ -24,14 +25,11 @@ const ROWS = HANUKKAH.map((h) => ({
 export default function HanukkahCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#1d4f91' }}
+      {...countdownProps('hanukkah')}
       heading={'How Many Days Until Hanukkah?'}
       tagline="Live countdown to the first night of Hanukkah — in 2026, sundown on Friday, December 4"
       lastUpdated="2026-10-15"
       breadcrumb="Hanukkah"
-      dateRanges={HANUKKAH}
-      countdownTitle="Hanukkah"
-      arrivedLabel="Happy Hanukkah! 🕎"
       facts={[
         { label: 'Begins', value: 'Sundown, Fri, Dec 4, 2026' },
         { label: 'Ends', value: 'Nightfall, Sat, Dec 12, 2026' },

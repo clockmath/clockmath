@@ -1,22 +1,18 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 
 // Opening ceremony of the Los Angeles 2028 Summer Olympics.
-const LA28_OPENING = new Date(2028, 6, 14);
 
 export default function Olympics2028CountdownPage() {
   return (
     <EventPage
-      board={{ color: '#0e5a8a' }}
+      {...countdownProps('olympics-2028')}
       heading={'How Many Days Until the 2028 Olympics?'}
       tagline="Time until the 2028 Summer Olympics"
       lastUpdated="2026-08-04"
       breadcrumb="LA 2028 Olympics"
-      target={LA28_OPENING}
-      countdownTitle="the 2028 Olympics"
-      arrivedLabel="The 2028 Olympics have begun! 🏅"
-      disclaimer="ClockMath is not affiliated with, endorsed by, or sponsored by the International Olympic Committee (IOC) or the LA28 organizing committee. “Olympic” and related names are trademarks of their respective owners. Dates subject to change."
       facts={[
         { label: 'Opening ceremony', value: 'July 14, 2028' },
         { label: 'Host city', value: 'Los Angeles, USA' },

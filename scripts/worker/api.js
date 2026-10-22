@@ -29,11 +29,19 @@ const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://*.clarity.ms; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests",
 };
 
+const isEmbedPath = (pathname) => typeof pathname === 'string' && pathname.startsWith('/embed/');
+
 function withSecurityHeaders(res, pathname) {
   try {
     const headers = new Headers(res.headers);
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
       headers.set(key, value);
+    }
+    // Embeddable countdowns are meant to be framed by other sites; every
+    // other page still refuses framing (clickjacking).
+    if (isEmbedPath(pathname)) {
+      headers.delete('X-Frame-Options');
+      headers.set('Content-Security-Policy', SECURITY_HEADERS['Content-Security-Policy'].replace("frame-ancestors 'none'", 'frame-ancestors *'));
     }
     const cacheControl = cacheControlFor(pathname, res);
     if (cacheControl) headers.set('Cache-Control', cacheControl);

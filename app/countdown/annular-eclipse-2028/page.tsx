@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
+import { countdownProps, eclipseProps } from '@/lib/countdowns';
 import EclipseCountdown from '@/components/EclipseCountdown';
 import EclipseCityTable from '@/components/EclipseCityTable';
 import { ANNULARITY, PARTIAL } from './eclipseData';
@@ -20,18 +21,13 @@ const STRONG = 'text-foreground dark:text-slate-200';
 export default function AnnularEclipse2028Page() {
   return (
     <EventPage
-      board={{ color: '#10142b', ink: '#ffb347' }}
+      {...countdownProps('annular-eclipse-2028')}
       heading="2028 Annular Solar Eclipse Countdown"
       tagline="Wednesday, January 26, 2028 — a ring of fire across South America, then over Spain and Portugal at sunset"
       lastUpdated="2026-10-15"
       breadcrumb="Annular eclipse 2028"
       countdownSlot={
-        <EclipseCountdown
-          peakMs={Date.UTC(2028, 0, 26, 15, 7, 43)}
-          title="the 2028 annular solar eclipse"
-          arrivedLabel="The January 2028 eclipse has passed — next: a total eclipse on July 22, 2028"
-          where="over the Atlantic off northern Brazil"
-        />
+        <EclipseCountdown {...eclipseProps('annular-eclipse-2028')} />
       }
       facts={[
         { label: 'Date', value: 'Wednesday, January 26, 2028' },

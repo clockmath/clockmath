@@ -1,18 +1,16 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 
 export default function ThanksgivingCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#b5541c' }}
+      {...countdownProps('thanksgiving')}
       heading={'How Many Days Until Thanksgiving?'}
       tagline="Live countdown to the fourth Thursday of November"
       lastUpdated="2026-10-17"
       breadcrumb="Thanksgiving"
-      nthWeekday={{ month: 10, weekday: 4, n: 4 }}
-      countdownTitle="Thanksgiving"
-      arrivedLabel="Happy Thanksgiving! 🦃"
       facts={[
         { label: 'Thanksgiving 2026', value: 'Thursday, November 26' },
         { label: 'Rule', value: '4th Thursday of November' },

@@ -44,16 +44,7 @@ export interface EventCountdownProps {
   disclaimer?: string;
 }
 
-/**
- * Reusable disclaimer template for event countdowns that reference a
- * third-party brand. Fill in the brand name and rights holder(s).
- * Example: buildEventDisclaimer('Grand Theft Auto', 'Rockstar Games or Take-Two Interactive')
- */
-export function buildEventDisclaimer(brand: string, rightsHolders: string, opts: { released?: boolean } = {}): string {
-  // Once it's out, "Release date subject to change" no longer applies.
-  const dateNote = opts.released ? '' : ' Release date subject to change.';
-  return `ClockMath is not affiliated with, endorsed by, or sponsored by ${rightsHolders}. "${brand}" and related names are trademarks of their respective owners.${dateNote}`;
-}
+export { buildEventDisclaimer } from '@/lib/disclaimer';
 
 // Next upcoming occurrence of an annual date, rolling to next year only once
 // the day has fully ended (so the page reads correctly on the day itself).

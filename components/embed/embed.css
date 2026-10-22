@@ -1,0 +1,42 @@
+/* ---------------------------------------------------------------------------
+   Embeddable countdown (/embed/countdown/…): the board alone, filling the
+   iframe. Sized by container queries on the iframe's width, so one embed
+   code works in a sidebar (~300px) or a full-width post (~700px).
+--------------------------------------------------------------------------- */
+
+/* The iframe sits on someone else's page: no white box around the board */
+html:has(.st-embed), html:has(.st-embed) body { background: transparent !important; margin: 0; }
+
+.station.st-embed { min-height: 0; height: 100vh; background: transparent; padding: 0; container-type: inline-size; }
+.st-embed-in {
+  box-sizing: border-box; height: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;
+  background: var(--board); color: var(--board-ink); border-radius: 12px; padding: 16px 20px 14px; overflow: hidden;
+}
+.st-embed-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.st-embed-title { margin: 0; font-weight: 700; font-size: 17px; line-height: 1.25; }
+.st-embed-credit { flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--board-ink) !important; opacity: 0.85;
+                   text-decoration: underline; text-underline-offset: 3px; }
+.st-embed-credit:hover { opacity: 1; }
+
+.st-embed-row { display: flex; align-items: flex-end; gap: 8px 28px; flex-wrap: wrap; }
+.st-embed-days { margin: 0; font-weight: 900; font-stretch: 66%; line-height: 0.8; letter-spacing: -0.03em;
+                 font-size: clamp(56px, 24cqi, 128px); }
+.st-embed-days small { font-size: 16px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; margin-left: 6px; }
+.st-embed-clock { display: flex; gap: 16px; margin: 0; }
+.st-embed-clock div { border-top: 1px solid color-mix(in srgb, var(--board-ink) 40%, transparent); padding-top: 5px; min-width: 44px; }
+.st-embed-clock dd { margin: 0; font-weight: 800; font-stretch: 72%; line-height: 1; font-size: clamp(26px, 8cqi, 40px); }
+.st-embed-clock dt { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+
+.st-embed-date { margin: 0; font-size: 13px; opacity: 0.85; }
+.st-embed-ticks { display: block; width: 100%; height: 18px; }
+.st-embed-ticks line { stroke: color-mix(in srgb, var(--board-ink) 30%, transparent); }
+.st-embed-ticks line.past { stroke: var(--board-ink); }
+.st-embed-note { margin: 0; font-size: 10px; line-height: 1.3; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Narrow (sidebar): stack the clock under the days */
+@container (max-width: 380px) {
+  .st-embed-in { padding: 14px 16px 12px; }
+  .st-embed-title { font-size: 15px; }
+  .st-embed-days { font-size: clamp(52px, 30cqi, 96px); }
+  .st-embed-clock { gap: 12px; }
+}

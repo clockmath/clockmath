@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
+import { countdownProps, eclipseProps } from '@/lib/countdowns';
 import EclipseCountdown from '@/components/EclipseCountdown';
 import EclipseCityTable from '@/components/EclipseCityTable';
 import { TOTALITY, PARTIAL } from './eclipseData';
@@ -19,18 +20,13 @@ const STRONG = 'text-foreground dark:text-slate-200';
 export default function SolarEclipse2027Page() {
   return (
     <EventPage
-      board={{ color: '#10142b', ink: '#f5d76e' }}
+      {...countdownProps('solar-eclipse-2027')}
       heading="2027 Total Solar Eclipse Countdown"
       tagline="Monday, August 2, 2027 — when totality reaches Spain, Morocco, Libya, Egypt and Saudi Arabia, in local time"
       lastUpdated="2026-10-15"
       breadcrumb="Solar eclipse 2027"
       countdownSlot={
-        <EclipseCountdown
-          peakMs={Date.UTC(2027, 7, 2, 10, 6, 37)}
-          title="the 2027 total solar eclipse"
-          arrivedLabel="The 2027 eclipse has passed — the next total eclipse is July 22, 2028"
-          where="near Luxor, Egypt"
-        />
+        <EclipseCountdown {...eclipseProps('solar-eclipse-2027')} />
       }
       facts={[
         { label: 'Date', value: 'Monday, August 2, 2027' },

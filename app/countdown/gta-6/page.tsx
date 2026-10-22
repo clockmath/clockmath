@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import EventPage from '@/components/EventPage';
-import { buildEventDisclaimer } from '@/components/EventCountdown';
+import { countdownProps } from '@/lib/countdowns';
 import StackedTable from '@/components/StackedTable';
-import { GTA6_RELEASE, LAUNCHED } from './launch';
+import { LAUNCHED } from './launch';
 
 // Rolling unlock: midnight on Nov 19 in each region, per the PlayStation
 // Store listings (reported by PCGamesN, Sep 21 2026; per-region UTC times
@@ -163,15 +163,11 @@ const COUNTDOWN_FAQS = [
 export default function Gta6CountdownPage() {
   return (
     <EventPage
-      board={{ color: '#b0215f' }}
+      {...countdownProps('gta-6')}
       heading={LAUNCHED ? 'GTA 6 Is Out: Release Date and Unlock Times' : 'How Many Days Until GTA 6?'}
       tagline={LAUNCHED ? 'Grand Theft Auto VI released on November 19, 2026' : 'Time until Grand Theft Auto VI releases'}
       lastUpdated={LAUNCHED ? '2026-11-19' : '2026-10-16'}
       breadcrumb="GTA 6"
-      target={GTA6_RELEASE}
-      countdownTitle="GTA 6"
-      arrivedLabel="GTA 6 is out! 🎮"
-      disclaimer={buildEventDisclaimer('Grand Theft Auto', 'Rockstar Games or Take-Two Interactive', { released: LAUNCHED })}
       facts={
         LAUNCHED
           ? [

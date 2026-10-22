@@ -1,19 +1,17 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesTable';
 
 export default function ChristmasCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#1f5f3f' }}
+      {...countdownProps('christmas')}
       heading={'How Many Days Until Christmas?'}
       tagline="Live countdown to December 25 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"
       breadcrumb="Christmas"
-      recurring={{ month: 11, day: 25 }}
-      countdownTitle="Christmas"
-      arrivedLabel="Merry Christmas! 🎄"
       facts={[
         { label: 'Date', value: 'December 25' },
         { label: 'Christmas Eve', value: 'December 24' },

@@ -71,7 +71,8 @@ function getArticleMetadata(articlePath: string) {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const appDir = path.join(process.cwd(), 'app');
-  const pages = Array.from(new Set(getAllPages(appDir)));
+  // Embeds (/embed/…) are noindex widget frames, not pages to list.
+  const pages = Array.from(new Set(getAllPages(appDir))).filter((p) => !p.startsWith('/embed'));
   
   // Define custom priorities and change frequencies for different page types
   const sitemapEntries: MetadataRoute.Sitemap = pages.map((page) => {
