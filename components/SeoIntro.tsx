@@ -38,7 +38,7 @@ const FAQS = [
   {
     question: 'How do I calculate the hours between two times?',
     answer:
-      'Enter a start and end time and press Calculate Duration. The result shows hours and minutes, the total in minutes, and decimal hours for payroll.',
+      'Enter a start and end time; the answer updates as you type. It shows hours and minutes, the total in minutes, and decimal hours for payroll.',
   },
   {
     question: 'Does it work across midnight?',
@@ -48,7 +48,7 @@ const FAQS = [
   {
     question: 'Can it calculate the duration between two dates?',
     answer:
-      'Yes — both ends take a date as well as a time. The result breaks the span down calendar-accurately into years, months, days, hours and minutes, and Show details gives it as a total number of days, weeks or hours.',
+      'Yes — both ends take a date as well as a time. The result breaks the span down calendar-accurately into years, months, days, hours and minutes, and the breakdown link under the answer gives it as a total number of days, weeks or hours.',
   },
   {
     question: 'What are decimal hours?',

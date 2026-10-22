@@ -93,7 +93,7 @@ export default function InfoTip({
             setPinned(true);
           }
         }}
-        className="inline-grid place-items-center w-5 h-5 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+        className="inline-grid place-items-center w-5 h-5 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
         <Info className="w-3.5 h-3.5" aria-hidden="true" />
       </button>
@@ -104,7 +104,7 @@ export default function InfoTip({
         // `left`, not a transform: a transformed panel still widens the page
         // by its original box while open (sideways scroll on phones).
         style={{ left: shift }}
-        className="absolute top-full mt-1.5 z-50 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border dark:border-slate-600 bg-card dark:bg-slate-800 shadow-md px-3 py-2 text-xs leading-relaxed font-normal normal-case tracking-normal text-left text-muted-foreground dark:text-slate-300"
+        className="absolute top-full mt-1.5 z-50 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border dark:border-border bg-card dark:bg-card shadow-md px-3 py-2 text-xs leading-relaxed font-normal normal-case tracking-normal text-left text-muted-foreground dark:text-foreground"
       >
         {children}
       </span>

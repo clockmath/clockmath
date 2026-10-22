@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { event as gaEvent } from '@/lib/gtag';
+import StationChrome from '@/components/station/StationChrome';
 
 /**
  * Last line of defence for a crash inside a page. Without it Next shows a
@@ -16,29 +17,19 @@ export default function PageError({ error, reset }: { error: Error & { digest?: 
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 py-10">
-      <div className="w-full max-w-lg text-center bg-card/70 dark:bg-slate-800/60 rounded-2xl p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-        <h1 className="text-xl font-bold text-foreground dark:text-slate-100">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground dark:text-slate-400">
-          This page hit an error. Trying again usually fixes it.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <button
-            type="button"
-            onClick={reset}
-            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm"
-          >
-            Try again
-          </button>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="px-5 py-2.5 rounded-xl border border-border dark:border-slate-600 font-semibold text-foreground hover:bg-muted/60 dark:hover:bg-slate-700/60"
-          >
-            Reload the page
-          </button>
-        </div>
+    <StationChrome currentTool="error">
+      <div className="st-intro">
+        <h1 className="st-h1">Something went wrong</h1>
+        <p className="st-lede">This page hit an error. Trying again usually fixes it.</p>
       </div>
-    </div>
+      <div className="st-cta">
+        <button type="button" onClick={reset} className="st-btn primary">
+          Try again
+        </button>
+        <button type="button" onClick={() => window.location.reload()} className="st-btn quiet">
+          Reload the page
+        </button>
+      </div>
+    </StationChrome>
   );
 }

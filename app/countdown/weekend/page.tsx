@@ -5,6 +5,7 @@ import EventPage from '@/components/EventPage';
 export default function WeekendCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#f3c64a', ink: '#000000' }}
       heading={'How Many Days Until the Weekend?'}
       tagline="Live countdown to Saturday — days, hours, minutes, and seconds"
       lastUpdated="2026-08-03"

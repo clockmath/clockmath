@@ -24,6 +24,7 @@ const ROWS = HANUKKAH.map((h) => ({
 export default function HanukkahCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#1d4f91' }}
       heading={'How Many Days Until Hanukkah?'}
       tagline="Live countdown to the first night of Hanukkah — in 2026, sundown on Friday, December 4"
       lastUpdated="2026-10-15"

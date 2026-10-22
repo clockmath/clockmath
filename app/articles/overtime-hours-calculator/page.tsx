@@ -12,7 +12,7 @@ const TITLE = "How to Calculate Overtime Hours and Pay | ClockMath";
 const DESCRIPTION =
   "Work out overtime by hand: the 40-hour rule, daily overtime in states like California, time-and-a-half pay and decimal hours, with worked examples.";
 
-const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+const LINK = "text-primary hover:text-primary font-medium";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -65,13 +65,13 @@ export default function OvertimeHoursCalculatorPage() {
         Sunday to Saturday.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: 46 hours at $20/hour</h3>
         <div className="space-y-2 text-sm">
           <div>Regular: 40 hours × $20 = <strong>$800</strong></div>
           <div>Overtime rate: $20 × 1.5 = $30/hour</div>
           <div>Overtime: 6 hours × $30 = <strong>$180</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>Total: $980</strong>
           </div>
         </div>
@@ -88,13 +88,13 @@ export default function OvertimeHoursCalculatorPage() {
         federal weekly rule, but 8 overtime hours under California's daily one.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: a 13-hour day in California at $20/hour</h3>
         <div className="space-y-2 text-sm">
           <div>First 8 hours × $20 = <strong>$160</strong></div>
           <div>Hours 9–12: 4 × $30 = <strong>$120</strong></div>
           <div>Hour 13: 1 × $40 (double time) = <strong>$40</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>Total for the day: $320</strong>
           </div>
         </div>

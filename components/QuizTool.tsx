@@ -76,7 +76,7 @@ function ClockFace({ h, m }: { h: number; m: number }) {
         );
       })}
       <line x1="60" y1="60" x2={hour.x2} y2={hour.y2} className="stroke-foreground" strokeWidth={hour.width} strokeLinecap="round" />
-      <line x1="60" y1="60" x2={minute.x2} y2={minute.y2} className="stroke-emerald-600 dark:stroke-emerald-400" strokeWidth={minute.width} strokeLinecap="round" />
+      <line x1="60" y1="60" x2={minute.x2} y2={minute.y2} className="stroke-primary" strokeWidth={minute.width} strokeLinecap="round" />
       <circle cx="60" cy="60" r="3.5" className="fill-foreground" />
     </svg>
   );
@@ -157,7 +157,7 @@ function bumpStreak(day: string): number {
 }
 
 const cardClass =
-  'bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50';
+  'bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50';
 
 type Phase = 'loading' | 'intro' | 'playing' | 'done' | 'practice';
 
@@ -584,13 +584,13 @@ export function QuizTool({ className = '' }: { className?: string }) {
       'w-full px-4 py-3 rounded-xl border text-base font-medium text-left transition-colors tabular-nums ';
     if (!revealed) {
       cls +=
-        'bg-background dark:bg-slate-900/40 border-border dark:border-slate-600 text-foreground hover:border-emerald-500 hover:bg-emerald-500/5';
+        'bg-background dark:bg-background/40 border-border dark:border-border text-foreground hover:border-primary hover:bg-primary/10';
     } else if (isCorrect) {
-      cls += 'bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-300';
+      cls += 'bg-primary/10 border-primary text-primary ';
     } else if (isPicked) {
       cls += 'bg-red-500/10 border-red-400 text-red-700 dark:text-red-300';
     } else {
-      cls += 'bg-background dark:bg-slate-900/40 border-border/50 dark:border-slate-700 text-muted-foreground';
+      cls += 'bg-background dark:bg-background/40 border-border/50 dark:border-border text-muted-foreground';
     }
     return (
       <button
@@ -619,7 +619,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
     if (correct) {
       return (
         <p
-          className="mt-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"
+          className="mt-4 text-sm font-semibold text-primary flex items-center gap-1.5"
           aria-live="polite"
         >
           <Check className="w-4 h-4" aria-hidden="true" />
@@ -628,12 +628,12 @@ export function QuizTool({ className = '' }: { className?: string }) {
       );
     }
     return (
-      <div className="mt-4 pt-4 border-t border-border/50 dark:border-slate-700/50" aria-live="polite">
+      <div className="mt-4 pt-4 border-t border-border/50 dark:border-border/50" aria-live="polite">
         <span className="sr-only">{`Not quite — the answer is ${q.options[q.correctIndex]}.`}</span>
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={onNext}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
           >
             {nextLabel}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -652,7 +652,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             {q.explanation}{' '}
             <Link
               href={q.toolHref}
-              className="text-emerald-700 dark:text-emerald-400 underline underline-offset-4 hover:text-emerald-600"
+              className="text-primary underline underline-offset-4 hover:text-primary"
             >
               Practice with the {q.toolLabel}
             </Link>
@@ -675,11 +675,11 @@ export function QuizTool({ className = '' }: { className?: string }) {
           </p>
           {crowd && board && board.top.length > 0 && (
             <p className="text-sm mb-5 flex items-center gap-2 text-muted-foreground">
-              <Trophy className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+              <Trophy className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
               <span>
                 <span className="font-semibold text-foreground tabular-nums">{board.count}</span> players so far — the
                 score to beat is{' '}
-                <span className="font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
+                <span className="font-semibold text-primary tabular-nums">
                   {board.top[0].i} · {board.top[0].s}/{QUIZ_QUESTION_COUNT} in {fmtMMSS(board.top[0].t)}
                 </span>
               </span>
@@ -687,7 +687,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           )}
           <button
             onClick={startDaily}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-semibold transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-lg font-semibold transition-colors"
           >
             <Trophy className="w-5 h-5" aria-hidden="true" />
             {resumable
@@ -764,14 +764,14 @@ export function QuizTool({ className = '' }: { className?: string }) {
                     onKeyDown={(e) => handleInitialKeyDown(i, e)}
                     onFocus={(e) => e.target.select()}
                     aria-label={`Initial ${i + 1}`}
-                    className="w-12 h-14 text-center text-2xl font-bold uppercase rounded-xl border border-border dark:border-slate-600 bg-background dark:bg-slate-900/40 text-foreground tabular-nums"
+                    className="w-12 h-14 text-center text-2xl font-bold uppercase rounded-xl border border-border dark:border-border bg-background dark:bg-background/40 text-foreground tabular-nums"
                   />
                 ))}
               </div>
               <button
                 onClick={() => submitScore(initials.join(''))}
                 disabled={submitting || initials.join('').length !== 3}
-                className="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+                className="px-4 py-3 rounded-xl bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:hover:bg-primary text-primary-foreground text-sm font-semibold transition-colors"
               >
                 {submitting ? 'Sending…' : 'Submit'}
               </button>
@@ -798,8 +798,8 @@ export function QuizTool({ className = '' }: { className?: string }) {
                 key={`${entry.i}-${i}`}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm tabular-nums ${
                   highlightOwn && stored.initials === entry.i && stored.score === entry.s && stored.timeMs === entry.t
-                    ? 'bg-emerald-500/10 border border-emerald-500/40'
-                    : 'bg-background dark:bg-slate-900/40'
+                    ? 'bg-primary/10 border border-primary/30'
+                    : 'bg-background dark:bg-background/40'
                 }`}
               >
                 <span className="w-6 text-muted-foreground">{i + 1}.</span>
@@ -817,7 +817,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
               Daily #{quiz.number} · {dayLabel}
             </p>
             <div className="flex items-end gap-3 mb-2" aria-live="polite">
-              <span className="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <span className="st-figure text-4xl font-extrabold text-primary tabular-nums">
                 <RollingNumber value={`${stored.score}/${QUIZ_QUESTION_COUNT}`} />
               </span>
               <span className="text-muted-foreground mb-1">
@@ -842,14 +842,14 @@ export function QuizTool({ className = '' }: { className?: string }) {
             <div className="flex flex-col sm:flex-row gap-2.5">
               <button
                 onClick={share}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-colors"
               >
                 {shareCopied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Share2 className="w-4 h-4" aria-hidden="true" />}
                 {shareCopied ? 'Copied!' : 'Share your result'}
               </button>
               <button
                 onClick={startPractice}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border dark:border-slate-600 text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border dark:border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
               >
                 <GraduationCap className="w-4 h-4" aria-hidden="true" />
                 Keep practicing
@@ -866,12 +866,12 @@ export function QuizTool({ className = '' }: { className?: string }) {
                   rows={3}
                   aria-label="Your shareable result"
                   onFocus={(e) => e.target.select()}
-                  className="w-full text-sm rounded-xl border border-border dark:border-slate-600 bg-background dark:bg-slate-900/40 text-foreground p-3"
+                  className="w-full text-sm rounded-xl border border-border dark:border-border bg-background dark:bg-background/40 text-foreground p-3"
                 />
               </div>
             )}
             {!fullBoard && (needsInitials || (board && board.top.length > 0)) && (
-              <div className="mt-5 pt-5 border-t border-border/50 dark:border-slate-700/50 space-y-4">
+              <div className="mt-5 pt-5 border-t border-border/50 dark:border-border/50 space-y-4">
                 {needsInitials && initialsForm}
                 {!boardDown && board && board.top.length > 0 && boardRows(board.top, true, 'Scores today')}
               </div>
@@ -915,7 +915,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
                         aria-pressed={boardView === v}
                         className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
                           boardView === v
-                            ? 'bg-emerald-600 text-white'
+                            ? 'bg-primary text-primary-foreground'
                             : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -962,7 +962,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
               )}
 
               {championDays.length >= CROWD_MIN && (
-                <div className="mt-6 pt-4 border-t border-border/50 dark:border-slate-700/50">
+                <div className="mt-6 pt-4 border-t border-border/50 dark:border-border/50">
                   <h3 className="text-sm font-semibold text-foreground mb-2">
                     This week&apos;s daily champions
                   </h3>
@@ -1007,7 +1007,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             {practiceQ.options.map((_, i) => optionButton(practiceQ, i, practiceAnswered, answerPractice))}
           </div>
           {practiceAnswered !== null && feedbackPanel(practiceQ, practiceAnswered, nextPractice, 'Another one', true)}
-          <div className="mt-4 pt-4 border-t border-border/50 dark:border-slate-700/50">
+          <div className="mt-4 pt-4 border-t border-border/50 dark:border-border/50">
             <button
               onClick={() => setPhase(stored ? 'done' : 'intro')}
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"

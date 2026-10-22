@@ -65,14 +65,14 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
   }, [decimalStr]);
 
   const inputClass =
-    'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-slate-900/60 border border-border dark:border-slate-700 text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-emerald-500/50';
+    'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-primary/50';
 
   return (
     <div className={`grid gap-6 sm:grid-cols-2 ${className}`}>
       {/* Time → decimal */}
       <section
         aria-labelledby="to-decimal-heading"
-        className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
+        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
       >
         <h2 id="to-decimal-heading" className="text-lg font-bold text-foreground mb-4">
           Hours &amp; minutes → decimal
@@ -120,7 +120,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
         <div
           role="status"
           aria-live="polite"
-          className="text-center rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 py-4 px-3"
+          className="text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
         >
           {toDecimal === null ? (
             <p className="text-sm text-muted-foreground">Enter hours and minutes above</p>
@@ -128,7 +128,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
             <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">{toDecimal.error}</p>
           ) : (
             <>
-              <p className="text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+              <p className="st-figure text-3xl font-bold font-mono text-primary">
                 <RollingNumber value={toDecimal.value} />
               </p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -142,7 +142,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
       {/* Decimal → time */}
       <section
         aria-labelledby="to-time-heading"
-        className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
+        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
       >
         <h2 id="to-time-heading" className="text-lg font-bold text-foreground mb-4">
           Decimal → hours &amp; minutes
@@ -171,13 +171,13 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
         <div
           role="status"
           aria-live="polite"
-          className="text-center rounded-xl bg-blue-500/10 dark:bg-blue-500/15 border border-blue-500/30 py-4 px-3"
+          className="text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
         >
           {toTime === null ? (
             <p className="text-sm text-muted-foreground">Enter decimal hours above</p>
           ) : (
             <>
-              <p className="text-3xl font-bold font-mono text-blue-600 dark:text-blue-400">
+              <p className="st-figure text-3xl font-bold font-mono text-primary">
                 <RollingNumber value={`${toTime.hours}h ${toTime.minutes}m`} />
               </p>
               <p className="text-xs text-muted-foreground mt-1">{toTime.d} decimal hours</p>

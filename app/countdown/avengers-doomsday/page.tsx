@@ -11,6 +11,7 @@ const RELEASE = new Date(2026, 11, 18);
 export default function AvengersDoomsdayCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#23402f' }}
       heading={'How Many Days Until Avengers: Doomsday?'}
       tagline="Time until Avengers: Doomsday hits theaters"
       lastUpdated="2026-10-15"

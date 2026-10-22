@@ -381,12 +381,12 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   };
 
   return (
-    <div className={`relative z-20 bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-border/50 dark:border-slate-700/50 hover:shadow-md transition-all duration-300 ${className}`}>
+    <div className={`relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-border/50 dark:border-border/50 hover:shadow-md transition-all duration-300 ${className}`}>
       {/* Card toolbar — the page header already carries the title/subtitle;
           repeating them here was the page's third title. */}
       <div className="flex items-center justify-end gap-4 mb-4 sm:mb-6">
         <div className="flex items-center justify-center">
-          <div className="bg-muted/50 dark:bg-slate-700/50 rounded-xl p-1.5 flex items-center gap-1">
+          <div className="bg-muted/50 dark:bg-muted/50 rounded-xl p-1.5 flex items-center gap-1">
             <button
               onClick={() => setHour12(true)}
             aria-pressed={hour12}
@@ -419,7 +419,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           {/* From Timezone */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200">
+              <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
                 From Location
               </label>
               <button
@@ -453,7 +453,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
           {/* To Timezone */}
           <div className="space-y-3 relative">
-            <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200">
+            <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
               To Location
             </label>
             <LocationTimezonePicker
@@ -500,7 +500,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             </svg>
             Advanced: Select timezone manually
           </summary>
-          <div className="mt-4 grid sm:grid-cols-2 gap-4 sm:gap-6 p-4 bg-muted/30 dark:bg-slate-700/30 rounded-lg">
+          <div className="mt-4 grid sm:grid-cols-2 gap-4 sm:gap-6 p-4 bg-muted/30 dark:bg-muted/30 rounded-lg">
             <div className="space-y-2">
               <label className="block text-xs font-medium text-muted-foreground">From Timezone</label>
               <SearchableSelect
@@ -527,7 +527,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         {/* Date/Time Input - moved closer to location inputs */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground dark:text-slate-200">
+            <h3 className="text-sm font-semibold text-foreground dark:text-foreground">
               Date & Time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
             </h3>
             <div className="flex gap-2">
@@ -587,7 +587,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             <button
               type="button"
               onClick={handleCalculate}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
@@ -601,33 +601,34 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
       {/* Conversion Result */}
       {result && (
-        <div className="bg-gradient-to-br from-muted/80 to-muted/40 dark:from-slate-700/80 dark:to-slate-700/40 rounded-2xl p-4 sm:p-6 mb-6 border border-border/50 dark:border-slate-600/50 shadow-inner">
+        <div className="bg-card rounded-2xl p-4 sm:p-6 mb-6 border border-border/50 dark:border-border/50 shadow-inner">
           <div className="text-center space-y-6">
             {/* Main Result */}
-            <div className="text-lg sm:text-xl font-bold text-foreground dark:text-slate-100">
-              <span className="text-primary dark:text-accent">{result.from.time}</span>
-              <span className="mx-2 text-muted-foreground">in</span>
-              <span className="text-emerald-600 dark:text-emerald-400">{getFromZoneDisplayName()}</span>
-              <span className="mx-2 text-muted-foreground">=</span>
-              <span className="text-primary dark:text-accent">{result.to.time}</span>
-              <span className="mx-2 text-muted-foreground">in</span>
-              <span className="text-emerald-600 dark:text-emerald-400">{getToZoneDisplayName()}</span>
+            <div className="grid sm:grid-cols-2 gap-6 text-left">
+              <div>
+                <div className="text-sm text-muted-foreground">{getFromZoneDisplayName()}</div>
+                <div className="st-figure">{result.from.time}</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">{getToZoneDisplayName()}</div>
+                <div className="st-figure">{result.to.time}</div>
+              </div>
             </div>
 
             {/* Time Difference - Emphasized */}
-            <div className="bg-gradient-to-r from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
-              <div className="text-xs text-muted-foreground dark:text-slate-400 mb-1">
+            <div className="bg-primary/10 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
+              <div className="text-xs text-muted-foreground dark:text-muted-foreground mb-1">
                 Time Difference
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-primary dark:text-accent">
+              <div className="text-xl sm:text-2xl font-bold text-primary">
                 {getTimeDifference()}
               </div>
             </div>
 
             {/* Date Information */}
-              <div className="grid sm:grid-cols-2 gap-4 text-sm text-muted-foreground dark:text-slate-400">
+              <div className="grid sm:grid-cols-2 gap-4 text-sm text-muted-foreground dark:text-muted-foreground">
                 <div className="space-y-1">
-                  <div className="font-medium text-foreground dark:text-slate-200">
+                  <div className="font-medium text-foreground dark:text-foreground">
                     {getFromZoneDisplayName()}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -636,7 +637,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                   <div>{result.from.weekday}, {result.from.date}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="font-medium text-foreground dark:text-slate-200">
+                  <div className="font-medium text-foreground dark:text-foreground">
                     {getToZoneDisplayName()}
                   </div>
                   <div className="text-xs text-muted-foreground">

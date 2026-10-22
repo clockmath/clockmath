@@ -163,6 +163,7 @@ const COUNTDOWN_FAQS = [
 export default function Gta6CountdownPage() {
   return (
     <EventPage
+      board={{ color: '#b0215f' }}
       heading={LAUNCHED ? 'GTA 6 Is Out: Release Date and Unlock Times' : 'How Many Days Until GTA 6?'}
       tagline={LAUNCHED ? 'Grand Theft Auto VI released on November 19, 2026' : 'Time until Grand Theft Auto VI releases'}
       lastUpdated={LAUNCHED ? '2026-11-19' : '2026-10-16'}

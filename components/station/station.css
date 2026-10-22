@@ -1,0 +1,339 @@
+/* ---------------------------------------------------------------------------
+   Station clock design (design/station-clock preview, Oct 2026).
+
+   A railway station clock: white dial, black hands, one red second hand.
+   Applied only inside .station (StationChrome), so pages that haven't moved
+   to it look exactly as before. .station redefines the site's colour tokens,
+   which is how the shared pieces inside it (pickers, FAQ, footer, history)
+   pick up the palette without their own changes.
+
+   Colour roles, each with one job:
+   - ink       numerals, headings, the span you entered
+   - signal    "now" and seconds only (the second hand)
+   - enamel    things you press or follow: buttons, links, the active tab
+   - daylight  the 24-hour ruler's sky, night → dawn → day → dusk
+   - board     an event's own colour on its countdown (set per page)
+   This file is unlayered, so it wins over Tailwind utilities; keep its
+   selectors to .station and st- classes.
+--------------------------------------------------------------------------- */
+
+.station {
+  --dial: #ffffff;
+  --ink: #000000;
+  --text: #3a3f46;
+  --quiet: #6b7178;
+  --rule: #dadde2;
+  --wash: #f2f4f7;
+  --signal: #d51f26;
+  --enamel: #1849a9;
+  --enamel-hover: #123a8a;
+  --enamel-wash: #e8eefb;
+  --night: #2b3270;
+  --dawn: #f0a531;
+  --day: #7cc0ec;
+  --dusk: #e0663a;
+  --board: #000000;
+  --board-ink: #ffffff;
+
+  /* The site tokens, re-pointed */
+  --background: var(--dial);
+  --foreground: var(--ink);
+  --card: var(--wash);
+  --card-foreground: var(--text);
+  --popover: var(--dial);
+  --popover-foreground: var(--text);
+  --primary: var(--enamel);
+  --primary-foreground: #ffffff;
+  --accent: var(--enamel);
+  --accent-foreground: var(--primary-foreground);
+  --secondary: var(--wash);
+  --muted: var(--wash);
+  --muted-foreground: var(--quiet);
+  --border: var(--rule);
+  --input: var(--wash);
+  --ring: rgba(24, 73, 169, 0.45);
+  --radius: 0.375rem;
+
+  min-height: 100vh;
+  background: var(--dial);
+  color: var(--text);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+.dark .station {
+  --dial: #0f1216;
+  --ink: #f5f6f8;
+  --text: #c6cbd2;
+  --quiet: #8e959e;
+  --rule: #2c3139;
+  --wash: #1a1e24;
+  --signal: #ff5a52;
+  --enamel: #8fb0ff;
+  --enamel-hover: #b3caff;
+  --enamel-wash: #1b2640;
+  --night: #3a4290;
+  --board-ink: #ffffff;
+  --primary-foreground: #0f1216;
+  --ring: rgba(143, 176, 255, 0.5);
+}
+
+.station a { color: var(--enamel); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.station a:hover { color: var(--enamel-hover); }
+.station :focus-visible { outline: 2px solid var(--enamel); outline-offset: 2px; }
+/* Mono was for aligned digits; Archivo's tabular figures do that job. */
+.station .font-mono { font-family: inherit; font-stretch: 88%; font-weight: 600; }
+/* Shared cards inside (FAQ, history) sit flat on the wash, no shadow. */
+.station .bg-card, .dark .station .bg-card { background: var(--wash); box-shadow: none; }
+
+.st-wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ---- Header: wordmark and plain text tabs ---- */
+.st-header { border-bottom: 1px solid var(--rule); }
+.st-header .st-wrap { display: flex; align-items: center; gap: 36px; height: 64px; }
+.st-mark { display: flex; align-items: center; gap: 10px; flex-shrink: 0; text-decoration: none; color: var(--ink) !important;
+           font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+.st-mark svg { width: 28px; height: 28px; }
+.st-tabs { display: flex; gap: 26px; font-size: 15px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.st-tabs::-webkit-scrollbar { display: none; }
+.st-tabs a { white-space: nowrap; text-decoration: none; color: var(--quiet); padding: 20px 0 18px; border-bottom: 3px solid transparent; }
+.st-tabs a:hover { color: var(--ink); }
+.st-tabs a[aria-current] { color: var(--ink); border-bottom-color: var(--enamel); font-weight: 600; }
+.st-theme { flex-shrink: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--rule);
+            border-radius: 6px; background: none; color: var(--ink); cursor: pointer; }
+.st-theme:hover { border-color: var(--ink); }
+
+.st-main { padding-bottom: 40px; }
+.st-h1 { color: var(--ink); font-weight: 800; font-size: 44px; line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+.st-lede { margin: 10px 0 0; font-size: 19px; max-width: 64ch; }
+.st-crumbs { font-size: 14px; color: var(--quiet); margin-bottom: 10px; }
+.st-crumbs a { color: var(--quiet); }
+
+.st-btn { font: inherit; font-size: 15px; font-weight: 600; border-radius: 6px; padding: 11px 18px; cursor: pointer;
+          text-decoration: none !important; display: inline-flex; align-items: center; gap: 8px; line-height: 1.3; }
+.st-btn.primary { background: var(--enamel); color: var(--primary-foreground) !important; border: 1px solid var(--enamel); }
+.st-btn.primary:hover { background: var(--enamel-hover); border-color: var(--enamel-hover); }
+.st-btn.quiet { background: none; color: var(--ink) !important; border: 1px solid var(--rule); }
+.st-btn.quiet:hover { border-color: var(--ink); }
+
+/* ---- Homepage calculator: one ruled band, no card ---- */
+.st-intro { padding: 52px 0 28px; }
+.st-calc { border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 26px 0 30px; }
+.st-fields { display: grid; grid-template-columns: 1fr 1fr auto; gap: 20px; align-items: end; }
+.st-field > span { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.st-pair { display: grid; grid-template-columns: 1.15fr 1fr; gap: 8px; }
+/* The pickers' trigger buttons, restyled from outside */
+.st-pair button[aria-haspopup] {
+  background: var(--wash) !important; border-color: transparent !important; border-radius: 6px !important;
+  min-height: 52px; color: var(--ink);
+}
+.st-pair button[aria-haspopup]:hover { border-color: var(--rule) !important; }
+.st-pair .font-mono { font-size: 21px; font-weight: 700; font-stretch: 85%; color: var(--ink); }
+.st-seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; height: 52px; }
+.st-seg button { border: 0; background: none; padding: 0 16px; font: inherit; font-size: 15px; color: var(--quiet); cursor: pointer; }
+.st-seg button[aria-pressed="true"] { background: var(--ink); color: var(--dial); font-weight: 600; }
+
+.st-answer { padding: 34px 0 6px; display: grid; grid-template-columns: auto 1fr; gap: 14px 56px; align-items: end; }
+.st-big { font-stretch: 70%; font-weight: 900; color: var(--ink); line-height: 0.82; letter-spacing: -0.02em;
+          font-size: clamp(84px, 14vw, 176px); margin: 0; white-space: nowrap; }
+.st-big.long { font-size: clamp(64px, 9vw, 120px); }
+.st-big .u { font-size: 0.42em; font-weight: 700; letter-spacing: 0; margin: 0 0.2em 0 0.04em; }
+.st-big .u:last-child { margin-right: 0; }
+.st-error { font-size: 22px; color: var(--ink); font-weight: 600; margin: 0; }
+.st-also { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 36px; margin: 0; max-width: 440px; }
+.st-also div { border-top: 1px solid var(--rule); padding: 9px 0; }
+.st-also dt { font-size: 14px; color: var(--quiet); }
+.st-also dd { margin: 0; font-size: 26px; font-weight: 800; font-stretch: 80%; color: var(--ink); }
+.st-note { font-size: 15px; margin: 10px 0 0; color: var(--text); }
+.st-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.st-link-btn { font: inherit; font-size: 15px; background: none; border: 0; padding: 0; color: var(--enamel); cursor: pointer;
+               text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+/* 24-hour ruler */
+.st-ruler { margin-top: 44px; }
+.st-ruler svg { display: block; width: 100%; overflow: visible; }
+.st-ruler svg.bars { height: 50px; }
+.st-ruler svg.labels { height: 22px; }
+.st-ruler text { font-family: var(--font-archivo), sans-serif; font-size: 12px; fill: var(--quiet); }
+.st-now-label { position: absolute; top: -22px; font-size: 12px; line-height: 1; font-weight: 700; color: var(--signal); }
+.st-ruler-key { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 13px; color: var(--quiet); margin-top: 8px; }
+.st-ruler-key i { display: inline-block; width: 18px; height: 6px; border-radius: 1px; margin-right: 6px; vertical-align: middle; }
+
+.st-nudge { margin: 22px 0 0; font-size: 15px; }
+
+/* ---- Supporting sections: heading left, content right ---- */
+.st-more { padding: 52px 0 0; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 48px; }
+.st-more > h2 { color: var(--ink); font-size: 24px; line-height: 1.2; font-weight: 800; margin: 0; letter-spacing: -0.01em; }
+.st-more > div { max-width: 68ch; }
+.st-faq h3 { color: var(--ink); font-size: 18px; margin: 0 0 4px; font-weight: 700; }
+.st-faq p { margin: 0 0 22px; }
+.st-list { list-style: none; margin: 0; padding: 0; }
+.st-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; border-top: 1px solid var(--rule); padding: 10px 0; }
+.st-list li:last-child { border-bottom: 1px solid var(--rule); }
+.st-list li > :first-child { color: var(--text); }
+.st-list li > :last-child { color: var(--ink); font-weight: 700; text-align: right; }
+.st-chips { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.st-chips a { font-size: 15px; }
+
+/* Content sections. Countdown pages' extra sections and the tool pages'
+   explainers are written as "h2 + content" (often a card or table inside):
+   laid out here like .st-more, heading left, cards flattened to ruled text.
+   One rule for both, so the pages needed no per-page markup changes. */
+.st-extra section, .station section.max-w-3xl.mx-auto {
+  max-width: none; margin: 0; padding: 52px 0 0; display: grid;
+  grid-template-columns: 260px minmax(0, 1fr); gap: 0 48px; align-items: start;
+}
+.st-extra section > h2, .station section.max-w-3xl.mx-auto > h2 {
+  grid-column: 1; grid-row: 1 / span 20; margin: 0; color: var(--ink);
+  font-size: 24px !important; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em;
+}
+.st-extra section > :not(h2), .station section.max-w-3xl.mx-auto > :not(h2) { grid-column: 2; max-width: 72ch; }
+.st-extra .bg-card, .station section.max-w-3xl.mx-auto .bg-card {
+  background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+}
+.st-extra .bg-card:has(table), .station section.max-w-3xl.mx-auto .bg-card:has(table) { border-top: 1px solid var(--rule) !important; }
+.st-extra section.bg-card { padding-top: 52px !important; }
+.station section.max-w-3xl.mx-auto .bg-card h3 { font-size: 18px; color: var(--ink); font-weight: 700; }
+.station section.max-w-3xl.mx-auto .bg-card p { font-size: inherit; }
+.st-extra th, .station section.max-w-3xl.mx-auto th { color: var(--quiet); font-weight: 600; }
+.st-extra td, .st-extra th { padding-left: 0 !important; }
+
+/* A tool's answer, set like the homepage's: condensed, heavy, in ink */
+.station .st-figure { font-family: inherit !important; font-stretch: 70%; font-weight: 900 !important; color: var(--ink) !important;
+                      font-size: clamp(48px, 7vw, 76px) !important; line-height: 0.95; letter-spacing: -0.02em; }
+
+/* Tool panels: flat, smaller corners; popovers keep their shadow */
+.station .shadow-sm, .station .shadow, .station .shadow-md, .station .shadow-inner,
+.station .hover\:shadow-md:hover, .station .hover\:shadow-sm:hover { box-shadow: none; }
+.station .rounded-2xl { border-radius: 10px; }
+.station .rounded-xl { border-radius: 7px; }
+
+/* The tools hub: a departures board, one ruled row per tool */
+.st-hub { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.st-hub li { border-bottom: 1px solid var(--rule); }
+.st-hub a { display: grid; grid-template-columns: 260px minmax(0, 1fr) auto; gap: 4px 48px; align-items: baseline;
+            padding: 18px 0; text-decoration: none; color: var(--text); }
+.st-hub-title { color: var(--ink); font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+.st-hub a:hover .st-hub-title { color: var(--enamel); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.st-hub-desc { max-width: 60ch; }
+.st-hub-live { font-size: 14px; color: var(--quiet); white-space: nowrap; }
+.st-hub-live i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--quiet); margin-right: 7px; }
+.st-hub-live i.open { background: #1f9d55; }
+
+/* SeoIntro and the footer, inside the station frame */
+.station .st-legacy h2 { font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
+.station footer { border-top-color: var(--rule); }
+
+/* ---- Countdown board ---- */
+.st-intro-event { padding-bottom: 0; }
+.st-board { margin-top: 30px; background: var(--board); color: var(--board-ink); border-radius: 10px; padding: 30px 36px 28px;
+            display: grid; grid-template-columns: auto 1fr; gap: 24px 64px; align-items: end; }
+.st-board h2 { grid-column: 1 / -1; margin: 0; font-size: 20px; font-weight: 700; color: var(--board-ink); }
+.st-days { margin: 0; font-weight: 900; font-stretch: 66%; line-height: 0.8; letter-spacing: -0.03em; font-size: clamp(140px, 22vw, 280px); }
+.st-days small { display: block; font-size: 22px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; line-height: 1.2; margin-top: 14px; }
+.st-sentence { font-size: 21px; line-height: 1.4; max-width: 32ch; margin: 0 0 20px; }
+.st-sentence strong { font-weight: 800; }
+.st-clock { display: flex; gap: 28px; margin: 0; }
+.st-clock div { border-top: 1px solid color-mix(in srgb, var(--board-ink) 40%, transparent); padding-top: 8px; min-width: 76px; }
+.st-clock dd { margin: 0; font-size: 46px; font-weight: 800; font-stretch: 72%; line-height: 1; }
+.st-clock dt { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+.st-board .st-disclaimer { grid-column: 1 / -1; font-size: 12px; opacity: 0.75; margin: 0; max-width: 80ch; }
+.st-seconds { margin-top: 14px; }
+.st-seconds svg { display: block; width: 100%; height: 30px; }
+.st-seconds line { stroke: var(--rule); }
+.st-seconds line.past { stroke: var(--ink); }
+.st-seconds line.now { stroke: var(--signal); }
+.st-date { display: flex; flex-wrap: wrap; gap: 6px 40px; border-bottom: 1px solid var(--rule); padding: 12px 0; font-size: 15px; }
+.st-date b { color: var(--ink); font-weight: 600; }
+.st-board-note { margin: 14px 0 0; max-width: 72ch; }
+.st-board-note strong, .st-notice strong { color: inherit; }
+.st-notice { display: block; }
+.st-notice .st-sentence { max-width: 60ch; margin: 0; }
+.st-notice .st-sentence p { margin: 0 0 10px; }
+.st-notice .st-sentence p + p { font-size: 16px; opacity: 0.85; }
+.st-verified { font-size: 15px; margin: 12px 0 0; }
+/* Retirement: the visitor's own date, above the board */
+.st-picker { padding-top: 26px; border-top: 2px solid var(--ink); margin-top: 26px; }
+.st-picker > span { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.st-picker-field { max-width: 320px; }
+.st-picker-field button[aria-haspopup] { background: var(--wash) !important; border-color: transparent !important; border-radius: 6px !important; min-height: 52px; }
+.st-picker > p { font-size: 14px; color: var(--quiet); margin: 8px 0 0; }
+.st-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+
+/* ---- Guides ---- */
+.st-byline { font-size: 14px; color: var(--quiet); margin: 12px 0 0; }
+/* Article body: one readable column on the page's left edge, ruled off
+   from the intro like the calculator band */
+.st-article { border-top: 2px solid var(--ink); padding-top: 32px; max-width: 70ch; }
+.station .article-prose, .dark .station .article-prose { color: var(--text); font-size: 18px; line-height: 1.65; }
+.station .article-prose h2, .dark .station .article-prose h2 { color: var(--ink); font-weight: 800; letter-spacing: -0.01em; font-size: 26px; }
+.station .article-prose h3, .station .article-prose h4,
+.dark .station .article-prose h3, .dark .station .article-prose h4 { color: var(--ink); font-weight: 700; }
+.station .article-prose strong { color: var(--ink); }
+.station .article-prose .bg-card, .station .article-prose [class*="bg-primary/"] { border-radius: 8px; }
+/* The tool a guide is about: the one coloured block on the page, in the
+   site's blue (fixed, so dark mode keeps white text readable) */
+.st-callout { margin-top: 48px; background: #1849a9; color: #fff; border-radius: 10px; padding: 26px 30px; max-width: 70ch; }
+.st-callout h2 { margin: 0 0 6px; font-size: 24px; font-weight: 800; letter-spacing: -0.01em; color: #fff; }
+.st-callout p { margin: 0 0 18px; opacity: 0.9; }
+.st-btn.on-board { background: #fff; color: #1849a9 !important; border: 1px solid #fff; }
+.st-btn.on-board:hover { background: #e8eefb; }
+/* A ruled list of links with a line of description each */
+.st-links { list-style: none; margin: 0; padding: 0; }
+.st-links li { border-top: 1px solid var(--rule); padding: 11px 0; display: grid; gap: 2px; }
+.st-links li:last-child { border-bottom: 1px solid var(--rule); }
+.st-links a { font-weight: 700; }
+.st-links span { color: var(--quiet); font-size: 15px; }
+/* Guides index: search and filters on one ruled line */
+.st-filters { display: grid; grid-template-columns: minmax(0, 2fr) 1fr 1fr; gap: 10px; }
+.st-filters input, .st-filters select { width: 100%; height: 48px; font: inherit; font-size: 16px; color: var(--ink);
+  background: var(--wash); border: 1px solid transparent; border-radius: 6px; padding: 0 14px; }
+.st-filters input:focus, .st-filters select:focus { outline: 2px solid var(--enamel); outline-offset: 1px; }
+.st-filter-search { position: relative; }
+.st-filter-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--quiet); }
+.st-filter-search input { padding-left: 42px; }
+.st-filter-count { font-size: 15px; color: var(--quiet); margin: 14px 0 18px; }
+.st-empty { border-top: 2px solid var(--ink); padding: 28px 0; }
+.st-empty p { margin: 0 0 14px; font-size: 19px; color: var(--ink); }
+/* 404: the number, set like a countdown's days */
+.st-404 { margin: 0 0 10px; font-weight: 900; font-stretch: 66%; line-height: 0.8; letter-spacing: -0.03em;
+          font-size: clamp(120px, 20vw, 220px); color: var(--ink); }
+
+@media (max-width: 760px) {
+  .station { font-size: 16px; }
+  .st-wrap { padding: 0 16px; }
+  .st-header .st-wrap { gap: 16px; height: 56px; }
+  .st-mark span { display: none; }
+  .st-tabs { gap: 18px; font-size: 14px; }
+  .st-tabs a { padding: 17px 0 15px; }
+  .st-intro { padding: 28px 0 20px; }
+  .st-h1 { font-size: 31px; }
+  .st-lede { font-size: 17px; }
+  .st-fields { grid-template-columns: 1fr; gap: 16px; }
+  .st-seg { justify-self: start; height: 44px; }
+  .st-answer { grid-template-columns: 1fr; gap: 10px; padding-top: 26px; }
+  .st-big { font-size: 96px; }
+  .st-big.long { font-size: 60px; white-space: normal; }
+  .st-more { grid-template-columns: 1fr; gap: 14px; padding-top: 40px; }
+  .st-extra section, .station section.max-w-3xl.mx-auto { grid-template-columns: 1fr; padding-top: 40px; }
+  .st-extra section > h2, .station section.max-w-3xl.mx-auto > h2 { grid-row: auto; margin-bottom: 14px; }
+  .st-extra section > :not(h2), .station section.max-w-3xl.mx-auto > :not(h2) { grid-column: 1; }
+  .st-hub a { grid-template-columns: 1fr; padding: 14px 0; }
+  .st-filters { grid-template-columns: 1fr 1fr; }
+  .st-filter-search { grid-column: 1 / -1; }
+  .st-callout { padding: 22px 20px; }
+  .station .article-prose { font-size: 17px; }
+  .st-board { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; border-radius: 8px; }
+  .st-days { font-size: 150px; }
+  .st-sentence { font-size: 18px; margin-bottom: 14px; }
+  .st-clock { gap: 16px; }
+  .st-clock div { min-width: 0; flex: 1; }
+  .st-clock dd { font-size: 36px; }
+}
+
+/* A black or midnight board would sink into the dark dial: give it an edge */
+.dark .st-board { box-shadow: inset 0 0 0 1px var(--rule); }

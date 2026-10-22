@@ -27,19 +27,19 @@ export function DetailedDurationBreakdown({
   // Color classes based on variant
   const colorClasses = {
     primary: {
-      text: 'text-emerald-700 dark:text-emerald-300',
-      bg: 'bg-white/60 dark:bg-slate-800/60',
-      border: 'border-emerald-200/50 dark:border-slate-600/50'
+      text: 'text-primary ',
+      bg: 'bg-background/60 dark:bg-card/60',
+      border: 'border-primary/30 dark:border-border/50'
     },
     secondary: {
-      text: 'text-blue-700 dark:text-blue-300',
-      bg: 'bg-white/60 dark:bg-slate-800/60',
-      border: 'border-blue-200/50 dark:border-slate-600/50'
+      text: 'text-primary ',
+      bg: 'bg-background/60 dark:bg-card/60',
+      border: 'border-primary/30 dark:border-border/50'
     },
     muted: {
       text: 'text-foreground',
-      bg: 'bg-muted/40 dark:bg-slate-600/40',
-      border: 'border-border/30 dark:border-slate-500/30'
+      bg: 'bg-muted/40 dark:bg-muted/40',
+      border: 'border-border/30 dark:border-border/30'
     }
   }
 

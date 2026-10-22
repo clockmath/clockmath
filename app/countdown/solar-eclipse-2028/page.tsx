@@ -20,6 +20,7 @@ const STRONG = 'text-foreground dark:text-slate-200';
 export default function SolarEclipse2028Page() {
   return (
     <EventPage
+      board={{ color: '#10142b', ink: '#f5d76e' }}
       heading="2028 Total Solar Eclipse Countdown"
       tagline="Saturday, July 22, 2028 — totality across Australia, through Sydney, and on to New Zealand, in local time"
       lastUpdated="2026-10-15"

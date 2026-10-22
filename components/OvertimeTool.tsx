@@ -53,7 +53,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
   }, [hoursStr, thresholdStr, multiplier, rateStr]);
 
   const inputClass =
-    'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-slate-900/60 border border-border dark:border-slate-700 text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-emerald-500/50';
+    'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-primary/50';
   const labelClass = 'block text-sm font-medium text-foreground mb-1';
 
   const hasError = result !== null && 'error' in result;
@@ -63,7 +63,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
     <div className={className}>
       <section
         aria-labelledby="overtime-form-heading"
-        className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50 mb-6"
+        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6"
       >
         <h2 id="overtime-form-heading" className="sr-only">
           Overtime inputs
@@ -134,8 +134,8 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                   }}
                   className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
                     multiplier === m.value
-                      ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-transparent text-muted-foreground dark:text-slate-400 border-border dark:border-slate-600 hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-transparent text-muted-foreground dark:text-muted-foreground border-border dark:border-border hover:text-foreground'
                   }`}
                 >
                   {m.label}
@@ -174,7 +174,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
       <section
         aria-labelledby="overtime-result-heading"
         aria-live="polite"
-        className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
+        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
       >
         <h2 id="overtime-result-heading" className="text-lg font-bold text-foreground mb-4">
           Your split
@@ -185,7 +185,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
         )}
 
         {!hasError && split === null && (
-          <p className="text-sm text-muted-foreground dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             Enter your hours worked to see the regular vs overtime breakdown.
           </p>
         )}
@@ -193,28 +193,28 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
         {split && (
           <>
             <div className="grid grid-cols-2 gap-4 mb-2">
-              <div className="rounded-xl bg-background dark:bg-slate-900/40 border border-border/50 dark:border-slate-700/50 p-4 text-center">
-                <div className="text-2xl font-bold text-foreground">
+              <div className="rounded-xl bg-background dark:bg-background/40 border border-border/50 dark:border-border/50 p-4 text-center">
+                <div className="st-figure text-2xl font-bold text-foreground">
                   <RollingNumber value={split.regularHours} />
                 </div>
-                <div className="text-xs text-muted-foreground dark:text-slate-400 mt-1">
+                <div className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                   regular hours ({decimalToHmLabel(split.regularHours)})
                 </div>
               </div>
-              <div className="rounded-xl bg-emerald-600/10 dark:bg-emerald-500/10 border border-emerald-600/30 p-4 text-center">
-                <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
+              <div className="rounded-xl bg-primary/10 border border-primary/30 p-4 text-center">
+                <div className="st-figure text-2xl font-bold text-primary">
                   <RollingNumber value={split.overtimeHours} />
                 </div>
-                <div className="text-xs text-muted-foreground dark:text-slate-400 mt-1">
+                <div className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                   overtime hours ({decimalToHmLabel(split.overtimeHours)})
                 </div>
               </div>
             </div>
 
             {split.totalPay !== null ? (
-              <dl className="mt-4 divide-y divide-border/50 dark:divide-slate-700/50 text-sm">
+              <dl className="mt-4 divide-y divide-border/50 dark:divide-border/50 text-sm">
                 <div className="flex items-center justify-between py-2">
-                  <dt className="text-muted-foreground dark:text-slate-400">
+                  <dt className="text-muted-foreground dark:text-muted-foreground">
                     Regular pay ({decimalToHmLabel(split.regularHours)} × ${Number(rateStr).toFixed(2)})
                   </dt>
                   <dd className="font-mono font-medium text-foreground">
@@ -222,7 +222,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                   </dd>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <dt className="text-muted-foreground dark:text-slate-400">
+                  <dt className="text-muted-foreground dark:text-muted-foreground">
                     Overtime pay ({decimalToHmLabel(split.overtimeHours)} × ${split.overtimeRate!.toFixed(2)})
                   </dt>
                   <dd className="font-mono font-medium text-foreground">
@@ -231,13 +231,13 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <dt className="font-medium text-foreground">Total gross pay</dt>
-                  <dd className="font-mono text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                  <dd className="font-mono text-lg font-bold text-primary">
                     $<RollingNumber value={split.totalPay.toFixed(2)} />
                   </dd>
                 </div>
               </dl>
             ) : (
-              <p className="text-xs text-muted-foreground dark:text-slate-400 mt-3">
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-3">
                 Add your hourly rate to see the pay breakdown.
               </p>
             )}

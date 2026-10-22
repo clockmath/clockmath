@@ -105,7 +105,7 @@ export function LocationTimezonePicker({
   return (
     <div className={className} onPointerEnter={() => void loadTzLookup()} onFocusCapture={() => void loadTzLookup()}>
       {label && (
-        <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-slate-200 uppercase tracking-wide mb-3">
+        <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground uppercase tracking-wide mb-3">
           {label}
         </label>
       )}
@@ -128,13 +128,13 @@ export function LocationTimezonePicker({
         <div className={`text-xs transition-colors ${
           iana
             ? 'text-primary dark:text-accent font-medium'
-            : 'text-muted-foreground dark:text-slate-400'
+            : 'text-muted-foreground dark:text-muted-foreground'
         }`}>
           {iana ? `${getTimeZoneDisplayName(iana)} time (${getOffsetLabel(iana, new Date())})` : (defaultHint || "Search for a place to auto-detect timezone")}
         </div>
 
         {displayLabel && iana && (
-          <div className="text-xs text-muted-foreground dark:text-slate-500 mt-1">
+          <div className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
             📍 {displayLabel}
           </div>
         )}

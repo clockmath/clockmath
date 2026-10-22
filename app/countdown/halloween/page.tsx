@@ -6,6 +6,7 @@ import HolidayDatesTable from '@/components/HolidayDatesTable';
 export default function HalloweenCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#000000', ink: '#ff8a1f' }}
       heading={'How Many Days Until Halloween?'}
       tagline="Live countdown to October 31 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"

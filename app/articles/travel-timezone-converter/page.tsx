@@ -67,7 +67,7 @@ export default function TravelTimezoneConverterPage() {
           With <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a>, you can quickly see the time in your destination before you leave. This helps you adjust sleep schedules, manage jet lag, and plan activities around your arrival.
         </p>
 
-        <div className="bg-muted/50 dark:bg-slate-800/50 rounded-lg p-6 my-8">
+        <div className="bg-muted/50 dark:bg-card/50 rounded-lg p-6 my-8">
           <h3 className="text-lg font-semibold mb-4">Example Flight Conversion</h3>
           <ul className="space-y-2">
             <li><strong>Flight leaves Toronto at:</strong> 2:00 PM EST</li>
@@ -103,15 +103,15 @@ export default function TravelTimezoneConverterPage() {
 
         <h2>Essential Travel Time Calculations</h2>
         <div className="grid gap-6 md:grid-cols-2 my-8">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Departure Planning</h4>
-            <p className="text-sm text-blue-700 dark:text-blue-300">
+          <div className="bg-card rounded-lg p-4">
+            <h4 className="font-semibold text-primary mb-2">Departure Planning</h4>
+            <p className="text-sm text-primary">
               Convert your local departure time to destination time to understand what part of their day you'll arrive.
             </p>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">Return Journey</h4>
-            <p className="text-sm text-green-700 dark:text-green-300">
+          <div className="bg-card rounded-lg p-4">
+            <h4 className="font-semibold text-primary mb-2">Return Journey</h4>
+            <p className="text-sm text-primary">
               Plan your return flight timing to minimize disruption to your home schedule.
             </p>
           </div>
@@ -138,7 +138,7 @@ export default function TravelTimezoneConverterPage() {
           Take the guesswork out of international travel planning. Use <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> to check local times before you fly, and arrive at your destination prepared and refreshed.
         </p>
 
-        <div className="bg-gradient-to-r from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
+        <div className="bg-card from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-3">Planning Your Next Trip?</h3>
           <p className="mb-4">
             Check destination times and plan your travel schedule with our timezone converter.

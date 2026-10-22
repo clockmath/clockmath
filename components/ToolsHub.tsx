@@ -21,7 +21,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
-import PageChrome from '@/components/PageChrome';
+import StationChrome from '@/components/station/StationChrome';
 import JsonLd from '@/components/JsonLd';
 import { MARKETS, getMarketStatus } from '@/lib/markets';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -117,53 +117,35 @@ export default function ToolsHub() {
 
 
   return (
-    <PageChrome currentTool="tools" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="tools" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd data={getItemListSchema()} />
 
-      <header className="text-center mb-8 sm:mb-section">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Free time &amp; date tools</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mt-1">
-          Nine free tools. No signup, no ads.
-        </p>
-        <nav className="text-sm text-muted-foreground mt-4">
-          <Link href="/" className="hover:text-primary transition-colors">
-            ClockMath
-          </Link>
-          <span className="mx-2">›</span>
-          <span>All Tools</span>
-        </nav>
-      </header>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-section">
-        {TILES.map((tile) => {
-          const Icon = tile.icon;
-          return (
-            <Link
-              key={tile.href}
-              href={tile.href}
-              className="group bg-card dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-border/50 dark:border-slate-700/50 hover:border-emerald-500/50 hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15">
-                  <Icon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                </span>
-                {tile.live && marketsOpen !== null && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                    <span className={`w-1.5 h-1.5 rounded-full ${marketsOpen > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-                    {marketsOpen} of {MARKETS.length} open
-                  </span>
-                )}
-              </div>
-              <h2 className="font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                {tile.title}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">{tile.description}</p>
-            </Link>
-          );
-        })}
+      <div className="st-intro">
+        <h1 className="st-h1">Free time &amp; date tools</h1>
+        <p className="st-lede">Nine free tools. No signup, no ads.</p>
       </div>
 
-      <SiteFooter />
-    </PageChrome>
+      {/* A departures board: one ruled row per tool */}
+      <ul className="st-hub">
+        {TILES.map((tile) => (
+          <li key={tile.href}>
+            <Link href={tile.href}>
+              <span className="st-hub-title">{tile.title}</span>
+              <span className="st-hub-desc">{tile.description}</span>
+              {tile.live && marketsOpen !== null && (
+                <span className="st-hub-live">
+                  <i className={marketsOpen > 0 ? 'open' : undefined} aria-hidden="true" />
+                  {marketsOpen} of {MARKETS.length} open
+                </span>
+              )}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <div style={{ marginTop: 56 }}>
+        <SiteFooter />
+      </div>
+    </StationChrome>
   );
 }

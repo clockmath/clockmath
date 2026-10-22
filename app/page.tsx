@@ -1,13 +1,13 @@
 "use client"
 
 /* eslint-disable react/no-unescaped-entities */
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import Link from "next/link"
 import InfoTip from "@/components/InfoTip"
-import { RollingNumber } from "@/components/RollingNumber"
 import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
-import PageChrome from "@/components/PageChrome"
+import StationChrome from "@/components/station/StationChrome"
+import DayRuler from "@/components/station/DayRuler"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
@@ -47,22 +47,12 @@ export default function ClockMathPage() {
   const [startTime, setStartTime] = useState("09:00:00")
   const [endDate, setEndDate] = useState<Date>(new Date())
   const [endTime, setEndTime] = useState("17:30:00")
-  const [result, setResult] = useState("")
   const [history, setHistory] = useState<CalculationHistory[]>([])
   const [isDarkMode, toggleTheme] = useDarkMode();
-  const [isCalculating, setIsCalculating] = useState(false)
   const [expandedHistory, setExpandedHistory] = useState<Set<string>>(new Set());
   const [selectedCalculations, setSelectedCalculations] = useState<Set<string>>(new Set());
-  const [currentDetailedResult, setCurrentDetailedResult] = useState<{
-    years: number
-    months: number
-    weeks: number
-    days: number
-    hours: number
-    minutes: number
-    seconds: number
-  } | null>(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [copied, setCopied] = useState(false)
   const [sumResult, setSumResult] = useState<{
     total: string
     detailed: {
@@ -247,100 +237,115 @@ export default function ClockMathPage() {
     }
   }, [is24HourFormat])
 
-  const calculateTimeDifference = useCallback(() => {
-    if (!startTime || !endTime) return
+  // The span between the two inputs. Same date with an earlier end time is
+  // an overnight span (22:00 → 06:00), as the FAQ promises: the end is the
+  // next day. A genuinely earlier end date is an error.
+  const span = useMemo(() => {
+    const startSeconds = parseTimeToSeconds(startTime)
+    const endSeconds = parseTimeToSeconds(endTime)
+    if (isNaN(startSeconds) || isNaN(endSeconds)) return { error: "Enter a start and end time, like 09:00." } as const
 
-    setIsCalculating(true)
-    // Simulate calculation delay for animation
-    setTimeout(() => {
-      const startSeconds = parseTimeToSeconds(startTime)
-      const endSeconds = parseTimeToSeconds(endTime)
-
-      if (isNaN(startSeconds) || isNaN(endSeconds)) {
-        setResult("Invalid time format")
-        setIsCalculating(false)
-        return
-      }
-
-      // Combine date and time into full datetime
-      const startDateTime = new Date(startDate)
-      startDateTime.setHours(Math.floor(startSeconds / 3600))
-      startDateTime.setMinutes(Math.floor((startSeconds % 3600) / 60))
-      startDateTime.setSeconds(startSeconds % 60)
-      startDateTime.setMilliseconds(0)
-
-      const endDateTime = new Date(endDate)
-      endDateTime.setHours(Math.floor(endSeconds / 3600))
-      endDateTime.setMinutes(Math.floor((endSeconds % 3600) / 60))
-      endDateTime.setSeconds(endSeconds % 60)
-      endDateTime.setMilliseconds(0)
-
-      // Same date with an earlier end time is an overnight span (22:00 → 06:00),
-      // as the FAQ promises: the end is the next day.
-      if (endDateTime < startDateTime && endDateTime.toDateString() === startDateTime.toDateString()) {
-        endDateTime.setDate(endDateTime.getDate() + 1)
-      }
-
-      const diffMs = endDateTime.getTime() - startDateTime.getTime()
-      const diffSeconds = Math.floor(diffMs / 1000)
-
-      if (diffSeconds < 0) {
-        setResult("End is before start")
-      } else {
-        const duration = formatDuration(startDateTime, endDateTime)
-        const detailedDuration = formatDetailedDuration(diffSeconds)
-        setResult(duration)
-        setCurrentDetailedResult(detailedDuration)
-
-        // Add to history
-        const newEntry: CalculationHistory = {
-          id: Date.now().toString(),
-          startDate: format(startDate, 'yyyy-MM-dd'),
-          startTime,
-          endDate: format(endDate, 'yyyy-MM-dd'),
-          endTime,
-          result: duration,
-          seconds: diffSeconds, // Store raw seconds for efficient sum calculations
-          detailedResult: detailedDuration || undefined,
-          timestamp: new Date()
-        }
-        setHistory(prev => [newEntry, ...prev.slice(0, 9)]) // Keep last 10
-
-        // Save to localStorage
-        const storageEntry: StoredCalculation = {
-          ...newEntry,
-          timestamp: newEntry.timestamp.toISOString()
-        }
-        try {
-          const existing = JSON.parse(localStorage.getItem("clockmath-history") || "[]")
-          const updated = [storageEntry, ...existing.slice(0, 9)]
-          localStorage.setItem("clockmath-history", JSON.stringify(updated))
-        } catch {
-          // Silently fail if localStorage is unavailable
-        }
-
-        // Analytics
-        const daysDiff = Math.floor(diffSeconds / 86400)
-        gaEvent({
-          action: "calculation_completed",
-          params: {
-            page: "calculator",
-            duration_seconds: diffSeconds,
-            duration_days: daysDiff,
-            is_multi_day: daysDiff > 0,
-            device: getDevice(),
-          },
-        });
-        if (!toolUsedRef.current) {
-          toolUsedRef.current = true
-          toolUsed("calculator", { device: getDevice() })
-        }
-      }
-
-      setIsCalculating(false)
-    }, 300)
+    const at = (date: Date, secs: number) => {
+      const d = new Date(date)
+      d.setHours(Math.floor(secs / 3600), Math.floor((secs % 3600) / 60), secs % 60, 0)
+      return d
+    }
+    const start = at(startDate, startSeconds)
+    const end = at(endDate, endSeconds)
+    let overnight = false
+    if (end < start && end.toDateString() === start.toDateString()) {
+      end.setDate(end.getDate() + 1)
+      overnight = true
+    }
+    const seconds = Math.floor((end.getTime() - start.getTime()) / 1000)
+    if (seconds < 0) return { error: "The end is before the start. Pick a later end date or time." } as const
+    return {
+      start,
+      end,
+      seconds,
+      overnight,
+      startHour: startSeconds / 3600,
+      endHour: endSeconds / 3600,
+      parts: intervalToDuration({ start, end }),
+      summary: formatDuration(start, end),
+      detailed: formatDetailedDuration(seconds),
+    }
   }, [startDate, startTime, endDate, endTime, parseTimeToSeconds, formatDuration, formatDetailedDuration])
 
+  // The first change to the inputs counts as using the tool: the answer is
+  // live now, so waiting for the save button would undercount.
+  const firstRender = useRef(true)
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    if (!toolUsedRef.current) {
+      toolUsedRef.current = true
+      toolUsed("calculator", { device: getDevice() })
+    }
+  }, [startDate, startTime, endDate, endTime])
+
+  const saveToHistory = useCallback(() => {
+    if ("error" in span) return
+    const newEntry: CalculationHistory = {
+      id: Date.now().toString(),
+      startDate: format(startDate, 'yyyy-MM-dd'),
+      startTime,
+      endDate: format(endDate, 'yyyy-MM-dd'),
+      endTime,
+      result: span.summary,
+      seconds: span.seconds, // Store raw seconds for efficient sum calculations
+      detailedResult: span.detailed || undefined,
+      timestamp: new Date()
+    }
+    setHistory(prev => [newEntry, ...prev.slice(0, 9)]) // Keep last 10
+
+    const storageEntry: StoredCalculation = {
+      ...newEntry,
+      timestamp: newEntry.timestamp.toISOString()
+    }
+    try {
+      const existing = JSON.parse(localStorage.getItem("clockmath-history") || "[]")
+      const updated = [storageEntry, ...existing.slice(0, 9)]
+      localStorage.setItem("clockmath-history", JSON.stringify(updated))
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
+
+    const daysDiff = Math.floor(span.seconds / 86400)
+    gaEvent({
+      action: "calculation_completed",
+      params: {
+        page: "calculator",
+        duration_seconds: span.seconds,
+        duration_days: daysDiff,
+        is_multi_day: daysDiff > 0,
+        device: getDevice(),
+      },
+    });
+  }, [span, startDate, startTime, endDate, endTime])
+
+  const copyResult = useCallback(async () => {
+    if ("error" in span || !span.detailed) return
+    try {
+      await navigator.clipboard.writeText(`${span.summary} (${span.detailed.hours.toFixed(2)} hours)`)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard blocked: the answer is on screen to copy by hand
+    }
+  }, [span])
+
+  // The big answer: "8h 30m", "2d 4h", "1y 3mo 2d". Seconds only under a day.
+  const bigParts: Array<[number, string]> = []
+  if (!("error" in span)) {
+    const p = span.parts
+    const units: Array<[number | undefined, string]> = [[p.years, "y"], [p.months, "mo"], [p.days, "d"], [p.hours, "h"], [p.minutes, "m"]]
+    for (const [n, u] of units) if (n) bigParts.push([n, u])
+    if (p.seconds && !p.years && !p.months && !p.days) bigParts.push([p.seconds, "s"])
+    if (bigParts.length === 0) bigParts.push([0, "m"])
+  }
 
   // Load history from localStorage
   useEffect(() => {
@@ -382,7 +387,7 @@ export default function ClockMathPage() {
   }, [])
 
   return (
-    <PageChrome currentTool="calculator" onToggleTheme={toggleTheme} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="calculator" onToggleTheme={toggleTheme} isDarkMode={isDarkMode}>
       <JsonLd data={getOrganizationSchema()} />
       <JsonLd data={getWebSiteSchema()} />
       <JsonLd
@@ -392,192 +397,94 @@ export default function ClockMathPage() {
           url: 'https://clockmath.com/',
         })}
       />
-      <div className="space-y-section pb-10">
-        {/* Header — slim: the nav already carries the brand, so the page
-            leads with what the page is. Reclaims ~350px above the fold. */}
-        <header className="text-center mb-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Time Duration Calculator</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">
-            The exact time between two times or dates — free, no signup
+      <div>
+        <div className="st-intro">
+          <h1 className="st-h1">Time Duration Calculator</h1>
+          <p className="st-lede">
+            The exact time between two times or dates, overnight included, with decimal hours for timesheets. Free, no signup.
           </p>
-        </header>
+        </div>
 
-        {/* Main Calculator Card */}
-        {/* No min-height: the card hugs its content (a fixed 600px left a large
-            dead area below the form before any result existed) */}
-        <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <div className="grid gap-6">
-
-            {/* Time Format Toggle */}
-            <div className="flex items-center justify-center">
-              <div className="bg-muted/50 dark:bg-slate-700/50 rounded-xl p-1.5 flex items-center gap-1">
-                <button
-                  onClick={() => setIs24HourFormat(false)}
-            aria-pressed={!is24HourFormat}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    !is24HourFormat
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  12h
-                </button>
-                <button
-                  onClick={() => setIs24HourFormat(true)}
-            aria-pressed={is24HourFormat}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    is24HourFormat
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  24h
-                </button>
+        {/* One ruled band: inputs, the answer (live, no button), the ruler */}
+        <section className="st-calc" aria-label="Duration calculator">
+          <div className="st-fields">
+            <div className="st-field">
+              <span>Start</span>
+              <div className="st-pair">
+                <InlineDatePicker ariaLabel="Start date" value={startDate} onChange={setStartDate} placeholder="Select date" startOnCalendar />
+                <InlineTimePicker ariaLabel="Start time" value={startTime} onChange={setStartTime} is24h={is24HourFormat} placeholder="Time" />
               </div>
             </div>
+            <div className="st-field">
+              <span>End</span>
+              <div className="st-pair">
+                <InlineDatePicker ariaLabel="End date" value={endDate} onChange={setEndDate} placeholder="Select date" startOnCalendar />
+                <InlineTimePicker ariaLabel="End time" value={endTime} onChange={setEndTime} is24h={is24HourFormat} placeholder="Time" />
+              </div>
+            </div>
+            <div className="st-seg" role="group" aria-label="Clock format">
+              <button type="button" onClick={() => setIs24HourFormat(false)} aria-pressed={!is24HourFormat}>12h</button>
+              <button type="button" onClick={() => setIs24HourFormat(true)} aria-pressed={is24HourFormat}>24h</button>
+            </div>
+          </div>
 
-            {/* Date and Time Inputs */}
-            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-              {/* Start */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground dark:text-slate-100">
-                  Start
-                </label>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <InlineDatePicker
-                      ariaLabel="Start date"
-                      value={startDate}
-                      onChange={setStartDate}
-                      placeholder="Select date"
-                      startOnCalendar
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <InlineTimePicker
-                      ariaLabel="Start time"
-                      value={startTime}
-                      onChange={setStartTime}
-                      is24h={is24HourFormat}
-                      placeholder="Time"
-                    />
+          {"error" in span ? (
+            <div className="st-answer" aria-live="polite">
+              <p className="st-error">{span.error}</p>
+            </div>
+          ) : (
+            <>
+              <div className="st-answer" aria-live="polite">
+                <p className={`st-big${bigParts.length > 3 ? " long" : ""}`}>
+                  {bigParts.map(([n, u]) => (
+                    <span key={u}>
+                      {n.toLocaleString()}
+                      <span className="u">{u}</span>
+                    </span>
+                  ))}
+                </p>
+                <div>
+                  {span.detailed && (
+                    <dl className="st-also">
+                      <div><dt>Decimal hours</dt><dd>{span.detailed.hours.toFixed(2)}</dd></div>
+                      <div><dt>Total minutes</dt><dd>{Math.round(span.detailed.minutes).toLocaleString()}</dd></div>
+                    </dl>
+                  )}
+                  {span.overnight && (
+                    <p className="st-note">The end is earlier than the start, so it counts to {formatTime(endTime)} the next day.</p>
+                  )}
+                  <div className="st-actions">
+                    <button type="button" className="st-btn primary" onClick={saveToHistory}>Save to history</button>
+                    <button type="button" className="st-btn quiet" onClick={copyResult}>{copied ? "Copied" : "Copy result"}</button>
                   </div>
                 </div>
               </div>
-
-              {/* End */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground dark:text-slate-100">
-                  End
-                </label>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <InlineDatePicker
-                      ariaLabel="End date"
-                      value={endDate}
-                      onChange={setEndDate}
-                      placeholder="Select date"
-                      startOnCalendar
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <InlineTimePicker
-                      ariaLabel="End time"
-                      value={endTime}
-                      onChange={setEndTime}
-                      is24h={is24HourFormat}
-                      placeholder="Time"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Calculate Button */}
-            <button
-              onClick={calculateTimeDifference}
-              disabled={!startTime || !endTime || isCalculating}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-muted disabled:text-muted-foreground text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isCalculating ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Calculating...
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
-                    <circle cx="12" cy="12" r="10" />
-                  </svg>
-                  Calculate Duration
-                </>
-              )}
-            </button>
-
-            {/* Result */}
-            {result && (
-              <div className="text-center">
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-5 sm:p-6 border border-emerald-200 dark:border-emerald-800">
-                  <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-4">
-                    Duration
-                  </h3>
-                  
-                  {/* Main duration (hours and minutes) - largest and centered */}
-                  <p className="text-4xl font-bold text-emerald-900 dark:text-emerald-100 font-mono mb-2">
-                    <RollingNumber value={result} />
-                  </p>
-
-                  {/* The payroll-useful conversions stay inline; the full
-                      years→seconds breakdown collapses behind a toggle after
-                      user feedback that it made simple results feel busy. */}
-                  {currentDetailedResult && (
-                    <>
-                      <p className="text-sm text-emerald-800/80 dark:text-emerald-200/80 mb-2">
-                        = {currentDetailedResult.hours.toFixed(2)} decimal hours ·{' '}
-                        {Math.round(currentDetailedResult.minutes).toLocaleString()} minutes
-                      </p>
-                      <button
-                        onClick={() => setShowBreakdown((prev) => !prev)}
-                        aria-expanded={showBreakdown}
-                        className="text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline mb-2"
-                      >
-                        {showBreakdown ? 'Hide details' : 'Show details'}
-                      </button>
-                      {showBreakdown && (
-                        <DetailedDurationBreakdown
-                          detailedResult={currentDetailedResult}
-                          variant="primary"
-                          size="large"
-                        />
-                      )}
-                    </>
+              <DayRuler startHour={span.startHour} endHour={span.endHour} fullDay={span.seconds >= 86400} />
+              {span.detailed && (
+                <div style={{ marginTop: 14 }}>
+                  <button type="button" className="st-link-btn" onClick={() => setShowBreakdown((prev) => !prev)} aria-expanded={showBreakdown}>
+                    {showBreakdown ? "Hide the breakdown" : "Show it in weeks, days and seconds"}
+                  </button>
+                  {showBreakdown && (
+                    <div style={{ marginTop: 12 }}>
+                      <DetailedDurationBreakdown detailedResult={span.detailed} variant="primary" size="large" />
+                    </div>
                   )}
                 </div>
+              )}
+            </>
+          )}
+        </section>
 
-                {/* Intent-matched nudge: a duration result showing decimal hours
-                    is usually someone doing payroll/timesheet math */}
-                <div className="mt-4 flex items-center gap-2.5 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-3.5">
-                  <svg className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                  </svg>
-                  <p className="text-sm text-foreground m-0">
-                    Adding up a work week?{" "}
-                    <Link href="/tools/timesheet/" className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
-                      Total your shifts in the work hours calculator
-                    </Link>
-                    {" "}— breaks, overnight shifts, and gross pay included.
-                  </p>
-                </div>
-
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Intent-matched nudge: decimal hours usually means payroll math */}
+        <p className="st-nudge">
+          Adding up a work week?{" "}
+          <Link href="/tools/timesheet/">Total your shifts in the work hours calculator</Link>, with breaks, overnight shifts and gross pay.
+        </p>
 
         {/* History */}
         {history.length > 0 && (
-          <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+          <div className="bg-card rounded-lg p-5 sm:p-6 mt-10">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-bold text-foreground dark:text-slate-100 inline-flex items-center gap-1.5">
@@ -765,17 +672,17 @@ export default function ClockMathPage() {
 
         {/* Sum Result */}
         {sumResult && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-5 sm:p-6 shadow-sm border border-blue-200 dark:border-blue-800 animate-in fade-in-50 duration-500">
+          <div className="bg-card rounded-lg p-5 sm:p-6 mt-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Sum of Selected Calculations
               </h3>
-              <p className="text-xs text-blue-600 dark:text-blue-400 mb-4">
+              <p className="text-xs text-foreground mb-4">
                 Total of {selectedCalculations.size} calculation{selectedCalculations.size !== 1 ? 's' : ''}
               </p>
               
               {/* Main sum result - largest and centered */}
-              <p className="text-4xl font-bold text-blue-900 dark:text-blue-100 font-mono mb-4">
+              <p className="text-4xl font-bold text-foreground font-mono mb-4">
                 {sumResult.total}
               </p>
               
@@ -790,9 +697,11 @@ export default function ClockMathPage() {
         )}
 
 
-        <SeoIntro />
-        <SiteFooter />
+        <div className="st-legacy" style={{ marginTop: 56 }}>
+          <SeoIntro />
+          <SiteFooter />
+        </div>
       </div>
-    </PageChrome>
+    </StationChrome>
   )
 }

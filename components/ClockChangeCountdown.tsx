@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { EventCountdown } from '@/components/EventCountdown';
+import { StationBoard, StationNotice } from '@/components/station/StationBoard';
 import { getUserTimeZone, getTimezoneOffset } from '@/lib/time';
 
 interface ClockChange {
@@ -88,25 +88,18 @@ export default function ClockChangeCountdown() {
 
   if (state.status === 'pending') {
     // Stable skeleton until the visitor's own timezone is known (no hydration mismatch).
-    return <EventCountdown key="pending" title="the clocks change" />;
+    return <StationBoard key="pending" title="the clocks change" />;
   }
 
   if (state.status === 'none') {
     return (
-      <div className="bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-sm border border-emerald-100 dark:border-slate-700/50 text-center">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-2">
-          Your clocks don&apos;t change
-        </h2>
-        <p className="text-foreground dark:text-slate-200">
+      <StationNotice heading="Your clocks don&apos;t change">
+        <p>
           {placeName(state.tz)} stays on the same time all year — there is no clock change in the next twelve months.
         </p>
-        {NO_CHANGE_NOTES[state.tz] && (
-          <p className="text-sm text-muted-foreground dark:text-slate-400 mt-2">{NO_CHANGE_NOTES[state.tz]}</p>
-        )}
-        <p className="text-sm text-muted-foreground dark:text-slate-400 mt-2">
-          Dates for places that do change are in the table below.
-        </p>
-      </div>
+        {NO_CHANGE_NOTES[state.tz] && <p>{NO_CHANGE_NOTES[state.tz]}</p>}
+        <p>Dates for places that do change are in the table below.</p>
+      </StationNotice>
     );
   }
 
@@ -121,19 +114,16 @@ export default function ClockChangeCountdown() {
   });
 
   return (
-    <div>
-      <EventCountdown
-        key={change.at}
-        target={new Date(change.at)}
-        title={`the clocks go ${direction}`}
-        arrivedLabel="The clocks have changed"
-      />
-      <p className="text-center text-foreground dark:text-slate-200 mt-4">
-        In <strong>{placeName(tz)}</strong>, on <strong>{day}</strong>, at{' '}
-        <strong>{wallTime(change.at, change.before)}</strong> the clocks go {direction}{' '}
-        {shiftLabel(change.after - change.before)} to <strong>{wallTime(change.at, change.after)}</strong> —{' '}
-        {shiftLabel(change.after - change.before)} {direction === 'back' ? 'extra' : 'less'} that night.
-      </p>
-    </div>
+    <StationBoard
+      key={change.at}
+      target={new Date(change.at)}
+      title={`the clocks go ${direction}`}
+      arrivedLabel="The clocks have changed"
+    >
+      In <strong>{placeName(tz)}</strong>, on <strong>{day}</strong>, at{' '}
+      <strong>{wallTime(change.at, change.before)}</strong> the clocks go {direction}{' '}
+      {shiftLabel(change.after - change.before)} to <strong>{wallTime(change.at, change.after)}</strong> —{' '}
+      {shiftLabel(change.after - change.before)} {direction === 'back' ? 'extra' : 'less'} that night.
+    </StationBoard>
   );
 }

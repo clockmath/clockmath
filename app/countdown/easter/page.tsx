@@ -24,6 +24,7 @@ const RANGES = YEARS.map((y) => ({ start: y.easter }));
 export default function EasterCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#e7defa', ink: '#3b2a6b' }}
       heading={'How Many Days Until Easter?'}
       tagline="Live countdown to Easter Sunday 2027 — March 28"
       lastUpdated="2026-10-15"

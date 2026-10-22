@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
-import { EventCountdown } from '@/components/EventCountdown';
+import { StationBoard } from '@/components/station/StationBoard';
 import { event as gaEvent } from '@/lib/gtag';
 import { storageGet, storageSet } from '@/lib/safeStorage';
 import { getDevice } from '@/lib/device';
@@ -62,16 +62,19 @@ export function UserDateCountdown({
   );
 
   return (
-    <div className="space-y-4">
-      <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
-        <label className="block text-sm font-medium text-foreground mb-2">{prompt}</label>
-        {mounted && date && (
-          <InlineDatePicker ariaLabel="Your date" value={date} onChange={handleChange} placeholder="Select your date" startOnCalendar />
-        )}
-        <p className="text-xs text-muted-foreground mt-2">Your date is saved on this device only.</p>
+    <div>
+      <div className="st-picker">
+        <span>{prompt}</span>
+        <div className="st-picker-field">
+          {mounted && date && (
+            <InlineDatePicker ariaLabel="Your date" value={date} onChange={handleChange} placeholder="Select your date" startOnCalendar />
+          )}
+        </div>
+        <p>Your date is saved on this device only.</p>
       </div>
 
-      {mounted && date && <EventCountdown target={date} title={title} arrivedLabel={arrivedLabel} />}
+      {/* Keyed on the date so a new pick resolves a fresh target */}
+      {mounted && date && <StationBoard key={date.getTime()} target={date} title={title} arrivedLabel={arrivedLabel} />}
     </div>
   );
 }

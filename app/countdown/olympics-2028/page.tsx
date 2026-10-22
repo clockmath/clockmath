@@ -8,6 +8,7 @@ const LA28_OPENING = new Date(2028, 6, 14);
 export default function Olympics2028CountdownPage() {
   return (
     <EventPage
+      board={{ color: '#0e5a8a' }}
       heading={'How Many Days Until the 2028 Olympics?'}
       tagline="Time until the 2028 Summer Olympics"
       lastUpdated="2026-08-04"

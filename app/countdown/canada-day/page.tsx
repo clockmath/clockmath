@@ -6,6 +6,7 @@ import HolidayDatesTable, { sundayToMonday } from '@/components/HolidayDatesTabl
 export default function CanadaDayCountdownPage() {
   return (
     <EventPage
+      board={{ color: '#c8102e' }}
       heading={'How Many Days Until Canada Day?'}
       tagline="Live countdown to July 1 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"

@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { ClipboardList } from 'lucide-react';
 import { TimesheetTool } from '@/components/TimesheetTool';
 import SiteFooter from '@/components/SiteFooter';
-import PageChrome from '@/components/PageChrome';
+import StationChrome from '@/components/station/StationChrome';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -66,7 +65,7 @@ export default function TimesheetPage() {
 
 
   return (
-    <PageChrome currentTool="timesheet" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="timesheet" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd
         data={getSoftwareApplicationSchema({
           name: 'ClockMath Work Hours Calculator',
@@ -78,31 +77,25 @@ export default function TimesheetPage() {
       <JsonLd data={getFAQPageSchema(FAQS)} />
       <Toaster />
 
-      {/* Header — slim: brand lives in the nav; the page leads with what it is */}
-      <header className="mb-6 sm:mb-8">
-        <nav className="text-sm text-muted-foreground mb-3">
-          <Link href="/" className="hover:text-primary transition-colors">
-            ClockMath
-          </Link>
-          <span className="mx-2">›</span>
-          <span>Work Hours</span>
+      <div className="st-intro">
+
+        <nav className="st-crumbs" aria-label="Breadcrumb">
+
+          <Link href="/tools/">Tools</Link> / Work Hours
+
         </nav>
-        <div className="flex items-center gap-3">
-          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
-            <ClipboardList className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          </span>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Work Hours Calculator</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Total your shifts for the pay period — breaks and overnight included</p>
-          </div>
-        </div>
-      </header>
+
+        <h1 className="st-h1">Work Hours Calculator</h1>
+
+        <p className="st-lede">Total your shifts for the pay period — breaks and overnight included</p>
+
+      </div>
 
       <TimesheetTool className="mb-section" />
 
       {/* Supporting content — static JSX, fully server-rendered for crawlers */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
           A worked payroll example
         </h2>
         <p className="text-muted-foreground mb-3">
@@ -127,7 +120,7 @@ export default function TimesheetPage() {
       </section>
 
       <section id="decimal-hours" className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
           Minutes to decimal hours
         </h2>
         <p className="text-muted-foreground mb-4">
@@ -145,7 +138,7 @@ export default function TimesheetPage() {
         <div className="overflow-x-auto">
           <table className="w-full max-w-md mx-auto text-sm border-collapse">
             <thead>
-              <tr className="border-b border-border dark:border-slate-700">
+              <tr className="border-b border-border dark:border-border">
                 <th scope="col" className="text-left py-2 px-3 font-semibold text-foreground">Minutes</th>
                 <th scope="col" className="text-left py-2 px-3 font-semibold text-foreground">Decimal hours</th>
                 <th scope="col" className="text-left py-2 px-3 font-semibold text-foreground">Minutes</th>
@@ -154,7 +147,7 @@ export default function TimesheetPage() {
             </thead>
             <tbody>
               {[0, 1, 2, 3].map((i) => (
-                <tr key={i} className="border-b border-border/50 dark:border-slate-700/50">
+                <tr key={i} className="border-b border-border/50 dark:border-border/50">
                   <td className="py-1.5 px-3 text-muted-foreground">{DECIMAL_ROWS[i][0]}</td>
                   <td className="py-1.5 px-3 font-mono text-foreground">{DECIMAL_ROWS[i][1]}</td>
                   <td className="py-1.5 px-3 text-muted-foreground">{DECIMAL_ROWS[i + 4][0]}</td>
@@ -168,14 +161,14 @@ export default function TimesheetPage() {
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-4">
           Frequently asked questions
         </h2>
         <div className="space-y-4">
           {FAQS.map((faq) => (
             <div
               key={faq.question}
-              className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-slate-700/50"
+              className="bg-card dark:bg-card rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-border/50"
             >
               <h3 className="font-semibold text-foreground mb-1.5">{faq.question}</h3>
               <p className="text-sm text-muted-foreground">{faq.answer}</p>
@@ -186,7 +179,7 @@ export default function TimesheetPage() {
 
       {/* Related tools & guides */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
           Related tools and guides
         </h2>
         <ul className="space-y-2 text-muted-foreground">
@@ -230,6 +223,6 @@ export default function TimesheetPage() {
       </section>
 
       <SiteFooter />
-    </PageChrome>
+    </StationChrome>
   );
 }

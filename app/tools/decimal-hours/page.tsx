@@ -2,10 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Percent } from 'lucide-react';
 import { DecimalHoursTool, minutesToDecimal } from '@/components/DecimalHoursTool';
 import SiteFooter from '@/components/SiteFooter';
-import PageChrome from '@/components/PageChrome';
+import StationChrome from '@/components/station/StationChrome';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
 import PrintChartButton from '@/components/PrintChartButton';
@@ -67,7 +66,7 @@ export default function DecimalHoursPage() {
 
 
   return (
-    <PageChrome currentTool="decimal-hours" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="decimal-hours" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd
         data={getSoftwareApplicationSchema({
           name: 'ClockMath Decimal Hours Converter',
@@ -78,25 +77,19 @@ export default function DecimalHoursPage() {
       />
       <JsonLd data={getFAQPageSchema(FAQS)} />
 
-      {/* Header — slim: brand lives in the nav; the page leads with what it is */}
-      <header className="mb-6 sm:mb-8">
-        <nav className="text-sm text-muted-foreground mb-3">
-          <Link href="/" className="hover:text-primary transition-colors">
-            ClockMath
-          </Link>
-          <span className="mx-2">›</span>
-          <span>Decimal Hours</span>
+      <div className="st-intro">
+
+        <nav className="st-crumbs" aria-label="Breadcrumb">
+
+          <Link href="/tools/">Tools</Link> / Decimal Hours
+
         </nav>
-        <div className="flex items-center gap-3">
-          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
-            <Percent className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          </span>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Minutes to Decimal Converter</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Time to decimal hours and back, for timesheets and payroll</p>
-          </div>
-        </div>
-      </header>
+
+        <h1 className="st-h1">Minutes to Decimal Converter</h1>
+
+        <p className="st-lede">Time to decimal hours and back, for timesheets and payroll</p>
+
+      </div>
 
       <DecimalHoursTool className="mb-section" />
 
@@ -104,7 +97,7 @@ export default function DecimalHoursPage() {
 
       {/* Explanation */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
           How the conversion works
         </h2>
         <p className="text-muted-foreground mb-3">
@@ -124,7 +117,7 @@ export default function DecimalHoursPage() {
       {/* Full chart — static, server-rendered */}
       <section className="max-w-3xl mx-auto mb-section">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground">
             Minutes to decimal hours chart
           </h2>
           <PrintChartButton />
@@ -132,10 +125,10 @@ export default function DecimalHoursPage() {
         <p className="text-muted-foreground mb-4">
           Values to two decimal places, the convention most timesheet software uses. Print it on one page to keep by the time clock.
         </p>
-        <div className="overflow-x-auto bg-card dark:bg-slate-800 rounded-2xl p-4 border border-border/50 dark:border-slate-700/50">
+        <div className="overflow-x-auto bg-card dark:bg-card rounded-2xl p-4 border border-border/50 dark:border-border/50">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-b border-border dark:border-slate-700">
+              <tr className="border-b border-border dark:border-border">
                 {[0, 1, 2, 3].map((c) => (
                   <React.Fragment key={c}>
                     <th scope="col" className="text-left py-2 px-2 font-semibold text-foreground">Min</th>
@@ -146,7 +139,7 @@ export default function DecimalHoursPage() {
             </thead>
             <tbody>
               {Array.from({ length: 15 }, (_, row) => (
-                <tr key={row} className="border-b border-border/40 dark:border-slate-700/40">
+                <tr key={row} className="border-b border-border/40 dark:border-border/40">
                   {[0, 1, 2, 3].map((col) => {
                     const minute = row + 1 + col * 15;
                     return (
@@ -170,14 +163,14 @@ export default function DecimalHoursPage() {
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-4">
           Frequently asked questions
         </h2>
         <div className="space-y-4">
           {FAQS.map((faq) => (
             <div
               key={faq.question}
-              className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-slate-700/50"
+              className="bg-card dark:bg-card rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-border/50"
             >
               <h3 className="font-semibold text-foreground mb-1.5">{faq.question}</h3>
               <p className="text-sm text-muted-foreground">{faq.answer}</p>
@@ -188,7 +181,7 @@ export default function DecimalHoursPage() {
 
       {/* Related */}
       <section className="max-w-3xl mx-auto mb-section">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
           Related tools and guides
         </h2>
         <ul className="space-y-2 text-muted-foreground">
@@ -214,6 +207,6 @@ export default function DecimalHoursPage() {
       </section>
 
       <SiteFooter />
-    </PageChrome>
+    </StationChrome>
   );
 }

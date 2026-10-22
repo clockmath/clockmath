@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { EventCountdown } from '@/components/EventCountdown';
+import { StationBoard } from '@/components/station/StationBoard';
 
 /**
  * Countdown to an eclipse's greatest eclipse, plus that moment in the
@@ -36,19 +36,16 @@ export default function EclipseCountdown({ peakMs, title, arrivedLabel, where }:
   }, [peakDisplayMs]);
 
   return (
-    <div>
-      <EventCountdown target={new Date(peakMs)} title={title} arrivedLabel={arrivedLabel} />
-      <p className="text-center text-foreground dark:text-slate-200 mt-4">
-        The eclipse peaks at about <strong>{utcLabel} UTC</strong> {where}
-        {local ? (
-          <>
-            {' '}— that&apos;s <strong>{local}</strong>.
-          </>
-        ) : (
-          '.'
-        )}{' '}
-        Whether you can see it depends on where you are — check the tables below.
-      </p>
-    </div>
+    <StationBoard target={new Date(peakMs)} title={title} arrivedLabel={arrivedLabel}>
+      The eclipse peaks at about <strong>{utcLabel} UTC</strong> {where}
+      {local ? (
+        <>
+          {' '}— that&apos;s <strong>{local}</strong>.
+        </>
+      ) : (
+        '.'
+      )}{' '}
+      Whether you can see it depends on where you are — check the tables below.
+    </StationBoard>
   );
 }

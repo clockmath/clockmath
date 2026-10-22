@@ -137,7 +137,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
     <div className={className}>
       {/* Shared format toggle */}
       <div className="flex justify-end mb-4">
-        <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
+        <div className="flex bg-muted/50 dark:bg-muted/50 rounded-lg p-1">
           <button onClick={() => setHourFormat(true)} aria-pressed={hour12} className={modeButton(hour12)}>
             12h
           </button>
@@ -151,7 +151,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
         {/* How long did I sleep */}
         <section
           aria-labelledby="slept-heading"
-          className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
+          className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
         >
           <h2 id="slept-heading" className="text-lg font-bold text-foreground mb-4">
             How long did I sleep?
@@ -193,7 +193,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
           <div
             role="status"
             aria-live="polite"
-            className="text-center rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 py-4 px-3"
+            className="text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
           >
             {slept === null ? (
               <p className="text-sm text-muted-foreground">
@@ -203,7 +203,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
               </p>
             ) : (
               <>
-                <p className="text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                <p className="st-figure text-3xl font-bold font-mono text-primary">
                   <RollingNumber value={hm(slept)} />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -217,7 +217,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
         {/* Cycle planner */}
         <section
           aria-labelledby="planner-heading"
-          className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50"
+          className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
         >
           <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
             <h2 id="planner-heading" className="text-lg font-bold text-foreground inline-flex items-center gap-1.5">
@@ -227,7 +227,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
                 cycle tends to feel easier than waking mid-cycle.
               </InfoTip>
             </h2>
-            <div className="flex bg-muted/50 dark:bg-slate-700/50 rounded-lg p-1">
+            <div className="flex bg-muted/50 dark:bg-muted/50 rounded-lg p-1">
               <button
                 onClick={() => {
                   setPlanMode('wake-at');
@@ -281,8 +281,8 @@ export function SleepTool({ className = '' }: SleepToolProps) {
                 key={row.cycles}
                 className={`flex items-center justify-between rounded-xl border px-4 py-2.5 ${
                   row.best
-                    ? 'border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-500/15'
-                    : 'border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40'
+                    ? 'border-primary/30 bg-primary/10 '
+                    : 'border-border/50 dark:border-border/50 bg-background/60 dark:bg-background/40'
                 }`}
               >
                 <span className="text-lg font-bold font-mono text-foreground">
@@ -291,7 +291,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
                 <span className="text-sm text-muted-foreground">
                   {row.cycles} cycles · {row.sleep}
                   {row.best && (
-                    <span className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="ml-2 text-xs font-semibold text-primary">
                       Recommended
                     </span>
                   )}
