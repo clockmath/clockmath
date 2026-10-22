@@ -62,39 +62,44 @@ export function StationBoard({
           <p className="st-sentence">This countdown starts again as soon as the next date is announced.</p>
         ) : (
           <>
+            {/* Days and the rest of the last day read as one duration, "Time
+                left: 35 days 11:26:05"; the calendar-day sentence follows on
+                its own line. (Side by side, "35 days" next to "There are 36
+                days until…" looked like a mistake; both are right.) */}
             {!isPast && (
-              <p className="st-days" suppressHydrationWarning>
-                {days === null ? '--' : days.toLocaleString()}
-                <small>{days === 1 ? 'day' : 'days'}</small>
+              <div>
+                <p className="st-left-cap">Time left</p>
+                <p className="st-days" suppressHydrationWarning>
+                  {days === null ? '--' : days.toLocaleString()}
+                  <small>{days === 1 ? 'day' : 'days'}</small>
+                </p>
+              </div>
+            )}
+            {!isPast && (
+              <dl className="st-clock" aria-live="off">
+                {(['hours', 'minutes', 'seconds'] as const).map((unit, i) => (
+                  <div key={unit}>
+                    <dd suppressHydrationWarning>{clock ? pad(clock[i]) : '--'}</dd>
+                    <dt>{unit}</dt>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {totalDays !== null && (
+              <p className="st-sentence" data-days-until={liveSpec} suppressHydrationWarning>
+                There{' '}
+                <span data-live="verb" suppressHydrationWarning>
+                  {totalDays === 1 ? 'is' : 'are'}
+                </span>{' '}
+                <strong data-live="days" suppressHydrationWarning>
+                  {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
+                </strong>{' '}
+                until {title}.
+                <span data-live="weeks" suppressHydrationWarning>
+                  {weeksPhrase(totalDays)}
+                </span>
               </p>
             )}
-            <div>
-              {totalDays !== null && (
-                <p className="st-sentence" data-days-until={liveSpec} suppressHydrationWarning>
-                  There{' '}
-                  <span data-live="verb" suppressHydrationWarning>
-                    {totalDays === 1 ? 'is' : 'are'}
-                  </span>{' '}
-                  <strong data-live="days" suppressHydrationWarning>
-                    {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
-                  </strong>{' '}
-                  until {title}.
-                  <span data-live="weeks" suppressHydrationWarning>
-                    {weeksPhrase(totalDays)}
-                  </span>
-                </p>
-              )}
-              {!isPast && (
-                <dl className="st-clock" aria-live="off">
-                  {(['hours', 'minutes', 'seconds'] as const).map((unit, i) => (
-                    <div key={unit}>
-                      <dd suppressHydrationWarning>{clock ? pad(clock[i]) : '--'}</dd>
-                      <dt>{unit}</dt>
-                    </div>
-                  ))}
-                </dl>
-              )}
-            </div>
           </>
         )}
         {disclaimer && <p className="st-disclaimer">{disclaimer}</p>}
