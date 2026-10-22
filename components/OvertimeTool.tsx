@@ -63,7 +63,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
     <div className={className}>
       <section
         aria-labelledby="overtime-form-heading"
-        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6"
+        className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6"
       >
         <h2 id="overtime-form-heading" className="sr-only">
           Overtime inputs
@@ -174,7 +174,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
       <section
         aria-labelledby="overtime-result-heading"
         aria-live="polite"
-        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
+        className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
       >
         <h2 id="overtime-result-heading" className="text-lg font-bold text-foreground mb-4">
           Your split
@@ -193,7 +193,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
         {split && (
           <>
             <div className="grid grid-cols-2 gap-4 mb-2">
-              <div className="rounded-xl bg-background dark:bg-background/40 border border-border/50 dark:border-border/50 p-4 text-center">
+              <div className="st-result rounded-xl bg-background dark:bg-background/40 border border-border/50 dark:border-border/50 p-4 text-center">
                 <div className="st-figure text-2xl font-bold text-foreground">
                   <RollingNumber value={split.regularHours} />
                 </div>
@@ -201,7 +201,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                   regular hours ({decimalToHmLabel(split.regularHours)})
                 </div>
               </div>
-              <div className="rounded-xl bg-primary/10 border border-primary/30 p-4 text-center">
+              <div className="st-result rounded-xl bg-primary/10 border border-primary/30 p-4 text-center">
                 <div className="st-figure text-2xl font-bold text-primary">
                   <RollingNumber value={split.overtimeHours} />
                 </div>

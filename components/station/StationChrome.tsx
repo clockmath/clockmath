@@ -5,6 +5,7 @@ import { ClassicToggle } from "./ClassicToggle"
 import { StationTabs } from "./StationTabs"
 import { ThemeToggle } from "./ThemeToggle"
 import "./station.css"
+import "./tools.css"
 import "./classic.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text
