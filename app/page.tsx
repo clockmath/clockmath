@@ -699,8 +699,8 @@ export default function ClockMathPage() {
 
         <div className="st-legacy" style={{ marginTop: 56 }}>
           <SeoIntro />
-          <SiteFooter />
         </div>
+        <SiteFooter />
       </div>
     </StationChrome>
   )

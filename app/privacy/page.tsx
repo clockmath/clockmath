@@ -169,9 +169,7 @@ export default function PrivacyPage() {
           </div>
         </div>
 
-        <div style={{ marginTop: 56 }}>
-          <SiteFooter />
-        </div>
+        <SiteFooter />
     </StationChrome>
   );
 }

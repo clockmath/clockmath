@@ -57,19 +57,10 @@ export default function FeedbackForm() {
 
   if (!open) {
     return (
-      <>
-        {/* Separator lives here so it disappears with the trigger when the
-            form expands — otherwise the contact row ends in a dangling "·". */}
-        <span className="mx-2">·</span>
-        <button
-          type="button"
-          onClick={openForm}
-          className="inline-flex items-center gap-1.5 underline underline-offset-4 hover:text-foreground"
-        >
-          <MessageSquarePlus className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-          Feedback or feature request
-        </button>
-      </>
+      <button type="button" onClick={openForm} className="st-footer-feedback">
+        <MessageSquarePlus aria-hidden="true" />
+        Feedback or feature request
+      </button>
     );
   }
 
@@ -89,7 +80,7 @@ export default function FeedbackForm() {
     }`;
 
   return (
-    <form onSubmit={submit} className="mx-auto max-w-md text-left mt-3" aria-label="Send feedback">
+    <form onSubmit={submit} className="max-w-md text-left mt-3" aria-label="Send feedback">
       <div className="flex items-center gap-2 mb-3" role="group" aria-label="Type of message">
         <button type="button" className={chipClass(topic === 'feedback')} aria-pressed={topic === 'feedback'} onClick={() => setTopic('feedback')}>
           Feedback

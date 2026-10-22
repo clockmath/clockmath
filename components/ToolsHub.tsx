@@ -143,9 +143,7 @@ export default function ToolsHub() {
         ))}
       </ul>
 
-      <div style={{ marginTop: 56 }}>
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </StationChrome>
   );
 }

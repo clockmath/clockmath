@@ -165,9 +165,7 @@ export default function TimezoneConvertersHubPage() {
         </div>
       </section>
 
-      <div style={{ marginTop: 56 }}>
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </StationChrome>
   );
 }

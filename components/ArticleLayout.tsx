@@ -93,9 +93,7 @@ export default function ArticleLayout({
 
       <RelatedArticles currentPath={currentPath} category={category} maxArticles={3} />
 
-      <div style={{ marginTop: 56 }}>
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </StationChrome>
   );
 }
