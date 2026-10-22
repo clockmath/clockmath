@@ -19,6 +19,7 @@ export const metadata = generateSEOMetadata(
         description:
           'Live countdown to Grand Theft Auto VI — releasing November 19, 2026. See exactly how many days, hours, minutes, and seconds remain until GTA 6 launches.',
         path: '/countdown/gta-6',
+        ogImage: '/og/countdown/gta-6.png',
         keywords:
           'gta 6 countdown, gta 6 release date, time until gta 6, how many days until gta 6, grand theft auto vi countdown, gta 6 release countdown',
       },
