@@ -10,6 +10,7 @@ export const metadata = generateSEOMetadata({
   title: s.title,
   description: `Black Friday ${s.year} is ${s.long}, the day after Thanksgiving. See how many days and weeks are left, with a live countdown to the second.`,
   path: '/countdown/black-friday',
+  ogImage: '/og/countdown/black-friday.png',
   keywords: `how many days until black friday, how many days until black friday ${s.year}, black friday countdown, days until black friday, when is black friday ${s.year}`,
 });
 

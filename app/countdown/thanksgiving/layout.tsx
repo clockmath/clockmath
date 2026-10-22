@@ -10,6 +10,7 @@ export const metadata = generateSEOMetadata({
   title: s.title,
   description: `Thanksgiving ${s.year} is ${s.long}. See how many days and weeks are left, with a live countdown to the second.`,
   path: '/countdown/thanksgiving',
+  ogImage: '/og/countdown/thanksgiving.png',
   keywords: `how many days until thanksgiving, how many days until thanksgiving ${s.year}, thanksgiving countdown, days until thanksgiving, when is thanksgiving ${s.year}, how many weeks until thanksgiving`,
 });
 

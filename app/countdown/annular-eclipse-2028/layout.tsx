@@ -6,6 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Countdown to the January 26, 2028 "ring of fire" eclipse, with local times for Ecuador, Peru, Brazil, Spain and Portugal and coverage elsewhere.',
   path: '/countdown/annular-eclipse-2028',
+  ogImage: '/og/countdown/annular-eclipse-2028.png',
   keywords:
     'annular eclipse 2028, ring of fire eclipse january 26 2028, eclipse 2028 spain, eclipse 2028 seville, eclipse 2028 portugal, eclipse 2028 ecuador, eclipse 2028 brazil, 2028 eclipse countdown',
 });

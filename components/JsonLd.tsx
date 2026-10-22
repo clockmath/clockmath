@@ -131,7 +131,7 @@ export function getArticleSchema({
       url: 'https://clockmath.com',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://clockmath.com/og.png',
+        url: 'https://clockmath.com/icon-512.png',
       },
     },
     mainEntityOfPage: {

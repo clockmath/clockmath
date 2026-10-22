@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: "ClockMath",
     images: [
       {
-        url: "/og-v2.png",            // becomes https://clockmath.com/og-v2.png
+        url: "/og-v3.png",            // becomes https://clockmath.com/og-v3.png
         width: 1200,
         height: 630,
         alt: "ClockMath — Time Between Two Times",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/og-v2.png"],
+    images: ["/og-v3.png"],
   },
   robots: {
     index: true,
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1216" },
   ],
 }
 
