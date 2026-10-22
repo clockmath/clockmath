@@ -4,6 +4,8 @@ import { useCallback, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { StationBoard } from '@/components/station/StationBoard';
+import { EmbedCode } from '@/components/embed/EmbedCode';
+import { getCountdown } from '@/lib/countdowns';
 import StationChrome from '@/components/station/StationChrome';
 import SiteFooter from '@/components/SiteFooter';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
@@ -141,6 +143,9 @@ export default function EventPage({
   const [isDarkMode, toggleDarkMode] = useDarkMode();
   const pathname = usePathname();
   const handleShare = useShareCountdown();
+  // Pages in lib/countdowns.ts have an embed at /embed/countdown/<slug>/.
+  const slug = pathname?.match(/^\/countdown\/([^/]+)/)?.[1] ?? '';
+  const embeddable = getCountdown(slug);
 
   // Only pages with event facts have anything to verify — a user-picked
   // date (retirement) does not. lastUpdated still feeds the sitemap.
@@ -186,6 +191,11 @@ export default function EventPage({
         <button type="button" className="st-btn primary" onClick={handleShare}>
           Share this countdown
         </button>
+        {embeddable && (
+          <a href="#embed" className="st-btn quiet">
+            Embed on your site
+          </a>
+        )}
         <Link href="/tools/countdown/" className="st-btn quiet">
           Make your own countdown
         </Link>
@@ -236,6 +246,20 @@ export default function EventPage({
           ))}
         </div>
       </section>
+
+      {embeddable && (
+        <section className="st-more" id="embed">
+          <h2>Put this countdown on your site</h2>
+          <div>
+            <EmbedCode
+              src={`/embed/countdown/${slug}/`}
+              creditHref={`https://clockmath.com${embeddable.path}`}
+              label={`Countdown to ${embeddable.name}`}
+              id={slug}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Cross-links between event pages (excludes the page you're on). Every
           countdown, not a top-N slice: a .slice(0, 6) here left half the event

@@ -106,6 +106,15 @@ const post = (url, body, headers = {}) =>
     assert.ok(h.get(k), `${k} set`);
   }
 
+  // Embeds may be framed by any site; nothing else may.
+  const embed = api.withSecurityHeaders(new Response('x', { headers: { 'Content-Type': 'text/html' } }), '/embed/countdown/thanksgiving/').headers;
+  assert.strictEqual(embed.get('X-Frame-Options'), null, 'embed: no X-Frame-Options');
+  assert.match(embed.get('Content-Security-Policy'), /frame-ancestors \*/);
+  assert.match(h.get('Content-Security-Policy'), /frame-ancestors 'none'/, 'other pages still refuse framing');
+  assert.strictEqual(h.get('X-Frame-Options'), 'DENY');
+  const lookalike = api.withSecurityHeaders(new Response('x'), '/embedded-thing/').headers;
+  assert.strictEqual(lookalike.get('X-Frame-Options'), 'DENY', 'only /embed/ itself');
+
   console.log('api: all checks passed');
 })().catch((e) => {
   console.error(e);

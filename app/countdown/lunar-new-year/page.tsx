@@ -1,6 +1,7 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import StackedTable from '@/components/StackedTable';
 import { LUNAR_NEW_YEAR as YEARS } from '@/lib/holidays';
 
@@ -15,19 +16,15 @@ const label = (iso: string) => {
 };
 
 const ROWS = YEARS.map((y) => ({ year: y.start.slice(0, 4), date: label(y.start), animal: `Year of the ${y.animal}` }));
-const RANGES = YEARS.map((y) => ({ start: y.start }));
 
 export default function LunarNewYearCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#b71c1c', ink: '#ffd36b' }}
+      {...countdownProps('lunar-new-year')}
       heading={'How Many Days Until Lunar New Year?'}
       tagline="Live countdown to Lunar New Year 2027 — Saturday, February 6, the Year of the Goat"
       lastUpdated="2026-10-15"
       breadcrumb="Lunar New Year"
-      dateRanges={RANGES}
-      countdownTitle="Lunar New Year"
-      arrivedLabel="Happy Lunar New Year! 🧧"
       facts={[
         { label: '2027 date', value: 'Saturday, Feb 6' },
         { label: 'Zodiac', value: 'Year of the Goat' },

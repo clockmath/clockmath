@@ -1,19 +1,17 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable from '@/components/HolidayDatesTable';
 
 export default function HalloweenCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#000000', ink: '#ff8a1f' }}
+      {...countdownProps('halloween')}
       heading={'How Many Days Until Halloween?'}
       tagline="Live countdown to October 31 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"
       breadcrumb="Halloween"
-      recurring={{ month: 9, day: 31 }}
-      countdownTitle="Halloween"
-      arrivedLabel="Happy Halloween! 🎃"
       facts={[
         { label: 'Date', value: 'October 31' },
         { label: 'Also known as', value: "All Hallows' Eve" },

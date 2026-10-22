@@ -1,19 +1,17 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesTable';
 
 export default function NewYearCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#14234b', ink: '#f3c74f' }}
+      {...countdownProps('new-year')}
       heading={'How Many Days Until New Year?'}
       tagline="Live countdown to midnight, January 1 — down to the second"
       lastUpdated="2026-10-15"
       breadcrumb="New Year"
-      recurring={{ month: 0, day: 1 }}
-      countdownTitle="New Year"
-      arrivedLabel="Happy New Year! 🎉"
       facts={[
         { label: 'Date', value: 'January 1' },
         { label: "New Year's Eve", value: 'December 31' },

@@ -1,19 +1,17 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesTable';
 
 export default function July4thCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#1c2f6b' }}
+      {...countdownProps('july-4th')}
       heading={'How Many Days Until the 4th of July?'}
       tagline="Live countdown to July 4 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"
       breadcrumb="4th of July"
-      recurring={{ month: 6, day: 4 }}
-      countdownTitle="the 4th of July"
-      arrivedLabel="Happy 4th of July! 🎆"
       facts={[
         { label: 'Date', value: 'July 4' },
         { label: 'Holiday', value: 'Independence Day' },

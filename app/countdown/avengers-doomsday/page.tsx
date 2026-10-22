@@ -1,28 +1,20 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
-import { buildEventDisclaimer } from '@/components/EventCountdown';
+import { countdownProps } from '@/lib/countdowns';
 
 // Theatrical release of Avengers: Doomsday.
 // Dec 18, 2026 worldwide (Marvel/Disney listings, rechecked Oct 15, 2026); UK
 // opens Wed Dec 16 (MovieWeb, Sep 24, 2026, citing Digital Spy).
-const RELEASE = new Date(2026, 11, 18);
 
 export default function AvengersDoomsdayCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#23402f' }}
+      {...countdownProps('avengers-doomsday')}
       heading={'How Many Days Until Avengers: Doomsday?'}
       tagline="Time until Avengers: Doomsday hits theaters"
       lastUpdated="2026-10-15"
       breadcrumb="Avengers: Doomsday"
-      target={RELEASE}
-      countdownTitle="Avengers: Doomsday"
-      arrivedLabel="Avengers: Doomsday is here! 💥"
-      disclaimer={buildEventDisclaimer(
-        'Avengers',
-        'Marvel Studios or The Walt Disney Company',
-      )}
       facts={[
         { label: 'Release date', value: 'December 18, 2026' },
         { label: 'Directed by', value: 'Anthony & Joe Russo' },

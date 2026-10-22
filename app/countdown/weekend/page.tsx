@@ -1,18 +1,16 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 
 export default function WeekendCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#f3c64a', ink: '#000000' }}
+      {...countdownProps('weekend')}
       heading={'How Many Days Until the Weekend?'}
       tagline="Live countdown to Saturday — days, hours, minutes, and seconds"
       lastUpdated="2026-08-03"
       breadcrumb="Weekend"
-      weekly={{ weekday: 6, spanDays: 2 }}
-      countdownTitle="the weekend"
-      arrivedLabel="It's the weekend! 🎉"
       facts={[
         { label: 'Counts to', value: 'Saturday' },
         { label: 'Resets', value: 'Every week' },

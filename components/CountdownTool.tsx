@@ -8,6 +8,7 @@ import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { StationBoard } from '@/components/station/StationBoard';
+import { EmbedCode } from '@/components/embed/EmbedCode';
 import { buildDay } from '@/lib/buildDay';
 import { getDevice } from '@/lib/device';
 
@@ -63,6 +64,17 @@ const toDateInputValue = (date: Date): string => {
 };
 
 // Local wall-clock string "YYYY-MM-DDTHH:MM" from a Date.
+// Board colours offered for an embedded countdown (each >= 4.5:1 with the
+// numerals the embed picks for it).
+const EMBED_COLORS = [
+  { name: 'Blue', hex: '#1849a9' },
+  { name: 'Rust', hex: '#b5541c' },
+  { name: 'Pine', hex: '#1f5f3f' },
+  { name: 'Crimson', hex: '#a3123a' },
+  { name: 'Black', hex: '#000000' },
+  { name: 'Sun', hex: '#f3c64a' },
+];
+
 const toWallClock = (date: Date): string =>
   `${toDateInputValue(date)}T${`${date.getHours()}`.padStart(2, '0')}:${`${date.getMinutes()}`.padStart(2, '0')}`;
 
@@ -198,6 +210,19 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     return `${window.location.origin}/tools/countdown/?${params.toString()}`;
   }, [active]);
 
+  // Embed code for the active countdown: the share link's parameters plus a
+  // board colour (the embed picks black or white numerals to suit it).
+  const [showEmbed, setShowEmbed] = useState(false);
+  const [embedColor, setEmbedColor] = useState(EMBED_COLORS[0].hex);
+  const embedQuery = useMemo(() => {
+    if (!active) return '';
+    const params = new URLSearchParams();
+    params.set('to', toWallClock(new Date(active.ms)));
+    if (active.title.trim()) params.set('title', active.title.trim());
+    params.set('color', embedColor);
+    return params.toString();
+  }, [active, embedColor]);
+
   const handleShare = useCallback(async () => {
     if (!active) return;
     const url = buildShareUrl();
@@ -308,7 +333,37 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
             </svg>
             Save
           </button>
+          <button
+            type="button"
+            onClick={() => setShowEmbed((v) => !v)}
+            aria-expanded={showEmbed}
+            className="st-btn quiet"
+          >
+            Embed on your site
+          </button>
         </div>
+        {showEmbed && active && (
+          <div className="mt-6">
+            <div className="st-swatches" role="group" aria-label="Board colour">
+              {EMBED_COLORS.map((c) => (
+                <button
+                  key={c.hex}
+                  type="button"
+                  style={{ background: c.hex }}
+                  aria-label={c.name}
+                  aria-pressed={embedColor === c.hex}
+                  onClick={() => setEmbedColor(c.hex)}
+                />
+              ))}
+            </div>
+            <EmbedCode
+              src={`/embed/countdown/?${embedQuery}`}
+              creditHref={buildShareUrl().replace(window.location.origin, 'https://clockmath.com')}
+              label={`Countdown to ${activeTitle || 'the big day'}`}
+              id="custom"
+            />
+          </div>
+        )}
       </div>
       )}
 

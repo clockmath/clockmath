@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
+import { countdownProps, eclipseProps } from '@/lib/countdowns';
 import EclipseCountdown from '@/components/EclipseCountdown';
 import EclipseCityTable from '@/components/EclipseCityTable';
 import { TOTALITY, PARTIAL } from './eclipseData';
@@ -20,18 +21,13 @@ const STRONG = 'text-foreground dark:text-slate-200';
 export default function SolarEclipse2028Page() {
   return (
     <EventPage
-      board={{ color: '#10142b', ink: '#f5d76e' }}
+      {...countdownProps('solar-eclipse-2028')}
       heading="2028 Total Solar Eclipse Countdown"
       tagline="Saturday, July 22, 2028 — totality across Australia, through Sydney, and on to New Zealand, in local time"
       lastUpdated="2026-10-15"
       breadcrumb="Solar eclipse 2028"
       countdownSlot={
-        <EclipseCountdown
-          peakMs={Date.UTC(2028, 6, 22, 2, 55, 23)}
-          title="the 2028 total solar eclipse"
-          arrivedLabel="The 2028 eclipse has passed — the next total eclipse is November 25, 2030"
-          where="in the Kimberley, Western Australia"
-        />
+        <EclipseCountdown {...eclipseProps('solar-eclipse-2028')} />
       }
       facts={[
         { label: 'Date', value: 'Saturday, July 22, 2028' },

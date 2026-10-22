@@ -337,3 +337,14 @@
 
 /* A black or midnight board would sink into the dark dial: give it an edge */
 .dark .st-board { box-shadow: inset 0 0 0 1px var(--rule); }
+
+/* "Embed on your site": preview, code box, copy button */
+.st-embedcode { max-width: 560px; }
+.st-embedcode-preview { display: block; border: 0; border-radius: 12px; background: transparent; }
+.st-embedcode-label { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin: 18px 0 6px; }
+.st-embedcode textarea { box-sizing: border-box; width: 100%; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink); background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; resize: vertical; }
+.st-embedcode-help { font-size: 14px; color: var(--quiet); margin: 12px 0 0; }
+.st-swatches { display: flex; gap: 8px; margin: 0 0 14px; }
+.st-swatches button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.st-swatches button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 2px var(--dial); }

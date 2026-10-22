@@ -1,19 +1,17 @@
 'use client';
 
 import EventPage from '@/components/EventPage';
+import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable from '@/components/HolidayDatesTable';
 
 export default function ValentinesDayCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#a3123a' }}
+      {...countdownProps('valentines-day')}
       heading={"How Many Days Until Valentine's Day?"}
       tagline="Live countdown to February 14 — days, hours, minutes, and seconds"
       lastUpdated="2026-10-15"
       breadcrumb="Valentine's Day"
-      recurring={{ month: 1, day: 14 }}
-      countdownTitle="Valentine's Day"
-      arrivedLabel="Happy Valentine's Day! ❤️"
       facts={[
         { label: 'Date', value: 'February 14' },
         { label: 'In 2027', value: 'Sunday' },

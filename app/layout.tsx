@@ -7,6 +7,7 @@ import Analytics from "@/components/Analytics";
 import ClarityAnalytics from "@/components/ClarityAnalytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import WebVitals from "@/components/WebVitals";
+import NotOnEmbed from "@/components/NotOnEmbed";
 
   
 
@@ -65,11 +66,15 @@ export default function RootLayout({
             __html: `(function(){try{var s=localStorage.getItem('clockmath-darkmode');var m=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='true'||(s===null&&m)){document.documentElement.classList.add('dark');}if(localStorage.getItem('clockmath-classic')==='true'){document.documentElement.classList.add('classic');}}catch(e){}})();`,
           }}
         />
-        <Analytics />
-        <ClarityAnalytics />
-        <WebVitals />
+        <NotOnEmbed>
+          <Analytics />
+          <ClarityAnalytics />
+          <WebVitals />
+        </NotOnEmbed>
         {children}
-        <ConsentBanner />
+        <NotOnEmbed>
+          <ConsentBanner />
+        </NotOnEmbed>
       </body>
     </html>
   );

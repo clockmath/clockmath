@@ -2,25 +2,20 @@
 
 import Link from 'next/link';
 import EventPage from '@/components/EventPage';
-import { buildEventDisclaimer } from '@/components/EventCountdown';
+import { countdownProps } from '@/lib/countdowns';
 
 // Super Bowl LXI: Sun Feb 14, 2027, SoFi Stadium, Inglewood (Wikipedia and
 // NFL-linked listings, checked Oct 15, 2026). Kickoff time not announced —
 // counts to the day. After the game, roll this page to Super Bowl LXII.
-const GAME_DAYS = [{ start: '2027-02-14' }];
 
 export default function SuperBowlCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#2f5d2a' }}
+      {...countdownProps('super-bowl')}
       heading={'Super Bowl LXI Countdown'}
       tagline="Sunday, February 14, 2027 — SoFi Stadium, Inglewood, California"
       lastUpdated="2026-10-15"
       breadcrumb="Super Bowl"
-      dateRanges={GAME_DAYS}
-      countdownTitle="Super Bowl LXI"
-      arrivedLabel="It's Super Bowl Sunday! 🏈"
-      disclaimer={buildEventDisclaimer('Super Bowl', 'the National Football League (NFL)')}
       facts={[
         { label: 'Date', value: 'Sunday, Feb 14, 2027' },
         { label: 'Stadium', value: 'SoFi Stadium, Inglewood' },
