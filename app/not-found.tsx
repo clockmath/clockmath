@@ -37,9 +37,7 @@ export default function NotFound() {
           Back to ClockMath
         </Link>
       </div>
-      <div style={{ marginTop: 56 }}>
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </StationChrome>
   );
 }

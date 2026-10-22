@@ -225,7 +225,6 @@
 
 /* SeoIntro and the footer, inside the station frame */
 .station .st-legacy h2 { font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
-.station footer { border-top-color: var(--rule); }
 
 /* ---- Countdown board ---- */
 .st-intro-event { padding-bottom: 0; }
