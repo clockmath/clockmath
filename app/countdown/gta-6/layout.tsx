@@ -10,6 +10,7 @@ export const metadata = generateSEOMetadata(
         description:
           'Yes: Grand Theft Auto VI released November 19, 2026 on PS5 and Xbox Series X|S. When it unlocked in each region, and whether there is a PC date yet.',
         path: '/countdown/gta-6',
+        ogImage: '/og/countdown/gta-6.png',
         keywords:
           'is gta 6 out, gta 6 release date, gta 6 release time, what time did gta 6 unlock, gta 6 pc release date, when did gta 6 come out',
       }

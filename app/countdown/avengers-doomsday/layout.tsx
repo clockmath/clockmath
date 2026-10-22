@@ -6,6 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Countdown to Avengers: Doomsday, in theaters December 18, 2026: the days, hours, minutes and seconds until Robert Downey Jr. returns as Doctor Doom.',
   path: '/countdown/avengers-doomsday',
+  ogImage: '/og/countdown/avengers-doomsday.png',
   keywords:
     'avengers doomsday countdown, avengers doomsday release date, days until avengers doomsday, time until avengers doomsday, new avengers movie countdown, doctor doom movie release',
 });

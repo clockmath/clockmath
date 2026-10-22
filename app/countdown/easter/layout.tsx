@@ -6,6 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live countdown to Easter Sunday 2027, March 28: Good Friday, Orthodox Easter (May 2) and Easter dates for the coming years, and why the date moves.',
   path: '/countdown/easter',
+  ogImage: '/og/countdown/easter.png',
   keywords:
     'easter countdown, how many days until easter, when is easter 2027, easter 2027 date, good friday 2027, orthodox easter 2027, easter sunday 2027',
 });

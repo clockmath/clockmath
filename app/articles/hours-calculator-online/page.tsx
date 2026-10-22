@@ -17,12 +17,13 @@ export const metadata: Metadata = {
     description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
     type: "article",
     url: "https://clockmath.com/articles/hours-calculator-online/",
+    images: [{ url: "/og-v3.png", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Hours Calculator Online – Faster Than Manual Math",
     description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
-    images: ["/og-v2.png"],
+    images: ["/og-v3.png"],
   },
   robots: {
     index: true,

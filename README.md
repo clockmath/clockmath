@@ -1,6 +1,6 @@
 # ClockMath
 
-![ClockMath](https://clockmath.com/og.png)
+![ClockMath](https://clockmath.com/og-v3.png)
 
 Free online time, timezone, countdown, and timesheet calculators.
 

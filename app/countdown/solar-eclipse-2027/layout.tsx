@@ -6,6 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Countdown to the August 2, 2027 total solar eclipse: local times of totality in Spain, Morocco, Libya, Egypt and Saudi Arabia, and coverage elsewhere.',
   path: '/countdown/solar-eclipse-2027',
+  ogImage: '/og/countdown/solar-eclipse-2027.png',
   keywords:
     'solar eclipse 2027, total solar eclipse august 2 2027, 2027 eclipse countdown, eclipse 2027 spain time, eclipse 2027 luxor, eclipse 2027 morocco, 2027 eclipse path, eclipse 2027 times by city, how long is the 2027 eclipse',
 });
