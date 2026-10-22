@@ -558,7 +558,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   return (
     <div className={className}>
       {/* Shifts (input) */}
-      <div className="relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6">
+      <div className="st-panel relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground dark:text-foreground inline-flex items-center gap-1">
             Shifts
@@ -663,7 +663,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
       </div>
 
       {/* Result (this is what export/share captures) */}
-      <div className="relative z-10 bg-card rounded-2xl p-4 sm:p-5 shadow-sm border border-primary/30 dark:border-border/50">
+      <div className="st-panel relative z-10 bg-card rounded-2xl p-4 sm:p-5 shadow-sm border border-primary/30 dark:border-border/50">
         {/* Header: name + rate */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <h2 className="text-base font-bold text-foreground dark:text-foreground">
@@ -945,7 +945,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
       {/* Saved timesheets */}
       {saved.length > 0 && (
-        <div className="relative z-0 mt-6 bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50">
+        <div className="st-panel relative z-0 mt-6 bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50">
           <h3 className="text-sm font-semibold text-foreground dark:text-foreground mb-3">
             Saved timesheets
           </h3>

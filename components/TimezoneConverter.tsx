@@ -601,7 +601,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
       {/* Conversion Result */}
       {result && (
-        <div className="bg-card rounded-2xl p-4 sm:p-6 mb-6 border border-border/50 dark:border-border/50 shadow-inner">
+        <div className="st-panel bg-card rounded-2xl p-4 sm:p-6 mb-6 border border-border/50 dark:border-border/50 shadow-inner">
           <div className="text-center space-y-6">
             {/* Main Result */}
             <div className="grid sm:grid-cols-2 gap-6 text-left">
@@ -616,7 +616,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             </div>
 
             {/* Time Difference - Emphasized */}
-            <div className="bg-primary/10 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
+            <div className="st-result bg-primary/10 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
               <div className="text-xs text-muted-foreground dark:text-muted-foreground mb-1">
                 Time Difference
               </div>

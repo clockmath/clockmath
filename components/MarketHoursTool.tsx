@@ -176,7 +176,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
   return (
     <div className={className}>
       {/* Summary bar */}
-      <div className="bg-card dark:bg-card rounded-2xl px-4 sm:px-6 py-4 shadow-sm border border-border/50 dark:border-border/50 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="st-panel bg-card dark:bg-card rounded-2xl px-4 sm:px-6 py-4 shadow-sm border border-border/50 dark:border-border/50 mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-lg font-semibold text-foreground">
             {openCount === 0 ? 'No markets open right now' : `${openCount} of ${MARKETS.length} markets open`}
@@ -232,7 +232,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
           return (
             <div
               key={market.id}
-              className="bg-card dark:bg-card rounded-2xl p-4 sm:p-5 shadow-sm border border-border/50 dark:border-border/50"
+              className="st-tile bg-card dark:bg-card rounded-2xl p-4 sm:p-5 shadow-sm border border-border/50 dark:border-border/50"
             >
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2.5 min-w-0">

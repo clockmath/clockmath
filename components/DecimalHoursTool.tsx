@@ -72,7 +72,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
       {/* Time → decimal */}
       <section
         aria-labelledby="to-decimal-heading"
-        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
+        className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
       >
         <h2 id="to-decimal-heading" className="text-lg font-bold text-foreground mb-4">
           Hours &amp; minutes → decimal
@@ -120,7 +120,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
         <div
           role="status"
           aria-live="polite"
-          className="text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
+          className="st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
         >
           {toDecimal === null ? (
             <p className="text-sm text-muted-foreground">Enter hours and minutes above</p>
@@ -142,7 +142,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
       {/* Decimal → time */}
       <section
         aria-labelledby="to-time-heading"
-        className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
+        className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
       >
         <h2 id="to-time-heading" className="text-lg font-bold text-foreground mb-4">
           Decimal → hours &amp; minutes
@@ -171,7 +171,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
         <div
           role="status"
           aria-live="polite"
-          className="text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
+          className="st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
         >
           {toTime === null ? (
             <p className="text-sm text-muted-foreground">Enter decimal hours above</p>

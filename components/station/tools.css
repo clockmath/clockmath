@@ -1,0 +1,31 @@
+/* ---------------------------------------------------------------------------
+   Tool panels in the station design: the same ruled bands as the homepage
+   calculator instead of cards. Components mark their parts explicitly:
+   - st-panel   a tool's outer card    -> a band ruled in ink across the top
+   - st-result  an answer box          -> the answer under a thin rule, unboxed
+   - st-tile    one of a set of cards  -> a lighter rule (market hours)
+   Classic view keeps the cards, so every rule here skips html.classic.
+--------------------------------------------------------------------------- */
+
+html:not(.classic) .station .st-panel {
+  background: none; border: 0; border-top: 2px solid var(--ink); border-radius: 0; box-shadow: none;
+  padding: 22px 0 26px;
+}
+html:not(.classic) .station .st-result {
+  background: none; border: 0; border-top: 1px solid var(--rule); border-radius: 0; box-shadow: none;
+  padding: 14px 0 4px; text-align: left;
+}
+html:not(.classic) .station .st-tile {
+  background: none; border: 0; border-top: 1px solid var(--rule); border-radius: 0; box-shadow: none;
+  padding: 14px 0 16px;
+}
+/* An answer in ink, like the homepage's; the tint went with the box */
+html:not(.classic) .station .st-result .st-figure { color: var(--ink) !important; }
+/* Inputs lost the card behind them: give them the wash, as on the homepage */
+html:not(.classic) .station .st-panel :is(input[type="text"], input[type="number"], input[type="search"], input:not([type]), select, textarea) {
+  background-color: var(--wash);
+}
+/* The date/time pickers and the timezone select are fields too */
+html:not(.classic) .station .st-panel :is(button[aria-haspopup="dialog"], button[aria-haspopup="listbox"]) {
+  background-color: var(--wash);
+}

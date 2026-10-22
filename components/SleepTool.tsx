@@ -151,7 +151,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
         {/* How long did I sleep */}
         <section
           aria-labelledby="slept-heading"
-          className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
+          className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
         >
           <h2 id="slept-heading" className="text-lg font-bold text-foreground mb-4">
             How long did I sleep?
@@ -193,7 +193,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
           <div
             role="status"
             aria-live="polite"
-            className="text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
+            className="st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
           >
             {slept === null ? (
               <p className="text-sm text-muted-foreground">
@@ -217,7 +217,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
         {/* Cycle planner */}
         <section
           aria-labelledby="planner-heading"
-          className="bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
+          className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
         >
           <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
             <h2 id="planner-heading" className="text-lg font-bold text-foreground inline-flex items-center gap-1.5">
