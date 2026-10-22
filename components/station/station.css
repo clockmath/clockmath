@@ -234,6 +234,10 @@
 .st-board h2 { grid-column: 1 / -1; margin: 0; font-size: 20px; font-weight: 700; color: var(--board-ink); }
 .st-days { margin: 0; font-weight: 900; font-stretch: 66%; line-height: 0.8; letter-spacing: -0.03em; font-size: clamp(140px, 22vw, 280px); }
 .st-days small { display: block; font-size: 22px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; line-height: 1.2; margin-top: 14px; }
+.st-left-cap { margin: 0 0 12px; font-size: 15px; font-weight: 600; opacity: 0.85; }
+/* The calendar-day answer, on its own ruled line under the time left */
+.st-board .st-sentence[data-days-until] { grid-column: 1 / -1; margin: 0; padding-top: 14px; max-width: none;
+                         border-top: 1px solid color-mix(in srgb, var(--board-ink) 35%, transparent); }
 .st-sentence { font-size: 21px; line-height: 1.4; max-width: 32ch; margin: 0 0 20px; }
 .st-sentence strong { font-weight: 800; }
 .st-clock { display: flex; gap: 28px; margin: 0; }
