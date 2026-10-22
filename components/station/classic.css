@@ -1,0 +1,83 @@
+/* ---------------------------------------------------------------------------
+   Classic view (Oct 2026): the pre-redesign look, chosen from the header and
+   remembered per browser (html.classic, set before paint in app/layout.tsx).
+
+   Same layouts as the station design; only the surface changes back: the
+   emerald palette, Geist, rounded cards with soft shadows, bold numerals at
+   normal width, and green countdown boards instead of each event's colour.
+   Everything is keyed off .classic .station, so removing this file removes
+   classic view.
+--------------------------------------------------------------------------- */
+
+.classic .station {
+  --dial: #ffffff;
+  --ink: #1e293b;
+  --text: #475569;
+  --quiet: #64748b;
+  --rule: #d1d5db;
+  --wash: #f1f5f9;
+  --enamel: #059669;
+  --enamel-hover: #047857;
+  --enamel-wash: #ecfdf5;
+  --primary-foreground: #ffffff;
+  --ring: rgba(5, 150, 105, 0.5);
+  --radius: 0.5rem;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.classic.dark .station {
+  --dial: #0f172a;
+  --ink: #f1f5f9;
+  --text: #e2e8f0;
+  --quiet: #94a3b8;
+  --rule: #334155;
+  --wash: #1e293b;
+  --enamel: #10b981;
+  --enamel-hover: #34d399;
+  --enamel-wash: rgba(16, 185, 129, 0.15);
+  /* Dark text on the brighter green: white on #10b981 is only 2.5:1 */
+  --primary-foreground: #052e1b;
+  --ring: rgba(16, 185, 129, 0.5);
+}
+
+/* Archivo's width axis has no Geist equivalent: undo the condensed settings
+   and bring the sizes down so the wider numerals still fit a phone. */
+.classic .station * { font-stretch: normal !important; }
+.classic .st-big { font-weight: 800; letter-spacing: -0.03em; line-height: 0.9; font-size: clamp(60px, 10vw, 124px); }
+.classic .st-big.long { font-size: clamp(44px, 6.5vw, 84px); }
+.classic .st-days { font-weight: 800; letter-spacing: -0.04em; font-size: clamp(100px, 15vw, 190px); }
+.classic .st-404 { font-weight: 800; letter-spacing: -0.04em; font-size: clamp(96px, 15vw, 170px); color: var(--enamel); }
+.classic .station .st-figure { font-weight: 800 !important; letter-spacing: -0.03em; font-size: clamp(38px, 5.5vw, 56px) !important; }
+.classic .st-clock dd { font-size: 38px; }
+.classic .st-h1 { font-weight: 700; letter-spacing: -0.02em; }
+
+/* Rounded cards with a soft shadow, as before */
+.classic .station .rounded-2xl { border-radius: 1rem; }
+.classic .station .rounded-xl { border-radius: 0.75rem; }
+.classic .station .shadow-sm, .classic .station .shadow { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.classic .station .bg-card { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.classic .st-btn, .classic .st-seg, .classic .st-theme, .classic .st-view,
+.classic .st-filters input, .classic .st-filters select,
+.classic .st-pair button[aria-haspopup] { border-radius: 0.75rem !important; }
+/* The calculator band becomes the old card */
+.classic .st-calc { background: var(--wash); border: 1px solid var(--rule); border-radius: 1rem;
+                    padding: 24px 28px 28px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.classic .st-pair button[aria-haspopup] { background: var(--dial) !important; border-color: var(--rule) !important; }
+.classic .st-article, .classic .st-hub, .classic .st-empty { border-top-color: var(--rule); border-top-width: 1px; }
+
+/* Countdown boards: the old green, whatever the event's own colour */
+.classic .st-board { --board-ink: #ffffff; background: linear-gradient(135deg, #059669, #047857); border-radius: 1rem;
+                     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
+.classic .st-callout { background: linear-gradient(135deg, #059669, #047857); border-radius: 1rem; }
+.classic .st-btn.on-board { color: #047857 !important; }
+.classic .st-btn.on-board:hover { background: #ecfdf5; }
+
+/* The header switch itself (both views) */
+.st-view { flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px;
+           border: 1px solid var(--rule); border-radius: 6px; background: none; color: var(--ink);
+           font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.st-view:hover { border-color: var(--ink); }
+@media (max-width: 760px) {
+  .st-view { width: 40px; padding: 0; justify-content: center; }
+  .st-view span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
