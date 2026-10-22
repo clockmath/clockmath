@@ -48,15 +48,15 @@ export default function StudyTimeCalculatorPage() {
 
       <h2>Quick Solution</h2>
       <p>
-        Use our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">duration calculator</Link> to log how long you studied each day. Simply enter your start and finish times, and you'll get precise measurements in hours and minutes. No more guessing or rough estimates.
+        Use our <Link href="/" className="text-primary hover:text-primary font-medium">duration calculator</Link> to log how long you studied each day. Simply enter your start and finish times, and you'll get precise measurements in hours and minutes. No more guessing or rough estimates.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example Study Session</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 2:10 PM</div>
           <div><strong>End:</strong> 5:05 PM</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>➡ Total Study Time = 2 hours 55 minutes</strong>
           </div>
         </div>
@@ -72,12 +72,12 @@ export default function StudyTimeCalculatorPage() {
 
       <h2>Analyzing Your Study Patterns</h2>
       <p>
-        Use our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator</Link> to identify when you're most productive. Are you more focused in the morning or evening? How long can you maintain concentration? This data helps you schedule study time when you're naturally most alert and effective.
+        Use our <Link href="/" className="text-primary hover:text-primary font-medium">hours calculator</Link> to identify when you're most productive. Are you more focused in the morning or evening? How long can you maintain concentration? This data helps you schedule study time when you're naturally most alert and effective.
       </p>
 
       <h2>Setting Realistic Goals</h2>
       <p>
-        Accurate time tracking helps you set achievable study goals. Instead of vague plans like "study more," you can set specific targets like "study math for 90 minutes daily." Our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> helps you measure progress toward these concrete goals.
+        Accurate time tracking helps you set achievable study goals. Instead of vague plans like "study more," you can set specific targets like "study math for 90 minutes daily." Our <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> helps you measure progress toward these concrete goals.
       </p>
 
       <h2>Conclusion</h2>

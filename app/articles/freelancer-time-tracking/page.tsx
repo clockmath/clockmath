@@ -48,19 +48,19 @@ export default function FreelancerTimeTrackingPage() {
 
       <h2>Calculate Time Per Task</h2>
       <p>
-        Use our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> to quickly determine how long you spent on any task. Enter the start time when you begin and the end time when you finish, then record that duration against the client or project. This simple habit transforms vague time estimates into accurate billing.
+        Use our <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> to quickly determine how long you spent on any task. Enter the start time when you begin and the end time when you finish, then record that duration against the client or project. This simple habit transforms vague time estimates into accurate billing.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Billable Hours Example</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Task:</strong> Website design review</div>
           <div><strong>Start:</strong> 2:15 PM</div>
           <div><strong>End:</strong> 4:45 PM</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>➡ Billable Time = 2 hours 30 minutes (2.5 hours)</strong>
           </div>
-          <div className="text-slate-600 dark:text-slate-400">
+          <div className="text-slate-600 dark:text-muted-foreground">
             At $75/hour = $187.50
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function FreelancerTimeTrackingPage() {
 
       <h2>Conclusion</h2>
       <p>
-        Accurate time tracking is the foundation of a sustainable freelance business. Use ClockMath's <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator</Link> to track your billable time precisely, create accurate invoices, and ensure you're compensated fairly for every minute of your valuable work.
+        Accurate time tracking is the foundation of a sustainable freelance business. Use ClockMath's <Link href="/" className="text-primary hover:text-primary font-medium">hours calculator</Link> to track your billable time precisely, create accurate invoices, and ensure you're compensated fairly for every minute of your valuable work.
       </p>
     </ArticleLayout>
   );

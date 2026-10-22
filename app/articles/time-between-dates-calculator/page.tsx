@@ -45,7 +45,7 @@ export default function TimeBetweenDatesCalculatorPage() {
       currentPath="/articles/time-between-dates-calculator"
     >
       <p>
-        If you just need the answer, the <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> gives
+        If you just need the answer, the <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> gives
         it instantly, times of day included. This guide shows how the counting actually works, so you can check a
         result or do it without a computer.
       </p>
@@ -57,13 +57,13 @@ export default function TimeBetweenDatesCalculatorPage() {
         <li><strong>The ending month:</strong> add the end day's number.</li>
       </ol>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: March 1 to April 15, 2025</h3>
         <div className="space-y-2 text-sm">
           <div>March has 31 days, so 31 − 1 = <strong>30</strong> days left in March</div>
           <div>No full months in between</div>
           <div>April 15 adds <strong>15</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>30 + 15 = 45 days</strong>
           </div>
         </div>
@@ -113,9 +113,9 @@ export default function TimeBetweenDatesCalculatorPage() {
       </ul>
 
       <p>
-        For spans that include times of day, or when you'd rather not count, the <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> gives
+        For spans that include times of day, or when you'd rather not count, the <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> gives
         a calendar-accurate breakdown. To watch the days tick down to a future date, use
-        the <Link href="/tools/countdown" className="text-emerald-600 hover:text-emerald-500 font-medium">countdown timer</Link>.
+        the <Link href="/tools/countdown" className="text-primary hover:text-primary font-medium">countdown timer</Link>.
       </p>
     </ArticleLayout>
   );

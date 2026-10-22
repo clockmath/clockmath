@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
-import Link from "next/link";
+import StationChrome from "@/components/station/StationChrome";
+import SiteFooter from "@/components/SiteFooter";
 import { Metadata } from "next";
 import ManageConsentButton from "@/components/ManageConsentButton";
 
@@ -27,30 +28,15 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <div className="container mx-auto px-4 py-6 sm:py-10 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors mb-4"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to ClockMath
-          </Link>
-          <h1 className="text-4xl font-bold text-foreground dark:text-slate-100 mb-2">
-            Privacy Policy
-          </h1>
-          <p className="text-muted-foreground dark:text-slate-400">
-            ClockMath.com
-          </p>
-        </div>
+    <StationChrome currentTool="privacy">
+      <div className="st-intro">
+        <h1 className="st-h1">Privacy Policy</h1>
+        <p className="st-lede">ClockMath.com</p>
+      </div>
 
         {/* Content */}
-        <div className="bg-card dark:bg-slate-800 rounded-2xl p-5 sm:p-6 md:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <div className="prose prose-slate dark:prose-invert max-w-none">
+        <div className="st-article article-prose">
+          <div>
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
               <strong>Effective date:</strong> October 18, 2026
             </p>
@@ -104,9 +90,9 @@ export default function PrivacyPage() {
             </p>
             <p className="mb-6">
               We don&apos;t use advertising features, remarketing or user IDs, and we don&apos;t sell or share visitor
-              data. You can also block Google Analytics everywhere with the 
-              <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google Analytics opt-out add-on</a>. See 
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google's</a> and 
+              data. You can also block Google Analytics everywhere with the{' '}
+              <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google Analytics opt-out add-on</a>. See{' '}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google's</a> and{' '}
               <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Microsoft's</a> privacy statements for how they handle
               this data.
             </p>
@@ -166,7 +152,7 @@ export default function PrivacyPage() {
               <li>An end to analytics tracking (the consent setting above does this immediately)</li>
             </ul>
             <p className="mb-6">
-              Email us at 
+              Email us at{' '}
               <a href="mailto:hello@clockmath.com" className="text-primary hover:text-primary/80 underline">
                 hello@clockmath.com
               </a>
@@ -182,19 +168,9 @@ export default function PrivacyPage() {
           </div>
         </div>
 
-        {/* Back to ClockMath CTA */}
-        <div className="text-center mt-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Go to ClockMath
-          </Link>
+        <div style={{ marginTop: 56 }}>
+          <SiteFooter />
         </div>
-      </div>
-    </div>
+    </StationChrome>
   );
 }

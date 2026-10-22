@@ -1,5 +1,8 @@
 import Link from "next/link"
 import { Archivo } from "./fonts"
+import AnnouncementBanner from "@/components/AnnouncementBanner"
+import { StationTabs } from "./StationTabs"
+import { ThemeToggle } from "./ThemeToggle"
 import "./station.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text
@@ -17,11 +20,11 @@ const TABS = [
 
 interface StationChromeProps {
   children: React.ReactNode
-  /** A tab id; tools without a tab of their own (overtime, decimal hours,
-      market hours) light up "All tools". */
+  /** A tab id, or the page's own id (overtime, articles, privacy…). */
   currentTool: string
-  onToggleTheme: () => void
-  isDarkMode: boolean
+  /** Optional: without them the header runs its own toggle (server pages). */
+  onToggleTheme?: () => void
+  isDarkMode?: boolean
 }
 
 // The mark is the dial itself: black hands, the red second hand.
@@ -38,40 +41,24 @@ function Mark() {
 }
 
 export default function StationChrome({ children, currentTool, onToggleTheme, isDarkMode }: StationChromeProps) {
-  const active = TABS.some((t) => t.id === currentTool) ? currentTool : "tools"
+  // Tools without a tab of their own light up "All tools"; guides and
+  // site pages light none.
+  const active = TABS.some((t) => t.id === currentTool)
+    ? currentTool
+    : ["overtime", "decimal-hours", "market-hours"].includes(currentTool)
+      ? "tools"
+      : null
   return (
     <div className={`station ${Archivo.variable}`}>
+      <AnnouncementBanner />
       <header className="st-header">
         <div className="st-wrap">
           <Link href="/" className="st-mark" aria-label="ClockMath home">
             <Mark />
             <span>ClockMath</span>
           </Link>
-          <nav className="st-tabs" aria-label="Tools">
-            {TABS.map((t) => (
-              <Link key={t.id} href={t.href} aria-current={t.id === active ? "page" : undefined}>
-                {t.label}
-              </Link>
-            ))}
-          </nav>
-          <button
-            type="button"
-            className="st-theme"
-            onClick={onToggleTheme}
-            aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-            title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-          >
-            {isDarkMode ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="4" />
-                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M20.4 15.4A9 9 0 0 1 8.6 3.6 9 9 0 1 0 20.4 15.4z" />
-              </svg>
-            )}
-          </button>
+          <StationTabs tabs={TABS} active={active} />
+          <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} />
         </div>
       </header>
       <main className="st-wrap st-main">{children}</main>

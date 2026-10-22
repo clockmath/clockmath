@@ -75,7 +75,7 @@ export default function FeedbackForm() {
 
   if (status === 'sent') {
     return (
-      <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-3" role="status">
+      <p className="text-sm text-primary mt-3" role="status">
         Thanks — got it. Feedback goes straight to the developer.
       </p>
     );
@@ -84,8 +84,8 @@ export default function FeedbackForm() {
   const chipClass = (active: boolean) =>
     `px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
       active
-        ? 'bg-emerald-600 text-white border-emerald-600'
-        : 'bg-transparent text-muted-foreground dark:text-slate-400 border-border dark:border-slate-600 hover:text-foreground'
+        ? 'bg-primary text-primary-foreground border-primary'
+        : 'bg-transparent text-muted-foreground dark:text-muted-foreground border-border dark:border-border hover:text-foreground'
     }`;
 
   return (
@@ -110,7 +110,7 @@ export default function FeedbackForm() {
         maxLength={4000}
         required
         placeholder={topic === 'feature' ? 'What should ClockMath do next?' : "What's working? What's confusing?"}
-        className="w-full text-sm rounded-xl border border-border dark:border-slate-600 bg-background dark:bg-slate-900/40 text-foreground p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        className="w-full text-sm rounded-xl border border-border dark:border-border bg-background dark:bg-background/40 text-foreground p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
       />
 
       <label htmlFor="feedback-email" className="sr-only">
@@ -123,7 +123,7 @@ export default function FeedbackForm() {
         onChange={(e) => setEmail(e.target.value)}
         maxLength={200}
         placeholder="Email (optional — only if you'd like a reply)"
-        className="w-full text-sm rounded-xl border border-border dark:border-slate-600 bg-background dark:bg-slate-900/40 text-foreground p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        className="w-full text-sm rounded-xl border border-border dark:border-border bg-background dark:bg-background/40 text-foreground p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
       />
 
       {/* Honeypot: visually hidden, skipped by keyboard, invisible to humans */}
@@ -153,14 +153,14 @@ export default function FeedbackForm() {
         <button
           type="submit"
           disabled={message.trim().length < 10 || status === 'sending'}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 rounded-xl text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {status === 'sending' ? 'Sending…' : 'Send'}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="text-sm text-muted-foreground dark:text-slate-400 hover:text-foreground underline underline-offset-4"
+          className="text-sm text-muted-foreground dark:text-muted-foreground hover:text-foreground underline underline-offset-4"
         >
           Cancel
         </button>

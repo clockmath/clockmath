@@ -14,7 +14,7 @@ const TITLE = "How to Calculate Hours Worked, With Breaks | ClockMath";
 const DESCRIPTION =
   "Work out a day's hours by hand: switch to 24-hour time, subtract, take off unpaid breaks, and convert to decimal hours for payroll — with worked examples.";
 
-const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+const LINK = "text-primary hover:text-primary font-medium";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -74,12 +74,12 @@ export default function WorkHoursCalculatorPage() {
         expected, doesn't have to be paid. State rules and employment contracts can add to this, so check yours.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: 9:15 AM to 5:45 PM, 30-minute lunch</h3>
         <div className="space-y-2 text-sm">
           <div>In 24-hour time: 17:45 − 9:15 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid lunch: − 30 minutes</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>Hours worked: 8 hours (8.00)</strong>
           </div>
         </div>
@@ -92,12 +92,12 @@ export default function WorkHoursCalculatorPage() {
         every minute from 1 to 60.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: 7:50 AM to 4:20 PM, 45-minute lunch</h3>
         <div className="space-y-2 text-sm">
           <div>16:20 − 7:50 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid lunch: − 45 minutes = 7 hours 45 minutes</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>In decimal: 7 + 45 ÷ 60 = 7.75 hours</strong>
           </div>
         </div>

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import StationChrome from "@/components/station/StationChrome";
+import SiteFooter from "@/components/SiteFooter";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,38 +18,28 @@ const links = [
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 py-10">
-      <div className="w-full max-w-lg text-center bg-card/70 dark:bg-slate-800/60 rounded-2xl p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-        <div className="text-6xl font-extrabold tracking-tight">
-          <span className="text-emerald-600 dark:text-emerald-400">4</span>
-          <span className="text-emerald-600 dark:text-emerald-400">0</span>
-          <span className="text-emerald-600 dark:text-emerald-400">4</span>
-        </div>
-        <h1 className="mt-3 text-xl font-bold text-foreground dark:text-slate-100">Page not found</h1>
-        <p className="mt-2 text-sm text-muted-foreground dark:text-slate-400">
-          That page doesn&apos;t exist or may have moved. Try one of our free tools:
-        </p>
-
-        <div className="mt-6 grid gap-2 sm:grid-cols-2 text-left">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="rounded-xl border border-border/50 dark:border-slate-700/50 bg-background/60 dark:bg-slate-900/40 px-4 py-3 hover:border-primary/50 hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors"
-            >
-              <span className="block font-medium text-foreground dark:text-slate-100">{l.label}</span>
-              <span className="block text-xs text-muted-foreground">{l.desc}</span>
-            </Link>
-          ))}
-        </div>
-
-        <Link
-          href="/"
-          className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition-all duration-200"
-        >
+    <StationChrome currentTool="not-found">
+      <div className="st-intro">
+        <p className="st-404" aria-hidden="true">404</p>
+        <h1 className="st-h1">Page not found</h1>
+        <p className="st-lede">That page doesn&apos;t exist or may have moved. Try one of the free tools:</p>
+      </div>
+      <ul className="st-links" style={{ maxWidth: '72ch' }}>
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link href={l.href}>{l.label}</Link>
+            <span>{l.desc}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="st-cta">
+        <Link href="/" className="st-btn primary">
           Back to ClockMath
         </Link>
       </div>
-    </div>
+      <div style={{ marginTop: 56 }}>
+        <SiteFooter />
+      </div>
+    </StationChrome>
   );
 }

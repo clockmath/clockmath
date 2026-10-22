@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import PageChrome from '@/components/PageChrome';
+import StationChrome from '@/components/station/StationChrome';
 import SiteFooter from '@/components/SiteFooter';
-import Link from 'next/link';
-import { Mail } from 'lucide-react';
 import { event as gaEvent } from '@/lib/gtag';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -121,49 +119,33 @@ export default function ContactPage() {
   ];
 
   return (
-    <PageChrome currentTool="articles" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="contact" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
       <JsonLd data={getFAQPageSchema(faqItems)} />
-      {/* Header */}
-      {/* Header — slim: brand lives in the nav; the page leads with what it is */}
-      <header className="mb-6 sm:mb-8">
-        <nav className="text-sm text-muted-foreground mb-3">
-          <Link href="/" className="hover:text-primary transition-colors">
-            ClockMath
-          </Link>
-          <span className="mx-2">›</span>
-          <span>Contact</span>
-        </nav>
-        <div className="flex items-center gap-3">
-          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 shrink-0" aria-hidden="true">
-            <Mail className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          </span>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Contact ClockMath</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Questions, feedback, or feature requests</p>
-          </div>
-        </div>
-      </header>
+      <div className="st-intro">
+        <h1 className="st-h1">Contact ClockMath</h1>
+        <p className="st-lede">Questions, feedback, or feature requests</p>
+      </div>
 
       <div className="grid lg:grid-cols-2 gap-6 mb-section">
         {/* FAQ Section */}
-        <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <h2 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-6">
-            Frequently Asked Questions
+        <section className="bg-card/70 dark:bg-card/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-border/50">
+          <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-6">
+            Questions
           </h2>
           <div className="space-y-4">
             {faqItems.map((item, index) => (
               <details key={index} className="group">
                 <summary className="cursor-pointer list-none">
-                  <div className="flex items-center justify-between p-4 bg-slate-100 dark:bg-slate-700/50 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors border border-slate-200 dark:border-slate-600">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                  <div className="flex items-center justify-between p-4 bg-slate-100 dark:bg-muted/50 rounded-lg hover:bg-slate-200 dark:hover:bg-muted transition-colors border border-slate-200 dark:border-border">
+                    <h3 className="font-semibold text-slate-900 dark:text-foreground">
                       {item.question}
                     </h3>
-                    <svg className="w-5 h-5 text-slate-600 dark:text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-slate-600 dark:text-muted-foreground group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
                 </summary>
-                <div className="px-4 py-3 text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30 rounded-b-lg border-x border-b border-slate-200 dark:border-slate-600 -mt-1">
+                <div className="px-4 py-3 text-slate-700 dark:text-muted-foreground bg-slate-50 dark:bg-card/30 rounded-b-lg border-x border-b border-slate-200 dark:border-border -mt-1">
                   {item.answer}
                 </div>
               </details>
@@ -172,14 +154,14 @@ export default function ContactPage() {
         </section>
 
         {/* Contact Form */}
-        <section className="bg-card/70 dark:bg-slate-800/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <h2 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-6">
-            Send Message
+        <section className="bg-card/70 dark:bg-card/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-border/50">
+          <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-6">
+            Send a message
           </h2>
           
           {submitStatus === 'success' && (
-            <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
-              <p className="text-emerald-800 dark:text-emerald-200">
+            <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg">
+              <p className="text-primary">
                 Your email client should have opened. If not, you can email us directly at{' '}
                 <a href="mailto:hello@clockmath.com" className="underline hover:no-underline">
                   hello@clockmath.com
@@ -216,7 +198,7 @@ export default function ContactPage() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground dark:text-slate-100 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                   Name *
                 </label>
                 <input
@@ -226,12 +208,12 @@ export default function ContactPage() {
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-background dark:bg-slate-700 border border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 bg-background dark:bg-muted border border-border dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
                   placeholder="Your name"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground dark:text-slate-100 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                   Email *
                 </label>
                 <input
@@ -241,14 +223,14 @@ export default function ContactPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-background dark:bg-slate-700 border border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 bg-background dark:bg-muted border border-border dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
                   placeholder="your@email.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-foreground dark:text-slate-100 mb-2">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                 Category
               </label>
               <select
@@ -256,7 +238,7 @@ export default function ContactPage() {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-background dark:bg-slate-700 border border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                className="w-full px-4 py-3 bg-background dark:bg-muted border border-border dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
               >
                 <option value="">Select a category</option>
                 <option value="Bug Report">Bug Report</option>
@@ -268,7 +250,7 @@ export default function ContactPage() {
             </div>
 
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-foreground dark:text-slate-100 mb-2">
+              <label htmlFor="subject" className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                 Subject *
               </label>
               <input
@@ -278,13 +260,13 @@ export default function ContactPage() {
                 required
                 value={formData.subject}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-background dark:bg-slate-700 border border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                className="w-full px-4 py-3 bg-background dark:bg-muted border border-border dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
                 placeholder="Brief description of your message"
               />
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-foreground dark:text-slate-100 mb-2">
+              <label htmlFor="message" className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                 Message *
               </label>
               <textarea
@@ -294,7 +276,7 @@ export default function ContactPage() {
                 rows={6}
                 value={formData.message}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-background dark:bg-slate-700 border border-border dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 resize-none"
+                className="w-full px-4 py-3 bg-background dark:bg-muted border border-border dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 resize-none"
                 placeholder="Tell us more about your question or feedback..."
               />
             </div>
@@ -302,7 +284,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting || !formData.name || !formData.email || !formData.subject || !formData.message}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-muted disabled:text-muted-foreground text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -314,7 +296,7 @@ export default function ContactPage() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  Send Message
+                  Send a message
                 </>
               )}
             </button>
@@ -324,6 +306,6 @@ export default function ContactPage() {
       </div>
 
       <SiteFooter />
-    </PageChrome>
+    </StationChrome>
   );
 }

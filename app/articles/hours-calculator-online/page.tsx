@@ -54,15 +54,15 @@ export default function HoursCalculatorOnlinePage() {
 
       <h2>The Better Way</h2>
       <p>
-        That's why our free <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator online</Link> is the smarter choice. Just enter two times, and ClockMath handles all the complex math instantly. No more scratching your head over time zone conversions or midnight crossovers.
+        That's why our free <Link href="/" className="text-primary hover:text-primary font-medium">hours calculator online</Link> is the smarter choice. Just enter two times, and ClockMath handles all the complex math instantly. No more scratching your head over time zone conversions or midnight crossovers.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: Overnight Shift</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 11:45 PM</div>
           <div><strong>End:</strong> 6:20 AM</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>➡ Total = 6 hours 35 minutes</strong>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function HoursCalculatorOnlinePage() {
 
       <h2>Advantages of Online Calculators</h2>
       <p>
-        An <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator online</Link> eliminates human error and saves valuable time. You get instant results in multiple formats: traditional hours and minutes, decimal hours for payroll, and total minutes for detailed tracking.
+        An <Link href="/" className="text-primary hover:text-primary font-medium">hours calculator online</Link> eliminates human error and saves valuable time. You get instant results in multiple formats: traditional hours and minutes, decimal hours for payroll, and total minutes for detailed tracking.
       </p>
 
       <h2>Professional Applications</h2>
@@ -86,12 +86,12 @@ export default function HoursCalculatorOnlinePage() {
 
       <h2>Mobile Accessibility</h2>
       <p>
-        Our <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">time duration calculator</Link> works perfectly on phones, tablets, and computers. Calculate hours anywhere, anytime—no apps to download or software to install. Just open your browser and start calculating.
+        Our <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> works perfectly on phones, tablets, and computers. Calculate hours anywhere, anytime—no apps to download or software to install. Just open your browser and start calculating.
       </p>
 
       <h2>Conclusion</h2>
       <p>
-        An online calculator saves time, avoids errors, and works anywhere you have internet access. ClockMath is the simplest, most reliable way to calculate time duration. Stop struggling with manual math and start getting accurate results instantly with our free <Link href="/" className="text-emerald-600 hover:text-emerald-500 font-medium">hours calculator online</Link>.
+        An online calculator saves time, avoids errors, and works anywhere you have internet access. ClockMath is the simplest, most reliable way to calculate time duration. Stop struggling with manual math and start getting accurate results instantly with our free <Link href="/" className="text-primary hover:text-primary font-medium">hours calculator online</Link>.
       </p>
     </ArticleLayout>
   );

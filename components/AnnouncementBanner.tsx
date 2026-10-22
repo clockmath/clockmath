@@ -46,16 +46,16 @@ export default function AnnouncementBanner() {
   if (!visible || pathname?.startsWith(CAMPAIGN.hideOnPrefix)) return null;
 
   return (
-    <div className="relative z-20 bg-emerald-600/10 dark:bg-emerald-500/10 border-b border-emerald-600/20 dark:border-emerald-500/20">
+    <div className="relative z-20 bg-primary/10 border-b border-primary/30">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-center gap-2 text-sm">
-        <Trophy className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+        <Trophy className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
         <Link
           href={CAMPAIGN.href}
           onClick={() => gaEvent({ action: 'banner_click', params: { campaign: CAMPAIGN.id, from: pathname ?? '' } })}
-          className="text-foreground dark:text-slate-200 hover:underline underline-offset-4 min-w-0 truncate"
+          className="text-foreground dark:text-foreground hover:underline underline-offset-4 min-w-0 truncate"
         >
           <span className="font-semibold">New:</span> the Daily Time Quiz — five questions, one world
-          leaderboard. <span className="font-medium text-emerald-700 dark:text-emerald-400">Play today&apos;s →</span>
+          leaderboard. <span className="font-medium text-primary">Play today&apos;s →</span>
         </Link>
         <button
           type="button"
@@ -69,7 +69,7 @@ export default function AnnouncementBanner() {
             setVisible(false);
             gaEvent({ action: 'banner_dismiss', params: { campaign: CAMPAIGN.id } });
           }}
-          className="shrink-0 grid place-items-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-emerald-600/10 transition-colors"
+          className="shrink-0 grid place-items-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors"
         >
           <X className="w-4 h-4" aria-hidden="true" />
         </button>

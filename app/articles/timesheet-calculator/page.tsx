@@ -12,7 +12,7 @@ const TITLE = "How to Total a Weekly Timesheet for Payroll | ClockMath";
 const DESCRIPTION =
   "Add up a week of shifts correctly: total the minutes first, convert to decimal hours, apply US rounding rules and spot where overtime starts.";
 
-const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+const LINK = "text-primary hover:text-primary font-medium";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -59,7 +59,7 @@ export default function TimesheetCalculatorPage() {
         to calculate hours worked</Link> walks through a single day step by step.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example week, 30-minute unpaid lunch each day</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Monday:</strong> 8:30 AM – 5:00 PM = 8h 30m − 30m = 8h 00m</div>
@@ -67,7 +67,7 @@ export default function TimesheetCalculatorPage() {
           <div><strong>Wednesday:</strong> 8:45 AM – 5:15 PM = 8h 30m − 30m = 8h 00m</div>
           <div><strong>Thursday:</strong> 8:30 AM – 5:00 PM = 8h 30m − 30m = 8h 00m</div>
           <div><strong>Friday:</strong> 9:00 AM – 4:00 PM = 7h 00m − 30m = 6h 30m</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>Week: 38 hours 30 minutes = 38.5 hours</strong>
           </div>
         </div>

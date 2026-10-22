@@ -1,4 +1,5 @@
-import PageChrome from "./PageChrome";
+import Link from "next/link";
+import StationChrome from "./station/StationChrome";
 import RelatedArticles from "./RelatedArticles";
 import ArticleAnalytics from "./ArticleAnalytics";
 import ArticleCtaLink from "./ArticleCtaLink";
@@ -14,6 +15,13 @@ interface ArticleLayoutProps {
   category?: 'timezone' | 'calculator' | 'productivity' | 'business';
   currentPath?: string;
 }
+
+const CATEGORY_LABEL: Record<NonNullable<ArticleLayoutProps['category']>, string> = {
+  timezone: 'Time zones',
+  calculator: 'Calculators',
+  productivity: 'Productivity',
+  business: 'Business',
+};
 
 // "2025-01-15" → "January 15, 2025"; bare years pass through unchanged.
 function formatPublishDate(publishDate: string): string {
@@ -51,7 +59,7 @@ export default function ArticleLayout({
   return (
     // Articles share the site chrome (nav included) — they used to be
     // navigational dead ends with only a "Back to ClockMath" link.
-    <PageChrome currentTool="articles">
+    <StationChrome currentTool="articles">
       <JsonLd
         data={getArticleSchema({
           headline: title,
@@ -65,53 +73,29 @@ export default function ArticleLayout({
       />
       <ArticleAnalytics title={title} category={category} currentPath={currentPath} />
 
-      <div className="max-w-4xl mx-auto">
-        {/* Article content */}
-        <article className="bg-card dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-slate-700/50">
-          <header className="mb-8 border-b border-border/50 dark:border-slate-700/50 pb-6">
-            <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-2">
-              ClockMath Guides
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground dark:text-slate-100 mb-3">
-              {title}
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground dark:text-slate-400 mb-3">
-              {description}
-            </p>
-            <time className="text-sm text-muted-foreground">
-              Published {formatPublishDate(publishDate)}
-            </time>
-          </header>
+      <div className="st-intro">
+        <nav className="st-crumbs" aria-label="Breadcrumb">
+          <Link href="/articles/">Guides</Link> / {CATEGORY_LABEL[category]}
+        </nav>
+        <h1 className="st-h1">{title}</h1>
+        <p className="st-lede">{description}</p>
+        <p className="st-byline">Published {formatPublishDate(publishDate)}</p>
+      </div>
 
-          <div className="article-prose max-w-none">
-            {children}
-          </div>
+      <article className="st-article article-prose">{children}</article>
 
-          {/* Call to action */}
-          <div className="mt-section p-5 sm:p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
-            <div className="text-center">
-              <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                {primaryTool.title}
-              </h3>
-              <p className="text-emerald-700 dark:text-emerald-300 mb-4">
-                {primaryTool.description}
-              </p>
-              <ArticleCtaLink href={primaryTool.href} title={title} />
-            </div>
-          </div>
-        </article>
+      {/* Call to action: the tool this guide is about */}
+      <section className="st-callout">
+        <h2>{primaryTool.title}</h2>
+        <p>{primaryTool.description}</p>
+        <ArticleCtaLink href={primaryTool.href} title={title} />
+      </section>
 
-        {/* Smart related articles */}
-        <div className="mt-8">
-          <RelatedArticles
-            currentPath={currentPath}
-            category={category}
-            maxArticles={3}
-          />
-        </div>
+      <RelatedArticles currentPath={currentPath} category={category} maxArticles={3} />
 
+      <div style={{ marginTop: 56 }}>
         <SiteFooter />
       </div>
-    </PageChrome>
+    </StationChrome>
   );
 }

@@ -15,7 +15,7 @@ const TITLE = "How to Calculate Hours for Overnight and Night Shifts | ClockMath
 const DESCRIPTION =
   "Hours for shifts that cross midnight: the add-24-hours method, 12-hour shifts, which week the hours count toward, and daylight-saving nights.";
 
-const LINK = "text-emerald-600 hover:text-emerald-500 font-medium";
+const LINK = "text-primary hover:text-primary font-medium";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -68,13 +68,13 @@ export default function ShiftWorkHoursCalculatorPage() {
         31:30 − 23:00 is 8 hours 30 minutes. Then take off any unpaid break, exactly as for a day shift.
       </p>
 
-      <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl my-6">
+      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: 11:00 PM to 7:30 AM, 30-minute break</h3>
         <div className="space-y-2 text-sm">
           <div>End 7:30 + 24 = 31:30</div>
           <div>31:30 − 23:00 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid break: − 30 minutes</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-slate-200 dark:border-border">
             <strong>Hours worked: 8 hours</strong>
           </div>
         </div>

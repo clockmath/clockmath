@@ -68,7 +68,7 @@ export default function StockMarketTimezoneConverterPage() {
           Use <a href="/tools/market-hours" className="text-primary hover:text-primary/80 font-semibold">ClockMath's live market hours tool</a> to see every major exchange's open and close in your local time — with live open/closed status and countdowns to the next bell.
         </p>
 
-        <div className="bg-muted/50 dark:bg-slate-800/50 rounded-lg p-6 my-8">
+        <div className="bg-muted/50 dark:bg-card/50 rounded-lg p-6 my-8">
           <h3 className="text-lg font-semibold mb-4">Major Stock Exchange Hours</h3>
           <div className="space-y-3">
             <div>
@@ -107,15 +107,15 @@ export default function StockMarketTimezoneConverterPage() {
 
         <h2>Critical Trading Times to Track</h2>
         <div className="grid gap-6 md:grid-cols-2 my-8">
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">Market Opens</h4>
-            <p className="text-sm text-green-700 dark:text-green-300">
+          <div className="bg-card rounded-lg p-4">
+            <h4 className="font-semibold text-primary mb-2">Market Opens</h4>
+            <p className="text-sm text-primary">
               Opening prices often reflect overnight news and pre-market sentiment. Convert opening times to catch these crucial moments.
             </p>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Market Closes</h4>
-            <p className="text-sm text-blue-700 dark:text-blue-300">
+          <div className="bg-card rounded-lg p-4">
+            <h4 className="font-semibold text-primary mb-2">Market Closes</h4>
+            <p className="text-sm text-primary">
               Closing prices determine daily gains/losses and often trigger algorithmic trading. Plan your exits accordingly.
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function StockMarketTimezoneConverterPage() {
           Stay ahead of the market by knowing exactly when global exchanges open and close. <a href="/tools/market-hours" className="text-primary hover:text-primary/80 font-semibold">ClockMath's market hours tool</a> keeps you in sync with markets worldwide, and for one-off conversions the <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">timezone converter</a> handles any two zones.
         </p>
 
-        <div className="bg-gradient-to-r from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
+        <div className="bg-card from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-3">Ready to Track Global Markets?</h3>
           <p className="mb-4">
             See live open/closed status for every major exchange in your local timezone and never miss an opening bell.
