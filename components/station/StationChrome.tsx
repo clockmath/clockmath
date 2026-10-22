@@ -1,9 +1,11 @@
 import Link from "next/link"
 import { Archivo } from "./fonts"
 import AnnouncementBanner from "@/components/AnnouncementBanner"
+import { ClassicToggle } from "./ClassicToggle"
 import { StationTabs } from "./StationTabs"
 import { ThemeToggle } from "./ThemeToggle"
 import "./station.css"
+import "./classic.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text
 // tabs, theme toggle. Stands in for PageChrome on the pages being trialled;
@@ -58,6 +60,7 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
             <span>ClockMath</span>
           </Link>
           <StationTabs tabs={TABS} active={active} />
+          <ClassicToggle />
           <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} />
         </div>
       </header>

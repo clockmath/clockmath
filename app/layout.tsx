@@ -58,10 +58,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        {/* Apply the saved/system theme before paint to avoid a light flash. */}
+        {/* Apply the saved/system theme, and classic view if chosen, before
+            paint to avoid a flash of the wrong look. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('clockmath-darkmode');var m=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='true'||(s===null&&m)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{var s=localStorage.getItem('clockmath-darkmode');var m=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='true'||(s===null&&m)){document.documentElement.classList.add('dark');}if(localStorage.getItem('clockmath-classic')==='true'){document.documentElement.classList.add('classic');}}catch(e){}})();`,
           }}
         />
         <Analytics />
