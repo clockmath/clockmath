@@ -122,3 +122,18 @@ html:not(.classic) .station .st-departures [data-live="days"] { color: #ffb27a; 
   .station .st-departures tbody td:last-child { grid-column: 2; grid-row: 1 / span 2; }
   .station .st-departures [data-live="days"] { font-size: 26px; }
 }
+
+/* ---- The contact form: fields like the calculators' ---- */
+html:not(.classic) .station .st-form label { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+html:not(.classic) .station .st-form :is(input, select, textarea) {
+  background: var(--wash); border: 1px solid transparent; border-radius: 6px; min-height: 52px; color: var(--ink); font-size: 17px;
+}
+html:not(.classic) .station .st-form :is(input, select, textarea):hover { border-color: var(--rule); }
+html:not(.classic) .station .st-form :is(input, select, textarea):focus { border-color: var(--enamel); box-shadow: 0 0 0 3px var(--ring); }
+html:not(.classic) .station .st-form button[type="submit"] {
+  border-radius: 6px; box-shadow: none; font-size: 17px; padding: 14px 24px; width: auto; background: var(--enamel); color: var(--primary-foreground);
+}
+html:not(.classic) .station .st-form button[type="submit"]:disabled { background: var(--wash); color: var(--quiet); }
+@media (max-width: 760px) {
+  html:not(.classic) .station .st-form button[type="submit"] { width: 100%; }
+}
