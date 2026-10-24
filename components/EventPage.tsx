@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { StationBoard } from '@/components/station/StationBoard';
 import { EmbedCode } from '@/components/embed/EmbedCode';
 import StationFold from '@/components/station/StationFold';
-import { getCountdown } from '@/lib/countdowns';
+import { eventColour, getCountdown } from '@/lib/countdowns';
 import StationChrome from '@/components/station/StationChrome';
 import SiteFooter from '@/components/SiteFooter';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
@@ -211,8 +211,28 @@ export default function EventPage({
         .
       </p>
 
+      {/* Cross-links between event pages (excludes the page you're on). Every
+          countdown, not a top-N slice: a .slice(0, 6) here left half the event
+          pages with no internal links at all, so Google never found them. */}
+      <section className="st-more">
+        <h2>More countdowns</h2>
+        <div className="st-chips">
+          {/* Each with a dot of its own board colour, like the line colours on the tabs */}
+          {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, ''))).map((c) => {
+            const dot = eventColour(c.href);
+            return (
+              <Link key={c.href} href={c.href}>
+                {dot && <span className="st-dot" style={{ '--dot': dot } as React.CSSProperties} aria-hidden="true" />}
+                {c.title}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
       {/* The embed panel is large (a live preview and the code): folded, and
-          opened by the "Embed on your site" button's #embed link */}
+          opened by the "Embed on your site" button's #embed link. It sits
+          with the other fold, so the page ends board, links, then the folds */}
       {embeddable && (
         <StationFold id="embed" summary="Put this countdown on your site">
           <div className="st-fold-plain">
@@ -225,20 +245,6 @@ export default function EventPage({
           </div>
         </StationFold>
       )}
-
-      {/* Cross-links between event pages (excludes the page you're on). Every
-          countdown, not a top-N slice: a .slice(0, 6) here left half the event
-          pages with no internal links at all, so Google never found them. */}
-      <section className="st-more">
-        <h2>More countdowns</h2>
-        <div className="st-chips">
-          {POPULAR_COUNTDOWNS.filter((c) => !pathname?.startsWith(c.href.replace(/\/$/, ''))).map((c) => (
-            <Link key={c.href} href={c.href}>
-              {c.title}
-            </Link>
-          ))}
-        </div>
-      </section>
 
       {/* Facts, the explanation, date tables and FAQs: folded under the board
           (the FAQ schema above still matches them; they stay in the HTML) */}

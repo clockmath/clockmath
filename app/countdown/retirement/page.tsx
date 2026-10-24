@@ -2,11 +2,12 @@
 
 import EventPage from '@/components/EventPage';
 import { UserDateCountdown } from '@/components/UserDateCountdown';
+import { RETIREMENT_BOARD } from '@/lib/countdowns';
 
 export default function RetirementCountdownPage() {
   return (
     <EventPage
-      board={{ color: '#1f5c6b' }}
+      board={RETIREMENT_BOARD}
       heading={'Retirement Countdown'}
       tagline="How long until you retire?"
       lastUpdated="2026-08-03"
