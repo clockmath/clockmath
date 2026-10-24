@@ -9,6 +9,7 @@ import "./station.css"
 import "./tools.css"
 import "./lines.css"
 import "./colour-bands.css"
+import "./quiz.css"
 import "./classic.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text

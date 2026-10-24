@@ -594,12 +594,15 @@ export function QuizTool({ className = '' }: { className?: string }) {
     } else {
       cls += 'bg-background dark:bg-background/40 border-border/50 dark:border-border text-muted-foreground';
     }
+    // The station board styles the tiles by state; classic view uses cls
+    const state = !revealed ? 'open' : isCorrect ? 'correct' : isPicked ? 'wrong' : 'other';
     return (
       <button
         key={optionIndex}
         onClick={() => onPick(optionIndex)}
         disabled={revealed}
-        className={cls}
+        className={`st-quiz-opt ${cls}`}
+        data-state={state}
       >
         <span className="flex items-center justify-between gap-2">
           {q.options[optionIndex]}
@@ -711,7 +714,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
 
       {/* ------------------------------------------------ playing */}
       {phase === 'playing' && (
-        <div className={cardClass}>
+        <div className={`st-result st-quiz-card st-quiz-play ${cardClass}`}>
           <div className="flex items-center justify-between gap-3 mb-3">
             <span className="text-sm font-medium text-muted-foreground">
               Question {questionIndex + 1} of {QUIZ_QUESTION_COUNT}
@@ -814,7 +817,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
         );
 
         const resultCard = (
-          <div className={cardClass}>
+          <div className={`st-result st-quiz-card ${cardClass}`}>
             <p className="text-sm text-muted-foreground tabular-nums mb-2">
               Daily #{quiz.number} · {dayLabel}
             </p>
@@ -903,7 +906,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
             {resultCard}
 
             {/* Leaderboard card — only once there is a board worth a column */}
-            <div className={cardClass}>
+            <div className={`st-panel ${cardClass}`}>
               <div className="flex items-center justify-between gap-3 mb-3">
                 <h2 className="text-lg font-bold text-foreground">
                   {boardView === 'today' ? "Today's leaderboard" : "Yesterday's final board"}
@@ -994,7 +997,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
 
       {/* ------------------------------------------------ practice */}
       {phase === 'practice' && practiceQ && (
-        <div className={cardClass}>
+        <div className={`st-result st-quiz-card st-quiz-play ${cardClass}`}>
           <div className="flex items-center justify-between gap-3 mb-3">
             <span className="text-sm font-medium text-muted-foreground">
               Practice — untimed, unlimited
