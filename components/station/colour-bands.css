@@ -37,8 +37,15 @@ html:not(.classic) .station .st-intro {
 html:not(.classic) .station .st-intro :is(.st-h1, .st-404) { color: var(--band-ink); }
 html:not(.classic) .station .st-intro :is(.st-lede, .st-byline, .st-crumbs) { color: var(--band-ink); }
 html:not(.classic) .station .st-intro .st-crumbs a { color: var(--band-ink); }
-/* Event pages: the board follows the sign at its usual distance */
-html:not(.classic) .station .st-intro.st-intro-event { padding-bottom: 36px; margin-bottom: 0; }
+/* Event pages: the board follows the sign at its usual distance, and the
+   sign is a shade of the board's colour (StationChrome's heroStyle) so the
+   two read as a sign and a board, not one block */
+html:not(.classic) .station .st-intro.st-intro-event {
+  padding-bottom: 36px; margin-bottom: 0;
+  --sign: var(--hero-sign, var(--band)); --sign-ink: var(--hero-sign-ink, var(--band-ink));
+  background: var(--sign); color: var(--sign-ink); box-shadow: 0 0 0 100vmax var(--sign);
+}
+html:not(.classic) .station .st-intro.st-intro-event :is(.st-h1, .st-lede, .st-crumbs, .st-crumbs a) { color: var(--sign-ink); }
 
 /* ---- The explainers: a soft tint of the colour, edge to edge ---- */
 html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto, .st-extra section) {
