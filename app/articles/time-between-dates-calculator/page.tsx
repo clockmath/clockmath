@@ -58,7 +58,7 @@ export default function TimeBetweenDatesCalculatorPage() {
         <li><strong>The ending month:</strong> add the end day's number.</li>
       </ol>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: March 1 to April 15, 2025</h3>
         <div className="space-y-2 text-sm">
           <div>March has 31 days, so 31 − 1 = <strong>30</strong> days left in March</div>

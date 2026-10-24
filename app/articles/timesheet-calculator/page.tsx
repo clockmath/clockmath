@@ -60,7 +60,7 @@ export default function TimesheetCalculatorPage() {
         to calculate hours worked</Link> walks through a single day step by step.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example week, 30-minute unpaid lunch each day</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Monday:</strong> 8:30 AM – 5:00 PM = 8h 30m − 30m = 8h 00m</div>

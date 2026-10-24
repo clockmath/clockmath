@@ -38,7 +38,7 @@ export default function TimezoneConverterRemoteWorkPage() {
           With <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's free timezone converter</a>, you can instantly see what time a meeting falls in different regions. Just enter your local time and select the target timezone to avoid scheduling headaches.
         </p>
 
-        <div className="bg-muted/50 dark:bg-card/50 rounded-lg p-6 my-8">
+        <div className="st-aside bg-card rounded-lg p-6 my-8">
           <h3 className="text-lg font-semibold mb-4">Example Meeting Conversion</h3>
           <ul className="space-y-2">
             <li><strong>Meeting time:</strong> 9:00 AM EST (New York)</li>
@@ -79,7 +79,7 @@ export default function TimezoneConverterRemoteWorkPage() {
           Save your team from endless "what time is that for you?" questions. Use <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> to keep remote meetings stress-free and ensure everyone shows up at the right time.
         </p>
 
-        <div className="bg-card from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
+        <div className="st-aside bg-card rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-3">Ready to Schedule Your Next Meeting?</h3>
           <p className="mb-4">
             Convert meeting times instantly with our free timezone converter tool.

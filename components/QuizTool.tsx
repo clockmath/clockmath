@@ -555,7 +555,9 @@ export function QuizTool({ className = '' }: { className?: string }) {
 
   if (!quiz || phase === 'loading') {
     return (
-      <div className={`${cardClass} ${className}`} aria-busy="true">
+      // Holds the start screen's height (250px on phones, 214px from sm up)
+      // so the page below doesn't jump when the quiz loads.
+      <div className={`${cardClass} ${className} min-h-[250px] sm:min-h-[214px]`} aria-busy="true">
         <p className="text-sm text-muted-foreground">Loading today&apos;s quiz…</p>
       </div>
     );

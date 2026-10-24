@@ -66,7 +66,7 @@ export default function OvertimeHoursCalculatorPage() {
         Sunday to Saturday.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: 46 hours at $20/hour</h3>
         <div className="space-y-2 text-sm">
           <div>Regular: 40 hours × $20 = <strong>$800</strong></div>
@@ -89,7 +89,7 @@ export default function OvertimeHoursCalculatorPage() {
         federal weekly rule, but 8 overtime hours under California's daily one.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: a 13-hour day in California at $20/hour</h3>
         <div className="space-y-2 text-sm">
           <div>First 8 hours × $20 = <strong>$160</strong></div>

@@ -238,7 +238,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="text-2xl" aria-hidden="true">{market.flag}</span>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-foreground leading-tight">{market.shortName}</h3>
+                    <h2 className="font-bold text-foreground leading-tight">{market.shortName}</h2>
                     <p className="text-xs text-muted-foreground truncate">{market.city}</p>
                   </div>
                 </div>

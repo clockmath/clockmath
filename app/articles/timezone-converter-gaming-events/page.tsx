@@ -65,7 +65,7 @@ export default function GamingTimezoneConverterPage() {
           <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> makes it easy to know exactly when a release or event happens in your local time. No more manual calculations or missed launches.
         </p>
 
-        <div className="bg-muted/50 dark:bg-card/50 rounded-lg p-6 my-8">
+        <div className="st-aside bg-card rounded-lg p-6 my-8">
           <h3 className="text-lg font-semibold mb-4">Example Game Launch Times</h3>
           <p className="mb-3"><strong>New game launch:</strong> 12:00 AM EST</p>
           <ul className="space-y-2">
@@ -99,14 +99,14 @@ export default function GamingTimezoneConverterPage() {
 
         <h2>Gaming Time Management Tips</h2>
         <div className="grid gap-6 md:grid-cols-2 my-8">
-          <div className="bg-card from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4">
-            <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">Pre-Download Planning</h4>
+          <div className="st-aside-tile bg-card rounded-lg p-4">
+            <h3 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">Pre-Download Planning</h3>
             <p className="text-sm text-purple-700 dark:text-purple-300">
               Many games allow pre-downloading. Use timezone conversion to plan downloads before the launch rush hits servers.
             </p>
           </div>
-          <div className="bg-card from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4">
-            <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">Tournament Viewing</h4>
+          <div className="st-aside-tile bg-card rounded-lg p-4">
+            <h3 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">Tournament Viewing</h3>
             <p className="text-sm text-orange-700 dark:text-orange-300">
               Calculate optimal viewing times for international tournaments to catch key matches without staying up all night.
             </p>
@@ -145,7 +145,7 @@ export default function GamingTimezoneConverterPage() {
           Whether you're waiting for a global game release or watching an esports tournament, <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> ensures you'll never miss the action. Game on!
         </p>
 
-        <div className="bg-card from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
+        <div className="st-aside bg-card rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-3">Ready for Your Next Gaming Event?</h3>
           <p className="mb-4">
             Convert game launch times and tournament schedules to your local timezone.

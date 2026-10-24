@@ -58,7 +58,7 @@ export default function HoursCalculatorOnlinePage() {
         That's why our free <Link href="/" className="text-primary hover:text-primary font-medium">hours calculator online</Link> is the smarter choice. Just enter two times, and ClockMath handles all the complex math instantly. No more scratching your head over time zone conversions or midnight crossovers.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: Overnight Shift</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 11:45 PM</div>

@@ -113,7 +113,7 @@ export default function TimezonePage() {
 
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-4">
-          Frequently asked questions
+          Questions
         </h2>
         <div className="space-y-4">
           {FAQS.map((faq) => (

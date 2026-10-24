@@ -136,7 +136,7 @@ export default function TimesheetPage() {
           :
         </p>
         <div className="overflow-x-auto">
-          <table className="w-full max-w-md mx-auto text-sm border-collapse">
+          <table className="w-full max-w-md text-sm border-collapse">
             <thead>
               <tr className="border-b border-border dark:border-border">
                 <th scope="col" className="text-left py-2 px-3 font-semibold text-foreground">Minutes</th>
@@ -162,7 +162,7 @@ export default function TimesheetPage() {
       {/* FAQ */}
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-4">
-          Frequently asked questions
+          Questions
         </h2>
         <div className="space-y-4">
           {FAQS.map((faq) => (

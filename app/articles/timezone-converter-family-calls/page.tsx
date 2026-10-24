@@ -49,7 +49,7 @@ export default function FamilyCallsTimezoneConverterPage() {
           With <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a>, you can check the local time of your loved ones before you pick up the phone. This simple step prevents awkward timing and helps maintain strong relationships across distances.
         </p>
 
-        <div className="bg-muted/50 dark:bg-card/50 rounded-lg p-6 my-8">
+        <div className="st-aside bg-card rounded-lg p-6 my-8">
           <h3 className="text-lg font-semibold mb-4">Example Call Time Conversion</h3>
           <p className="mb-3">
             <strong>You're in Vancouver (UTC−7), your family is in Sydney (AEDT), October to April</strong>
@@ -80,13 +80,13 @@ export default function FamilyCallsTimezoneConverterPage() {
 
         <h3>Special Considerations</h3>
         <div className="grid gap-6 md:grid-cols-2 my-8">
-          <div className="bg-card from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-lg p-4">
+          <div className="st-aside-tile bg-card rounded-lg p-4">
             <h4 className="font-semibold text-pink-800 dark:text-pink-200 mb-2">Elderly Family Members</h4>
             <p className="text-sm text-pink-700 dark:text-pink-300">
               Often prefer calls during daytime hours and may go to bed earlier. Aim for late morning or early afternoon in their timezone.
             </p>
           </div>
-          <div className="bg-card rounded-lg p-4">
+          <div className="st-aside-tile bg-card rounded-lg p-4">
             <h4 className="font-semibold text-primary mb-2">Working Family</h4>
             <p className="text-sm text-primary">
               Consider their work schedule and commute times. Evening calls often work best for meaningful conversations.
@@ -163,7 +163,7 @@ export default function FamilyCallsTimezoneConverterPage() {
           No more awkward wake-up calls or missed connections. Use <a href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">ClockMath's timezone converter</a> to plan calls that fit everyone's schedule and keep your long-distance relationships strong.
         </p>
 
-        <div className="bg-card from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-lg p-6 mt-8">
+        <div className="st-aside bg-card rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-3">Ready to Call Your Loved Ones?</h3>
           <p className="mb-4">
             Check their local time first and find the perfect moment to connect.

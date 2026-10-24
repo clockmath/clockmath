@@ -126,9 +126,9 @@ export default function ContactPage() {
         <p className="st-lede">Questions, feedback, or feature requests</p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-section">
+      <div className="grid lg:grid-cols-2 lg:items-start gap-6 mb-section">
         {/* FAQ Section */}
-        <section className="bg-card/70 dark:bg-card/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-border/50">
+        <section className="st-panel bg-card/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50">
           <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-6">
             Questions
           </h2>
@@ -154,7 +154,7 @@ export default function ContactPage() {
         </section>
 
         {/* Contact Form */}
-        <section className="bg-card/70 dark:bg-card/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50 dark:border-border/50">
+        <section className="st-panel bg-card/70 rounded-2xl p-6 sm:p-8 shadow-sm border border-border/50">
           <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-6">
             Send a message
           </h2>

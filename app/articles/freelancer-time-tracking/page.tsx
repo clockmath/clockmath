@@ -52,7 +52,7 @@ export default function FreelancerTimeTrackingPage() {
         Use our <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> to quickly determine how long you spent on any task. Enter the start time when you begin and the end time when you finish, then record that duration against the client or project. This simple habit transforms vague time estimates into accurate billing.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Billable Hours Example</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Task:</strong> Website design review</div>

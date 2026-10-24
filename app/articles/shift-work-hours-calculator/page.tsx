@@ -69,7 +69,7 @@ export default function ShiftWorkHoursCalculatorPage() {
         31:30 − 23:00 is 8 hours 30 minutes. Then take off any unpaid break, exactly as for a day shift.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example: 11:00 PM to 7:30 AM, 30-minute break</h3>
         <div className="space-y-2 text-sm">
           <div>End 7:30 + 24 = 31:30</div>

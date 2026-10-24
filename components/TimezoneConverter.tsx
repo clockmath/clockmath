@@ -425,7 +425,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               <button
                 type="button"
                 onClick={handleUseMyLocation}
-                className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                className="st-hit flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
               >
                 <MapPin className="w-3 h-3" />
                 Use my location
@@ -489,7 +489,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
         {/* Manual Timezone Fallback */}
         <details className="group">
-          <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+          <summary className="cursor-pointer py-2 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
             <svg
               className="w-4 h-4 transition-transform group-open:rotate-90"
               fill="none"
@@ -527,9 +527,9 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         {/* Date/Time Input - moved closer to location inputs */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground dark:text-foreground">
+            <h2 className="text-sm font-semibold text-foreground dark:text-foreground">
               Date & Time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
-            </h3>
+            </h2>
             <div className="flex gap-2">
               <button
                 type="button"
