@@ -52,7 +52,7 @@ export default function StudyTimeCalculatorPage() {
         Use our <Link href="/" className="text-primary hover:text-primary font-medium">duration calculator</Link> to log how long you studied each day. Simply enter your start and finish times, and you'll get precise measurements in hours and minutes. No more guessing or rough estimates.
       </p>
 
-      <div className="bg-slate-50 dark:bg-card p-6 rounded-xl my-6">
+      <div className="st-aside bg-card p-6 rounded-xl my-6">
         <h3 className="font-bold text-lg mb-3">Example Study Session</h3>
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 2:10 PM</div>

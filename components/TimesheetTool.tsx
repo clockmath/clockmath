@@ -692,7 +692,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
         {/* Optional weekly overtime split */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-muted-foreground dark:text-muted-foreground">
+          <label className="flex items-center gap-2 min-h-11 cursor-pointer select-none text-muted-foreground dark:text-muted-foreground">
             <input
               type="checkbox"
               checked={otEnabled}

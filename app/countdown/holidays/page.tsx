@@ -115,7 +115,7 @@ export default function HolidaysPage() {
       lastUpdated="2026-10-16"
       breadcrumb="Holidays"
       countdownSlot={
-        <section className="bg-card dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-slate-700/50">
+        <section className="st-panel bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50">
           <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">Coming up</h2>
           <StackedTable
             rows={rows}

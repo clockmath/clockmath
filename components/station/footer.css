@@ -8,16 +8,16 @@
 .station .st-footer-brand p { margin: 0 0 8px; }
 .station .st-footer nav h2 { margin: 0 0 10px; font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: 0; }
 .station .st-footer ul { list-style: none; margin: 0; padding: 0; }
-.station .st-footer li { margin: 0 0 6px; }
-.station .st-footer nav a { color: var(--text); text-decoration: none; }
+.station .st-footer li { margin: 0 0 2px; }
+.station .st-footer nav a { display: inline-block; padding: 4px 0; color: var(--text); text-decoration: none; }
 .station .st-footer nav a:hover { color: var(--enamel); text-decoration: underline; }
 .station .st-footer-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 26px;
                   padding-top: 14px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--quiet); }
-.station .st-footer-base a { display: inline-flex; align-items: center; gap: 6px; color: var(--quiet); }
+.station .st-footer-base a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 0; color: var(--quiet); }
 .station .st-footer-base a:hover { color: var(--enamel); }
 .station .st-footer-base svg { width: 15px; height: 15px; }
 /* The feedback link and its form sit in the brand column */
-.station .st-footer-feedback { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--enamel);
+.station .st-footer-feedback { font: inherit; background: none; border: 0; padding: 8px 0; cursor: pointer; color: var(--enamel);
                       display: inline-flex; align-items: center; gap: 6px; text-decoration: underline; text-underline-offset: 3px; }
 .station .st-footer-feedback svg { width: 15px; height: 15px; }
 

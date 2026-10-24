@@ -29,3 +29,7 @@ html:not(.classic) .station .st-panel :is(input[type="text"], input[type="number
 html:not(.classic) .station .st-panel :is(button[aria-haspopup="dialog"], button[aria-haspopup="listbox"]) {
   background-color: var(--wash);
 }
+
+/* A panel standing in for a countdown board (the holidays hub's table) keeps
+   the board's distance from the intro, in both views */
+.station .st-board-wrap > .st-panel { margin-top: 30px; }

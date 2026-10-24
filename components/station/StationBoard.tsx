@@ -85,6 +85,13 @@ export function StationBoard({
                 ))}
               </dl>
             )}
+            {/* Target not known yet (a visitor's saved date, their timezone's
+                clock change): hold the sentence's line so nothing jumps */}
+            {totalDays === null && !ready && (
+              <p className="st-sentence st-sentence-pending" aria-hidden="true">
+                {'\u00a0'}
+              </p>
+            )}
             {totalDays !== null && (
               <p className="st-sentence" data-days-until={liveSpec} suppressHydrationWarning>
                 There{' '}

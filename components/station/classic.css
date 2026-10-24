@@ -13,11 +13,13 @@
   --dial: #ffffff;
   --ink: #1e293b;
   --text: #475569;
-  --quiet: #64748b;
+  --quiet: #5b6576;
   --rule: #d1d5db;
   --wash: #f1f5f9;
-  --enamel: #059669;
-  --enamel-hover: #047857;
+  /* One shade darker than the old site's #059669, which was 3.77:1 for links
+     and white button text (AA needs 4.5:1); #047857 is 5.48:1 both ways. */
+  --enamel: #047857;
+  --enamel-hover: #065f46;
   --enamel-wash: #ecfdf5;
   --primary-foreground: #ffffff;
   --ring: rgba(5, 150, 105, 0.5);
@@ -66,9 +68,9 @@
 .classic .st-article, .classic .st-hub, .classic .st-empty { border-top-color: var(--rule); border-top-width: 1px; }
 
 /* Countdown boards: the old green, whatever the event's own colour */
-.classic .st-board { --board-ink: #ffffff; background: linear-gradient(135deg, #059669, #047857); border-radius: 1rem;
+.classic .st-board { --board-ink: #ffffff; background: linear-gradient(135deg, #047857, #065f46); border-radius: 1rem;
                      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
-.classic .st-callout { background: linear-gradient(135deg, #059669, #047857); border-radius: 1rem; }
+.classic .st-callout { background: linear-gradient(135deg, #047857, #065f46); border-radius: 1rem; }
 .classic .st-btn.on-board { color: #047857 !important; }
 .classic .st-btn.on-board:hover { background: #ecfdf5; }
 

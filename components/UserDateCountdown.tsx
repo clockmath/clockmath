@@ -73,8 +73,9 @@ export function UserDateCountdown({
         <p>Your date is saved on this device only.</p>
       </div>
 
-      {/* Keyed on the date so a new pick resolves a fresh target */}
-      {mounted && date && <StationBoard key={date.getTime()} target={date} title={title} arrivedLabel={arrivedLabel} />}
+      {/* Keyed on the date so a new pick resolves a fresh target. Rendered
+          blank before the saved date is read, so the page doesn't jump. */}
+      <StationBoard key={date?.getTime() ?? 'pending'} target={date ?? undefined} title={title} arrivedLabel={arrivedLabel} />
     </div>
   );
 }

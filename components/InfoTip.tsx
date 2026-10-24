@@ -93,7 +93,7 @@ export default function InfoTip({
             setPinned(true);
           }
         }}
-        className="inline-grid place-items-center w-5 h-5 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="st-hit inline-grid place-items-center w-5 h-5 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
         <Info className="w-3.5 h-3.5" aria-hidden="true" />
       </button>

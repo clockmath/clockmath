@@ -109,7 +109,7 @@ export default function SeoIntro() {
           id="faq-heading"
           className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-4"
         >
-          Frequently asked questions
+          Questions
         </h2>
         <div className="space-y-4">
           {FAQS.map((faq) => (
@@ -122,71 +122,6 @@ export default function SeoIntro() {
             </div>
           ))}
         </div>
-      </section>
-
-      <section aria-labelledby="tools-heading" className="max-w-3xl mx-auto mb-section">
-        <h2
-          id="tools-heading"
-          className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3"
-        >
-          All ClockMath tools
-        </h2>
-        <ul className="space-y-2 text-muted-foreground">
-          <li>
-            <Link href="/tools/timesheet" className="text-primary hover:text-primary/80 font-semibold">
-              Work hours calculator
-            </Link>{' '}
-            — total shifts with breaks, decimal hours, and gross pay
-          </li>
-          <li>
-            <Link href="/tools/overtime" className="text-primary hover:text-primary/80 font-semibold">
-              Overtime calculator
-            </Link>{' '}
-            — regular vs overtime hours, and what time and a half pays
-          </li>
-          <li>
-            <Link href="/tools/timezone" className="text-primary hover:text-primary/80 font-semibold">
-              Time zone converter
-            </Link>{' '}
-            — any two places, with automatic daylight-saving handling
-          </li>
-          <li>
-            <Link href="/tools/market-hours" className="text-primary hover:text-primary/80 font-semibold">
-              Stock market hours
-            </Link>{' '}
-            — live open/closed status for major exchanges in your timezone
-          </li>
-          <li>
-            <Link href="/tools/decimal-hours" className="text-primary hover:text-primary/80 font-semibold">
-              Decimal hours converter
-            </Link>{' '}
-            — minutes to decimal (and back) with the full payroll chart
-          </li>
-          <li>
-            <Link href="/tools/sleep" className="text-primary hover:text-primary/80 font-semibold">
-              Sleep calculator
-            </Link>{' '}
-            — hours slept and sleep-cycle bedtimes for any wake-up time
-          </li>
-          <li>
-            <Link href="/tools/countdown" className="text-primary hover:text-primary/80 font-semibold">
-              Countdown timer
-            </Link>{' '}
-            — count down to any date and share it
-          </li>
-          <li>
-            <Link href="/tools/quiz" className="text-primary hover:text-primary/80 font-semibold">
-              Daily time quiz
-            </Link>{' '}
-            — five clock-math questions a day, with a leaderboard
-          </li>
-          <li>
-            <Link href="/articles" className="text-primary hover:text-primary/80 font-semibold">
-              Guides
-            </Link>{' '}
-            — practical articles on work hours, payroll time math, and timezones
-          </li>
-        </ul>
       </section>
     </>
   );
