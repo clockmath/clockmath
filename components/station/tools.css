@@ -68,3 +68,13 @@ html:not(.classic) .station .st-toast:not(.destructive) {
 html:not(.classic) .station .st-toast .text-sm.font-semibold { font-size: 16px; font-weight: 700; }
 html:not(.classic) .station .st-toast .text-sm.opacity-90 { font-size: 15px; opacity: 0.85; }
 html:not(.classic) .station .st-toast:not(.destructive) [toast-close] { color: var(--dial); }
+
+/* ---- Time zone answer: the time over there on the line's board ---- */
+.station .st-tz-answer .st-tz-place { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
+.station .st-tz-answer .st-big.st-tz-time { font-size: clamp(60px, 9vw, 112px); }
+.station .st-tz-answer .st-tz-date { margin: 12px 0 0; font-size: 15px; }
+.station .st-tz-answer .st-tz-diff { margin: 0 0 14px; font-size: 20px; font-weight: 700; line-height: 1.3; max-width: 30ch; }
+.station .st-tz-answer .st-tz-from { grid-template-columns: minmax(0, 1fr); max-width: 300px; }
+@media (max-width: 760px) {
+  .station .st-tz-answer .st-big.st-tz-time { font-size: 64px; }
+}
