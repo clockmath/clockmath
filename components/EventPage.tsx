@@ -155,7 +155,7 @@ export default function EventPage({
       : null;
 
   return (
-    <StationChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode}>
+    <StationChrome currentTool="countdown" onToggleTheme={toggleDarkMode} isDarkMode={isDarkMode} hero={board}>
       <JsonLd data={getFAQPageSchema(faqs)} />
 
       <div className="st-intro st-intro-event">

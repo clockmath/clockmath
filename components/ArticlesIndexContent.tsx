@@ -148,7 +148,7 @@ export default function ArticlesIndexContent({ groupedArticles }: ArticlesIndexC
       ) : (
         <ul className="st-hub">
           {filteredArticles.map((article) => (
-            <li key={article.href}>
+            <li key={article.href} data-line="guides">
               <Link href={article.href}>
                 <span className="st-hub-title">{article.title}</span>
                 <span className="st-hub-desc">{article.description}</span>

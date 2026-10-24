@@ -1,0 +1,71 @@
+/* ---------------------------------------------------------------------------
+   Line colours (see lib/lines.ts). data-line on .station sets the page's line;
+   data-line on a link or row sets that item's. Every rule skips classic view.
+   --line       the colour (boards, rules, tab underline)
+   --line-ink   numerals and text on a board in that colour
+   --line-rule  the colour as a thin rule; lifted in dark mode to stay visible
+--------------------------------------------------------------------------- */
+[data-line="time"]       { --line: #1849a9; --line-ink: #ffffff; }
+[data-line="work"]       { --line: #1d6b46; --line-ink: #ffffff; }
+[data-line="zones"]      { --line: #0a6b74; --line-ink: #ffffff; }
+[data-line="sleep"]      { --line: #3b2f86; --line-ink: #ffffff; }
+[data-line="countdowns"] { --line: #b5541c; --line-ink: #ffffff; }
+[data-line="quiz"]       { --line: #f3c64a; --line-ink: #000000; --line-deep: #1c1a12; }
+[data-line="guides"]     { --line: #8a2c5a; --line-ink: #ffffff; }
+[data-line] { --line-rule: var(--line); --line-text: var(--line); }
+/* Rust as text on the wash is 4.48:1; its text shade is a step darker */
+[data-line="countdowns"] { --line-text: #9a4616; }
+.dark [data-line] { --line-rule: color-mix(in srgb, var(--line) 55%, #ffffff); --line-text: var(--line-rule); }
+
+/* On a line's own pages, buttons and links take its colour (the quiz's sun
+   yellow is too light for text, so the quiz keeps the site blue). --primary
+   follows --enamel, so the tool components' buttons and tints follow too. */
+html:not(.classic) .station[data-line]:not([data-line="quiz"]) {
+  --enamel: var(--line-text);
+  --enamel-hover: color-mix(in srgb, var(--line-text) 80%, #000000);
+  --enamel-wash: color-mix(in srgb, var(--line) 10%, #ffffff);
+  --ring: color-mix(in srgb, var(--line) 45%, transparent);
+}
+html.dark:not(.classic) .station[data-line]:not([data-line="quiz"]) {
+  --enamel-hover: color-mix(in srgb, var(--line-text) 80%, #ffffff);
+  --enamel-wash: color-mix(in srgb, var(--line) 22%, #0f1216);
+}
+
+/* The page's colour thread: the rule over its main band */
+html:not(.classic) .station[data-line] :is(.st-calc, .st-panel, .st-article) { border-top-color: var(--line-rule); border-top-width: 3px; }
+
+/* Tabs: each carries its own line; the current one is underlined in it */
+html:not(.classic) .station .st-tabs a[data-line][aria-current] { border-bottom-color: var(--line-rule); }
+html:not(.classic) .station .st-tabs a[data-line]:hover { border-bottom-color: color-mix(in srgb, var(--line-rule) 45%, transparent); }
+
+/* ---- Answers on a board in the page's line, like the countdowns ---- */
+html:not(.classic) .station[data-line] .st-answer {
+  margin-top: 26px; padding: 28px 32px 26px; border-radius: 10px;
+  background: var(--line); color: var(--line-ink);
+}
+html:not(.classic) .station[data-line] .st-answer :is(.st-big, .st-error, .st-note, .st-also dd) { color: var(--line-ink); }
+html:not(.classic) .station[data-line] .st-answer .st-also dt { color: color-mix(in srgb, var(--line-ink) 80%, transparent); }
+html:not(.classic) .station[data-line] .st-answer .st-also div { border-top-color: color-mix(in srgb, var(--line-ink) 35%, transparent); }
+html:not(.classic) .station[data-line] .st-answer .st-btn.primary { background: var(--line-ink); color: var(--line) !important; border-color: var(--line-ink); }
+html:not(.classic) .station[data-line] .st-answer .st-btn.quiet { color: var(--line-ink) !important; border-color: color-mix(in srgb, var(--line-ink) 50%, transparent); }
+html:not(.classic) .station[data-line] .st-answer .st-btn.quiet:hover { border-color: var(--line-ink); }
+
+html:not(.classic) .station[data-line] .st-result {
+  background: var(--line); color: var(--line-ink); border: 0; border-radius: 8px; padding: 16px 18px 14px;
+}
+html:not(.classic) .station[data-line] .st-result .st-figure { color: var(--line-ink) !important; }
+html:not(.classic) .station[data-line] .st-result :is(p, div, span):not(.st-figure, .st-figure *) { color: color-mix(in srgb, var(--line-ink) 85%, transparent); }
+
+/* The quiz's start card is its board: keep the card's roomier padding */
+html:not(.classic) .station[data-line] .st-result.st-quiz-card { padding: 24px 26px; }
+
+/* A board on the near-black dial gets an edge, as the countdown boards do */
+html.dark:not(.classic) .station[data-line] :is(.st-answer, .st-result) { box-shadow: inset 0 0 0 1px var(--rule); }
+
+/* ---- Every line on one map: the tools hub and guides lists ---- */
+html:not(.classic) .station .st-hub li[data-line] a { border-left: 6px solid var(--line); padding-left: 16px; }
+
+/* The guide call-out takes the line of the tool it points to */
+html:not(.classic) .station .st-callout[data-line] { background: var(--line); color: var(--line-ink); }
+html:not(.classic) .station .st-callout[data-line] h2 { color: var(--line-ink); }
+html:not(.classic) .station .st-callout[data-line] .st-btn.on-board { color: var(--line) !important; }

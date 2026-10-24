@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { navClick } from "@/lib/gtag"
+import { lineForHref } from "@/lib/lines"
 
 // The header tabs. On narrow screens they scroll sideways: the edge with more
 // tabs past it fades (data-more-left / data-more-right, styled in
@@ -47,7 +48,13 @@ export function StationTabs({
   return (
     <nav className="st-tabs" aria-label="Tools" ref={ref}>
       {tabs.map((t) => (
-        <Link key={t.id} href={t.href} aria-current={t.id === active ? "page" : undefined} onClick={() => navClick(t.id, "tab")}>
+        <Link
+          key={t.id}
+          href={t.href}
+          aria-current={t.id === active ? "page" : undefined}
+          data-line={lineForHref(t.href) ?? undefined}
+          onClick={() => navClick(t.id, "tab")}
+        >
           {t.label}
         </Link>
       ))}
