@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live countdown to New Year (January 1). See exactly how many days, hours, minutes, and seconds are left until the new year.',
   path: '/countdown/new-year',
-  ogImage: '/og/countdown/new-year.png',
+  ogImage: '/og/countdown/new-year.png?v=2',
   keywords:
     'new year countdown, how many days until new year, days until new year, countdown to new year, new years eve countdown, nye countdown',
 });

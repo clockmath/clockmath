@@ -8,7 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Work out how long you slept, overnight included, or find the bedtime that fits 90-minute sleep cycles for your wake-up time. Free, no signup.',
   path: '/tools/sleep',
-  ogImage: '/og/tool/sleep.png',
+  ogImage: '/og/tool/sleep.png?v=2',
   keywords:
     'sleep calculator, sleep cycle calculator, how many hours did I sleep, bedtime calculator, wake up time calculator, hours of sleep calculator, sleep duration calculator',
 });

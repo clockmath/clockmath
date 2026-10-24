@@ -10,7 +10,7 @@ export const metadata = generateSEOMetadata({
   title: s.title,
   description: `Christmas ${s.year} is ${s.long}. See how many days and weeks are left, with a live countdown to the second and the weekday in coming years.`,
   path: '/countdown/christmas',
-  ogImage: '/og/countdown/christmas.png',
+  ogImage: '/og/countdown/christmas.png?v=2',
   keywords: `how many days until christmas, how many days until christmas ${s.year}, christmas countdown, days until christmas, xmas countdown`,
 });
 

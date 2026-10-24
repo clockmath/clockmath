@@ -27,13 +27,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/work-hours-calculator/",
-    images: [{ url: "/og/tool/guides.png", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og/tool/guides.png"],
+    images: ["/og/tool/guides.png?v=2"],
   },
   robots: {
     index: true,

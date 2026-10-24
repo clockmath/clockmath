@@ -26,7 +26,14 @@ import esbuild from 'esbuild';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'clockmath-brand-'));
-const FONT = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=block';
+const FONT = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Big+Shoulders:opsz,wght@10..72,100..900&display=block';
+// Headings and figures in Big Shoulders, as on the site (components/station/type.css)
+const DISPLAY = `font-family:'Big Shoulders',Archivo,sans-serif;font-stretch:100%;letter-spacing:0`;
+// Digits on split-flap tiles, as on the site's boards (components/station/Flap.tsx)
+const tiles = (html, tile) =>
+  html.replace(/(<[^>]*>)|(\d)/g, (m, tag, d) => (tag ? tag : `<span class="t" style="--tile:${tile}">${d}</span>`));
+const TILE_CSS = `.t{display:inline-block;min-width:0.6em;text-align:center;padding:0.06em 0.05em 0.03em;margin-right:0.05em;border-radius:0.06em;line-height:0.92;
+  background:linear-gradient(var(--tile) 0 calc(50% - 0.012em),rgb(0 0 0 / 0.38) calc(50% - 0.012em) calc(50% + 0.012em),var(--tile) calc(50% + 0.012em))}`;
 
 const INK = '#000000';
 const SIGNAL = '#d51f26';
@@ -91,7 +98,7 @@ const ticks = (ink, current = 37) =>
 const CARD_CSS = `
   body{width:1200px;height:630px;overflow:hidden}
   .card{width:1200px;height:630px;padding:64px 72px 56px;display:flex;flex-direction:column}
-  .wm{display:flex;align-items:center;gap:16px;font-weight:800;font-size:34px;letter-spacing:-0.01em}
+  .wm{display:flex;align-items:center;gap:16px;font-family:'Big Shoulders',Archivo,sans-serif;font-weight:900;font-size:40px}
   .wm .m{width:52px;height:52px}
   .ticks{display:block;width:100%;height:40px}
   .foot{display:flex;justify-content:space-between;align-items:baseline;font-size:26px;margin-top:22px}
@@ -138,13 +145,14 @@ function toolCards() {
       `<div class="card" style="background:${LINES[line]};color:#fff">
         ${wordmark('#fff')}
         <p class="q">${question}</p>
-        <p class="big" data-fit="1056">${answer}</p>
+        <p class="big" data-fit="1056">${tiles(answer, `color-mix(in srgb, ${LINES[line]} ${line === 'sleep' ? '84%, #fff' : '70%, #000'})`)}</p>
         <p class="sub">${meaning}</p>
         <div class="foot"><span>Free, no signup</span><b>${foot}</b></div>
       </div>${FIT}`,
       CARD_CSS +
+        TILE_CSS +
         `.q{margin:auto 0 0;font-size:40px;font-weight:700;opacity:0.9}
-         .big{margin:6px 0 0;font-weight:900;font-stretch:68%;font-size:210px;line-height:0.88;letter-spacing:-0.02em;white-space:nowrap}
+         .big{margin:20px 0 0;${DISPLAY};font-weight:900;font-size:196px;line-height:0.9;white-space:nowrap}
          .big .u{font-size:0.4em;font-weight:700;letter-spacing:0;margin:0 0.18em 0 0.06em}
          .big .u:last-child{margin-right:0}
          .sub{margin:22px 0 34px;font-size:36px;font-weight:600;line-height:1.25}
@@ -177,7 +185,7 @@ function hubCard() {
     </div>`,
     CARD_CSS +
       `.row{flex:1;display:flex;align-items:center;justify-content:space-between;gap:48px}
-       .h{margin:0;font-weight:900;font-stretch:70%;font-size:118px;line-height:0.92;letter-spacing:-0.02em;max-width:6.2em}
+       .h{margin:0;${DISPLAY};font-weight:900;font-size:128px;line-height:0.92;max-width:5.6em}
        ul{list-style:none;margin:0;padding:0;flex-shrink:0}
        li{border-left:12px solid;padding:7px 0 7px 18px;margin:8px 0;font-size:30px;font-weight:700}
        .foot{border-top:2px solid #dadde2;padding-top:20px}`,
@@ -205,10 +213,10 @@ function quizCard() {
     </div>`,
     CARD_CSS +
       `.row{flex:1;display:flex;align-items:center;justify-content:space-between;gap:56px}
-       .h{margin:0;font-weight:900;font-stretch:72%;font-size:132px;line-height:0.9;letter-spacing:-0.02em;word-spacing:0.12em}
+       .h{margin:0;${DISPLAY};font-weight:900;font-size:140px;line-height:0.9;word-spacing:0.08em}
        .sub{margin:22px 0 0;font-size:32px;line-height:1.3;color:rgb(0 0 0 / 0.78);max-width:15em}
        .board{flex-shrink:0;background:#fff;color:${INK};border-radius:18px;padding:34px 40px}
-       .score{margin:0;font-weight:900;font-stretch:70%;font-size:120px;line-height:0.9}
+       .score{margin:0;${DISPLAY};font-weight:900;font-size:124px;line-height:0.9}
        .score small{font-size:32px;font-stretch:100%;font-weight:700}
        .marks{display:flex;gap:12px;margin-top:22px}
        .marks i{width:46px;height:46px;border-radius:6px;display:block}`,
@@ -284,7 +292,7 @@ async function countdownCards() {
       </div>${FIT}`,
       CARD_CSS +
         `.until{margin:auto 0 0;font-size:34px;font-weight:700;opacity:0.85}
-         .name{margin:4px 0 0;font-weight:900;font-stretch:66%;font-size:190px;line-height:0.92;letter-spacing:-0.025em;word-spacing:0.14em;white-space:nowrap}
+         .name{margin:4px 0 0;${DISPLAY};font-weight:900;font-size:200px;line-height:0.92;word-spacing:0.1em;white-space:nowrap}
          .sub{margin:14px 0 30px;font-size:38px;font-weight:600}`,
     );
     shoot(`public/og/countdown/${slug}.png`, html, 1200, 630);
