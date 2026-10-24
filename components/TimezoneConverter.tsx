@@ -599,53 +599,28 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         </div>
       </div>
 
-      {/* Conversion Result */}
+      {/* Conversion Result: the time over there is the answer, so it goes on
+          the line's board; the difference in words, and your own time, beside it */}
       {result && (
-        <div className="st-panel bg-card rounded-2xl p-4 sm:p-6 mb-6 border border-border/50 dark:border-border/50 shadow-inner">
-          <div className="text-center space-y-6">
-            {/* Main Result */}
-            <div className="grid sm:grid-cols-2 gap-6 text-left">
+        <div className="st-answer st-tz-answer" aria-live="polite">
+          <div>
+            <p className="st-tz-place">{getToZoneDisplayName()}</p>
+            <p className="st-big st-tz-time">{result.to.time}</p>
+            <p className="st-tz-date">
+              {result.to.weekday}, {result.to.date} ({toTZ && getOffsetLabel(toTZ, result.targetDate)})
+            </p>
+          </div>
+          <div>
+            <p className="st-tz-diff">{getTimeDifference()}.</p>
+            <dl className="st-also st-tz-from">
               <div>
-                <div className="text-sm text-muted-foreground">{getFromZoneDisplayName()}</div>
-                <div className="st-figure">{result.from.time}</div>
+                <dt>{getFromZoneDisplayName()}</dt>
+                <dd>{result.from.time}</dd>
               </div>
-              <div>
-                <div className="text-sm text-muted-foreground">{getToZoneDisplayName()}</div>
-                <div className="st-figure">{result.to.time}</div>
-              </div>
-            </div>
-
-            {/* Time Difference - Emphasized */}
-            <div className="st-result bg-primary/10 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
-              <div className="text-xs text-muted-foreground dark:text-muted-foreground mb-1">
-                Time Difference
-              </div>
-              <div className="text-xl sm:text-2xl font-bold text-primary">
-                {getTimeDifference()}
-              </div>
-            </div>
-
-            {/* Date Information */}
-              <div className="grid sm:grid-cols-2 gap-4 text-sm text-muted-foreground dark:text-muted-foreground">
-                <div className="space-y-1">
-                  <div className="font-medium text-foreground dark:text-foreground">
-                    {getFromZoneDisplayName()}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {fromTZ && getOffsetLabel(fromTZ, result.targetDate)}
-                  </div>
-                  <div>{result.from.weekday}, {result.from.date}</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="font-medium text-foreground dark:text-foreground">
-                    {getToZoneDisplayName()}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {toTZ && getOffsetLabel(toTZ, result.targetDate)}
-                  </div>
-                  <div>{result.to.weekday}, {result.to.date}</div>
-                </div>
-              </div>
+            </dl>
+            <p className="st-note">
+              {result.from.weekday}, {result.from.date} ({fromTZ && getOffsetLabel(fromTZ, result.targetDate)})
+            </p>
           </div>
         </div>
       )}

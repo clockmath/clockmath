@@ -1,6 +1,10 @@
 /**
- * Reusable component for displaying detailed time duration breakdowns
- * Shows years, months, days, hours, minutes, and seconds
+ * A duration in other units: "8.50 hours, 510 minutes, 30,600 seconds".
+ *
+ * Only units the span fills at least once are shown. An 8-hour shift as
+ * "0.0010 years, 0.012 months" told nobody anything (Oct 2026); hours,
+ * minutes and seconds always show, days and up once the span reaches one.
+ * Laid out as ruled figures like the answer's own (st-units, station.css).
  */
 
 interface DetailedDuration {
@@ -13,73 +17,35 @@ interface DetailedDuration {
   seconds: number
 }
 
-interface DetailedDurationBreakdownProps {
-  detailedResult: DetailedDuration
-  variant?: 'primary' | 'secondary' | 'muted'
-  size?: 'large' | 'small'
-}
+const fmt = (n: number, digits: number) =>
+  n.toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits })
 
 export function DetailedDurationBreakdown({
-  detailedResult,
-  variant = 'primary',
-  size = 'large'
-}: DetailedDurationBreakdownProps) {
-  // Color classes based on variant
-  const colorClasses = {
-    primary: {
-      text: 'text-primary ',
-      bg: 'bg-background/60 dark:bg-card/60',
-      border: 'border-primary/30 dark:border-border/50'
-    },
-    secondary: {
-      text: 'text-primary ',
-      bg: 'bg-background/60 dark:bg-card/60',
-      border: 'border-primary/30 dark:border-border/50'
-    },
-    muted: {
-      text: 'text-foreground',
-      bg: 'bg-muted/40 dark:bg-muted/40',
-      border: 'border-border/30 dark:border-border/30'
-    }
-  }
-
-  // Size classes
-  const sizeClasses = {
-    large: {
-      value: 'text-lg',
-      label: 'text-xs'
-    },
-    small: {
-      value: 'text-base',
-      label: 'text-xs'
-    }
-  }
-
-  const colors = colorClasses[variant]
-  const sizes = sizeClasses[size]
-
-  const timeUnits = [
-    { value: detailedResult.years.toFixed(4), label: 'years' },
-    { value: detailedResult.months.toFixed(3), label: 'months' },
-    ...(detailedResult.weeks !== undefined ? [{ value: detailedResult.weeks.toFixed(2), label: 'weeks' }] : []),
-    { value: detailedResult.days.toFixed(2), label: 'days' },
-    { value: detailedResult.hours.toFixed(2), label: 'hours' },
-    { value: detailedResult.minutes.toFixed(1), label: 'minutes' },
-    { value: detailedResult.seconds.toLocaleString(), label: 'seconds' }
+  detailedResult: d,
+  omit = [],
+}: {
+  detailedResult: DetailedDuration
+  /** Units already on screen (the homepage board shows hours and minutes). */
+  omit?: string[]
+}) {
+  const units: Array<{ value: string; label: string } | false> = [
+    d.years >= 1 && { value: fmt(d.years, 2), label: 'years' },
+    d.months >= 1 && { value: fmt(d.months, 2), label: 'months' },
+    d.weeks !== undefined && d.weeks >= 1 && { value: fmt(d.weeks, 2), label: 'weeks' },
+    d.days >= 1 && { value: fmt(d.days, 2), label: 'days' },
+    { value: fmt(d.hours, 2), label: 'hours' },
+    { value: fmt(d.minutes, Number.isInteger(d.minutes) ? 0 : 1), label: 'minutes' },
+    { value: d.seconds.toLocaleString(), label: 'seconds' },
   ]
 
   return (
-    <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm ${colors.text}`}>
-      {timeUnits.map((unit) => (
-        <div
-          key={unit.label}
-          className={`${colors.bg} rounded-xl p-3 text-center border ${colors.border}`}
-        >
-          <div className={`font-bold ${sizes.value}`}>{unit.value}</div>
-          <div className={`${sizes.label} font-medium opacity-80`}>{unit.label}</div>
+    <dl className="st-units">
+      {units.filter((u) => u && !omit.includes(u.label)).map((u) => u && (
+        <div key={u.label}>
+          <dt>{u.label}</dt>
+          <dd>{u.value}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   )
 }
-

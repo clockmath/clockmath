@@ -114,7 +114,7 @@ export default function ContactPage() {
     },
     {
       question: "How do I report a bug or suggest a feature?",
-      answer: "Use the form below with 'Bug Report' or 'Feature Request' as the category."
+      answer: "Use the form on this page with 'Bug Report' or 'Feature Request' as the category."
     }
   ];
 
@@ -132,23 +132,13 @@ export default function ContactPage() {
           <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-6">
             Questions
           </h2>
-          <div className="space-y-4">
-            {faqItems.map((item, index) => (
-              <details key={index} className="group">
-                <summary className="cursor-pointer list-none">
-                  <div className="flex items-center justify-between p-4 bg-slate-100 dark:bg-muted/50 rounded-lg hover:bg-slate-200 dark:hover:bg-muted transition-colors border border-slate-200 dark:border-border">
-                    <h3 className="font-semibold text-slate-900 dark:text-foreground">
-                      {item.question}
-                    </h3>
-                    <svg className="w-5 h-5 text-slate-600 dark:text-muted-foreground group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </summary>
-                <div className="px-4 py-3 text-slate-700 dark:text-muted-foreground bg-slate-50 dark:bg-card/30 rounded-b-lg border-x border-b border-slate-200 dark:border-border -mt-1">
-                  {item.answer}
-                </div>
-              </details>
+          {/* Four short answers: shown, not folded behind accordions */}
+          <div className="st-faq">
+            {faqItems.map((item) => (
+              <div key={item.question}>
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
             ))}
           </div>
         </section>
@@ -181,7 +171,7 @@ export default function ContactPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="st-form space-y-4">
             {/* Honeypot field - hidden from users but visible to bots */}
             <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
               <label htmlFor="website">Website (leave blank)</label>

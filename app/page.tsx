@@ -305,8 +305,17 @@ export default function ClockMathPage() {
     })
   }, [startDate, startTime, endDate, endTime, spanFor])
 
+  // This exact span is in the history already: the button says Saved
+  const alreadySaved = history.some(
+    (h) =>
+      h.startDate === format(calculated.startDate, "yyyy-MM-dd") &&
+      h.startTime === calculated.startTime &&
+      h.endDate === format(calculated.endDate, "yyyy-MM-dd") &&
+      h.endTime === calculated.endTime,
+  )
+
   const saveToHistory = useCallback(() => {
-    if ("error" in span || stale) return
+    if ("error" in span || stale || alreadySaved) return
     const { startDate, startTime, endDate, endTime } = calculated
     const newEntry: CalculationHistory = {
       id: Date.now().toString(),
@@ -334,7 +343,7 @@ export default function ClockMathPage() {
     }
 
     gaEvent({ action: "calculation_saved", params: { page: "calculator", device: getDevice() } })
-  }, [span, stale, calculated])
+  }, [span, stale, alreadySaved, calculated])
 
   const copyResult = useCallback(async () => {
     if ("error" in span || !span.detailed || stale) return
@@ -469,7 +478,9 @@ export default function ClockMathPage() {
                     <p className="st-note">The end is earlier than the start, so it counts to {formatTime(calculated.endTime)} the next day.</p>
                   )}
                   <div className="st-actions">
-                    <button type="button" className="st-btn primary" onClick={saveToHistory} disabled={stale}>Save to history</button>
+                    <button type="button" className="st-btn primary" onClick={saveToHistory} disabled={stale || alreadySaved}>
+                      {alreadySaved && !stale ? "Saved" : "Save to history"}
+                    </button>
                     <button type="button" className="st-btn quiet" onClick={copyResult} disabled={stale}>{copied ? "Copied" : "Copy result"}</button>
                   </div>
                 </div>
@@ -477,11 +488,11 @@ export default function ClockMathPage() {
               {span.detailed && (
                 <div style={{ marginTop: 14 }}>
                   <button type="button" className="st-link-btn" onClick={() => setShowBreakdown((prev) => !prev)} aria-expanded={showBreakdown}>
-                    {showBreakdown ? "Hide the breakdown" : "Show it in weeks, days and seconds"}
+                    {showBreakdown ? "Hide the other units" : "Show it in other units"}
                   </button>
                   {showBreakdown && (
                     <div style={{ marginTop: 12 }}>
-                      <DetailedDurationBreakdown detailedResult={span.detailed} variant="primary" size="large" />
+                      <DetailedDurationBreakdown detailedResult={span.detailed} omit={["hours", "minutes"]} />
                     </div>
                   )}
                 </div>
@@ -496,42 +507,30 @@ export default function ClockMathPage() {
           <Link href="/tools/timesheet/">Total your shifts in the work hours calculator</Link>, with breaks, overnight shifts and gross pay.
         </p>
 
-        {/* History */}
+        {/* History: a ruled list like the timesheet's summary. Tick rows to
+            add them up; the total goes on the line's board. */}
         {history.length > 0 && (
-          <div className="bg-card rounded-lg p-5 sm:p-6 mt-10">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-bold text-foreground dark:text-slate-100 inline-flex items-center gap-1.5">
-                  Recent Calculations
-                  {history.length >= 2 && (
-                    <InfoTip label="adding up calculations">
-                      Tick two or more calculations and press Sum Selected to add them together, for example
-                      separate work sessions in a day.
-                    </InfoTip>
-                  )}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
+          <section className="st-history" aria-labelledby="st-history-title">
+            <div className="st-history-head">
+              <h2 id="st-history-title">
+                Recent calculations
+                {history.length >= 2 && (
+                  <InfoTip label="adding up calculations">
+                    Tick two or more calculations and press Add them up, for example separate work sessions in a day.
+                  </InfoTip>
+                )}
+              </h2>
+              <div className="st-history-tools">
                 {selectedCalculations.size > 0 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      {selectedCalculations.size} selected
-                    </span>
-                    <button
-                      onClick={calculateSum}
-                      className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors animate-in slide-in-from-right-2 duration-300"
-                    >
-                      Sum Selected
-                    </button>
-                    <button
-                      onClick={clearSelection}
-                      className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted rounded-lg transition-colors"
-                    >
-                      Clear
-                    </button>
-                  </div>
+                  <>
+                    <span>{selectedCalculations.size} selected</span>
+                    <button type="button" className="st-btn primary" onClick={calculateSum}>Add them up</button>
+                    <button type="button" className="st-btn quiet" onClick={clearSelection}>Clear selection</button>
+                  </>
                 )}
                 <button
+                  type="button"
+                  className="st-link-btn"
                   onClick={() => {
                     setHistory([]);
                     storageRemove("clockmath-history");
@@ -545,16 +544,13 @@ export default function ClockMathPage() {
                       },
                     });
                   }}
-                  className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-lg transition-colors"
-                  title="Clear all calculation history"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  Clear history
                 </button>
               </div>
             </div>
-            <div className="grid gap-3">
+
+            <ul className="st-history-list">
               {history.map((entry) => {
                 const startTimeFormatted = formatTime(entry.startTime)
                 const endTimeFormatted = formatTime(entry.endTime)
@@ -584,132 +580,63 @@ export default function ClockMathPage() {
                 const startDateFormatted = formatEntryDate(entry.startDate)
                 const endDateFormatted = formatEntryDate(entry.endDate)
                 const isMultiDay = entry.startDate && entry.endDate && entry.startDate !== entry.endDate
+                const label = startTimeFormatted && endTimeFormatted
+                  ? `${isMultiDay && startDateFormatted ? `${startDateFormatted} ` : ""}${startTimeFormatted} – ${isMultiDay && endDateFormatted ? `${endDateFormatted} ` : ""}${endTimeFormatted}`
+                  : "Invalid time data"
 
                 return (
-                  <div
-                    key={entry.id}
-                    className={`bg-background/50 dark:bg-slate-700/50 rounded-lg overflow-hidden transition-all duration-200 ${
-                      isSelected ? 'ring-2 ring-primary/50 bg-primary/5 dark:bg-primary/10' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between p-3">
-                      <div className="flex items-center gap-3">
-                        <label className="flex items-center cursor-pointer group" title="Click to select for summing">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleCalculationSelection(entry.id)}
-                            className="sr-only"
-                          />
-                          <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
-                            isSelected
-                              ? 'bg-primary border-primary'
-                              : 'border-border dark:border-slate-600 hover:border-primary/50 group-hover:scale-105'
-                          }`}>
-                            {isSelected && (
-                              <svg className="w-3 h-3 text-primary-foreground absolute top-0.5 left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <polyline points="20,6 9,17 4,12" strokeWidth="2" />
-                              </svg>
-                            )}
-                          </div>
-                        </label>
-                        <span className="font-mono text-sm text-muted-foreground">
-                          {startTimeFormatted && endTimeFormatted ? (
-                            <>
-                              {isMultiDay && startDateFormatted && (
-                                <span className="text-xs text-primary/70 mr-1">{startDateFormatted}</span>
-                              )}
-                              {startTimeFormatted}
-                              <span className="mx-1">→</span>
-                              {isMultiDay && endDateFormatted && (
-                                <span className="text-xs text-primary/70 mr-1">{endDateFormatted}</span>
-                              )}
-                              {endTimeFormatted}
-                            </>
-                          ) : (
-                            <span className="text-red-500 text-xs">
-                              Invalid time data
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-semibold text-primary">
-                          {entry.result || "Invalid result"}
-                        </span>
-                        {entry.detailedResult && (
-                          <button
-                            onClick={() => {
-                              const newExpanded = new Set(expandedHistory)
-                              if (isExpanded) {
-                                newExpanded.delete(entry.id)
-                              } else {
-                                newExpanded.add(entry.id)
-                              }
-                              setExpandedHistory(newExpanded)
-                            }}
-                            className="p-1 hover:bg-muted/50 dark:hover:bg-slate-600 rounded transition-colors"
-                            title={isExpanded ? "Hide details" : "Show details"}
-                          >
-                            <svg 
-                              className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                              fill="none" 
-                              stroke="currentColor" 
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
+                  <li key={entry.id} data-selected={isSelected || undefined}>
+                    <div className="st-history-row">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleCalculationSelection(entry.id)}
+                        />
+                        <span>{label}</span>
+                      </label>
+                      <span className="st-history-result">{entry.result || "Invalid result"}</span>
+                      {entry.detailedResult && (
+                        <button
+                          type="button"
+                          className="st-history-more"
+                          onClick={() => {
+                            const newExpanded = new Set(expandedHistory)
+                            if (isExpanded) {
+                              newExpanded.delete(entry.id)
+                            } else {
+                              newExpanded.add(entry.id)
+                            }
+                            setExpandedHistory(newExpanded)
+                          }}
+                          aria-expanded={isExpanded}
+                          aria-label={isExpanded ? `Hide details for ${label}` : `Show details for ${label}`}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
-                    
-                    {/* Expanded details */}
                     {isExpanded && entry.detailedResult && (
-                      <div className="px-3 pb-3 border-t border-border/50 dark:border-slate-600/50">
-                        <div className="pt-3">
-                          <div className="text-xs text-muted-foreground mb-2">Detailed breakdown:</div>
-                          <DetailedDurationBreakdown 
-                            detailedResult={entry.detailedResult}
-                            variant="muted"
-                            size="small"
-                          />
-                        </div>
-                      </div>
+                      <DetailedDurationBreakdown detailedResult={entry.detailedResult} />
                     )}
-                  </div>
+                  </li>
                 )
               })}
-            </div>
-          </div>
-        )}
+            </ul>
 
-        {/* Sum Result */}
-        {sumResult && (
-          <div className="bg-card rounded-lg p-5 sm:p-6 mt-6">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                Sum of Selected Calculations
-              </h3>
-              <p className="text-xs text-foreground mb-4">
-                Total of {selectedCalculations.size} calculation{selectedCalculations.size !== 1 ? 's' : ''}
-              </p>
-              
-              {/* Main sum result - largest and centered */}
-              <p className="text-4xl font-bold text-foreground font-mono mb-4">
-                {sumResult.total}
-              </p>
-              
-              {/* Detailed breakdown */}
-              <DetailedDurationBreakdown 
-                detailedResult={sumResult.detailed}
-                variant="secondary"
-                size="large"
-              />
-            </div>
-          </div>
+            {sumResult && (
+              <div className="st-result st-sum" aria-live="polite">
+                <p>
+                  Total of {selectedCalculations.size} calculation{selectedCalculations.size !== 1 ? "s" : ""}
+                </p>
+                <p className="st-figure">{sumResult.total}</p>
+                <DetailedDurationBreakdown detailedResult={sumResult.detailed} />
+              </div>
+            )}
+          </section>
         )}
-
 
         <StationFold>
           <div className="st-legacy">
