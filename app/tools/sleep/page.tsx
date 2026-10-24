@@ -5,6 +5,7 @@ import { SleepTool, CYCLE_MIN, FALL_ASLEEP_MIN, clock, sleepDuration, durationNo
 import QuickAnswers, { durationWords, decimalHoursWords, type QuickAnswer } from '@/components/QuickAnswers';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
@@ -102,6 +103,7 @@ export default function SleepPage() {
 
       <SleepTool className="mb-section" />
 
+      <StationFold>
       <QuickAnswers
         heading="What time should I go to bed?"
         intro={<>Bedtimes that end on a full 90-minute cycle, including about {FALL_ASLEEP_MIN} minutes to fall asleep.</>}
@@ -167,6 +169,7 @@ export default function SleepPage() {
           </li>
         </ul>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { StationBoard } from '@/components/station/StationBoard';
 import { EmbedCode } from '@/components/embed/EmbedCode';
+import StationFold from '@/components/station/StationFold';
 import { getCountdown } from '@/lib/countdowns';
 import StationChrome from '@/components/station/StationChrome';
 import SiteFooter from '@/components/SiteFooter';
@@ -210,47 +211,11 @@ export default function EventPage({
         .
       </p>
 
-      {facts && facts.length > 0 && (
-        <section className="st-more">
-          <h2>Key facts</h2>
-          <div>
-            <ul className="st-list">
-              {facts.map((f) => (
-                <li key={f.label}>
-                  <span>{f.label}</span>
-                  <span>{f.value}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-
-      <section className="st-more">
-        <h2>About this countdown</h2>
-        <div>
-          <p style={{ margin: 0 }}>{intro}</p>
-        </div>
-      </section>
-
-      {extraContent && <div className="st-extra">{extraContent}</div>}
-
-      <section className="st-more">
-        <h2>Questions</h2>
-        <div className="st-faq">
-          {faqs.map((faq) => (
-            <div key={faq.question}>
-              <h3>{faq.question}</h3>
-              <p>{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
+      {/* The embed panel is large (a live preview and the code): folded, and
+          opened by the "Embed on your site" button's #embed link */}
       {embeddable && (
-        <section className="st-more" id="embed">
-          <h2>Put this countdown on your site</h2>
-          <div>
+        <StationFold id="embed" summary="Put this countdown on your site">
+          <div className="st-fold-plain">
             <EmbedCode
               src={`/embed/countdown/${slug}/`}
               creditHref={`https://clockmath.com${embeddable.path}`}
@@ -258,7 +223,7 @@ export default function EventPage({
               id={slug}
             />
           </div>
-        </section>
+        </StationFold>
       )}
 
       {/* Cross-links between event pages (excludes the page you're on). Every
@@ -274,6 +239,47 @@ export default function EventPage({
           ))}
         </div>
       </section>
+
+      {/* Facts, the explanation, date tables and FAQs: folded under the board
+          (the FAQ schema above still matches them; they stay in the HTML) */}
+      <StationFold>
+        {facts && facts.length > 0 && (
+          <section className="st-more">
+            <h2>Key facts</h2>
+            <div>
+              <ul className="st-list">
+                {facts.map((f) => (
+                  <li key={f.label}>
+                    <span>{f.label}</span>
+                    <span>{f.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
+        <section className="st-more">
+          <h2>About this countdown</h2>
+          <div>
+            <p style={{ margin: 0 }}>{intro}</p>
+          </div>
+        </section>
+
+        {extraContent && <div className="st-extra">{extraContent}</div>}
+
+        <section className="st-more">
+          <h2>Questions</h2>
+          <div className="st-faq">
+            {faqs.map((faq) => (
+              <div key={faq.question}>
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </StationFold>
 
       <SiteFooter />
       <Toaster />

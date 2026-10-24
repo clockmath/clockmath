@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { QuizTool } from '@/components/QuizTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
@@ -64,6 +65,7 @@ export default function QuizPage() {
 
       <QuizTool className="mb-section" />
 
+      <StationFold>
       {/* About — plain text, no accordions: the quiz is the page, this is
           the small print. Mirrors the FAQPage JSON-LD above. */}
       <section className="max-w-3xl mx-auto mb-section">
@@ -95,6 +97,7 @@ export default function QuizPage() {
           ))}
         </dl>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>

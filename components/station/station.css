@@ -386,3 +386,20 @@ html:not(.classic) .station .st-aside-tile { background: none; border: 0; border
 .st-swatches { display: flex; gap: 8px; margin: 0 0 14px; }
 .st-swatches button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .st-swatches button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 2px var(--dial); }
+
+/* StationFold: the explainers under a tool, closed by default */
+.st-fold { margin-top: 48px; }
+.st-fold-summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+                   padding: 22px 0; cursor: pointer; border-top: 1px solid var(--rule);
+                   font-size: 19px; font-weight: 700; color: var(--ink); }
+.st-fold-summary::-webkit-details-marker { display: none; }
+.st-fold-summary:hover { color: var(--enamel); }
+.st-fold-summary svg { flex-shrink: 0; transition: transform 0.2s ease; }
+.st-fold[open] > .st-fold-summary svg { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .st-fold-summary svg { transition: none; } }
+.st-fold-body > :first-child { padding-top: 12px !important; }
+/* A fold holding a panel rather than sections (the embed code) */
+.st-fold-plain { padding: 4px 0 32px; }
+/* A fold straight after a tinted section (or another fold) continues it */
+.st-more + .st-fold, .st-fold + .st-fold { margin-top: 0; }
+@media (max-width: 760px) { .st-fold-summary { font-size: 16px; } }

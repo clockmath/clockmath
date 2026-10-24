@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { OvertimeTool } from '@/components/OvertimeTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
@@ -69,6 +70,7 @@ export default function OvertimePage() {
 
       <OvertimeTool className="mb-section" />
 
+      <StationFold>
       {/* Explanation */}
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
@@ -130,6 +132,7 @@ export default function OvertimePage() {
           .
         </p>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>

@@ -53,6 +53,16 @@ html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto, .st-legacy)
 /* Grey fields inside a tinted section stand out from it */
 html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto) .st-embedcode textarea { background: var(--dial); }
 
+/* The fold sits on the tint too, so a closed page reads tool, tinted bar,
+   footer; opened, the explainers continue on the same tint */
+html:not(.classic) .station .st-fold {
+  background: var(--band-tint);
+  box-shadow: 0 0 0 100vmax var(--band-tint); clip-path: inset(0 -100vmax);
+}
+html:not(.classic) .station .st-fold-summary { border-top: 0; padding: 24px 0; }
+html:not(.classic) .station .st-fold + .st-footer { margin-top: 0; }
+html:not(.classic) .station .st-fold-body > :last-child { padding-bottom: 48px; }
+
 /* ---- The footer: a deep shade of the colour, to the bottom of the window ---- */
 html:not(.classic) .station .st-footer {
   background: var(--band-deep); color: rgb(255 255 255 / 0.82); border-top: 0;

@@ -8,6 +8,7 @@ import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import StationChrome from "@/components/station/StationChrome"
 import DayRuler from "@/components/station/DayRuler"
+import StationFold from "@/components/station/StationFold"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
@@ -697,9 +698,11 @@ export default function ClockMathPage() {
         )}
 
 
-        <div className="st-legacy" style={{ marginTop: 56 }}>
-          <SeoIntro />
-        </div>
+        <StationFold>
+          <div className="st-legacy">
+            <SeoIntro />
+          </div>
+        </StationFold>
         <SiteFooter />
       </div>
     </StationChrome>

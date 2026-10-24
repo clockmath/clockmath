@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { DecimalHoursTool, minutesToDecimal } from '@/components/DecimalHoursTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
 import PrintChartButton from '@/components/PrintChartButton';
@@ -93,6 +94,7 @@ export default function DecimalHoursPage() {
 
       <DecimalHoursTool className="mb-section" />
 
+      <StationFold>
       <QuickAnswers heading="Common minutes to decimal hours" items={COMMON} />
 
       {/* Explanation */}
@@ -205,6 +207,7 @@ export default function DecimalHoursPage() {
           </li>
         </ul>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>
