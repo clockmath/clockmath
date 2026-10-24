@@ -5,6 +5,7 @@ import Link from 'next/link';
 import EventPage from '@/components/EventPage';
 import StackedTable from '@/components/StackedTable';
 import { buildDay } from '@/lib/buildDay';
+import { eventColour } from '@/lib/countdowns';
 import {
   EASTER,
   HANUKKAH,
@@ -101,6 +102,7 @@ export default function HolidaysPage() {
       key: it.href,
       name: it.name,
       href: it.href,
+      dot: eventColour(it.href) ?? '',
       spec: spec(it.ranges),
       date: dateLabel(n.start),
       days: n.days === null ? 'Today' : n.days === 1 ? '1 day' : `${n.days.toLocaleString('en-US')} days`,
@@ -132,7 +134,10 @@ export default function HolidaysPage() {
               {rows.map((r) => (
                 <tr key={r.key} role="row" data-days-until={r.spec} data-keep="">
                   <th role="rowheader" scope="row">
-                    <Link href={r.href}>{r.name}</Link>
+                    <Link href={r.href}>
+                      {r.dot && <span className="st-dot" style={{ '--dot': r.dot } as React.CSSProperties} aria-hidden="true" />}
+                      {r.name}
+                    </Link>
                   </th>
                   <td role="cell">
                     <span data-live="next-date" suppressHydrationWarning>
