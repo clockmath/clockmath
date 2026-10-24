@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import { lineForHref } from '@/lib/lines';
 import JsonLd from '@/components/JsonLd';
 import { MARKETS, getMarketStatus } from '@/lib/markets';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -128,7 +129,7 @@ export default function ToolsHub() {
       {/* A departures board: one ruled row per tool */}
       <ul className="st-hub">
         {TILES.map((tile) => (
-          <li key={tile.href}>
+          <li key={tile.href} data-line={lineForHref(tile.href) ?? undefined}>
             <Link href={tile.href}>
               <span className="st-hub-title">{tile.title}</span>
               <span className="st-hub-desc">{tile.description}</span>

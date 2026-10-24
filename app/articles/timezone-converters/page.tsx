@@ -112,7 +112,7 @@ export default function TimezoneConvertersHubPage() {
 
       <ul className="st-hub">
         {TIMEZONE_GUIDES.map((guide) => (
-          <li key={guide.href}>
+          <li key={guide.href} data-line="guides">
             <Link href={guide.href}>
               <span className="st-hub-title">{guide.title}</span>
               <span className="st-hub-desc">{guide.description}</span>

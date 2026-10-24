@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StationChrome from "./station/StationChrome";
+import { lineForHref } from "@/lib/lines";
 import RelatedArticles from "./RelatedArticles";
 import ArticleAnalytics from "./ArticleAnalytics";
 import ArticleCtaLink from "./ArticleCtaLink";
@@ -85,7 +86,7 @@ export default function ArticleLayout({
       <article className="st-article article-prose">{children}</article>
 
       {/* Call to action: the tool this guide is about */}
-      <section className="st-callout">
+      <section className="st-callout" data-line={lineForHref(primaryTool.href) ?? undefined}>
         <h2>{primaryTool.title}</h2>
         <p>{primaryTool.description}</p>
         <ArticleCtaLink href={primaryTool.href} title={title} />

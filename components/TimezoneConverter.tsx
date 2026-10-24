@@ -381,7 +381,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   };
 
   return (
-    <div className={`relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-border/50 dark:border-border/50 hover:shadow-md transition-all duration-300 ${className}`}>
+    <div className={`st-panel relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-border/50 dark:border-border/50 hover:shadow-md transition-all duration-300 ${className}`}>
       {/* Card toolbar — the page header already carries the title/subtitle;
           repeating them here was the page's third title. */}
       <div className="flex items-center justify-end gap-4 mb-4 sm:mb-6">

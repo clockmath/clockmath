@@ -1,11 +1,13 @@
 import Link from "next/link"
 import { Archivo } from "./fonts"
+import { lineForTool } from "@/lib/lines"
 import AnnouncementBanner from "@/components/AnnouncementBanner"
 import { ClassicToggle } from "./ClassicToggle"
 import { StationTabs } from "./StationTabs"
 import { ThemeToggle } from "./ThemeToggle"
 import "./station.css"
 import "./tools.css"
+import "./lines.css"
 import "./classic.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text
@@ -52,7 +54,7 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
       ? "tools"
       : null
   return (
-    <div className={`station ${Archivo.variable}`}>
+    <div className={`station ${Archivo.variable}`} data-line={lineForTool(currentTool) ?? undefined}>
       <AnnouncementBanner />
       <header className="st-header">
         <div className="st-wrap">

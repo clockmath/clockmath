@@ -287,8 +287,8 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     <div className={className}>
       {/* Countdown display — only shown once a countdown is active */}
       {active && (
-      <div className="relative z-10 mb-6" style={{ '--board': '#1849a9', '--board-ink': '#ffffff' } as React.CSSProperties}>
-        {/* The same departures board as the event pages, in the site's blue */}
+      <div className="relative z-10 mb-6" style={{ '--board': 'var(--line, #1849a9)', '--board-ink': 'var(--line-ink, #ffffff)' } as React.CSSProperties}>
+        {/* The same departures board as the event pages, in the Countdowns line colour */}
         <StationBoard
           key={activeMs}
           target={new Date(activeMs)}
