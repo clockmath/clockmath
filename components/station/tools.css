@@ -33,3 +33,12 @@ html:not(.classic) .station .st-panel :is(button[aria-haspopup="dialog"], button
 /* A panel standing in for a countdown board (the holidays hub's table) keeps
    the board's distance from the intro, in both views */
 .station .st-board-wrap > .st-panel { margin-top: 30px; }
+
+/* Reading sizes inside the tools. The tool components were built at 11–12px
+   (Tailwind text-xs and smaller) for cards; on the station's 17px page that
+   read as fine print (Oct 2026 audit: 53 such labels on market hours alone).
+   Notes and figures step up to 14px, field labels match the homepage's
+   (14px, semibold, in ink). The footer keeps its own sizes. */
+html:not(.classic) .station .st-main :is(.text-xs, .text-\[11px\]):not(.st-footer *) { font-size: 14px; line-height: 1.4; }
+html:not(.classic) .station .st-main .text-\[10px\]:not(.st-footer *) { font-size: 12px; line-height: 1.3; }
+html:not(.classic) .station .st-main label.text-xs:not(.st-footer *) { font-weight: 600; color: var(--ink); }

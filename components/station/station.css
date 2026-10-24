@@ -186,7 +186,7 @@
 .st-ruler svg.labels { height: 22px; }
 .st-ruler text { font-family: var(--font-archivo), sans-serif; font-size: 12px; fill: var(--quiet); }
 .st-now-label { position: absolute; top: -22px; font-size: 12px; line-height: 1; font-weight: 700; color: var(--signal); }
-.st-ruler-key { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 13px; color: var(--quiet); margin-top: 8px; }
+.st-ruler-key { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 14px; color: var(--quiet); margin-top: 8px; }
 .st-ruler-key i { display: inline-block; width: 18px; height: 6px; border-radius: 1px; margin-right: 6px; vertical-align: middle; }
 
 .st-nudge { margin: 22px 0 0; font-size: 15px; }
