@@ -6,6 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Every ClockMath tool in one place: time duration, timesheet, overtime, sleep, timezone, market hours, decimal hours and countdowns. Free, no signup.',
   path: '/tools',
+  ogImage: '/og/tool/tools.png',
   keywords:
     'time calculator tools, free time calculators, work hours tools, timesheet tools, time conversion tools',
 });

@@ -25,13 +25,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/timesheet-calculator/",
-    images: [{ url: "/og-v3.png", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og-v3.png"],
+    images: ["/og/tool/guides.png"],
   },
   robots: {
     index: true,

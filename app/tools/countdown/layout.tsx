@@ -8,6 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Create a free live countdown to any date and time, in days, hours, minutes and seconds, and share it with a link. For holidays, events, exams and trips.',
   path: '/tools/countdown',
+  ogImage: '/og/tool/countdown.png',
   keywords:
     'countdown timer, count down to date, days until, countdown clock, event countdown, time until',
 });

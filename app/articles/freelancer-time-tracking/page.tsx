@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     description: "Track billable hours as a freelancer or contractor. Calculate client time, convert to invoicing amounts, and manage multiple projects with our free tool.",
     type: "article",
     url: "https://clockmath.com/articles/freelancer-time-tracking/",
-    images: [{ url: "/og-v3.png", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Freelancer Time Tracking – Calculate Billable Hours Accurately",
     description: "Track billable hours as a freelancer or contractor. Calculate client time, convert to invoicing amounts, and manage multiple projects with our free tool.",
-    images: ["/og-v3.png"],
+    images: ["/og/tool/guides.png"],
   },
   robots: {
     index: true,
