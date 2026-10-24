@@ -169,7 +169,7 @@ export function InlineDatePicker({
           role="dialog"
           aria-label={ariaLabel ? `${ariaLabel}: choose a date` : "Choose a date"}
           style={{ position: "fixed", top: pos?.top ?? 0, left: pos?.left ?? 0, visibility: pos ? "visible" : "hidden" }}
-          className="bg-popover text-popover-foreground z-50 w-auto rounded-md border shadow-md"
+          className="st-pop bg-popover text-popover-foreground z-50 w-auto rounded-md border shadow-md"
         >
           {!showCalendar ? (
             <div className="p-2 space-y-1">
@@ -239,7 +239,9 @@ export function InlineDatePicker({
             </div>
           )}
         </div>,
-        document.body,
+        // Inside the page's .station frame, so the panel gets its tokens,
+        // font and line colour (fixed positioning is unaffected)
+        triggerRef.current?.closest(".station") ?? document.body,
       )
     : null;
 
