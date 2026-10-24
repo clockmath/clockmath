@@ -38,7 +38,7 @@ const FAQS = [
   {
     question: 'How do I calculate the hours between two times?',
     answer:
-      'Enter a start and end time; the answer updates as you type. It shows hours and minutes, the total in minutes, and decimal hours for payroll.',
+      'Enter a start and end time and press Calculate. The answer shows hours and minutes, the total in minutes, and decimal hours for payroll.',
   },
   {
     question: 'Does it work across midnight?',

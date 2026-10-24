@@ -400,7 +400,7 @@ export function InlineTimePicker({
               setIsOpen(false);
             }
           }}
-          className="absolute top-full left-0 right-0 mt-2 bg-background dark:bg-card border border-border dark:border-border rounded-xl shadow-xl z-[100] p-4 mb-4"
+          className="st-pop absolute top-full left-0 right-0 mt-2 bg-background dark:bg-card border border-border dark:border-border rounded-xl shadow-xl z-[100] p-4 mb-4"
         >
           {/* Time Display */}
           <div className="text-center mb-4">

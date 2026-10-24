@@ -9,6 +9,7 @@ import "./station.css"
 import "./tools.css"
 import "./lines.css"
 import "./colour-bands.css"
+import "./quiz.css"
 import "./classic.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text
@@ -63,16 +64,29 @@ const contrast = (a: number[], b: number[]) => {
 // The page's grey text (--quiet in station.css) must stay >= 4.6:1 on the tint.
 const QUIET = channels("#656b72")
 
+const mixRgb = (rgb: number[], with_: number, p: number) => `rgb(${rgb.map((c) => Math.round(c * p + with_ * (1 - p))).join(" ")})`
+
 // An event's colours for the bands. A light board (Easter lilac, the
 // weekend's yellow) would make a muddy footer mixed with black, so its footer
 // is a deep shade of its own dark ink instead, and its explainers' tint takes
 // more of the colour so it shows at all (colour-bands.css).
+//
+// The sign over the board is a shade of the board's colour, not the colour
+// itself: the same colour twice read as one slab. Darker for mid colours,
+// lighter for near-black ones (a darker black is still black), the dark ink
+// shade for light ones. Each keeps its text >= 5:1 and differs from the
+// board by >= 1.65:1 (checked against every board in Oct 2026).
 function heroStyle(hero: { color: string; ink?: string }): React.CSSProperties {
   const ink = hero.ink ?? "#ffffff"
   const style: Record<string, string> = { "--hero": hero.color, "--hero-ink": ink }
   const rgb = channels(hero.color)
-  if (luminance(rgb) > 0.4) {
+  const lum = luminance(rgb)
+  style["--hero-sign"] = lum < 0.05 ? mixRgb(rgb, 255, 0.8) : mixRgb(rgb, 0, 0.6)
+  style["--hero-sign-ink"] = ink
+  if (lum > 0.4) {
     style["--hero-deep"] = `color-mix(in srgb, ${ink} 88%, #000000)`
+    style["--hero-sign"] = style["--hero-deep"]
+    style["--hero-sign-ink"] = "#ffffff"
     // 8% of a colour this pale barely shows: use as much of it as the grey
     // text allows, up to 45%
     for (const p of [0.45, 0.35, 0.25, 0.15]) {

@@ -1,0 +1,35 @@
+/* ---------------------------------------------------------------------------
+   The quiz on its board. The intro, questions, practice and result all sit on
+   the quiz line's sun yellow (lines.css paints .st-result), like a game show:
+   the Tailwind tokens inside are re-pointed so fields are white and text is
+   black on the yellow, and the answer tiles say right and wrong in green and
+   red, not the site blue. Classic view keeps its cards: rules skip it.
+--------------------------------------------------------------------------- */
+
+html:not(.classic) .station .st-quiz-card {
+  --background: #ffffff; --foreground: #000000; --card: transparent; --muted: rgb(0 0 0 / 0.08);
+  --border: rgb(0 0 0 / 0.24); --muted-foreground: rgb(0 0 0 / 0.76);
+  /* The board is yellow in dark mode too: keep the light-mode blue on it
+     (dark mode's lighter blue is 2:1 on the yellow) */
+  --primary: #1849a9; --primary-foreground: #ffffff; --ring: rgb(0 0 0 / 0.5);
+  --enamel: #1849a9; --enamel-hover: #123a88;
+}
+
+/* The question, set large, like the homepage's answer */
+html:not(.classic) .station .st-quiz-play > p.text-lg { font-size: 26px; line-height: 1.25; font-weight: 800; font-stretch: 85%; color: #000; }
+
+/* Answer tiles */
+html:not(.classic) .station .st-quiz-card .st-quiz-opt {
+  background: #ffffff; color: #000000; border: 1px solid rgb(0 0 0 / 0.2); border-radius: 8px;
+  padding: 15px 18px; font-size: 18px; font-weight: 700;
+}
+html:not(.classic) .station .st-quiz-card .st-quiz-opt[data-state="open"]:hover { border-color: #000000; box-shadow: inset 0 0 0 1px #000000; }
+html:not(.classic) .station .st-quiz-card .st-quiz-opt[data-state="correct"] { background: #1d6b46; border-color: #1d6b46; color: #ffffff; }
+html:not(.classic) .station .st-quiz-card .st-quiz-opt[data-state="wrong"] { background: #b42318; border-color: #b42318; color: #ffffff; }
+html:not(.classic) .station .st-quiz-card .st-quiz-opt[data-state="other"] { background: rgb(255 255 255 / 0.45); border-color: transparent; color: rgb(0 0 0 / 0.6); }
+/* lines.css sets board text to ink 85%; a tile's label follows the tile */
+html:not(.classic) .station[data-line] .st-result.st-quiz-card .st-quiz-opt span { color: inherit; }
+
+@media (max-width: 760px) {
+  html:not(.classic) .station .st-quiz-play > p.text-lg { font-size: 22px; }
+}

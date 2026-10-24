@@ -597,7 +597,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                 key={shift.id}
                 className="relative rounded-xl border border-border/50 dark:border-border/50 bg-background/60 dark:bg-background/40 p-3 flex flex-col gap-2 sm:flex-row sm:items-end"
               >
-                <div className="sm:w-36">
+                <div className="sm:w-48">
                   <label className="block text-xs text-muted-foreground mb-1">Date</label>
                   <InlineDatePicker ariaLabel={`Shift ${i + 1} date`} value={shift.date} onChange={(d) => updateShift(shift.id, { date: d })} startOnCalendar />
                 </div>
