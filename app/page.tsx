@@ -238,10 +238,21 @@ export default function ClockMathPage() {
     }
   }, [is24HourFormat])
 
-  // The span between the two inputs. Same date with an earlier end time is
+  // The inputs the answer was last calculated from. Editing the fields doesn't
+  // change the answer until Calculate is pressed (Oct 2026: people set both
+  // ends first, then want the result); the page opens on the defaults' answer.
+  const [calculated, setCalculated] = useState(() => ({ startDate, startTime, endDate, endTime }))
+  const stale =
+    calculated.startTime !== startTime ||
+    calculated.endTime !== endTime ||
+    calculated.startDate.toDateString() !== startDate.toDateString() ||
+    calculated.endDate.toDateString() !== endDate.toDateString()
+
+  // The span between a set of inputs. Same date with an earlier end time is
   // an overnight span (22:00 → 06:00), as the FAQ promises: the end is the
   // next day. A genuinely earlier end date is an error.
-  const span = useMemo(() => {
+  const spanFor = useCallback((inputs: typeof calculated) => {
+    const { startDate, startTime, endDate, endTime } = inputs
     const startSeconds = parseTimeToSeconds(startTime)
     const endSeconds = parseTimeToSeconds(endTime)
     if (isNaN(startSeconds) || isNaN(endSeconds)) return { error: "Enter a start and end time, like 09:00." } as const
@@ -271,24 +282,35 @@ export default function ClockMathPage() {
       summary: formatDuration(start, end),
       detailed: formatDetailedDuration(seconds),
     }
-  }, [startDate, startTime, endDate, endTime, parseTimeToSeconds, formatDuration, formatDetailedDuration])
+  }, [parseTimeToSeconds, formatDuration, formatDetailedDuration])
 
-  // The first change to the inputs counts as using the tool: the answer is
-  // live now, so waiting for the save button would undercount.
-  const firstRender = useRef(true)
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false
-      return
-    }
+  const span = useMemo(() => spanFor(calculated), [spanFor, calculated])
+
+  const calculate = useCallback(() => {
+    const inputs = { startDate, startTime, endDate, endTime }
+    setCalculated(inputs)
     if (!toolUsedRef.current) {
       toolUsedRef.current = true
       toolUsed("calculator", { device: getDevice() })
     }
-  }, [startDate, startTime, endDate, endTime])
+    const result = spanFor(inputs)
+    if ("error" in result) return
+    const daysDiff = Math.floor(result.seconds / 86400)
+    gaEvent({
+      action: "calculation_completed",
+      params: {
+        page: "calculator",
+        duration_seconds: result.seconds,
+        duration_days: daysDiff,
+        is_multi_day: daysDiff > 0,
+        device: getDevice(),
+      },
+    })
+  }, [startDate, startTime, endDate, endTime, spanFor])
 
   const saveToHistory = useCallback(() => {
-    if ("error" in span) return
+    if ("error" in span || stale) return
+    const { startDate, startTime, endDate, endTime } = calculated
     const newEntry: CalculationHistory = {
       id: Date.now().toString(),
       startDate: format(startDate, 'yyyy-MM-dd'),
@@ -314,21 +336,11 @@ export default function ClockMathPage() {
       // Silently fail if localStorage is unavailable
     }
 
-    const daysDiff = Math.floor(span.seconds / 86400)
-    gaEvent({
-      action: "calculation_completed",
-      params: {
-        page: "calculator",
-        duration_seconds: span.seconds,
-        duration_days: daysDiff,
-        is_multi_day: daysDiff > 0,
-        device: getDevice(),
-      },
-    });
-  }, [span, startDate, startTime, endDate, endTime])
+    gaEvent({ action: "calculation_saved", params: { page: "calculator", device: getDevice() } })
+  }, [span, stale, calculated])
 
   const copyResult = useCallback(async () => {
-    if ("error" in span || !span.detailed) return
+    if ("error" in span || !span.detailed || stale) return
     try {
       await navigator.clipboard.writeText(`${span.summary} (${span.detailed.hours.toFixed(2)} hours)`)
       setCopied(true)
@@ -336,7 +348,7 @@ export default function ClockMathPage() {
     } catch {
       // Clipboard blocked: the answer is on screen to copy by hand
     }
-  }, [span])
+  }, [span, stale])
 
   // The big answer: "8h 30m", "2d 4h", "1y 3mo 2d". Seconds only under a day.
   const bigParts: Array<[number, string]> = []
@@ -406,7 +418,7 @@ export default function ClockMathPage() {
           </p>
         </div>
 
-        {/* One ruled band: inputs, the answer (live, no button), the ruler */}
+        {/* One ruled band: inputs, Calculate, the answer, the ruler */}
         <section className="st-calc" aria-label="Duration calculator">
           <div className="st-fields">
             <div className="st-field">
@@ -429,13 +441,18 @@ export default function ClockMathPage() {
             </div>
           </div>
 
+          <div className="st-go">
+            <button type="button" className="st-btn primary" onClick={calculate}>Calculate</button>
+            {stale && <p>Times changed. Press Calculate for the new answer.</p>}
+          </div>
+
           {"error" in span ? (
-            <div className="st-answer" aria-live="polite">
+            <div className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
               <p className="st-error">{span.error}</p>
             </div>
           ) : (
             <>
-              <div className="st-answer" aria-live="polite">
+              <div className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
                 <p className={`st-big${bigParts.length > 3 ? " long" : ""}`}>
                   {bigParts.map(([n, u]) => (
                     <span key={u}>
@@ -452,11 +469,11 @@ export default function ClockMathPage() {
                     </dl>
                   )}
                   {span.overnight && (
-                    <p className="st-note">The end is earlier than the start, so it counts to {formatTime(endTime)} the next day.</p>
+                    <p className="st-note">The end is earlier than the start, so it counts to {formatTime(calculated.endTime)} the next day.</p>
                   )}
                   <div className="st-actions">
-                    <button type="button" className="st-btn primary" onClick={saveToHistory}>Save to history</button>
-                    <button type="button" className="st-btn quiet" onClick={copyResult}>{copied ? "Copied" : "Copy result"}</button>
+                    <button type="button" className="st-btn primary" onClick={saveToHistory} disabled={stale}>Save to history</button>
+                    <button type="button" className="st-btn quiet" onClick={copyResult} disabled={stale}>{copied ? "Copied" : "Copy result"}</button>
                   </div>
                 </div>
               </div>
