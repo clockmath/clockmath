@@ -8,6 +8,7 @@ import { ThemeToggle } from "./ThemeToggle"
 import "./station.css"
 import "./tools.css"
 import "./lines.css"
+import "./colour-bands.css"
 import "./classic.css"
 
 // Station-clock frame (design/station-clock preview): wordmark, plain text
@@ -30,6 +31,9 @@ interface StationChromeProps {
   /** Optional: without them the header runs its own toggle (server pages). */
   onToggleTheme?: () => void
   isDarkMode?: boolean
+  /** The colour bands' colour when it isn't the page's line: an event
+      page's own board colour (colour-bands.css). */
+  hero?: { color: string; ink?: string }
 }
 
 // The mark is the dial itself: black hands, the red second hand.
@@ -45,7 +49,44 @@ function Mark() {
   )
 }
 
-export default function StationChrome({ children, currentTool, onToggleTheme, isDarkMode }: StationChromeProps) {
+// #rrggbb as 0-255 channels, and relative luminance / contrast (WCAG), to tell
+// light boards from dark and keep the tint under body text readable.
+const channels = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+function luminance(rgb: number[]): number {
+  const [r, g, b] = rgb.map((c) => c / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+const contrast = (a: number[], b: number[]) => {
+  const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m)
+  return (x + 0.05) / (y + 0.05)
+}
+// The page's grey text (--quiet in station.css) must stay >= 4.6:1 on the tint.
+const QUIET = channels("#656b72")
+
+// An event's colours for the bands. A light board (Easter lilac, the
+// weekend's yellow) would make a muddy footer mixed with black, so its footer
+// is a deep shade of its own dark ink instead, and its explainers' tint takes
+// more of the colour so it shows at all (colour-bands.css).
+function heroStyle(hero: { color: string; ink?: string }): React.CSSProperties {
+  const ink = hero.ink ?? "#ffffff"
+  const style: Record<string, string> = { "--hero": hero.color, "--hero-ink": ink }
+  const rgb = channels(hero.color)
+  if (luminance(rgb) > 0.4) {
+    style["--hero-deep"] = `color-mix(in srgb, ${ink} 88%, #000000)`
+    // 8% of a colour this pale barely shows: use as much of it as the grey
+    // text allows, up to 45%
+    for (const p of [0.45, 0.35, 0.25, 0.15]) {
+      const tint = rgb.map((c) => Math.round(c * p + 255 * (1 - p)))
+      if (contrast(QUIET, tint) >= 4.6) {
+        style["--hero-tint"] = `rgb(${tint.join(" ")})`
+        break
+      }
+    }
+  }
+  return style as React.CSSProperties
+}
+
+export default function StationChrome({ children, currentTool, onToggleTheme, isDarkMode, hero }: StationChromeProps) {
   // Tools without a tab of their own light up "All tools"; guides and
   // site pages light none.
   const active = TABS.some((t) => t.id === currentTool)
@@ -54,7 +95,11 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
       ? "tools"
       : null
   return (
-    <div className={`station ${Archivo.variable}`} data-line={lineForTool(currentTool) ?? undefined}>
+    <div
+      className={`station ${Archivo.variable}`}
+      data-line={lineForTool(currentTool) ?? undefined}
+      style={hero ? heroStyle(hero) : undefined}
+    >
       <AnnouncementBanner />
       <header className="st-header">
         <div className="st-wrap">

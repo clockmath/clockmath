@@ -10,7 +10,7 @@
 [data-line="zones"]      { --line: #0a6b74; --line-ink: #ffffff; }
 [data-line="sleep"]      { --line: #3b2f86; --line-ink: #ffffff; }
 [data-line="countdowns"] { --line: #b5541c; --line-ink: #ffffff; }
-[data-line="quiz"]       { --line: #f3c64a; --line-ink: #000000; }
+[data-line="quiz"]       { --line: #f3c64a; --line-ink: #000000; --line-deep: #1c1a12; }
 [data-line="guides"]     { --line: #8a2c5a; --line-ink: #ffffff; }
 [data-line] { --line-rule: var(--line); --line-text: var(--line); }
 /* Rust as text on the wash is 4.48:1; its text shade is a step darker */

@@ -1,0 +1,77 @@
+/* ---------------------------------------------------------------------------
+   Colour bands: every page opens on a full-width band in its colour (the
+   station sign), its explainers and FAQs sit on a soft tint of it, and it
+   ends on a deep shade of it (the footer). The colour is the page's line
+   (lib/lines.ts), an event page's own board colour (StationChrome's hero
+   prop), or the site blue on pages without one.
+
+   Full-width without 100vw (which adds a sideways scrollbar where scrollbars
+   take space): the box keeps its column, a 100vmax box-shadow paints the
+   colour to the edges, and clip-path trims it back to the box's own rows.
+   Classic view is unchanged: every rule skips html.classic.
+--------------------------------------------------------------------------- */
+
+html:not(.classic) .station {
+  --band: var(--hero, var(--line, #1849a9));
+  --band-ink: var(--hero-ink, var(--line-ink, #ffffff));
+  --band-tint: var(--hero-tint, color-mix(in srgb, var(--band) 8%, var(--dial)));
+  /* Dark enough for white text whatever the colour, sun yellow and Easter
+     lilac included (checked against every line and board colour) */
+  --band-deep: var(--hero-deep, var(--line-deep, color-mix(in srgb, var(--band) 40%, #000000)));
+}
+html.dark:not(.classic) .station {
+  --band-tint: color-mix(in srgb, var(--band) 12%, var(--dial)); /* grey text >= 4.72:1 on every colour's tint */
+  --band-deep: var(--hero-deep, var(--line-deep, color-mix(in srgb, var(--band) 35%, #000000)));
+}
+
+/* A light colour (sun yellow, Easter lilac) turns muddy mixed with black;
+   its footer is a deep shade of its own dark ink instead: --line-deep for the
+   quiz line, --hero-deep for light event boards (set by StationChrome). */
+
+/* ---- The sign: breadcrumb, title and tagline on the page's colour ---- */
+html:not(.classic) .station .st-intro {
+  background: var(--band); color: var(--band-ink);
+  box-shadow: 0 0 0 100vmax var(--band); clip-path: inset(0 -100vmax);
+  padding: 40px 0 36px; margin-bottom: 32px;
+}
+html:not(.classic) .station .st-intro :is(.st-h1, .st-404) { color: var(--band-ink); }
+html:not(.classic) .station .st-intro :is(.st-lede, .st-byline, .st-crumbs) { color: var(--band-ink); }
+html:not(.classic) .station .st-intro .st-crumbs a { color: var(--band-ink); }
+/* Event pages: the board follows the sign at its usual distance */
+html:not(.classic) .station .st-intro.st-intro-event { padding-bottom: 36px; margin-bottom: 0; }
+
+/* ---- The explainers: a soft tint of the colour, edge to edge ---- */
+html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto, .st-extra section) {
+  background: var(--band-tint);
+  box-shadow: 0 0 0 100vmax var(--band-tint); clip-path: inset(0 -100vmax);
+  padding-top: 44px;
+}
+/* The tinted run ends at the footer: no white strip between them */
+html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto):has(+ .st-footer),
+html:not(.classic) .station .st-legacy:has(+ .st-footer) section:last-child { padding-bottom: 48px; }
+html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto, .st-legacy) + .st-footer { margin-top: 0; }
+/* Grey fields inside a tinted section stand out from it */
+html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto) .st-embedcode textarea { background: var(--dial); }
+
+/* ---- The footer: a deep shade of the colour, to the bottom of the window ---- */
+html:not(.classic) .station .st-footer {
+  background: var(--band-deep); color: rgb(255 255 255 / 0.82); border-top: 0;
+  box-shadow: 0 0 0 100vmax var(--band-deep); clip-path: inset(0 -100vmax -100vmax);
+  padding: 36px 0 24px;
+}
+html:not(.classic) .station .st-footer :is(.st-footer-name, nav h2) { color: #ffffff; }
+html:not(.classic) .station .st-footer nav a { color: rgb(255 255 255 / 0.82); }
+html:not(.classic) .station .st-footer nav a:hover { color: #ffffff; }
+html:not(.classic) .station .st-footer .st-footer-brand a,
+html:not(.classic) .station .st-footer .st-footer-feedback { color: #ffffff; }
+html:not(.classic) .station .st-footer .st-footer-base { border-top-color: rgb(255 255 255 / 0.22); color: rgb(255 255 255 / 0.78); }
+html:not(.classic) .station .st-footer .st-footer-base a { color: rgb(255 255 255 / 0.82); }
+html:not(.classic) .station .st-footer .st-footer-base a:hover { color: #ffffff; }
+/* The page ends on the footer: no white padding under it */
+html:not(.classic) .station .st-main { padding-bottom: 0; }
+
+@media (max-width: 760px) {
+  html:not(.classic) .station .st-intro { padding: 28px 0 26px; margin-bottom: 24px; }
+  html:not(.classic) .station .st-intro.st-intro-event { padding-bottom: 26px; }
+  html:not(.classic) .station :is(.st-more, section.max-w-3xl.mx-auto, .st-extra section) { padding-top: 34px; }
+}
