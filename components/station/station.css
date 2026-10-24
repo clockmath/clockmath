@@ -180,6 +180,38 @@
 
 .st-nudge { margin: 22px 0 0; font-size: 15px; }
 
+/* A duration in other units (DetailedDurationBreakdown): ruled figures like
+   the answer's "Decimal hours" and "Total minutes" */
+.st-units { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0 28px; margin: 0; }
+.st-units div { border-top: 1px solid var(--rule); padding: 9px 0; }
+.st-units dt { font-size: 14px; color: var(--quiet); }
+.st-units dd { margin: 0; font-size: 24px; font-weight: 800; font-stretch: 80%; color: var(--ink); }
+/* On a board the figures take the board's ink */
+.st-result .st-units dd { color: inherit; }
+.st-result .st-units dt { color: inherit; opacity: 0.85; }
+.st-result .st-units div { border-top-color: color-mix(in srgb, currentColor 30%, transparent); }
+
+/* Recent calculations: a ruled list under the line's rule */
+.st-history { margin-top: 44px; border-top: 3px solid var(--line-rule, var(--ink)); padding-top: 18px; }
+.st-history-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; margin-bottom: 6px; }
+.st-history-head h2 { margin: 0; font-size: 22px; font-weight: 800; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+.st-history-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 15px; color: var(--quiet); }
+.st-history-list { list-style: none; margin: 0; padding: 0; }
+.st-history-list li { border-bottom: 1px solid var(--rule); margin: 0 -12px; padding: 0 12px; border-radius: 4px; }
+.st-history-list li[data-selected] { background: var(--enamel-wash); }
+.st-history-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.st-history-row label { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; cursor: pointer; font-size: 17px; color: var(--ink); }
+.st-history-row input[type="checkbox"] { width: 20px; height: 20px; flex: none; accent-color: var(--enamel); cursor: pointer; }
+.st-history-result { font-size: 22px; font-weight: 800; font-stretch: 80%; color: var(--ink); white-space: nowrap; }
+.st-history-more { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: var(--quiet); cursor: pointer; }
+.st-history-more:hover { background: var(--wash); color: var(--ink); }
+.st-history-more[aria-expanded="true"] svg { transform: rotate(180deg); }
+.st-history-list .st-units { padding: 0 0 14px 32px; }
+/* The sum of the ticked rows: an answer, so it goes on the board */
+.st-sum { margin-top: 20px; }
+.st-sum p { margin: 0; }
+.station .st-sum .st-figure { margin: 8px 0 16px; }
+
 /* ---- Supporting sections: heading left, content right ---- */
 .st-more { padding: 52px 0 0; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 48px; }
 .st-more > h2 { color: var(--ink); font-size: 24px; line-height: 1.2; font-weight: 800; margin: 0; letter-spacing: -0.01em; }
