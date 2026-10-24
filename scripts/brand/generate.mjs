@@ -2,9 +2,13 @@
 // node scripts/brand/generate.mjs — renders every brand image from code:
 //   app/icon.png, app/apple-icon.png, public/icon-192.png,
 //   public/icon-512.png       the station-clock mark
-//   public/og-v3.png          the default share card
-//   public/og-quiz-v2.png     the daily quiz share card
+//   public/og-v4.png          the default share card (homepage, site pages)
+//   public/og-quiz-v3.png     the daily quiz share card
+//   public/og/tool/*.png      one share card per tool, in its line colour,
+//                             and the guides card for every article
 //   public/og/countdown/*.png one share card per countdown, in its board colour
+// Older card files (og-v3.png, og-quiz-v2.png) stay in public/ so links
+// already shared with them keep their image; nothing references them now.
 //
 // Each image is an SVG/HTML template screenshotted at its exact size by
 // headless Chrome (macOS path below), so nothing is resized or hand-edited.
@@ -104,39 +108,91 @@ const FIT = `<script>
   });
 </script>`;
 
-// ---- Default card: the homepage's own answer and ruler
-function defaultCard() {
-  const sky = 'linear-gradient(90deg,#2b3270 0%,#2b3270 20.8%,#f0a531 27%,#7cc0ec 33.3%,#7cc0ec 70.8%,#e0663a 77%,#2b3270 83.3%,#2b3270 100%)';
-  const html = page(
-    `<div class="card" style="background:#fff;color:${INK}">
-      ${wordmark(INK)}
-      <p class="lede">Time between two times</p>
-      <p class="big">8<span class="u">h</span>30<span class="u">m</span></p>
-      <div class="ruler">
-        <div class="span"></div><div class="now"></div>
-        <div class="sky"></div>
-      </div>
-      <div class="foot"><span>Hours, timesheets, time zones and countdowns. Free, no sign-up.</span><b>clockmath.com</b></div>
-    </div>`,
-    CARD_CSS +
-      `.lede{margin:48px 0 0;font-size:40px;font-weight:600;color:#3a3f46}
-       .big{margin:6px 0 0;font-weight:900;font-stretch:70%;font-size:230px;line-height:0.86;letter-spacing:-0.02em}
-       .big .u{font-size:0.42em;font-weight:700;letter-spacing:0;margin:0 0.18em 0 0.04em}
-       .ruler{position:relative;margin-top:auto;height:44px}
-       .span{position:absolute;left:37.5%;width:35.4%;top:0;height:16px;background:${INK}}
-       .now{position:absolute;left:58.3%;top:-10px;width:4px;height:58px;background:${SIGNAL}}
-       .sky{position:absolute;left:0;right:0;bottom:0;height:12px;background:${sky}}`,
-  );
-  shoot('public/og-v3.png', html, 1200, 630);
+// ---- Tool cards: each tool's own question and a typical answer, on its line
+// colour (lib/lines.ts, components/station/lines.css), like its page's sign.
+// The answers are fixed examples that are always true; no live figures.
+const LINES = {
+  time: '#1849a9',
+  work: '#1d6b46',
+  zones: '#0a6b74',
+  sleep: '#3b2f86',
+  countdowns: '#b5541c',
+  guides: '#8a2c5a',
+};
+const TOOLS = [
+  // [file, line, question, answer (HTML), what it means, footer path]
+  ['og-v4', 'time', 'Time between two times', '8<span class="u">h</span>30<span class="u">m</span>', '9:00 AM to 5:30 PM, with decimal hours for timesheets', 'clockmath.com'],
+  ['og/tool/timesheet', 'work', 'Work hours calculator', '37.50<span class="u">hours</span>', 'Five shifts, breaks taken off, ready for payroll', 'clockmath.com/tools/timesheet'],
+  ['og/tool/overtime', 'work', 'Overtime calculator', '40 + 6.5<span class="u">h</span>', 'Regular and overtime hours, and what time and a half pays', 'clockmath.com/tools/overtime'],
+  ['og/tool/decimal-hours', 'work', 'Minutes to decimal hours', '7:45 = 7.75', 'Hours and minutes to decimal, and back, for timesheets', 'clockmath.com/tools/decimal-hours'],
+  ['og/tool/timezone', 'zones', 'Time zone converter', '12:00 PM<span class="u">in New York</span>', 'when it is 9:00 AM in Los Angeles, daylight saving handled', 'clockmath.com/tools/timezone'],
+  ['og/tool/market-hours', 'zones', 'Is the market open?', '9:30–4:00<span class="u">NYSE</span>', 'Ten major exchanges, open or closed, in your timezone', 'clockmath.com/tools/market-hours'],
+  ['og/tool/sleep', 'sleep', 'Sleep calculator', '7<span class="u">h</span>30<span class="u">m</span>', '11:00 PM to 6:30 AM: five full 90-minute sleep cycles', 'clockmath.com/tools/sleep'],
+  ['og/tool/countdown', 'countdowns', 'Countdown timer', 'Any date', 'Count down to your own date, then share the link', 'clockmath.com/tools/countdown'],
+  ['og/tool/guides', 'guides', 'ClockMath guides', 'Guides', 'Work hours, payroll time math and time zones, worked out', 'clockmath.com/articles'],
+];
+
+function toolCards() {
+  for (const [file, line, question, answer, meaning, foot] of TOOLS) {
+    const html = page(
+      `<div class="card" style="background:${LINES[line]};color:#fff">
+        ${wordmark('#fff')}
+        <p class="q">${question}</p>
+        <p class="big" data-fit="1056">${answer}</p>
+        <p class="sub">${meaning}</p>
+        <div class="foot"><span>Free, no signup</span><b>${foot}</b></div>
+      </div>${FIT}`,
+      CARD_CSS +
+        `.q{margin:auto 0 0;font-size:40px;font-weight:700;opacity:0.9}
+         .big{margin:6px 0 0;font-weight:900;font-stretch:68%;font-size:210px;line-height:0.88;letter-spacing:-0.02em;white-space:nowrap}
+         .big .u{font-size:0.4em;font-weight:700;letter-spacing:0;margin:0 0.18em 0 0.06em}
+         .big .u:last-child{margin-right:0}
+         .sub{margin:22px 0 34px;font-size:36px;font-weight:600;line-height:1.25}
+         .foot{border-top:2px solid rgb(255 255 255 / 0.35);padding-top:20px;margin-top:0}`,
+    );
+    shoot(`public/${file}.png`, html, 1200, 630);
+  }
 }
 
-// ---- Quiz card: a score on the site's blue board
-function quizCard() {
-  const marks = [1, 1, 0, 1, 1]
-    .map((ok) => `<i style="background:${ok ? '#ffffff' : SIGNAL};${ok ? '' : 'box-shadow:inset 0 0 0 3px #fff'}"></i>`)
+// The tools hub: every line, as on the All tools page
+function hubCard() {
+  const rows = [
+    ['time', 'Time Duration Calculator'],
+    ['work', 'Work Hours Calculator'],
+    ['zones', 'Time Zone Converter'],
+    ['sleep', 'Sleep Calculator'],
+    ['countdowns', 'Countdown Timer'],
+    ['guides', 'Guides'],
+  ]
+    .map(([line, name]) => `<li style="border-left-color:${LINES[line]}">${name}</li>`)
     .join('');
   const html = page(
     `<div class="card" style="background:#fff;color:${INK}">
+      ${wordmark(INK)}
+      <div class="row">
+        <p class="h">Free time &amp; date tools</p>
+        <ul>${rows}</ul>
+      </div>
+      <div class="foot"><span>No signup, no ads</span><b>clockmath.com/tools</b></div>
+    </div>`,
+    CARD_CSS +
+      `.row{flex:1;display:flex;align-items:center;justify-content:space-between;gap:48px}
+       .h{margin:0;font-weight:900;font-stretch:70%;font-size:118px;line-height:0.92;letter-spacing:-0.02em;max-width:6.2em}
+       ul{list-style:none;margin:0;padding:0;flex-shrink:0}
+       li{border-left:12px solid;padding:7px 0 7px 18px;margin:8px 0;font-size:30px;font-weight:700}
+       .foot{border-top:2px solid #dadde2;padding-top:20px}`,
+  );
+  shoot('public/og/tool/tools.png', html, 1200, 630);
+}
+
+// ---- Quiz card: a score on the quiz line's sun yellow, right in green and
+// wrong in red, as on the question tiles
+function quizCard() {
+  const marks = [1, 1, 0, 1, 1]
+    .map((ok) => `<i style="background:${ok ? '#1d6b46' : '#b42318'}"></i>`)
+    .join('');
+  const html = page(
+    `<div class="card" style="background:#f3c64a;color:${INK}">
       ${wordmark(INK)}
       <div class="row">
         <div>
@@ -150,14 +206,14 @@ function quizCard() {
     CARD_CSS +
       `.row{flex:1;display:flex;align-items:center;justify-content:space-between;gap:56px}
        .h{margin:0;font-weight:900;font-stretch:72%;font-size:132px;line-height:0.9;letter-spacing:-0.02em;word-spacing:0.12em}
-       .sub{margin:22px 0 0;font-size:32px;line-height:1.3;color:#3a3f46;max-width:15em}
-       .board{flex-shrink:0;background:#1849a9;color:#fff;border-radius:18px;padding:34px 40px}
+       .sub{margin:22px 0 0;font-size:32px;line-height:1.3;color:rgb(0 0 0 / 0.78);max-width:15em}
+       .board{flex-shrink:0;background:#fff;color:${INK};border-radius:18px;padding:34px 40px}
        .score{margin:0;font-weight:900;font-stretch:70%;font-size:120px;line-height:0.9}
        .score small{font-size:32px;font-stretch:100%;font-weight:700}
        .marks{display:flex;gap:12px;margin-top:22px}
        .marks i{width:46px;height:46px;border-radius:6px;display:block}`,
   );
-  shoot('public/og-quiz-v2.png', html, 1200, 630);
+  shoot('public/og-quiz-v3.png', html, 1200, 630);
 }
 
 // ---- Countdown cards
@@ -236,7 +292,8 @@ async function countdownCards() {
 }
 
 icons();
-defaultCard();
+toolCards();
+hubCard();
 quizCard();
 await countdownCards();
 fs.rmSync(TMP, { recursive: true, force: true });

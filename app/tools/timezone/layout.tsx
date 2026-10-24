@@ -8,6 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Convert a time between any two time zones or cities, with daylight saving handled for the date you pick. For meetings, calls and travel.',
   path: '/tools/timezone',
+  ogImage: '/og/tool/timezone.png',
   keywords:
     'time zone converter, timezone converter, time difference between cities, convert time zones, meeting timezone converter, time difference calculator, what time is it in',
 });

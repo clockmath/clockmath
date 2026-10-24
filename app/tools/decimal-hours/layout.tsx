@@ -8,6 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Convert minutes or time to decimal hours and back: 15 min = 0.25, 30 min = 0.50, 45 min = 0.75. Includes the full minutes-to-decimal chart for payroll.',
   path: '/tools/decimal-hours',
+  ogImage: '/og/tool/decimal-hours.png',
   keywords:
     'minutes to decimal, minutes to decimals, time to decimal, time to decimal calculator, decimal to time, hours to decimal, minutes to decimal chart, decimal hours calculator, minutes to decimal hours, decimal hours chart, convert minutes to decimal, payroll time conversion, decimal time converter',
 });

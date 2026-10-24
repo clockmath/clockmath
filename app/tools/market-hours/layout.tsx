@@ -8,6 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live stock market hours in your timezone: whether the NYSE, NASDAQ, LSE, Tokyo and other exchanges are open now, and when they next open or close.',
   path: '/tools/market-hours',
+  ogImage: '/og/tool/market-hours.png',
   keywords:
     'stock market hours, is the stock market open, nyse hours, nasdaq hours, market open time, stock market open today, market hours in my timezone, when does the stock market open',
 });
