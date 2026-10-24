@@ -11,7 +11,6 @@
    - ink       numerals, headings, the span you entered
    - signal    "now" and seconds only (the second hand)
    - enamel    things you press or follow: buttons, links, the active tab
-   - daylight  the 24-hour ruler's sky, night → dawn → day → dusk
    - board     an event's own colour on its countdown (set per page)
    This file is unlayered, so it wins over Tailwind utilities; keep its
    selectors to .station and st- classes.
@@ -178,16 +177,6 @@
 .st-answer.stale > * { opacity: 0.4; transition: opacity 0.15s; }
 .st-link-btn { font: inherit; font-size: 15px; background: none; border: 0; color: var(--enamel); cursor: pointer;
                text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; padding: 8px 0; }
-
-/* 24-hour ruler */
-.st-ruler { margin-top: 44px; }
-.st-ruler svg { display: block; width: 100%; overflow: visible; }
-.st-ruler svg.bars { height: 50px; }
-.st-ruler svg.labels { height: 22px; }
-.st-ruler text { font-family: var(--font-archivo), sans-serif; font-size: 12px; fill: var(--quiet); }
-.st-now-label { position: absolute; top: -22px; font-size: 12px; line-height: 1; font-weight: 700; color: var(--signal); }
-.st-ruler-key { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 14px; color: var(--quiet); margin-top: 8px; }
-.st-ruler-key i { display: inline-block; width: 18px; height: 6px; border-radius: 1px; margin-right: 6px; vertical-align: middle; }
 
 .st-nudge { margin: 22px 0 0; font-size: 15px; }
 

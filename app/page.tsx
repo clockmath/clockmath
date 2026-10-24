@@ -7,7 +7,6 @@ import InfoTip from "@/components/InfoTip"
 import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import StationChrome from "@/components/station/StationChrome"
-import DayRuler from "@/components/station/DayRuler"
 import StationFold from "@/components/station/StationFold"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
@@ -276,8 +275,6 @@ export default function ClockMathPage() {
       end,
       seconds,
       overnight,
-      startHour: startSeconds / 3600,
-      endHour: endSeconds / 3600,
       parts: intervalToDuration({ start, end }),
       summary: formatDuration(start, end),
       detailed: formatDetailedDuration(seconds),
@@ -418,7 +415,7 @@ export default function ClockMathPage() {
           </p>
         </div>
 
-        {/* One ruled band: inputs, Calculate, the answer, the ruler */}
+        {/* One ruled band: inputs, Calculate, the answer */}
         <section className="st-calc" aria-label="Duration calculator">
           <div className="st-fields">
             <div className="st-field">
@@ -477,7 +474,6 @@ export default function ClockMathPage() {
                   </div>
                 </div>
               </div>
-              <DayRuler startHour={span.startHour} endHour={span.endHour} fullDay={span.seconds >= 86400} />
               {span.detailed && (
                 <div style={{ marginTop: 14 }}>
                   <button type="button" className="st-link-btn" onClick={() => setShowBreakdown((prev) => !prev)} aria-expanded={showBreakdown}>
