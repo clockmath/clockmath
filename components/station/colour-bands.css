@@ -63,20 +63,19 @@ html:not(.classic) .station .st-fold-summary { border-top: 0; padding: 24px 0; }
 html:not(.classic) .station .st-fold + .st-footer { margin-top: 0; }
 html:not(.classic) .station .st-fold-body > :last-child { padding-bottom: 48px; }
 
-/* ---- The footer: a deep shade of the colour, to the bottom of the window ---- */
+/* ---- The footer: a deep shade of the colour, its own height only ---- */
 html:not(.classic) .station .st-footer {
   background: var(--band-deep); color: rgb(255 255 255 / 0.82); border-top: 0;
-  box-shadow: 0 0 0 100vmax var(--band-deep); clip-path: inset(0 -100vmax -100vmax);
-  padding: 36px 0 24px;
+  box-shadow: 0 0 0 100vmax var(--band-deep); clip-path: inset(0 -100vmax);
+  padding: 20px 0 16px;
 }
-html:not(.classic) .station .st-footer :is(.st-footer-name, nav h2) { color: #ffffff; }
-html:not(.classic) .station .st-footer nav a { color: rgb(255 255 255 / 0.82); }
-html:not(.classic) .station .st-footer nav a:hover { color: #ffffff; }
-html:not(.classic) .station .st-footer .st-footer-brand a,
-html:not(.classic) .station .st-footer .st-footer-feedback { color: #ffffff; }
+html:not(.classic) .station .st-footer .st-footer-name { color: #ffffff; }
+html:not(.classic) .station .st-footer .st-footer-links a { color: rgb(255 255 255 / 0.86); }
+html:not(.classic) .station .st-footer .st-footer-links a:hover { color: #ffffff; }
 html:not(.classic) .station .st-footer .st-footer-base { border-top-color: rgb(255 255 255 / 0.22); color: rgb(255 255 255 / 0.78); }
-html:not(.classic) .station .st-footer .st-footer-base a { color: rgb(255 255 255 / 0.82); }
-html:not(.classic) .station .st-footer .st-footer-base a:hover { color: #ffffff; }
+html:not(.classic) .station .st-footer .st-footer-base a { color: rgb(255 255 255 / 0.86); }
+html:not(.classic) .station .st-footer .st-footer-base a:hover,
+html:not(.classic) .station .st-footer .st-footer-feedback { color: #ffffff; }
 /* The page ends on the footer: no white padding under it */
 html:not(.classic) .station .st-main { padding-bottom: 0; }
 
