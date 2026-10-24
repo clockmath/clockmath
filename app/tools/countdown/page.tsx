@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { CountdownTool } from '@/components/CountdownTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -71,6 +72,7 @@ export default function CountdownPage() {
 
       <CountdownTool className="mb-section" />
 
+      <StationFold>
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
           How the countdown works
@@ -125,6 +127,7 @@ export default function CountdownPage() {
           </li>
         </ul>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>

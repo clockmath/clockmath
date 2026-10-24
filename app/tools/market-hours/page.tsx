@@ -5,6 +5,7 @@
 import { MarketHoursTool } from '@/components/MarketHoursTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import Link from 'next/link';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
@@ -69,6 +70,7 @@ export default function MarketHoursPage() {
       {/* Live market grid */}
       <MarketHoursTool className="mb-section" />
 
+      <StationFold>
       {/* SEO / help content */}
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
@@ -114,6 +116,7 @@ export default function MarketHoursPage() {
           ))}
         </div>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>

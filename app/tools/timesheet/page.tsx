@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { TimesheetTool } from '@/components/TimesheetTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
+import StationFold from '@/components/station/StationFold';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -93,6 +94,7 @@ export default function TimesheetPage() {
 
       <TimesheetTool className="mb-section" />
 
+      <StationFold>
       {/* Supporting content — static JSX, fully server-rendered for crawlers */}
       <section className="max-w-3xl mx-auto mb-section">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">
@@ -221,6 +223,7 @@ export default function TimesheetPage() {
           </li>
         </ul>
       </section>
+      </StationFold>
 
       <SiteFooter />
     </StationChrome>
