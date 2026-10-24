@@ -87,7 +87,6 @@ const WEEKEND_EXAMPLES =
     ? ` New Year's Day ${FEDERAL_YEAR + 1} falls on a Saturday, so it is observed on ${fmtDate(nextNewYear.observed, true)}.`
     : '');
 
-const LINK = 'text-primary hover:text-primary/80 font-semibold';
 
 export default function HolidaysPage() {
   // Build-day values first (identical on server and client), then the
@@ -115,38 +114,41 @@ export default function HolidaysPage() {
       lastUpdated="2026-10-16"
       breadcrumb="Holidays"
       countdownSlot={
-        <section className="st-panel bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">Coming up</h2>
-          <StackedTable
-            rows={rows}
-            firstKey="key"
-            firstHeader="Holiday or event"
-            columns={[
-              { key: 'date', header: 'Next date' },
-              { key: 'days', header: 'Days left', right: true },
-            ]}
-            renderFirst={(r) => (
-              <Link href={r.href} className={LINK}>
-                {r.name}
-              </Link>
-            )}
-            render={{
-              date: (r) => (
-                <span data-live="next-date" suppressHydrationWarning>
-                  {r.date}
-                </span>
-              ),
-              days: (r) => (
-                <span data-live="days" suppressHydrationWarning>
-                  {r.days}
-                </span>
-              ),
-            }}
-            rowAttrs={(r) => ({ 'data-days-until': r.spec, 'data-keep': '' })}
-          />
-          <p className="text-sm text-muted-foreground mt-3">
-            Days are counted to the start of each date in your own timezone. Each name links to its live countdown.
-          </p>
+        // A departures board: every countdown in date order, days left set
+        // large. Its own table, not StackedTable: rows lay out as a grid on
+        // phones (name and date left, days right). Explicit roles keep the
+        // table semantics that display changes drop.
+        <section className="st-departures" aria-labelledby="st-coming-up">
+          <h2 id="st-coming-up">Coming up</h2>
+          <table role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" scope="col">Holiday or event</th>
+                <th role="columnheader" scope="col">Next date</th>
+                <th role="columnheader" scope="col">Days left</th>
+              </tr>
+            </thead>
+            <tbody role="rowgroup">
+              {rows.map((r) => (
+                <tr key={r.key} role="row" data-days-until={r.spec} data-keep="">
+                  <th role="rowheader" scope="row">
+                    <Link href={r.href}>{r.name}</Link>
+                  </th>
+                  <td role="cell">
+                    <span data-live="next-date" suppressHydrationWarning>
+                      {r.date}
+                    </span>
+                  </td>
+                  <td role="cell">
+                    <span data-live="days" suppressHydrationWarning>
+                      {r.days}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p>Days are counted to the start of each date in your own timezone. Each name links to its live countdown.</p>
         </section>
       }
       intro={
@@ -161,7 +163,7 @@ export default function HolidaysPage() {
           <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
             US federal holidays {FEDERAL_YEAR}
           </h2>
-          <div className="bg-card dark:bg-slate-800 rounded-2xl border border-border/50 dark:border-slate-700/50 px-4 py-2">
+          <div>
             <StackedTable
               rows={FEDERAL}
               firstKey="name"

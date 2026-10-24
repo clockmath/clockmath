@@ -78,3 +78,47 @@ html:not(.classic) .station .st-toast:not(.destructive) [toast-close] { color: v
 @media (max-width: 760px) {
   .station .st-tz-answer .st-big.st-tz-time { font-size: 64px; }
 }
+
+/* ---- The holidays page's departures board ----
+   Every countdown in date order on a dark board, days left set large in a
+   light shade of the countdown line's rust (10.2:1 on the board). Classic
+   view gets the same table, ruled, on the page. */
+.station .st-board-wrap > .st-departures { margin-top: 30px; }
+.station .st-departures h2 { margin: 0 0 10px; font-size: 22px; font-weight: 800; color: var(--ink); }
+.station .st-departures table { width: 100%; border-collapse: collapse; }
+.station .st-departures thead th { text-align: left; font-size: 14px; font-weight: 600; color: var(--quiet); padding: 0 8px 10px 0; }
+.station .st-departures thead th:last-child,
+.station .st-departures td:last-child { text-align: right; padding-right: 0; }
+.station .st-departures tbody tr { border-top: 1px solid var(--rule); }
+.station .st-departures tbody :is(th, td) { padding: 12px 8px 12px 0; vertical-align: baseline; text-align: left; }
+.station .st-departures tbody th { font-size: 19px; font-weight: 700; }
+.station .st-departures tbody th a { color: var(--ink); text-decoration: none; }
+.station .st-departures tbody th a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.station .st-departures tbody td { font-size: 16px; color: var(--text); }
+.station .st-departures [data-live="days"] { font-size: 30px; font-weight: 800; font-stretch: 75%; line-height: 1; color: var(--ink); white-space: nowrap; }
+.station .st-departures > p { margin: 14px 0 0; font-size: 15px; color: var(--quiet); }
+
+html:not(.classic) .station .st-departures {
+  --dep-board: #14171c; --dep-ink: #ffffff; --dep-quiet: rgb(255 255 255 / 0.72); --dep-rule: rgb(255 255 255 / 0.14);
+  background: var(--dep-board); color: var(--dep-ink); border-radius: 10px; padding: 26px 32px 22px;
+}
+html.dark:not(.classic) .station .st-departures { box-shadow: inset 0 0 0 1px var(--rule); }
+html:not(.classic) .station .st-departures h2,
+html:not(.classic) .station .st-departures tbody th a { color: var(--dep-ink); }
+html:not(.classic) .station .st-departures :is(thead th, > p) { color: var(--dep-quiet); }
+html:not(.classic) .station .st-departures tbody td { color: rgb(255 255 255 / 0.86); }
+html:not(.classic) .station .st-departures tbody tr { border-top-color: var(--dep-rule); }
+html:not(.classic) .station .st-departures [data-live="days"] { color: #ffb27a; }
+
+/* Phones: each row is name and date on the left, days on the right */
+@media (max-width: 640px) {
+  html:not(.classic) .station .st-departures { padding: 20px 18px 16px; border-radius: 8px; }
+  .station .st-departures :is(table, thead, tbody) { display: block; }
+  .station .st-departures thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .station .st-departures tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; padding: 11px 0; }
+  .station .st-departures tbody :is(th, td) { display: block; padding: 0; }
+  .station .st-departures tbody th { grid-column: 1; font-size: 17px; }
+  .station .st-departures tbody td:nth-child(2) { grid-column: 1; font-size: 15px; }
+  .station .st-departures tbody td:last-child { grid-column: 2; grid-row: 1 / span 2; }
+  .station .st-departures [data-live="days"] { font-size: 26px; }
+}
