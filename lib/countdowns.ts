@@ -11,6 +11,7 @@
 import { EASTER, HANUKKAH, LUNAR_NEW_YEAR } from '@/lib/holidays';
 import { buildEventDisclaimer } from '@/lib/disclaimer';
 import { GTA6_RELEASE, LAUNCHED as GTA6_LAUNCHED } from '@/app/countdown/gta-6/launch';
+import { channels, luminance } from '@/lib/colour';
 
 export interface CountdownSpec {
   /** Fixed one-off target. */
@@ -206,4 +207,24 @@ export function countdownProps(slug: CountdownSlug): CountdownSpec {
 /** An eclipse page's EclipseCountdown props. */
 export function eclipseProps(slug: 'solar-eclipse-2027' | 'solar-eclipse-2028' | 'annular-eclipse-2028') {
   return COUNTDOWNS[slug].eclipse;
+}
+
+/** The retirement page's board: it counts to the visitor's own date, so it
+ * has no entry above, but it is one of the countdowns all the same. */
+export const RETIREMENT_BOARD = { color: '#1f5c6b' };
+
+/**
+ * The colour that stands for a countdown in lists of them (the dots in
+ * "More countdowns" and on the holidays board): its board colour, or for a
+ * near-black board with coloured numerals (Halloween's orange, the eclipses'
+ * gold), those numerals, since a black dot says little. Null for links that
+ * are not one event's page (the holidays hub).
+ */
+export function eventColour(href: string): string | null {
+  const path = href.endsWith('/') ? href : `${href}/`;
+  if (path === '/countdown/retirement/') return RETIREMENT_BOARD.color;
+  const entry = (Object.values(COUNTDOWNS) as CountdownEntry[]).find((e) => e.path === path);
+  if (!entry) return null;
+  const { color, ink } = entry.spec.board;
+  return ink && luminance(channels(color)) < 0.02 ? ink : color;
 }
