@@ -40,3 +40,7 @@ html:has(.st-embed), html:has(.st-embed) body { background: transparent !importa
   .st-embed-days { font-size: clamp(52px, 30cqi, 96px); }
   .st-embed-clock { gap: 12px; }
 }
+
+/* The station lettering and split-flap tiles, as on the event pages (type.css) */
+html:not(.classic) .st-embed :is(.st-embed-days, .st-embed-clock dd) { font-family: var(--display); font-stretch: 100%; letter-spacing: 0; }
+html:not(.classic) .st-embed .st-embed-days small { font-family: var(--font-archivo), sans-serif; }

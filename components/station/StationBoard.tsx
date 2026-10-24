@@ -1,7 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useEventCountdown, weeksPhrase, type CountdownTarget } from '@/components/EventCountdown';
+import { buildDayCount, useEventCountdown, weeksPhrase, type CountdownTarget } from '@/components/EventCountdown';
+import { Flap } from './Flap';
 
 const DAY = 86_400_000;
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -45,10 +46,12 @@ export function StationBoard({
   });
 
   // The targets are local midnights (or a fixed instant), so whole days left
-  // is the calendar count less today; before mount (and in the static HTML)
-  // that stands in, so the number doesn't jump when the clock starts.
+  // is the calendar count less today. Before mount (and in the static HTML)
+  // the count from the build day stands in: the same on server and client,
+  // which the tiles (one element per digit) need to hydrate.
   const left = ready && !isPast ? (targetMs as number) - (nowMs as number) : null;
-  const days = left !== null ? Math.floor(left / DAY) : totalDays !== null ? Math.max(totalDays - 1, 0) : null;
+  const fromBuild = buildDayCount({ target, recurring, weekly, nthWeekday, dateRanges });
+  const days = left !== null ? Math.floor(left / DAY) : fromBuild !== null ? Math.max(fromBuild - 1, 0) : null;
   const clock = left !== null
     ? [Math.floor(left / 3_600_000) % 24, Math.floor(left / 60_000) % 60, Math.floor(left / 1000) % 60]
     : null;
@@ -69,8 +72,8 @@ export function StationBoard({
             {!isPast && (
               <div>
                 <p className="st-left-cap">Time left</p>
-                <p className="st-days" suppressHydrationWarning>
-                  {days === null ? '--' : days.toLocaleString()}
+                <p className="st-days">
+                  <Flap value={days === null ? '--' : String(days)} />
                   <small>{days === 1 ? 'day' : 'days'}</small>
                 </p>
               </div>
@@ -79,7 +82,9 @@ export function StationBoard({
               <dl className="st-clock" aria-live="off">
                 {(['hours', 'minutes', 'seconds'] as const).map((unit, i) => (
                   <div key={unit}>
-                    <dd suppressHydrationWarning>{clock ? pad(clock[i]) : '--'}</dd>
+                    <dd>
+                      <Flap value={clock ? pad(clock[i]) : '--'} />
+                    </dd>
                     <dt>{unit}</dt>
                   </div>
                 ))}

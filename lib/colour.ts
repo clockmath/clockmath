@@ -14,3 +14,17 @@ export const contrast = (a: number[], b: number[]) => {
   const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m)
   return (x + 0.05) / (y + 0.05)
 }
+
+/**
+ * A split-flap tile's colour on a board of `hex`: a darker shade of a mid
+ * colour, a lighter one of near-black (a darker black is still black) or of
+ * a pale board (Easter lilac, the weekend's yellow), whose ink is dark.
+ */
+export function tileShade(hex: string): string {
+  const rgb = channels(hex)
+  const lum = luminance(rgb)
+  const mix = (to: number, p: number) => `rgb(${rgb.map((c) => Math.round(c * p + to * (1 - p))).join(" ")})`
+  if (lum < 0.05) return mix(255, 0.84)
+  if (lum > 0.4) return mix(255, 0.5)
+  return mix(0, 0.7)
+}
