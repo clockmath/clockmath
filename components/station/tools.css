@@ -265,3 +265,33 @@ html:not(.classic) .station .st-quiz-streak .st-flap { font-family: var(--displa
   .station .st-install { left: 8px; right: 8px; bottom: 8px; width: auto; }
 }
 @media print { .station .st-install { display: none; } }
+
+/* ---- Calculation feedback (Oct 2026) ----
+   A board's brief glow once a changed answer settles (useSettledChange /
+   flashClass): two identical animations that take turns, so each change
+   restarts it. */
+@keyframes st-flash-a { 30% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--line, var(--enamel)) 40%, transparent); } }
+@keyframes st-flash-b { 30% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--line, var(--enamel)) 40%, transparent); } }
+.station .st-flash-a { animation: st-flash-a 700ms ease-out; }
+.station .st-flash-b { animation: st-flash-b 700ms ease-out; }
+
+/* The answer pinned to the foot of a phone's screen (AnswerBar) while the
+   real one is out of sight */
+.station .st-answer-bar {
+  position: fixed; z-index: 80; left: 8px; right: 8px; bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px; border: 0; border-radius: 8px; text-align: left; cursor: pointer;
+  background: var(--line, var(--enamel)); color: var(--line-ink, #ffffff);
+  font: inherit; font-size: 15px; font-weight: 600; line-height: 1.2;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  transform: translateY(calc(100% + 24px)); visibility: hidden; transition: transform 0.2s ease-out, visibility 0s linear 0.2s;
+}
+.station .st-answer-bar[data-show] { transform: none; visibility: visible; transition: transform 0.2s ease-out; }
+.station .st-answer-bar-body { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
+html:not(.classic) .station .st-answer-bar .st-flap { font-family: var(--display); font-size: 24px; font-weight: 800; }
+.station .st-answer-bar-go { flex-shrink: 0; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+html.dark:not(.classic) .station .st-answer-bar { background: var(--line-button, var(--line)); }
+@media (min-width: 761px) { .station .st-answer-bar { display: none; } }
+@media (prefers-reduced-motion: reduce) { .station .st-answer-bar, .station .st-answer-bar[data-show] { transition: none; } }
+/* The install offer sits above the bar while it shows */
+@media (max-width: 760px) { html[data-answer-bar] .station .st-install { bottom: 72px; } }

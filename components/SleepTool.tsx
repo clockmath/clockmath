@@ -16,6 +16,9 @@ import InfoTip from '@/components/InfoTip';
 import { storageGet, storageSet } from '@/lib/safeStorage';
 import { useClockFormat } from '@/hooks/use-clock-format';
 import { getDevice } from '@/lib/device';
+import { Flap } from '@/components/station/Flap';
+import { AnswerBar } from '@/components/station/AnswerBar';
+import { flashClass, useSettledChange } from '@/hooks/use-answer-feedback';
 
 export const CYCLE_MIN = 90;
 export const FALL_ASLEEP_MIN = 15;
@@ -176,6 +179,15 @@ export function SleepTool({ className = '' }: SleepToolProps) {
     }));
   }, [planMode, targetWake, nowMs, hour12, fallAsleep]);
 
+  // Both answers update as you type: each board glows once a change settles,
+  // and on a phone the planner's best time rides along at the foot of the
+  // screen while its board is out of sight
+  const sleptFlash = useSettledChange(slept === null ? '' : JSON.stringify(slept));
+  // Keyed to what you change, not the times: "Sleep now" moves with the clock
+  const planFlash = useSettledChange(`${planMode}|${targetWake}|${fallAsleep}`);
+  const plannerRef = useRef<HTMLElement>(null);
+  const planBoardRef = useRef<HTMLUListElement>(null);
+
   const modeButton = (active: boolean) =>
     `px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
       active ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
@@ -269,7 +281,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
           <div
             role="status"
             aria-live="polite"
-            className="st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
+            className={`st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3${flashClass(sleptFlash)}`}
           >
             {slept === null ? (
               <p className="text-sm text-muted-foreground">
@@ -316,6 +328,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
 
         {/* Cycle planner */}
         <section
+          ref={plannerRef}
           aria-labelledby="planner-heading"
           className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
         >
@@ -400,7 +413,7 @@ export function SleepTool({ className = '' }: SleepToolProps) {
 
           {/* A small departures board in the night line's colour: the times
               on flap tiles, the recommended ones at full strength */}
-          <ul className="st-result st-sleep-board" aria-live="polite">
+          <ul ref={planBoardRef} className={`st-result st-sleep-board${flashClass(planFlash)}`} aria-live="polite">
             {planRows.map((row) => (
               <li key={row.cycles} className={row.best ? 'best' : undefined}>
                 <span className="st-figure">
@@ -417,6 +430,14 @@ export function SleepTool({ className = '' }: SleepToolProps) {
           </ul>
         </section>
       </div>
+
+      {planRows[0] && (
+        <AnswerBar formRef={plannerRef} answerRef={planBoardRef}>
+          {planMode === 'wake-at' ? 'Go to bed at' : 'Wake at'}{' '}
+          <Flap value={planRows[0].time.replace(/\s*[AP]M$/, '')} />
+          {/[AP]M$/.test(planRows[0].time) && <span>{planRows[0].time.slice(-2)}</span>}
+        </AnswerBar>
+      )}
     </div>
   );
 }

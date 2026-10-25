@@ -15,6 +15,9 @@ import { buildDay } from '@/lib/buildDay';
 import { Coffee, X } from 'lucide-react';
 import InfoTip from '@/components/InfoTip';
 import { getDevice } from '@/lib/device';
+import { Flap } from '@/components/station/Flap';
+import { AnswerBar } from '@/components/station/AnswerBar';
+import { flashClass, useSettledChange } from '@/hooks/use-answer-feedback';
 
 interface TimesheetToolProps {
   className?: string;
@@ -406,6 +409,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   // Track real timesheet usage: fire once per session when the user has entered
   // shifts that produce a non-zero total (the tool's primary action).
   const calcTrackedRef = useRef(false);
+  // The total answers as you type: it glows once a change settles, and on a
+  // phone it rides along at the foot of the screen while the board is out of
+  // sight (with a week of shifts it is far below the one being edited)
+  const shiftsRef = useRef<HTMLDivElement>(null);
+  const totalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (calcTrackedRef.current || totalMins <= 0) return;
     calcTrackedRef.current = true;
@@ -451,6 +459,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   }, [otEnabled, totalMins, weeklyMins, otThreshold, otMultiplier, flatGross, rateNum]);
 
   const gross = otSplit && otSplit.totalPay != null ? otSplit.totalPay : flatGross;
+  const totalFlash = useSettledChange(`${totalMins}|${gross ?? ''}`);
 
   const formatClock = useCallback(
     (t: string): string => {
@@ -664,7 +673,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   return (
     <div className={className}>
       {/* Shifts (input) */}
-      <div className="st-panel relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6">
+      <div ref={shiftsRef} className="st-panel relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground dark:text-foreground inline-flex items-center gap-1">
             Shifts
@@ -871,7 +880,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
         {/* The answer on the line's board, as on every tool: the hours payroll
             wants, the same in hours and minutes, and the pay once there's a rate */}
-        <div className="st-result st-ts-board mb-3" aria-live="polite">
+        <div ref={totalRef} className={`st-result st-ts-board mb-3${flashClass(totalFlash)}`} aria-live="polite">
           <div>
             <p className="st-figure text-5xl font-bold m-0">
               <RollingNumber value={decimalHours(totalMins)} />
@@ -1141,6 +1150,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           </ul>
         </div>
       )}
+
+      <AnswerBar formRef={shiftsRef} answerRef={totalRef}>
+        Total <Flap value={decimalHours(totalMins)} /> h
+        {gross != null && <span>· ${gross.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>}
+      </AnswerBar>
     </div>
   );
 }

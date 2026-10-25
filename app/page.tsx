@@ -19,6 +19,7 @@ import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useClockFormat } from "@/hooks/use-clock-format"
 import { storageRemove } from "@/lib/safeStorage"
 import { copyText } from "@/lib/clipboard"
+import { useCalculateFeedback } from "@/hooks/use-answer-feedback"
 import { getDevice } from "@/lib/device"
 
 // Interface for calculator-specific data
@@ -71,6 +72,10 @@ export default function ClockMathPage() {
 
   // Fire the unified tool_used event at most once per page session.
   const toolUsedRef = useRef(false)
+  // Every Calculate shows it worked: the tiles flip again (even for the same
+  // answer), the button says "Updated", and the answer is scrolled into view
+  const answerRef = useRef<HTMLDivElement>(null)
+  const { round, updated, confirm } = useCalculateFeedback(answerRef)
 
 
 
@@ -289,6 +294,7 @@ export default function ClockMathPage() {
   const calculate = useCallback(() => {
     const inputs = { startDate, startTime, endDate, endTime }
     setCalculated(inputs)
+    confirm()
     if (!toolUsedRef.current) {
       toolUsedRef.current = true
       toolUsed("calculator", { device: getDevice() })
@@ -306,7 +312,7 @@ export default function ClockMathPage() {
         device: getDevice(),
       },
     })
-  }, [startDate, startTime, endDate, endTime, spanFor])
+  }, [startDate, startTime, endDate, endTime, spanFor, confirm])
 
   // Calculate and Enter submit the form. A time typed and entered in the same
   // keystroke reaches state in that event, so the calculation runs in an
@@ -493,20 +499,21 @@ export default function ClockMathPage() {
           </div>
 
           <div className="st-go">
-            <button type="submit" className="st-btn primary">Calculate</button>
+            <button type="submit" className="st-btn primary">{updated ? "Updated" : "Calculate"}</button>
+            <span className="sr-only" role="status">{updated ? "Answer updated" : ""}</span>
             {stale && <p>Times changed. Press Calculate for the new answer.</p>}
           </div>
           </form>
 
           {"error" in span ? (
-            <div className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
+            <div ref={answerRef} className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
               <p className="st-error">{span.error}</p>
             </div>
           ) : (
             <>
-              <div className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
+              <div ref={answerRef} className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
                 {/* The figures on split-flap tiles; the plain answer for screen readers */}
-                <p className={`st-big${bigParts.length > 3 ? " long" : ""}`} aria-hidden="true">
+                <p key={round} className={`st-big${bigParts.length > 3 ? " long" : ""}`} aria-hidden="true">
                   {bigParts.map(([n, u]) => (
                     <span key={u}>
                       <Flap value={String(n)} />

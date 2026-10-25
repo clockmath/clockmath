@@ -26,6 +26,7 @@ import { buildDay } from '@/lib/buildDay';
 import { getDevice } from '@/lib/device';
 import { copyText } from '@/lib/clipboard';
 import { parseWallClock, toWallClock } from '@/lib/wallClock';
+import { useCalculateFeedback } from '@/hooks/use-answer-feedback';
 
 // Curated event countdowns (each is its own SEO landing page).
 const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> = [
@@ -104,6 +105,10 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
   // Said under the fields when a shared link's date can't be read
   const [linkNote, setLinkNote] = useState<string | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  // Start countdown shows it worked, even for the same date: the board's
+  // tiles flip again, the button says so, and the board comes into view
+  const boardRef = useRef<HTMLDivElement>(null);
+  const { round, updated, confirm } = useCalculateFeedback(boardRef);
   const toolUsedRef = useRef(false);
 
   // Compute a target timestamp from the current draft inputs.
@@ -199,6 +204,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     }
     setLinkNote(null);
     setActive({ ms: draftTargetMs, title: title.trim() });
+    confirm();
     gaEvent({
       action: 'countdown_created',
       params: { device: getDevice(), has_title: Boolean(title.trim()) },
@@ -207,7 +213,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
       toolUsedRef.current = true;
       toolUsed('countdown', { device: getDevice() });
     }
-  }, [draftTargetMs, title]);
+  }, [draftTargetMs, title, confirm]);
 
   // Start countdown and Enter submit the form. A time typed and entered in
   // the same keystroke reaches state in that event, so the countdown starts
@@ -335,11 +341,11 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
     <div className={className}>
       {/* Countdown display — only shown once a countdown is active */}
       {active && (
-      <div className="relative z-10 mb-6" style={{ '--board': 'var(--line, #1849a9)', '--board-ink': 'var(--line-ink, #ffffff)' } as React.CSSProperties}>
+      <div ref={boardRef} className="relative z-10 mb-6" style={{ '--board': 'var(--line, #1849a9)', '--board-ink': 'var(--line-ink, #ffffff)' } as React.CSSProperties}>
         {/* The same departures board as the event pages, in the Countdowns line colour */}
         <div className={stale ? 'st-faded' : undefined}>
         <StationBoard
-          key={activeMs}
+          key={`${activeMs}-${round}`}
           target={new Date(activeMs)}
           title={activeTitle || 'your date'}
           arrivedLabel={`${activeTitle || 'Your date'} has passed`}
@@ -533,7 +539,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
               <circle cx="12" cy="12" r="10" />
             </svg>
-            Start countdown
+            {updated ? 'Counting down' : 'Start countdown'}
           </button>
           <button
             type="button"
@@ -543,6 +549,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
             Clear
           </button>
         </div>
+        <span className="sr-only" role="status">{updated ? 'Countdown started' : ''}</span>
         {stale && (
           <p role="status" className="mt-2 mb-0 text-sm text-muted-foreground">
             Changed. Press Start countdown to update the board.
