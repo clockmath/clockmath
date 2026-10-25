@@ -155,3 +155,40 @@ html:not(.classic) .station .st-departures .st-dot { width: 12px; height: 12px; 
 
 /* The work hours total: hours and pay side by side on the line's board */
 html:not(.classic) .station .st-ts-board { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 48px; }
+
+/* ---- Market hours: the departures board, one row per exchange ----
+   Built on .st-departures (the holidays board); a light per state, the
+   countdown in the board's lettering, the 12h/24h switch in its header. */
+html:not(.classic) .station .st-markets-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-bottom: 16px; }
+html:not(.classic) .station .st-markets-head h2 { margin: 0; }
+html:not(.classic) .station .st-markets-head p { margin: 4px 0 0; font-size: 15px; color: var(--dep-quiet); }
+html:not(.classic) .station .st-departures.st-markets .st-seg { height: 40px; border-color: var(--dep-rule); }
+html:not(.classic) .station .st-departures.st-markets .st-seg button { color: var(--dep-quiet); }
+html:not(.classic) .station[data-line] .st-departures.st-markets .st-seg button[aria-pressed="true"] { background: var(--line); color: var(--line-ink); }
+html:not(.classic) .station .st-markets tbody th { white-space: nowrap; }
+.station .st-mk-pin { background: none; border: 0; padding: 8px; margin: -8px 2px -8px -8px; color: var(--dep-quiet, var(--quiet)); cursor: pointer; vertical-align: -2px; }
+.station .st-mk-pin:hover { color: var(--dep-ink, var(--ink)); }
+.station .st-mk-pin[aria-pressed="true"] { color: #f3c64a; }
+.station .st-mk-name { font-size: 19px; font-weight: 700; }
+.station .st-mk-city { display: block; margin-left: 26px; font-size: 14px; font-weight: 400; color: var(--dep-quiet, var(--quiet)); }
+.station .st-mk-state { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.station .st-mk-state i { width: 10px; height: 10px; border-radius: 50%; background: rgb(255 255 255 / 0.3); }
+.station .st-markets tr[data-state="open"] .st-mk-state i { background: #3ddc84; box-shadow: 0 0 0 3px rgb(61 220 132 / 0.25); }
+.station .st-markets tr:is([data-state="pre-market"], [data-state="after-hours"]) .st-mk-state i { background: #f5b942; }
+.station .st-markets tr[data-state="lunch"] .st-mk-state i { background: #7cc4ff; }
+.station .st-mk-hours small { display: block; margin-top: 2px; font-size: 13px; color: var(--dep-quiet, var(--quiet)); }
+.station .st-mk-hours small.st-mk-note { color: #ffb27a; }
+.station .st-mk-next { white-space: nowrap; }
+.station .st-mk-next small { display: block; font-size: 13px; color: var(--dep-quiet, var(--quiet)); }
+html:not(.classic) .station .st-mk-next b { font-family: var(--display); font-size: 28px; font-weight: 800; line-height: 1; color: #ffb27a; }
+html:not(.classic) .station .st-markets tr[data-state="open"] .st-mk-next b { color: #3ddc84; }
+@media (max-width: 640px) {
+  /* Name, status and hours on the left; the countdown on the right */
+  .station .st-markets tbody td:nth-child(3) { grid-column: 1; }
+  .station .st-markets tbody td:last-child { grid-row: 1 / span 3; align-self: center; }
+  html:not(.classic) .station .st-mk-next b { font-size: 24px; }
+  /* Shorter rows: the city on the name's line, the hours a size down */
+  .station .st-mk-city { display: inline; margin-left: 8px; }
+  .station .st-markets tbody td.st-mk-hours { font-size: 14px; }
+  .station .st-markets tbody tr { row-gap: 2px; }
+}

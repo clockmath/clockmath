@@ -1,7 +1,12 @@
 /**
  * MarketHoursTool component for ClockMath.com
  * Live stock market hours in the visitor's timezone: open/closed status,
- * countdowns to the next open/close, and pinnable exchange cards.
+ * countdowns to the next open/close, and pinnable exchanges.
+ *
+ * Oct 2026: a departures board (as on the holidays page), one row per
+ * exchange, in place of the grid of cards with emoji flags and pills that
+ * the rest of the site had left behind. The 12h/24h choice is the site's
+ * shared one (useClockFormat).
  */
 
 'use client';
@@ -20,7 +25,7 @@ import {
 import { getUserTimeZone, formatZoned, getTimeZoneDisplayName } from '@/lib/time';
 import { RollingNumber } from '@/components/RollingNumber';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
-import { storageGet } from '@/lib/safeStorage';
+import { useClockFormat } from '@/hooks/use-clock-format';
 import { getDevice } from '@/lib/device';
 
 const PINNED_KEY = 'clockmath-pinned-markets';
@@ -29,22 +34,6 @@ const PINNED_KEY = 'clockmath-pinned-markets';
 interface MarketHoursToolProps {
   className?: string;
 }
-
-const STATE_BADGE: Record<MarketState, string> = {
-  open: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-  'pre-market': 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
-  'after-hours': 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
-  lunch: 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/30',
-  closed: 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30',
-};
-
-const STATE_DOT: Record<MarketState, string> = {
-  open: 'bg-emerald-500',
-  'pre-market': 'bg-amber-500',
-  'after-hours': 'bg-amber-500',
-  lunch: 'bg-sky-500',
-  closed: 'bg-slate-400',
-};
 
 // Sort weight: pinned handled separately; among the rest, trading states
 // first, then closed markets by soonest reopen.
@@ -66,7 +55,8 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
   const toolUsedRef = useRef(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
-  const [hour12, setHour12] = useState(true);
+  const [is24h, setIs24h] = useClockFormat();
+  const hour12 = !is24h;
   const [pinned, setPinned] = useState<string[]>([]);
 
   useEffect(() => {
@@ -79,10 +69,6 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
     } catch {
       /* ignore */
     }
-
-    // Shared preference with the other tools
-    const saved12Hour = storageGet('clockmath-hour12');
-    if (saved12Hour !== null) setHour12(saved12Hour === 'true');
   }, []);
 
   useEffect(() => {
@@ -100,14 +86,7 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
 
   // Note: deliberately not counted as tool use — the format toggle is a
   // cosmetic preference (TimezoneConverter treats the same toggle the same way).
-  const setHourFormat = useCallback((is12: boolean) => {
-    setHour12(is12);
-    try {
-      window.localStorage.setItem('clockmath-hour12', is12.toString());
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setHourFormat = useCallback((is12: boolean) => setIs24h(!is12), [setIs24h]);
 
   const togglePin = useCallback(
     (marketId: string) => {
@@ -175,124 +154,94 @@ export function MarketHoursTool({ className = '' }: MarketHoursToolProps) {
 
   return (
     <div className={className}>
-      {/* Summary bar */}
-      <div className="st-panel bg-card dark:bg-card rounded-2xl px-4 sm:px-6 py-4 shadow-sm border border-border/50 dark:border-border/50 mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-lg font-semibold text-foreground">
-            {openCount === 0 ? 'No markets open right now' : `${openCount} of ${MARKETS.length} markets open`}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            All times shown in your timezone — {getTimeZoneDisplayName(userTZ)}
-          </p>
+      <section className="st-departures st-markets" aria-labelledby="mh-board-title">
+        <div className="st-markets-head">
+          <div>
+            <h2 id="mh-board-title">
+              {openCount === 0 ? 'No markets open right now' : `${openCount} of ${MARKETS.length} markets open`}
+            </h2>
+            <p>All times in your time zone ({getTimeZoneDisplayName(userTZ)})</p>
+          </div>
+          <div className="st-seg" role="group" aria-label="Clock format">
+            <button type="button" onClick={() => setHourFormat(true)} aria-pressed={hour12}>
+              12h
+            </button>
+            <button type="button" onClick={() => setHourFormat(false)} aria-pressed={!hour12}>
+              24h
+            </button>
+          </div>
         </div>
-        <div className="flex bg-muted/50 dark:bg-muted/50 rounded-lg p-1">
-          <button
-            onClick={() => setHourFormat(true)}
-            aria-pressed={hour12}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
-              hour12
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-            }`}
-          >
-            12h
-          </button>
-          <button
-            onClick={() => setHourFormat(false)}
-            aria-pressed={!hour12}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
-              !hour12
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-            }`}
-          >
-            24h
-          </button>
-        </div>
-      </div>
-
-      {/* Market cards */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {sorted.map(({ market, status }) => {
-          const isPinned = pinned.includes(market.id);
-          const sessionTimes = status.sessions
-            .map((s) => {
-              const open = formatZoned(s.openUtc, userTZ, { hour12 });
-              const close = formatZoned(s.closeUtc, userTZ, { hour12 });
-              return `${open.time} – ${close.time}`;
-            })
-            .join(' · ');
-          const sessionDay = status.sessions[0]
-            ? formatZoned(status.sessions[0].openUtc, userTZ)
-            : null;
-          const sessionDayLabel =
-            sessionDay && sessionDay.date !== todayInUserTz ? `${sessionDay.weekday} ` : '';
-          const localHours = market.sessions.map((s) => `${s.open}–${s.close}`).join(', ');
-
-          return (
-            <div
-              key={market.id}
-              className="st-tile bg-card dark:bg-card rounded-2xl p-4 sm:p-5 shadow-sm border border-border/50 dark:border-border/50"
-            >
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-2xl" aria-hidden="true">{market.flag}</span>
-                  <div className="min-w-0">
-                    <h2 className="font-bold text-foreground leading-tight">{market.shortName}</h2>
-                    <p className="text-xs text-muted-foreground truncate">{market.city}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${STATE_BADGE[status.state]}`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${STATE_DOT[status.state]} ${status.state === 'open' ? 'animate-pulse' : ''}`} />
-                    {getStateLabel(status.state)}
-                  </span>
-                  <button
-                    onClick={() => togglePin(market.id)}
-                    aria-label={isPinned ? `Unpin ${market.shortName}` : `Pin ${market.shortName} to top`}
-                    aria-pressed={isPinned}
-                    className={`p-1.5 rounded-lg transition-colors ${
-                      isPinned
-                        ? 'text-amber-500 hover:text-amber-600'
-                        : 'text-muted-foreground/50 hover:text-foreground hover:bg-muted/50'
-                    }`}
-                  >
-                    <Star className="w-4 h-4" fill={isPinned ? 'currentColor' : 'none'} />
-                  </button>
-                </div>
-              </div>
-
-              <p className="text-lg font-semibold text-foreground mb-1">
-                {TRANSITION_VERB[status.nextTransitionLabel]} in{' '}
-                <span className="font-mono text-primary">
-                  <RollingNumber value={formatCountdown(status.nextTransition, new Date(nowMs))} />
-                </span>
-              </p>
-
-              <p className="text-sm text-muted-foreground">
-                {sessionDayLabel}
-                {sessionTimes || '—'} your time
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {localHours} in {market.city}
-              </p>
-
-              {(status.holidayName || status.isHalfDay) && (
-                <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-400">
-                  {status.holidayName ? `Closed today — ${status.holidayName}` : 'Shortened trading day today'}
-                </p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <p className="mt-4 text-xs text-muted-foreground text-center">
-        Regular trading hours with automatic DST handling. Holiday closures included for NYSE, NASDAQ,
-        and LSE; {uncuratedNames} show regular weekday hours only.
-      </p>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Exchange</th>
+              <th scope="col">Status</th>
+              <th scope="col">Hours, your time</th>
+              <th scope="col">Next</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map(({ market, status }) => {
+              const isPinned = pinned.includes(market.id);
+              const sessionTimes = status.sessions
+                .map((s) => {
+                  const open = formatZoned(s.openUtc, userTZ, { hour12 });
+                  const close = formatZoned(s.closeUtc, userTZ, { hour12 });
+                  return `${open.time} – ${close.time}`;
+                })
+                .join(' · ');
+              const sessionDay = status.sessions[0] ? formatZoned(status.sessions[0].openUtc, userTZ) : null;
+              const sessionDayLabel = sessionDay && sessionDay.date !== todayInUserTz ? `${sessionDay.weekday} ` : '';
+              const localHours = market.sessions.map((s) => `${s.open}–${s.close}`).join(', ');
+              return (
+                <tr key={market.id} data-state={status.state}>
+                  <th scope="row">
+                    <button
+                      type="button"
+                      className="st-mk-pin"
+                      onClick={() => togglePin(market.id)}
+                      aria-label={isPinned ? `Unpin ${market.shortName}` : `Pin ${market.shortName} to the top`}
+                      aria-pressed={isPinned}
+                    >
+                      <Star className="w-4 h-4" fill={isPinned ? 'currentColor' : 'none'} aria-hidden="true" />
+                    </button>
+                    <span className="st-mk-name">{market.shortName}</span>
+                    <span className="st-mk-city">{market.city}</span>
+                  </th>
+                  <td>
+                    <span className="st-mk-state">
+                      <i aria-hidden="true" />
+                      {getStateLabel(status.state)}
+                    </span>
+                  </td>
+                  <td className="st-mk-hours">
+                    {sessionDayLabel}
+                    {sessionTimes || '—'}
+                    <small>
+                      {localHours} in {market.city}
+                    </small>
+                    {(status.holidayName || status.isHalfDay) && (
+                      <small className="st-mk-note">
+                        {status.holidayName ? `Closed today: ${status.holidayName}` : 'Shortened trading day today'}
+                      </small>
+                    )}
+                  </td>
+                  <td className="st-mk-next">
+                    <small>{TRANSITION_VERB[status.nextTransitionLabel]} in</small>
+                    <b>
+                      <RollingNumber value={formatCountdown(status.nextTransition, new Date(nowMs))} />
+                    </b>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p>
+          Regular trading hours with automatic daylight-saving handling. Holiday closures included for NYSE, NASDAQ
+          and LSE; {uncuratedNames} show regular weekday hours only. Star an exchange to keep it at the top.
+        </p>
+      </section>
     </div>
   );
 }
