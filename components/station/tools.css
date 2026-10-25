@@ -230,3 +230,18 @@ html:not(.classic) .station .st-sleep-board .st-figure { font-size: 34px !import
 @media (max-width: 400px) {
   .station .st-sleep-best { display: block; width: max-content; margin: 4px 0 0 auto; }
 }
+
+/* ---- Quiz start screen: a clock face beside the start button ---- */
+html:not(.classic) .station .st-quiz-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 40px; align-items: start; }
+.station .st-quiz-intro-head { grid-column: 1; grid-row: 1; }
+.station .st-quiz-intro-body { grid-column: 1; grid-row: 2; }
+.station .st-quiz-intro-clock { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: 168px; height: 168px; }
+html:not(.classic) .station .st-quiz-streak { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; font-size: 15px; font-weight: 600; }
+html:not(.classic) .station .st-quiz-streak .st-flap { font-family: var(--display); font-size: 30px; font-weight: 800; }
+@media (max-width: 640px) {
+  /* Phones: a small clock beside the heading lines only; the button keeps the full width */
+  html:not(.classic) .station .st-quiz-intro { column-gap: 14px; }
+  .station .st-quiz-intro-body { grid-column: 1 / -1; }
+  .station .st-quiz-intro-clock { grid-row: 1; align-self: start; width: 76px; height: 76px; }
+}
+.classic .st-quiz-intro-clock { display: none; }
