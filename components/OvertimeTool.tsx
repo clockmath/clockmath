@@ -40,6 +40,13 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
   const [multiplier, setMultiplier] = useState(1.5);
   const [rateStr, setRateStr] = useState('');
   const [loaded, setLoaded] = useState(false);
+  // Phones show a number keypad for these fields (inputMode decimal), which
+  // has no ":" or "h": there the hint and note offer only what can be typed.
+  // Decided after mount, so the server and first client render match.
+  const [touch, setTouch] = useState(false);
+  useEffect(() => {
+    setTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
 
   // The same rate and threshold most weeks: remembered on this device
   useEffect(() => {
@@ -76,7 +83,9 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
     hours:
       hours === null
         ? hoursStr.trim()
-          ? 'Use hours like 46.5, 46:30 or 46h 30m.'
+          ? touch
+            ? 'Use decimal hours, like 46.5 for 46 hours 30 minutes.'
+            : 'Use hours like 46.5, 46:30 or 46h 30m.'
           : null
         : Number.isNaN(hours)
           ? "Hours can't be negative."
@@ -121,7 +130,18 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                 Hours worked this week
               </label>
               <InfoTip label="hours worked">
-                As 46.5, 46:30 or 46h 30m. Adding up shifts first?{' '}
+                {touch ? (
+                  <>
+                    In decimal hours: 46.5 is 46 hours 30 minutes. Have hours and minutes? The{' '}
+                    <Link href="/tools/decimal-hours" className="underline underline-offset-2 hover:text-foreground">
+                      decimal hours converter
+                    </Link>{' '}
+                    turns them into a decimal.{' '}
+                  </>
+                ) : (
+                  'As 46.5, 46:30 or 46h 30m. '
+                )}
+                Adding up shifts first?{' '}
                 <Link href="/tools/timesheet" className="underline underline-offset-2 hover:text-foreground">
                   Use the work hours calculator
                 </Link>
