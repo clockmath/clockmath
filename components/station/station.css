@@ -421,6 +421,12 @@ html:not(.classic) .station .st-aside-tile { background: none; border: 0; border
   .st-clock dd { font-size: 36px; }
 }
 
+/* Tablet widths: a three-digit day count and the clock don't fit side by
+   side, so the clock goes under the days */
+@media (min-width: 761px) and (max-width: 900px) {
+  .st-board { grid-template-columns: 1fr; }
+}
+
 /* A black or midnight board would sink into the dark dial: give it an edge */
 .dark .st-board { box-shadow: inset 0 0 0 1px var(--rule); }
 

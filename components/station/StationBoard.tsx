@@ -74,7 +74,10 @@ export function StationBoard({
                 <p className="st-left-cap">Time left</p>
                 <p className="st-days">
                   <Flap value={days === null ? '--' : String(days)} />
-                  <small>{days === 1 ? 'day' : 'days'}</small>
+                  {/* "Full days": 60 of them beside the sentence's 61 calendar
+                      days reads as two counts, not a mistake (the sentence is
+                      the line search engines quote, so it stays as it is) */}
+                  <small>{days === 1 ? 'full day' : 'full days'}</small>
                 </p>
               </div>
             )}
