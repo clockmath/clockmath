@@ -1,6 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+
+/**
+ * Time field: type straight into it ("930", "9:30", "17:45", "5:30pm"),
+ * or open the panel for hour and five-minute steps. Rebuilt Oct 2026 after
+ * an audit of the homepage inputs:
+ *  - the field only ever shows the time actually in use: Cancel, Escape or a
+ *    click outside the panel discard its steps, and a typed time that isn't
+ *    one ("25:00") is refused with a note instead of sitting in the field
+ *    while the answer used the old value;
+ *  - typing needs no panel (it took open, type, Confirm);
+ *  - minutes step by five (9:00 to 9:30 was 30 taps), carrying into the hour;
+ *  - the panel is wide enough for its controls and anchored inside the
+ *    field's right edge (at 156px it spilled off phones);
+ *  - on touch screens it is the phone's own time wheel (input type="time").
+ * The value in and out is "HH:MM:SS", 24-hour, as before.
+ */
 
 interface InlineTimePickerProps {
   value: string;
@@ -12,608 +28,297 @@ interface InlineTimePickerProps {
   ariaLabel?: string;
 }
 
-export function InlineTimePicker({ 
-  value, 
-  onChange, 
-  is24h,
-  className = "",
-  ariaLabel,
-}: InlineTimePickerProps) {
-  // Parse initial value for proper initialization
-  const parseInitialValue = (val: string) => {
-    if (!val) return { hour: 9, minute: 0, period: 'AM' as 'AM' | 'PM' };
-    
-    const parts = val.split(':');
-    const hour24 = parseInt(parts[0] || '9', 10);
-    const minute = parseInt(parts[1] || '0', 10);
-    
-    if (isNaN(hour24) || isNaN(minute)) {
-      return { hour: 9, minute: 0, period: 'AM' as 'AM' | 'PM' };
-    }
-    
-    // For 24h format, use hour as-is
-    if (is24h) {
-      return { hour: hour24, minute, period: 'AM' as 'AM' | 'PM' };
-    }
-    
-    // Convert to 12h format for initial state
-    let hour12 = hour24;
-    let period: 'AM' | 'PM' = 'AM';
-    
-    if (hour24 === 0) {
-      hour12 = 12;
-      period = 'AM';
-    } else if (hour24 < 12) {
-      hour12 = hour24;
-      period = 'AM';
-    } else if (hour24 === 12) {
-      hour12 = 12;
-      period = 'PM';
-    } else {
-      hour12 = hour24 - 12;
-      period = 'PM';
-    }
-    
-    return { hour: hour12, minute, period };
-  };
-  
-  const initialState = parseInitialValue(value);
-  
-  // Debug version - check console for input handling
-  const [selectedHour, setSelectedHour] = useState(initialState.hour);
-  const [selectedMinute, setSelectedMinute] = useState(initialState.minute);
-  const [selectedPeriod, setSelectedPeriod] = useState<'AM' | 'PM'>(initialState.period);
-  const [timeInput, setTimeInput] = useState('');
-  const [, setIsInputMode] = useState(false);
+const DAY = 1440;
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** "09:30:00" → minutes since midnight, or null. */
+function toMinutes(value: string): number | null {
+  const [h, m] = value.split(":").map(Number);
+  return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
+}
+const toValue = (t: number) => `${pad(Math.floor(t / 60))}:${pad(t % 60)}:00`;
+const wrap = (t: number) => ((t % DAY) + DAY) % DAY;
+/** Five minutes on or back, landing on a multiple of five (9:02 → 9:05 or 9:00). */
+const step5 = (t: number, dir: 1 | -1) => wrap(dir > 0 ? t - (t % 5) + 5 : t % 5 ? t - (t % 5) : t - 5);
+
+/** Minutes since midnight as the field shows them: "17:45" or "5:45 PM". */
+export function formatTime(t: number, is24h: boolean): string {
+  const h = Math.floor(t / 60);
+  const m = t % 60;
+  if (is24h) return `${pad(h)}:${pad(m)}`;
+  return `${h % 12 || 12}:${pad(m)} ${h >= 12 ? "PM" : "AM"}`;
+}
+
+/**
+ * What someone typed, as minutes since midnight, or null if it isn't a time:
+ * "9", "930", "0930", "9:30", "9.30", "21:30", "5:30pm", "5 pm", "5p".
+ * Without am/pm in 12-hour mode, 1–11 keeps the field's current half of the
+ * day (so "5:30" in an afternoon field is 5:30 PM) and a bare 12 is noon.
+ */
+export function parseTime(text: string, is24h: boolean, current: number | null): number | null {
+  const m = text.trim().toLowerCase().match(/^(\d{1,2})(?:[:.h]?(\d{2}))?\s*(a|p|am|pm|a\.m\.|p\.m\.)?$/);
+  if (!m) return null;
+  let h = Number(m[1]);
+  const min = m[2] === undefined ? 0 : Number(m[2]);
+  if (min > 59) return null;
+  const ap = m[3]?.[0];
+  if (ap) {
+    if (h < 1 || h > 12) return null;
+    h = (h % 12) + (ap === "p" ? 12 : 0);
+  } else if (!is24h && h >= 1 && h <= 11) {
+    h += current !== null && current >= 720 ? 12 : 0;
+  }
+  return h > 23 ? null : h * 60 + min;
+}
+
+export function InlineTimePicker({ value, onChange, is24h, className = "", ariaLabel }: InlineTimePickerProps) {
+  const current = toMinutes(value);
+  const shown = current === null ? "" : formatTime(current, is24h);
+  const [text, setText] = useState(shown);
+  const [focused, setFocused] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [draft, setDraft] = useState(current ?? 540);
+  // Touch screens get the phone's own time wheel; decided after mount so the
+  // server and first client render match
+  const [native, setNative] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const wasOpenRef = useRef(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const noteId = useId();
 
-  // Return keyboard focus to the trigger when the popup closes (Escape,
-  // Cancel, or Confirm) so keyboard users aren't dropped at the body.
   useEffect(() => {
-    if (wasOpenRef.current && !isOpen) {
-      const active = document.activeElement;
-      if (!active || active === document.body || containerRef.current?.contains(active)) {
-        triggerRef.current?.focus();
-      }
-    }
-    wasOpenRef.current = isOpen;
-  }, [isOpen]);
-
-  // Parse current time on mount or when value changes
-  useEffect(() => {
-    if (value) {
-      const [timePart] = value.split(':');
-      const hour = parseInt(timePart, 10);
-      const minute = parseInt(value.split(':')[1] || '0', 10);
-      
-      if (!isNaN(hour) && !isNaN(minute)) {
-        if (is24h) {
-          // Store in 24h format
-          setSelectedHour(hour);
-          setSelectedMinute(minute);
-          setTimeInput(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
-          setHourFormat('24h');
-        } else {
-          // Convert incoming 24h to 12h format
-          let hour12 = hour;
-          let period: 'AM' | 'PM' = 'AM';
-          
-          if (hour === 0) {
-            hour12 = 12;
-            period = 'AM';
-          } else if (hour < 12) {
-            hour12 = hour;
-            period = 'AM';
-          } else if (hour === 12) {
-            hour12 = 12;
-            period = 'PM';
-          } else {
-            hour12 = hour - 12;
-            period = 'PM';
-          }
-          
-          setSelectedHour(hour12);
-          setSelectedMinute(minute);
-          setSelectedPeriod(period);
-          setTimeInput(`${hour12}:${minute.toString().padStart(2, '0')} ${period}`);
-          setHourFormat('12h');
-        }
-      }
-    } else {
-      setTimeInput('');
-    }
-  }, [value, is24h]);
-
-  const formatDisplayTime = useCallback(() => {
-    // selectedHour is always in the correct format now (12h when !is24h, 24h when is24h)
-    if (is24h) {
-      return `${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}`;
-    } else {
-      return `${selectedHour}:${selectedMinute.toString().padStart(2, '0')} ${selectedPeriod}`;
-    }
-  }, [selectedHour, selectedMinute, selectedPeriod, is24h]);
-
-  // Track the current format of selectedHour to prevent double conversion
-  const [hourFormat, setHourFormat] = useState<'12h' | '24h'>(is24h ? '24h' : '12h');
-  
-  // Handle format switching - convert hour between 12h and 24h
-  useEffect(() => {
-    const targetFormat = is24h ? '24h' : '12h';
-    if (hourFormat === targetFormat) return; // No conversion needed
-    
-    if (targetFormat === '24h' && hourFormat === '12h') {
-      // Converting from 12h to 24h
-      let hour24 = selectedHour;
-      if (selectedPeriod === 'AM' && selectedHour === 12) {
-        hour24 = 0;
-      } else if (selectedPeriod === 'PM' && selectedHour !== 12) {
-        hour24 = selectedHour + 12;
-      }
-      setSelectedHour(hour24);
-      setHourFormat('24h');
-    } else if (targetFormat === '12h' && hourFormat === '24h') {
-      // Converting from 24h to 12h
-      let hour12 = selectedHour;
-      let period: 'AM' | 'PM' = 'AM';
-      
-      if (selectedHour === 0) {
-        hour12 = 12;
-        period = 'AM';
-      } else if (selectedHour < 12) {
-        hour12 = selectedHour;
-        period = 'AM';
-      } else if (selectedHour === 12) {
-        hour12 = 12;
-        period = 'PM';
-      } else {
-        hour12 = selectedHour - 12;
-        period = 'PM';
-      }
-      
-      setSelectedHour(hour12);
-      setSelectedPeriod(period);
-      setHourFormat('12h');
-    }
-  }, [is24h, hourFormat, selectedHour, selectedPeriod]);
-  
-  // Update time input display when hour/minute/period changes
-  useEffect(() => {
-    if (selectedHour !== undefined && selectedMinute !== undefined) {
-      if (is24h) {
-        setTimeInput(`${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}`);
-      } else {
-        setTimeInput(`${selectedHour}:${selectedMinute.toString().padStart(2, '0')} ${selectedPeriod}`);
-      }
-    }
-  }, [is24h, selectedHour, selectedMinute, selectedPeriod]);
-
-
-  
-  // Handle time input - just update the display, don't parse until blur/confirm
-  const handleTimeInputChange = useCallback((inputValue: string) => {
-    // Allow colons, digits, spaces, and AM/PM for 12h format
-    let cleanValue = inputValue;
-    
-    if (is24h) {
-      // 24h: only digits and colons, max 5 chars (HH:MM)
-      cleanValue = inputValue.replace(/[^\d:]/g, '').slice(0, 5);
-    } else {
-      // 12h: allow digits, colons, spaces, A, P, M
-      cleanValue = inputValue.replace(/[^\d:\sAPMapm]/g, '').slice(0, 8);
-    }
-    
-    // Just update the display, don't parse yet
-    setTimeInput(cleanValue);
-  }, [is24h]);
-
-  const handleHourChange = useCallback((delta: number) => {
-    if (is24h) {
-      setSelectedHour(prev => {
-        const newHour = prev + delta;
-        if (newHour < 0) return 23;
-        if (newHour > 23) return 0;
-        return newHour;
-      });
-    } else {
-      setSelectedHour(prev => {
-        const newHour = prev + delta;
-        if (newHour < 1) return 12;
-        if (newHour > 12) return 1;
-        return newHour;
-      });
-    }
-  }, [is24h]);
-
-  const handleMinuteChange = useCallback((delta: number) => {
-    setSelectedMinute(prev => {
-      const newMinute = prev + delta;
-      if (newMinute < 0) return 59;
-      if (newMinute > 59) return 0;
-      return newMinute;
-    });
+    setNative(window.matchMedia("(pointer: coarse)").matches);
   }, []);
 
-  const handleConfirm = useCallback(() => {
-    let hour24: number;
-    let minute: number;
-    
-    // If user typed something, parse it directly (don't rely on state updates)
-    if (timeInput && timeInput.trim()) {
-      const cleaned = timeInput.trim().toUpperCase();
-      
-      // Check for AM/PM in 12h mode
-      let period = selectedPeriod;
-      if (!is24h) {
-        if (cleaned.includes('P')) period = 'PM';
-        if (cleaned.includes('A')) period = 'AM';
-      }
-      
-      // Extract just the numbers and colon
-      const digits = cleaned.replace(/[^\d:]/g, '');
-      
-      let parsedHour: number | null = null;
-      let parsedMinute: number | null = null;
-      
-      if (digits.includes(':')) {
-        // Format: "9:30" or "09:30"
-        const parts = digits.split(':');
-        parsedHour = parseInt(parts[0], 10);
-        parsedMinute = parseInt(parts[1], 10);
-      } else {
-        // Format: "930" or "0930" or "1230"
-        if (digits.length === 1 || digits.length === 2) {
-          // "9" or "09" → hour only
-          parsedHour = parseInt(digits, 10);
-          parsedMinute = 0;
-        } else if (digits.length === 3) {
-          // "930" → 9:30
-          parsedHour = parseInt(digits.slice(0, 1), 10);
-          parsedMinute = parseInt(digits.slice(1, 3), 10);
-        } else if (digits.length === 4) {
-          // "0930" or "1230" → 09:30 or 12:30
-          parsedHour = parseInt(digits.slice(0, 2), 10);
-          parsedMinute = parseInt(digits.slice(2, 4), 10);
-        }
-      }
-      
-      // Validate and convert to 24h
-      if (parsedHour !== null && parsedMinute !== null && !isNaN(parsedHour) && !isNaN(parsedMinute) && parsedMinute >= 0 && parsedMinute <= 59) {
-        if (is24h) {
-          if (parsedHour >= 0 && parsedHour <= 23) {
-            hour24 = parsedHour;
-            minute = parsedMinute;
-          } else {
-            // Invalid, use current state
-            hour24 = selectedHour;
-            minute = selectedMinute;
-          }
-        } else {
-          // 12h format - convert to 24h
-          minute = parsedMinute;
-          if (parsedHour >= 1 && parsedHour <= 12) {
-            if (period === 'AM' && parsedHour === 12) {
-              hour24 = 0;
-            } else if (period === 'PM' && parsedHour !== 12) {
-              hour24 = parsedHour + 12;
-            } else {
-              hour24 = parsedHour;
-            }
-          } else if (parsedHour >= 13 && parsedHour <= 23) {
-            // User typed 24h format in 12h mode
-            hour24 = parsedHour;
-            minute = parsedMinute;
-          } else if (parsedHour === 0) {
-            // Midnight
-            hour24 = 0;
-            minute = parsedMinute;
-          } else {
-            // Invalid, use current state
-            hour24 = selectedHour;
-            minute = selectedMinute;
-            if (!is24h) {
-              if (selectedPeriod === 'AM' && selectedHour === 12) {
-                hour24 = 0;
-              } else if (selectedPeriod === 'PM' && selectedHour !== 12) {
-                hour24 = selectedHour + 12;
-              }
-            }
-          }
-        }
-      } else {
-        // Parsing failed, use current state
-        hour24 = selectedHour;
-        minute = selectedMinute;
-        if (!is24h) {
-          if (selectedPeriod === 'AM' && selectedHour === 12) {
-            hour24 = 0;
-          } else if (selectedPeriod === 'PM' && selectedHour !== 12) {
-            hour24 = selectedHour + 12;
-          }
-        }
-      }
-    } else {
-      // No typed input, use selected values from controls
-      hour24 = selectedHour;
-      minute = selectedMinute;
-      
-      if (!is24h) {
-        // Convert 12h to 24h
-        if (selectedPeriod === 'AM' && selectedHour === 12) {
-          hour24 = 0;
-        } else if (selectedPeriod === 'PM' && selectedHour !== 12) {
-          hour24 = selectedHour + 12;
-        }
-      }
+  useEffect(() => {
+    if (!note) return;
+    const id = setTimeout(() => setNote(null), 6000);
+    return () => clearTimeout(id);
+  }, [note]);
+
+  // The field follows the value (and the 12h/24h switch) unless it's being typed in
+  useEffect(() => {
+    if (!focused) setText(shown);
+  }, [shown, focused]);
+
+  const set = useCallback(
+    (t: number) => {
+      setNote(null);
+      if (t !== current) onChange(toValue(t));
+      setText(formatTime(t, is24h));
+    },
+    [current, onChange, is24h],
+  );
+
+  // Typed text: taken if it's a time, refused with a note if not
+  const commit = useCallback(() => {
+    const typed = text.trim();
+    if (typed === shown) return;
+    const t = parseTime(typed, is24h, current);
+    if (t === null) {
+      if (typed)
+        setNote(
+          `“${typed}” isn't a time, so ${shown} is kept. ${is24h ? "Hours run 0–23 and minutes 0–59." : "Try a time like 5:30 pm."}`,
+        );
+      setText(shown);
+      return;
     }
-    
-    const timeStr = `${hour24.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
-    onChange(timeStr);
+    set(t);
+  }, [text, shown, is24h, current, set]);
+
+  const close = useCallback((returnFocus: boolean) => {
     setIsOpen(false);
-  }, [selectedHour, selectedMinute, selectedPeriod, is24h, timeInput, onChange]);
+    if (returnFocus) toggleRef.current?.focus();
+  }, []);
+
+  // Outside click or focus leaving the panel: close without saving
+  useEffect(() => {
+    if (!isOpen) return;
+    const inside = (n: EventTarget | null) => n instanceof Node && !!containerRef.current?.contains(n);
+    const onPointer = (e: PointerEvent) => {
+      if (!inside(e.target)) close(false);
+    };
+    const onFocus = (e: FocusEvent) => {
+      if (!inside(e.target)) close(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("focusin", onFocus);
+    requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("button")?.focus());
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("focusin", onFocus);
+    };
+  }, [isOpen, close]);
+
+  const open = () => {
+    commit();
+    setDraft(parseTime(text, is24h, current) ?? current ?? 540);
+    setIsOpen(true);
+  };
+  const stepMinutes = (dir: 1 | -1) => setDraft((t) => step5(t, dir));
+
+  if (native) {
+    return (
+      <div className={`st-time-box relative flex items-center w-full bg-background dark:bg-muted border border-border rounded-xl ${className}`}>
+        <input
+          type="time"
+          aria-label={ariaLabel}
+          value={current === null ? "" : `${pad(Math.floor(current / 60))}:${pad(current % 60)}`}
+          onChange={(e) => {
+            const t = toMinutes(e.target.value);
+            if (t !== null) set(t);
+          }}
+          className="st-time-input w-full px-4 py-3 bg-transparent font-mono text-foreground outline-none"
+        />
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      {/* Time Input Button */}
-      <button
-        ref={triggerRef}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-        aria-label={`${ariaLabel ? ariaLabel + ', ' : ''}${timeInput || formatDisplayTime()}`}
-        onClick={() => {
-          setIsOpen(!isOpen);
-          // If opening, focus THIS picker's own input (scoped to the container
-          // so a text input elsewhere on the page isn't grabbed by mistake).
-          if (!isOpen) {
-            setTimeout(() => {
-              const input = containerRef.current?.querySelector('input[type="text"]') as HTMLInputElement | null;
-              if (input) {
-                input.focus();
-                input.select();
-              }
-            }, 100);
-          }
-        }}
-        className={`w-full px-4 py-3 text-left bg-background dark:bg-muted border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 border-border dark:border-border hover:border-primary/50`}
-      >
-        <div className="flex items-center justify-between">
-          <span className="text-foreground dark:text-foreground font-mono">
-            {timeInput || formatDisplayTime()}
-          </span>
-          <svg aria-hidden="true" className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </button>
-
-      {/* Dropdown Time Picker */}
-      {isOpen && (
-        <div
-          role="dialog"
-          aria-label={`${ariaLabel ? ariaLabel + ' — ' : ''}choose a time`}
+      <div className="st-time-box flex items-center w-full bg-background dark:bg-muted border border-border rounded-xl transition-colors hover:border-primary/50 focus-within:ring-2 focus-within:ring-primary/50">
+        <input
+          type="text"
+          inputMode="text"
+          autoComplete="off"
+          spellCheck={false}
+          aria-label={ariaLabel}
+          aria-invalid={note ? true : undefined}
+          aria-describedby={note ? noteId : undefined}
+          value={text}
+          placeholder={is24h ? "09:00" : "9:00 AM"}
+          maxLength={10}
+          onFocus={(e) => {
+            setFocused(true);
+            e.target.select();
+          }}
+          onChange={(e) => {
+            setText(e.target.value);
+            setNote(null);
+          }}
+          onBlur={() => {
+            setFocused(false);
+            commit();
+          }}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') {
+            if (e.key === "Enter") {
+              // Take the time; inside a form the Enter then submits it
+              commit();
+            } else if (e.key === "Escape") {
+              setText(shown);
+              setNote(null);
+            } else if ((e.key === "ArrowUp" || e.key === "ArrowDown") && current !== null) {
               e.preventDefault();
-              e.stopPropagation();
-              setIsOpen(false);
+              set(step5(parseTime(text, is24h, current) ?? current, e.key === "ArrowUp" ? 1 : -1));
             }
           }}
-          className="st-pop absolute top-full left-0 right-0 mt-2 bg-background dark:bg-card border border-border dark:border-border rounded-xl shadow-xl z-[100] p-4 mb-4"
+          className="st-time-input min-w-0 flex-1 px-4 py-3 bg-transparent font-mono text-foreground outline-none"
+        />
+        <button
+          ref={toggleRef}
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-label={`${ariaLabel ? `${ariaLabel}: ` : ""}choose with buttons`}
+          onClick={() => (isOpen ? close(true) : open())}
+          className="st-time-toggle shrink-0 self-stretch px-3 text-muted-foreground hover:text-foreground"
         >
-          {/* Time Display */}
-          <div className="text-center mb-4">
-            <div className="text-2xl font-bold text-foreground dark:text-foreground font-mono">
-              <input
-                type="text"
-                value={timeInput || formatDisplayTime()}
-                onChange={(e) => {
-                  setIsInputMode(true);
-                  handleTimeInputChange(e.target.value);
-                }}
-                onFocus={(e) => {
-                  setIsInputMode(true);
-                  // Show current formatted time for editing
-                  if (!timeInput || timeInput === formatDisplayTime()) {
-                    // Extract just the time part without AM/PM for easier editing
-                    const current = formatDisplayTime();
-                    const justTime = is24h ? current : current.replace(/\s*(AM|PM)\s*$/i, '');
-                    setTimeInput(justTime);
-                  }
-                  // Select all text when focused
-                  setTimeout(() => e.target.select(), 0);
-                }}
-                onBlur={(e) => {
-                  setIsInputMode(false);
-                  // Don't auto-confirm/close when focus moves to another control
-                  // inside the picker (steppers, AM/PM, hour/min inputs).
-                  const next = e.relatedTarget as Node | null;
-                  if (next && containerRef.current?.contains(next)) {
-                    return;
-                  }
-                  // Auto-confirm when blurring away from the picker entirely
-                  if (timeInput && isOpen) {
-                    handleConfirm();
-                  } else {
-                    // Format the display to show properly formatted time
-                    setTimeInput(formatDisplayTime());
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleConfirm();
-                  } else if (e.key === 'Escape') {
-                    e.preventDefault();
-                    setIsOpen(false);
-                  }
-                }}
-                aria-label="Type a time"
-                className="w-full text-center bg-transparent border-none outline-none focus:bg-muted/20 dark:focus:bg-muted/50 rounded-lg px-2 py-1"
-                placeholder={is24h ? "09:00" : "9:00 AM"}
-                maxLength={is24h ? 5 : 8}
-                autoFocus
-              />
+          <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+      {note && (
+        // Floats under the field, so it moves nothing around it (the fields
+        // beside it stay level); clears on the next edit or after a few seconds
+        <p
+          id={noteId}
+          role="status"
+          className="st-time-note absolute left-0 top-full z-50 mt-1 w-max max-w-[17rem] rounded-md px-3 py-2 text-sm text-red-700 dark:text-red-300 bg-background shadow-md border border-red-200 dark:border-red-900"
+        >
+          {note}
+        </p>
+      )}
+
+      {isOpen && (
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-label={`${ariaLabel ? `${ariaLabel}: ` : ""}choose a time`}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              e.stopPropagation();
+              close(true);
+            }
+          }}
+          className="st-pop st-time-pop absolute top-full right-0 mt-2 z-[100] w-[17rem] max-w-[calc(100vw-2rem)] bg-background dark:bg-card border border-border rounded-xl shadow-xl p-4"
+        >
+          <p className="text-center text-3xl font-bold font-mono text-foreground mb-3" aria-live="polite">
+            {formatTime(draft, is24h)}
+          </p>
+          {!is24h && (
+            <div className="flex justify-center mb-3" role="group" aria-label="Morning or afternoon">
+              <div className="flex bg-muted/50 dark:bg-muted rounded-lg p-1">
+                {(["AM", "PM"] as const).map((p) => {
+                  const on = (draft >= 720) === (p === "PM");
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => !on && setDraft((t) => wrap(t + 720))}
+                      className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            {!is24h && (
-              <div className="flex justify-center mt-2">
-                <div className="flex bg-muted/50 dark:bg-muted rounded-lg p-1">
-                  <button
-                    onClick={() => setSelectedPeriod('AM')}
-                    onMouseDown={(e) => e.preventDefault()}
-                    aria-pressed={selectedPeriod === 'AM'}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      selectedPeriod === 'AM'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    AM
+          )}
+          <div className="space-y-3">
+            {(
+              [
+                ["Hour", "One hour", () => setDraft((t) => wrap(t - 60)), () => setDraft((t) => wrap(t + 60))],
+                ["Minutes", "5 minutes", () => stepMinutes(-1), () => stepMinutes(1)],
+              ] as const
+            ).map(([label, unit, down, up]) => (
+              <div key={label} className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={down} aria-label={`${unit} earlier`} className="w-10 h-10 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted flex items-center justify-center">
+                    <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
                   </button>
-                  <button
-                    onClick={() => setSelectedPeriod('PM')}
-                    onMouseDown={(e) => e.preventDefault()}
-                    aria-pressed={selectedPeriod === 'PM'}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      selectedPeriod === 'PM'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    PM
+                  <button type="button" onClick={up} aria-label={`${unit} later`} className="w-10 h-10 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted flex items-center justify-center">
+                    <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
                   </button>
                 </div>
               </div>
-            )}
+            ))}
           </div>
-
-          {/* Time Controls */}
-          <div className="space-y-4">
-            {/* Hours */}
-            <div className="flex items-center justify-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground w-12">Hour</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleHourChange(-1)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  aria-label="Decrease hour"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
-                >
-                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                  </svg>
-                </button>
-                <div className="w-12 text-center">
-                  <input
-                    type="number"
-                    aria-label="Hour"
-                    value={selectedHour}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value, 10);
-                      if (!isNaN(value)) {
-                        if (is24h) {
-                          if (value >= 0 && value <= 23) {
-                            setSelectedHour(value);
-                          } else if (value > 23) {
-                            setSelectedHour(23);
-                          } else if (value < 0) {
-                            setSelectedHour(0);
-                          }
-                        } else {
-                          if (value >= 1 && value <= 12) {
-                            setSelectedHour(value);
-                          } else if (value > 12) {
-                            setSelectedHour(12);
-                          } else if (value < 1) {
-                            setSelectedHour(1);
-                          }
-                        }
-                      }
-                    }}
-                    className="w-full text-lg font-bold text-center bg-transparent border-none outline-none text-foreground dark:text-foreground"
-                    min={is24h ? 0 : 1}
-                    max={is24h ? 23 : 12}
-                    step={1}
-                  />
-                </div>
-                <button
-                  onClick={() => handleHourChange(1)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  aria-label="Increase hour"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
-                >
-                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Minutes */}
-            <div className="flex items-center justify-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground w-12">Min</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleMinuteChange(-1)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  aria-label="Decrease minute"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
-                >
-                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                  </svg>
-                </button>
-                <div className="w-12 text-center">
-                  <input
-                    type="number"
-                    aria-label="Minute"
-                    value={selectedMinute}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value, 10);
-                      if (!isNaN(value)) {
-                        if (value >= 0 && value <= 59) {
-                          setSelectedMinute(value);
-                        } else if (value > 59) {
-                          setSelectedMinute(59);
-                        } else if (value < 0) {
-                          setSelectedMinute(0);
-                        }
-                      }
-                    }}
-                    className="w-full text-lg font-bold text-center bg-transparent border-none outline-none text-foreground dark:text-foreground"
-                    min={0}
-                    max={59}
-                    step={1}
-                  />
-                </div>
-                <button
-                  onClick={() => handleMinuteChange(1)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  aria-label="Increase minute"
-                  className="w-8 h-8 rounded-lg bg-muted/50 dark:bg-muted hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
-                >
-                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
           <div className="flex gap-2 mt-4">
             <button
-              onClick={() => setIsOpen(false)}
-              className="flex-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted dark:bg-muted/50 dark:hover:bg-muted rounded-lg transition-colors"
+              type="button"
+              onClick={() => close(true)}
+              className="flex-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted rounded-lg transition-colors"
             >
               Cancel
             </button>
             <button
-              onClick={handleConfirm}
+              type="button"
+              onClick={() => {
+                set(draft);
+                close(true);
+              }}
               className="flex-1 px-3 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors"
             >
-              Confirm
+              Done
             </button>
           </div>
         </div>
