@@ -158,7 +158,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   }, [fromTZ]);
 
   // Centralized calculation helper so we can reuse for swap
-  const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string; fromName?: string; toName?: string }) => {
+  const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string; fromName?: string; toName?: string; silent?: boolean }) => {
     if (!from || !to) {
       toast({
         title: 'Select locations',
@@ -201,6 +201,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         clock,
       });
 
+      // The answer shown on arrival isn't a conversion anyone asked for
+      if (opts?.silent) return;
       const device = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop';
       gaEvent({
         action: 'tz_convert',
@@ -220,6 +222,16 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
       setResult(null);
     }
   }, [hour12, inputDate, inputTime, fromLocationDisplay, toLocationDisplay, displayForTZ]);
+
+  // The page opens on an answer, as the homepage does: the detected place
+  // against UTC, now (it showed an empty gap under Calculate until pressed).
+  // Once, when the place and time are in; Calculate does every later change.
+  const shownOnArrival = useRef(false);
+  useEffect(() => {
+    if (shownOnArrival.current || !fromTZ || !toTZ || !inputDate || !inputTime || timeZoneOptions.length === 0) return;
+    shownOnArrival.current = true;
+    if (!result) computeConversion(fromTZ, toTZ, { silent: true });
+  }, [fromTZ, toTZ, inputDate, inputTime, timeZoneOptions.length, result, computeConversion]);
 
   // Calculate conversion manually when user clicks Calculate
   // Text typed in a box but not picked from the list isn't a place yet:
