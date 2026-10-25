@@ -1,28 +1,33 @@
 /**
  * OvertimeTool — regular vs overtime split with optional pay breakdown.
  * Live calculation as you type, matching the decimal-hours tool's feel.
+ *
+ * Oct 2026 audit: the fields are plain text read by parseHours/parseAmount
+ * (lib/overtime.ts), not type="number" — that dropped commas and colons, so
+ * a "18,50" rate was $1,850 an hour and "46:30" hours were 4630. A field
+ * that can't be read says so under itself; the threshold, multiplier and
+ * rate are remembered on this device.
  */
 
 'use client';
 
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { RollingNumber } from '@/components/RollingNumber';
-import { computeOvertime, decimalToHmLabel } from '@/lib/overtime';
+import { computeOvertime, decimalToHmLabel, parseAmount, parseHours } from '@/lib/overtime';
 import { toolUsed } from '@/lib/gtag';
 import InfoTip from '@/components/InfoTip';
 import { getDevice } from '@/lib/device';
-
-
-const parseNum = (s: string): number => {
-  const n = Number.parseFloat(s);
-  return Number.isFinite(n) && n >= 0 ? n : NaN;
-};
+import { storageGet, storageSet } from '@/lib/safeStorage';
 
 const MULTIPLIERS = [
   { value: 1.5, label: '1.5× (time and a half)' },
   { value: 2, label: '2× (double time)' },
 ];
+const SAVED_KEY = 'clockmath-overtime';
+
+/** $74,000.00, not $74000.00 */
+const money = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 interface OvertimeToolProps {
   className?: string;
@@ -34,6 +39,25 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
   const [thresholdStr, setThresholdStr] = useState('40');
   const [multiplier, setMultiplier] = useState(1.5);
   const [rateStr, setRateStr] = useState('');
+  const [loaded, setLoaded] = useState(false);
+
+  // The same rate and threshold most weeks: remembered on this device
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(storageGet(SAVED_KEY) || 'null');
+      if (saved) {
+        if (typeof saved.threshold === 'string') setThresholdStr(saved.threshold);
+        if (MULTIPLIERS.some((m) => m.value === saved.multiplier)) setMultiplier(saved.multiplier);
+        if (typeof saved.rate === 'string') setRateStr(saved.rate);
+      }
+    } catch {
+      /* ignore a damaged entry */
+    }
+    setLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (loaded) storageSet(SAVED_KEY, JSON.stringify({ threshold: thresholdStr, multiplier, rate: rateStr }));
+  }, [loaded, thresholdStr, multiplier, rateStr]);
 
   const markToolUsed = useCallback(() => {
     if (!toolUsedRef.current) {
@@ -42,22 +66,44 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
     }
   }, []);
 
-  const result = useMemo(() => {
-    const hours = parseNum(hoursStr);
-    const threshold = thresholdStr.trim() === '' ? 40 : parseNum(thresholdStr);
-    if (Number.isNaN(hours) || Number.isNaN(threshold)) return null;
-    if (hours > 168) return { error: 'A week only has 168 hours — check the hours worked.' } as const;
-    const rate = rateStr.trim() === '' ? null : parseNum(rateStr);
-    if (rate !== null && Number.isNaN(rate)) return null;
-    return computeOvertime({ hoursWorked: hours, threshold, multiplier, rate });
-  }, [hoursStr, thresholdStr, multiplier, rateStr]);
+  const hours = parseHours(hoursStr);
+  const threshold = thresholdStr.trim() === '' ? 40 : parseAmount(thresholdStr);
+  const rate = parseAmount(rateStr);
+
+  // A note under each field that can't be read (the old catch-all asked to
+  // "Enter your hours" even when they were entered)
+  const notes = {
+    hours:
+      hours === null
+        ? hoursStr.trim()
+          ? 'Use hours like 46.5, 46:30 or 46h 30m.'
+          : null
+        : Number.isNaN(hours)
+          ? "Hours can't be negative."
+          : hours > 168
+            ? 'A week only has 168 hours. Check the hours worked.'
+            : null,
+    threshold:
+      threshold === null || Number.isNaN(threshold) ? 'Use a number of hours, like 40.' : null,
+    rate: rateStr.trim() && (rate === null || Number.isNaN(rate)) ? 'Use a rate like 18.50.' : null,
+  };
+
+  const split = useMemo(() => {
+    if (hours === null || Number.isNaN(hours) || hours > 168) return null;
+    if (threshold === null || Number.isNaN(threshold)) return null;
+    if (notes.rate) return null;
+    return computeOvertime({ hoursWorked: hours, threshold, multiplier, rate: rate ?? null });
+  }, [hours, threshold, multiplier, rate, notes.rate]);
 
   const inputClass =
     'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-primary/50';
   const labelClass = 'block text-sm font-medium text-foreground mb-1';
-
-  const hasError = result !== null && 'error' in result;
-  const split = result !== null && !('error' in result) ? result : null;
+  const noteFor = (id: string, note: string | null) =>
+    note && (
+      <p id={`${id}-note`} role="status" className="mt-1 mb-0 text-sm text-red-700 dark:text-red-300">
+        {note}
+      </p>
+    );
 
   return (
     <div className={className}>
@@ -75,7 +121,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                 Hours worked this week
               </label>
               <InfoTip label="hours worked">
-                In decimal hours: 46.5 means 46h 30m. Adding up shifts first?{' '}
+                As 46.5, 46:30 or 46h 30m. Adding up shifts first?{' '}
                 <Link href="/tools/timesheet" className="underline underline-offset-2 hover:text-foreground">
                   Use the work hours calculator
                 </Link>
@@ -84,17 +130,19 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
             </span>
             <input
               id="ot-hours"
-              type="number"
+              type="text"
               inputMode="decimal"
-              min={0}
-              step="0.25"
+              autoComplete="off"
               value={hoursStr}
+              aria-invalid={notes.hours ? true : undefined}
+              aria-describedby={notes.hours ? 'ot-hours-note' : undefined}
               onChange={(e) => {
                 setHoursStr(e.target.value);
                 markToolUsed();
               }}
               className={inputClass}
             />
+            {noteFor('ot-hours', notes.hours)}
           </div>
           <div>
             <label htmlFor="ot-threshold" className={labelClass}>
@@ -103,10 +151,12 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
             <div className="relative">
               <input
                 id="ot-threshold"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                min={0}
+                autoComplete="off"
                 value={thresholdStr}
+                aria-invalid={notes.threshold ? true : undefined}
+                aria-describedby={notes.threshold ? 'ot-threshold-note' : undefined}
                 onChange={(e) => {
                   setThresholdStr(e.target.value);
                   markToolUsed();
@@ -117,6 +167,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                 hours/week
               </span>
             </div>
+            {noteFor('ot-threshold', notes.threshold)}
           </div>
           <div>
             <span className={labelClass} id="ot-multiplier-label">
@@ -153,12 +204,13 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
               </span>
               <input
                 id="ot-rate"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                min={0}
-                step="0.01"
-                placeholder="18.50"
+                autoComplete="off"
+                placeholder="e.g. 18.50"
                 value={rateStr}
+                aria-invalid={notes.rate ? true : undefined}
+                aria-describedby={notes.rate ? 'ot-rate-note' : undefined}
                 onChange={(e) => {
                   setRateStr(e.target.value);
                   markToolUsed();
@@ -166,6 +218,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                 className={`${inputClass} pl-8`}
               />
             </div>
+            {noteFor('ot-rate', notes.rate)}
           </div>
         </div>
       </section>
@@ -180,13 +233,11 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
           Your split
         </h2>
 
-        {hasError && result && 'error' in result && (
-          <p className="text-sm text-red-600 dark:text-red-400">{result.error}</p>
-        )}
-
-        {!hasError && split === null && (
+        {split === null && (
           <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-            Enter your hours worked to see the regular vs overtime breakdown.
+            {notes.hours || notes.threshold || notes.rate
+              ? 'Check the field marked above to see the split.'
+              : 'Enter your hours worked to see the regular vs overtime breakdown.'}
           </p>
         )}
 
@@ -211,28 +262,28 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
               </div>
             </div>
 
-            {split.totalPay !== null ? (
+            {split.totalPay !== null && rate !== null ? (
               <dl className="mt-4 divide-y divide-border/50 dark:divide-border/50 text-sm">
                 <div className="flex items-center justify-between py-2">
                   <dt className="text-muted-foreground dark:text-muted-foreground">
-                    Regular pay ({decimalToHmLabel(split.regularHours)} × ${Number(rateStr).toFixed(2)})
+                    Regular pay ({decimalToHmLabel(split.regularHours)} × ${money(rate)})
                   </dt>
                   <dd className="font-mono font-medium text-foreground">
-                    $<RollingNumber value={split.regularPay!.toFixed(2)} />
+                    $<RollingNumber value={money(split.regularPay!)} />
                   </dd>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <dt className="text-muted-foreground dark:text-muted-foreground">
-                    Overtime pay ({decimalToHmLabel(split.overtimeHours)} × ${split.overtimeRate!.toFixed(2)})
+                    Overtime pay ({decimalToHmLabel(split.overtimeHours)} × ${money(split.overtimeRate!)})
                   </dt>
                   <dd className="font-mono font-medium text-foreground">
-                    $<RollingNumber value={split.overtimePay!.toFixed(2)} />
+                    $<RollingNumber value={money(split.overtimePay!)} />
                   </dd>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <dt className="font-medium text-foreground">Total gross pay</dt>
                   <dd className="font-mono text-lg font-bold text-primary">
-                    $<RollingNumber value={split.totalPay.toFixed(2)} />
+                    $<RollingNumber value={money(split.totalPay)} />
                   </dd>
                 </div>
               </dl>

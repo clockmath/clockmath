@@ -1,7 +1,7 @@
 // node --test tests/ — overtime pay maths (lib/overtime.ts).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeOvertime, computeWeeklyOvertime, round2 } from '../lib/overtime.ts';
+import { computeOvertime, computeWeeklyOvertime, parseAmount, parseHours, round2 } from '../lib/overtime.ts';
 
 test('round2 rounds half up to cents despite binary floating point', () => {
   assert.equal(round2(12.35 * 1.5), 18.53); // 18.525 → was 18.52
@@ -41,4 +41,36 @@ test('45 h + 35 h: overtime only in the first week', () => {
 test('no rate: hours split only', () => {
   const r = computeWeeklyOvertime([50], { threshold: 40, multiplier: 2, rate: null });
   assert.deepEqual(r, { weeks: 1, regularHours: 40, overtimeHours: 10, regularPay: null, overtimePay: null, totalPay: null, overtimeRate: null });
+});
+
+test('parseAmount reads comma decimals, thousands and $ (18,50 was 1850)', () => {
+  assert.equal(parseAmount('18.50'), 18.5);
+  assert.equal(parseAmount('18,50'), 18.5);
+  assert.equal(parseAmount('18,5'), 18.5);
+  assert.equal(parseAmount('$18.50'), 18.5);
+  assert.equal(parseAmount('1,850'), 1850);
+  assert.equal(parseAmount('1,234.50'), 1234.5);
+  assert.equal(parseAmount(' 40 '), 40);
+  assert.equal(parseAmount('.5'), 0.5);
+  assert.equal(parseAmount(''), null);
+  assert.equal(parseAmount('abc'), null);
+  assert.equal(parseAmount('18,5,0'), null);
+  assert.ok(Number.isNaN(parseAmount('-5')));
+});
+
+test('parseHours reads decimals, h:mm and 46h 30m (46:30 was 4630)', () => {
+  assert.equal(parseHours('46.5'), 46.5);
+  assert.equal(parseHours('46,5'), 46.5);
+  assert.equal(parseHours('46:30'), 46.5);
+  assert.equal(parseHours('46:05'), 46 + 5 / 60);
+  assert.equal(parseHours('46h 30m'), 46.5);
+  assert.equal(parseHours('46h30'), 46.5);
+  assert.equal(parseHours('46 hours 30 minutes'), 46.5);
+  assert.equal(parseHours('46h'), 46);
+  assert.equal(parseHours('40'), 40);
+  assert.equal(parseHours('46:75'), null);
+  assert.equal(parseHours('abc'), null);
+  assert.equal(parseHours(''), null);
+  assert.ok(Number.isNaN(parseHours('-5')));
+  assert.ok(Number.isNaN(parseHours('-46:30')));
 });

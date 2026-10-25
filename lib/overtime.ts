@@ -97,3 +97,41 @@ export function decimalToHmLabel(decimal: number): string {
   const m = totalMinutes % 60;
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
 }
+
+/**
+ * A typed amount (a rate, an hour threshold) as a number, or null if it
+ * isn't one. Plain text fields, not type="number": the browser's number
+ * field dropped a comma, so "18,50" became 1850 — $92,037.50 gross for a
+ * 46.5-hour week (Oct 2026 audit). A comma is a decimal mark before one or
+ * two digits ("18,50") and a thousands mark before three ("1,850"); with
+ * both marks, the comma groups thousands ("1,234.50"). "$" and spaces are
+ * ignored. Negative values return NaN, so callers can say so.
+ */
+export function parseAmount(text: string): number | null {
+  let t = text.trim().replace(/[$\s]/g, '');
+  if (t === '') return null;
+  const negative = t.startsWith('-');
+  if (negative) t = t.slice(1);
+  if (t.includes(',') && t.includes('.')) t = t.replace(/,/g, '');
+  else if (/^\d+,\d{1,2}$/.test(t)) t = t.replace(',', '.');
+  else if (/^\d{1,3}(,\d{3})+$/.test(t)) t = t.replace(/,/g, '');
+  if (!/^(\d+\.?\d*|\.\d+)$/.test(t)) return null;
+  return negative ? NaN : Number(t);
+}
+
+/**
+ * Typed hours as decimal hours, or null if it isn't a length of time:
+ * "46.5", "46,5", "46:30", "46h 30m", "46h", "46 h 30". The field only took
+ * decimals: "46:30" became 4630 ("a week only has 168 hours"). Negative
+ * values return NaN, as parseAmount does.
+ */
+export function parseHours(text: string): number | null {
+  const t = text.trim().toLowerCase();
+  if (t === '') return null;
+  if (t.startsWith('-')) return parseHours(t.slice(1)) === null ? null : NaN;
+  let m = t.match(/^(\d{1,3}):(\d{1,2})$/);
+  if (m) return Number(m[2]) < 60 ? Number(m[1]) + Number(m[2]) / 60 : null;
+  m = t.match(/^(\d{1,3})\s*h(?:ours?|rs?)?\s*(?:(\d{1,2})\s*m(?:in(?:utes?)?)?)?$/) ?? t.match(/^(\d{1,3})\s*h\s*(\d{1,2})$/);
+  if (m) return m[2] === undefined || Number(m[2]) < 60 ? Number(m[1]) + Number(m[2] ?? 0) / 60 : null;
+  return parseAmount(t);
+}
