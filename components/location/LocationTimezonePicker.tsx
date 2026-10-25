@@ -24,6 +24,8 @@ interface LocationTimezonePickerProps {
   id?: string; // Add id prop for accessibility
   name?: string; // Add name prop for form handling
   onDisplayChange?: (value: string) => void; // Callback for when display text changes (typing)
+  /** The search box's accessible name ("From: city or place"); both boxes were "Location search" */
+  searchLabel?: string;
 }
 
 export function LocationTimezonePicker({
@@ -37,6 +39,7 @@ export function LocationTimezonePicker({
   id,
   name,
   onDisplayChange,
+  searchLabel,
 }: LocationTimezonePickerProps) {
   const [iana, setIana] = useState<string>("");
   const [displayLabel, setDisplayLabel] = useState<string>(""); // shown under the input
@@ -85,17 +88,12 @@ export function LocationTimezonePicker({
     if (zone) {
       setIana(zone);
       
-      // Only set display label if no external value is provided or if it's empty (not from swap)
-      const shouldSetLabel = !value || value.trim() === '';
-      
-      if (shouldSetLabel) {
-        const label = `${zone.split('/').pop()?.replace(/_/g, ' ')} (preset)`;
-        setDisplayLabel(label);
-      }
-      
-      // Always emit when it's from a preset (geolocation), even if timezone appears the same
-      // This ensures the parent component gets notified and can update the display
-      const placeName = shouldSetLabel ? `${zone.split('/').pop()?.replace(/_/g, ' ')} (preset)` : undefined;
+      // "Your location (Halifax)": the box used to read "Halifax (preset)".
+      // Always set: it's a deliberate tap, and the box now starts filled with
+      // the detected place, so "only when empty" would keep the old name.
+      const here = `Your location (${zone.split('/').pop()?.replace(/_/g, ' ')})`;
+      setDisplayLabel(here);
+      const placeName = here;
       onTimezoneResolved(zone, placeName);
       // LocationSearch won't reopen because it re-opens only when focused && dirty
     }
@@ -112,7 +110,7 @@ export function LocationTimezonePicker({
 
       {/* LocationSearch handles the dropdown open/close and stale requests */}
       <LocationSearch
-        ariaLabel={`${label || 'Location'} search`}
+        ariaLabel={searchLabel ?? `${label || 'Location'} search`}
         placeholder="Type a city…"
         onSelect={handleSelect}
         value={displayLabel}
@@ -133,11 +131,8 @@ export function LocationTimezonePicker({
           {iana ? `${getTimeZoneDisplayName(iana)} time (${getOffsetLabel(iana, new Date())})` : (defaultHint || "Search for a place to auto-detect timezone")}
         </div>
 
-        {displayLabel && iana && (
-          <div className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
-            📍 {displayLabel}
-          </div>
-        )}
+        {/* (A "📍 place" line repeated the box above it, which now shows the
+            picked place itself) */}
       </div>
     </div>
   );

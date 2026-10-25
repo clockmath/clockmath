@@ -22,6 +22,7 @@ import {
   getTimezoneOffset,
   getOffsetLabel,
   resolveTimeZone,
+  getTimeZoneDisplayName,
 } from '@/lib/time';
 import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
@@ -52,14 +53,30 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   const [is24h, setIs24h] = useClockFormat();
   const hour12 = !is24h;
   const setHour12 = (v: boolean) => setIs24h(!v);
+  // The picked place names, shown in the boxes and the answer. What's typed
+  // is tracked apart: until Oct 2026 the answer used the typed text, so
+  // "Tokyo" typed but not picked read "Tokyo is 3 hours ahead" on UTC's time.
   const [fromLocationDisplay, setFromLocationDisplay] = useState<string>('');
-  const [toLocationDisplay, setToLocationDisplay] = useState<string>(''); // State for "To" location display
+  const [toLocationDisplay, setToLocationDisplay] = useState<string>('UTC');
+  const [fromTyped, setFromTyped] = useState<string | null>(null);
+  const [toTyped, setToTyped] = useState<string | null>(null);
+  const [pickNote, setPickNote] = useState<'from' | 'to' | null>(null);
   const [fromPreset, setFromPreset] = useState<{ lat: number; lon: number } | null>(null);
-  const [toPreset, setToPreset] = useState<{ lat: number; lon: number } | null>(null);
+  // Only From has a preset (Use my location)
+  const toPreset = null;
+  // What was calculated: the instants and the inputs they came from. The
+  // times are formatted when shown, so the answer follows the 12h/24h switch
+  // (it kept the format it was calculated in), and comparing the inputs tells
+  // when they've changed since (the answer used to stay up, unmarked).
   const [result, setResult] = useState<{
-    from: ReturnType<typeof formatZoned>;
-    to: ReturnType<typeof formatZoned>;
+    sourceDate: Date;
     targetDate: Date;
+    fromTZ: string;
+    toTZ: string;
+    fromName: string;
+    toName: string;
+    inputDate: string;
+    inputTime: string;
   } | null>(null);
   
   // Custom time picker state
@@ -89,6 +106,9 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     
     const userTZ = getUserTimeZone();
     setFromTZ(userTZ);
+    // Show the detected place in the box: it read "Type a city…" while the
+    // place was already set (only a small hint below said so)
+    setFromLocationDisplay(getTimeZoneDisplayName(userTZ));
     
     // Set initial date/time to now (host-local, not UTC — toISOString() would
     // be a day off near midnight west of UTC).
@@ -99,7 +119,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   }, [isHydrated]);
 
   // Centralized calculation helper so we can reuse for swap
-  const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string }) => {
+  const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string; fromName?: string; toName?: string }) => {
     if (!from || !to) {
       toast({
         title: 'Select locations',
@@ -127,13 +147,15 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         at: sourceDate
       });
 
-      const fromFormatted = formatZoned(sourceDate, from, { hour12 });
-      const toFormatted = formatZoned(targetDate, to, { hour12 });
-
       setResult({
-        from: fromFormatted,
-        to: toFormatted,
-        targetDate
+        sourceDate,
+        targetDate,
+        fromTZ: from,
+        toTZ: to,
+        fromName: opts?.fromName ?? (fromLocationDisplay || displayForTZ(from)),
+        toName: opts?.toName ?? (toLocationDisplay || displayForTZ(to)),
+        inputDate: dateStr,
+        inputTime: timeStr,
       });
 
       const device = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop';
@@ -154,12 +176,29 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     } catch {
       setResult(null);
     }
-  }, [hour12, inputDate, inputTime]);
+  }, [hour12, inputDate, inputTime, fromLocationDisplay, toLocationDisplay, displayForTZ]);
 
   // Calculate conversion manually when user clicks Calculate
+  // Text typed in a box but not picked from the list isn't a place yet:
+  // ask for a pick rather than answer for the box's old place
   const handleCalculate = useCallback(() => {
+    if (fromTyped !== null && fromTyped.trim() !== fromLocationDisplay) return setPickNote('from');
+    if (toTyped !== null && toTyped.trim() !== toLocationDisplay) return setPickNote('to');
+    setPickNote(null);
     computeConversion(fromTZ, toTZ);
-  }, [computeConversion, fromTZ, toTZ]);
+  }, [computeConversion, fromTZ, toTZ, fromTyped, toTyped, fromLocationDisplay, toLocationDisplay]);
+
+  // Enter in a field submits; a time typed and entered in the same keystroke
+  // reaches state in that event, so the calculation runs in an effect
+  const [submits, setSubmits] = useState(0);
+  useEffect(() => {
+    if (submits) handleCalculate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submits]);
+
+  const stale =
+    !!result &&
+    (result.fromTZ !== fromTZ || result.toTZ !== toTZ || result.inputDate !== inputDate || result.inputTime !== inputTime);
 
 
   const handleSwapTimezones = () => {
@@ -177,15 +216,21 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     setFromTZ(newFrom);
     setToTZ(newTo);
     
-    // Update displays based on swapped timezones to avoid stale copying
-    setFromLocationDisplay(displayForTZ(newFrom));
-    setToLocationDisplay(displayForTZ(newTo));
+    // The picked names swap with their zones
+    const newFromName = toLocationDisplay || displayForTZ(newFrom);
+    const newToName = fromLocationDisplay || displayForTZ(newTo);
+    setFromLocationDisplay(newFromName);
+    setToLocationDisplay(newToName);
+    setFromTyped(null);
+    setToTyped(null);
+    setPickNote(null);
     
     // Do NOT swap presets; presets represent pinned sources (like geolocation)
     // Swapping them causes auto-resolve effects to override selections.
     
-    // If we have a prior result, use its target time as the new input time
-    if (result) {
+    // If we have a current result, its target time becomes the new input
+    // time; if the inputs have changed since, the new inputs win
+    if (result && !stale) {
       try {
         const fmt = new Intl.DateTimeFormat('sv-SE', {
           timeZone: resolveTimeZone(newFrom, result.targetDate),
@@ -201,13 +246,13 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         setInputDate(dateStr);
         setInputTime(timeStr);
         // Recompute using the swapped zones and the carried-over time
-        computeConversion(newFrom, newTo, { dateStr, timeStr });
+        computeConversion(newFrom, newTo, { dateStr, timeStr, fromName: newFromName, toName: newToName });
       } catch {
-        computeConversion(newFrom, newTo);
+        computeConversion(newFrom, newTo, { fromName: newFromName, toName: newToName });
       }
     } else {
       // No prior result, recompute with existing inputs
-      computeConversion(newFrom, newTo);
+      computeConversion(newFrom, newTo, { fromName: newFromName, toName: newToName });
     }
 
     gaEvent({
@@ -278,8 +323,10 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         }
       },
       {
+        // A time zone needs a rough position, not GPS: faster, less battery
         timeout: 10000,
-        enableHighAccuracy: true
+        enableHighAccuracy: false,
+        maximumAge: 10 * 60 * 1000,
       }
     );
   };
@@ -319,17 +366,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     });
   };
 
-  const handleClearAllClick = () => {
-    setInputDate('');
-    setInputTime('');
-    setFromTZ('');
-    setToTZ('');
-    setFromLocationDisplay('');
-    setToLocationDisplay('');
-    setFromPreset(null);
-    setToPreset(null);
-    setResult(null);
-  };
+
 
   const getFromZoneDisplayName = () => {
     // Prefer the user's chosen place label if available
@@ -338,24 +375,19 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     return option ? option.label.split(' (')[0] : fromTZ;
   };
 
-  const getToZoneDisplayName = () => {
-    // Prefer the user's chosen place label if available
-    if (toLocationDisplay) return toLocationDisplay;
-    const option = timeZoneOptions.find(opt => opt.id === toTZ);
-    return option ? option.label.split(' (')[0] : toTZ;
-  };
+
 
   const getTimeDifference = () => {
     if (!result) return null;
     
-    const fromOffset = getTimezoneOffset(fromTZ, result.targetDate);
-    const toOffset = getTimezoneOffset(toTZ, result.targetDate);
+    const fromOffset = getTimezoneOffset(result.fromTZ, result.targetDate);
+    const toOffset = getTimezoneOffset(result.toTZ, result.targetDate);
     const diffMinutes = toOffset - fromOffset;
     const diffHours = diffMinutes / 60;
     
     // A full sentence: "3 hours ahead" alone never said who was ahead.
-    const from = getFromZoneDisplayName();
-    const to = getToZoneDisplayName();
+    const from = result.fromName;
+    const to = result.toName;
     if (diffHours === 0) {
       return `${to} and ${from} are on the same time`;
     }
@@ -375,6 +407,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         <div className="flex items-center justify-center">
           <div className="bg-muted/50 dark:bg-muted/50 rounded-xl p-1.5 flex items-center gap-1">
             <button
+              type="button"
               onClick={() => setHour12(true)}
             aria-pressed={hour12}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -386,6 +419,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               12h
             </button>
             <button
+              type="button"
               onClick={() => setHour12(false)}
             aria-pressed={!hour12}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -400,13 +434,20 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         </div>
       </div>
 
-      {/* Streamlined Timezone Selectors */}
-      <div className="grid gap-4 sm:gap-6 mb-6">
-        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-          {/* From Timezone */}
-          <div className="space-y-3">
+      {/* The places and the time, as a form: Enter calculates, as on the homepage */}
+      <form
+        className="grid gap-4 sm:gap-6 mb-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setSubmits((n) => n + 1);
+        }}
+      >
+        {/* From, swap, To: the swap sits between the two boxes (it was inside
+            the To box on phones, over the text, at 32px) */}
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-4 sm:items-start">
+          <div className="space-y-3 min-w-0">
             <div className="flex items-center justify-between">
-              <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
+              <label htmlFor="from-location" className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
                 From Location
               </label>
               <button
@@ -414,21 +455,20 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                 onClick={handleUseMyLocation}
                 className="st-hit flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
               >
-                <MapPin className="w-3 h-3" />
+                <MapPin className="w-3 h-3" aria-hidden="true" />
                 Use my location
               </button>
             </div>
             <LocationTimezonePicker
               label=""
+              searchLabel="From: city or place"
               onTimezoneResolved={(tz, placeName) => {
                 setFromTZ(tz);
-                if (placeName) {
-                  setFromLocationDisplay(placeName);
-                }
+                if (placeName) setFromLocationDisplay(placeName);
+                setFromTyped(null);
+                if (pickNote === 'from') setPickNote(null);
               }}
-              onDisplayChange={(displayText) => {
-                setFromLocationDisplay(displayText);
-              }}
+              onDisplayChange={(displayText) => setFromTyped(displayText)}
               defaultHint={isHydrated ? `Auto-detected: ${getUserTimeZone()}` : "Auto-detecting timezone..."}
               value={fromLocationDisplay}
               preset={fromPreset}
@@ -436,24 +476,37 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               id="from-location"
               name="fromLocation"
             />
+            {pickNote === 'from' && (
+              <p role="status" className="text-sm text-red-700 dark:text-red-300 m-0">
+                Pick a place from the list, or press Enter to take the first one.
+              </p>
+            )}
           </div>
 
-          {/* To Timezone */}
-          <div className="space-y-3 relative">
-            <label className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
+          <button
+            type="button"
+            onClick={handleSwapTimezones}
+            aria-label="Swap From and To"
+            title="Swap From and To"
+            className="justify-self-center sm:mt-9 w-11 h-11 grid place-items-center bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-sm transition-colors"
+          >
+            <ArrowLeftRight className="w-4 h-4 rotate-90 sm:rotate-0" aria-hidden="true" />
+          </button>
+
+          <div className="space-y-3 min-w-0">
+            <label htmlFor="to-location" className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
               To Location
             </label>
             <LocationTimezonePicker
               label=""
+              searchLabel="To: city or place"
               onTimezoneResolved={(tz, placeName) => {
                 setToTZ(tz);
-                if (placeName) {
-                  setToLocationDisplay(placeName);
-                }
+                if (placeName) setToLocationDisplay(placeName);
+                setToTyped(null);
+                if (pickNote === 'to') setPickNote(null);
               }}
-              onDisplayChange={(displayText) => {
-                setToLocationDisplay(displayText);
-              }}
+              onDisplayChange={(displayText) => setToTyped(displayText)}
               defaultHint="Search for a city..."
               value={toLocationDisplay}
               preset={toPreset}
@@ -461,16 +514,11 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               id="to-location"
               name="toLocation"
             />
-            
-            {/* Swap Button */}
-            <button
-              type="button"
-              onClick={handleSwapTimezones}
-              className="absolute top-8 right-2 sm:left-auto sm:right-full sm:mr-2 sm:top-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full p-2 shadow-sm transition-all duration-200 hover:scale-105"
-              title="Swap locations"
-            >
-              <ArrowLeftRight className="w-4 h-4" />
-            </button>
+            {pickNote === 'to' && (
+              <p role="status" className="text-sm text-red-700 dark:text-red-300 m-0">
+                Pick a place from the list, or press Enter to take the first one.
+              </p>
+            )}
           </div>
         </div>
 
@@ -482,6 +530,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -492,7 +541,11 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               <label className="block text-xs font-medium text-muted-foreground">From Timezone</label>
               <SearchableSelect
                 value={fromTZ}
-                onChange={setFromTZ}
+                onChange={(tz) => {
+                  setFromTZ(tz);
+                  setFromLocationDisplay(displayForTZ(tz));
+                  setFromTyped(null);
+                }}
                 options={timeZoneOptions}
                 placeholder="Select timezone..."
                 ariaLabel="Select source timezone"
@@ -502,7 +555,11 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               <label className="block text-xs font-medium text-muted-foreground">To Timezone</label>
               <SearchableSelect
                 value={toTZ}
-                onChange={setToTZ}
+                onChange={(tz) => {
+                  setToTZ(tz);
+                  setToLocationDisplay(displayForTZ(tz));
+                  setToTyped(null);
+                }}
                 options={timeZoneOptions}
                 placeholder="Select timezone..."
                 ariaLabel="Select target timezone"
@@ -513,34 +570,22 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
         {/* Date/Time Input - moved closer to location inputs */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-semibold text-foreground dark:text-foreground">
               Date & Time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
             </h2>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleNowClick}
-                className="px-3 py-1.5 text-xs font-medium bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-all duration-200 shadow-sm"
-              >
-                Current Time
-              </button>
-              <button
-                type="button"
-                onClick={handleClearAllClick}
-                className="px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 text-muted-foreground rounded-lg transition-all duration-200 shadow-sm"
-              >
-                Clear All
-              </button>
-            </div>
+            <button type="button" className="st-now" onClick={handleNowClick} aria-label="Set the date and time to now">
+              Now
+            </button>
           </div>
-        
+
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="block text-xs text-muted-foreground">
+            <label htmlFor="tz-date" className="block text-xs text-muted-foreground">
               Date
             </label>
             <InlineDatePicker
+              id="tz-date"
               ariaLabel="Date"
               value={inputDate ? parseLocalDate(inputDate) : new Date()}
               onChange={(date) => setInputDate(formatLocalDate(date))}
@@ -548,12 +593,13 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               startOnCalendar
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label htmlFor="time-input" className="block text-xs text-muted-foreground">
+            <label htmlFor="tz-time" className="block text-xs text-muted-foreground">
               Time
             </label>
             <InlineTimePicker
+              id="tz-time"
               ariaLabel="Time"
               value={inputTime && inputTime.trim() ? `${inputTime.trim()}:00` : "09:00:00"}
               onChange={(timeStr) => {
@@ -567,64 +613,70 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             />
           </div>
         </div>
-        
 
           {/* Calculate Button */}
           <div className="mt-6 text-center">
             <button
-              type="button"
-              onClick={handleCalculate}
+              type="submit"
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
                 <circle cx="12" cy="12" r="10" />
               </svg>
               Calculate Time Difference
             </button>
+            {stale && (
+              <p className="mt-3 mb-0 text-sm text-foreground">Places or time changed. Press Calculate for the new answer.</p>
+            )}
           </div>
         </div>
-      </div>
+      </form>
 
       {/* Conversion Result: the time over there is the answer, so it goes on
-          the line's board; the difference in words, and your own time, beside it */}
-      {result && (
-        <div className="st-answer st-tz-answer" aria-live="polite">
-          <div>
-            <p className="st-tz-place">{getToZoneDisplayName()}</p>
-            <p className="st-big st-tz-time">
-              {/* "12:00 PM": the hours and minutes on tiles, AM/PM beside them */}
-              {(() => {
-                const m = result.to.time.match(/^(\d+):(\d+)\s*(.*)$/);
-                if (!m) return result.to.time;
-                return (
+          the line's board; the difference in words, and your own time, beside
+          it. Formatted here, so it follows the 12h/24h switch; faded once the
+          places or time change, until Calculate. */}
+      {result && (() => {
+        const to = formatZoned(result.targetDate, result.toTZ, { hour12 });
+        const from = formatZoned(result.sourceDate, result.fromTZ, { hour12 });
+        const m = to.time.match(/^(\d+):(\d+)\s*(.*)$/);
+        return (
+          <div className={`st-answer st-tz-answer${stale ? ' stale' : ''}`} aria-live="polite">
+            <div>
+              <p className="st-tz-place">{result.toName}</p>
+              <p className="st-big st-tz-time">
+                {/* "12:00 PM": the hours and minutes on tiles, AM/PM beside them */}
+                {m ? (
                   <>
                     <Flap value={m[1]} />
                     <span className="st-tz-colon">:</span>
                     <Flap value={m[2]} />
                     {m[3] && <span className="u">{m[3]}</span>}
                   </>
-                );
-              })()}
-            </p>
-            <p className="st-tz-date">
-              {result.to.weekday}, {result.to.date} ({toTZ && getOffsetLabel(toTZ, result.targetDate)})
-            </p>
+                ) : (
+                  to.time
+                )}
+              </p>
+              <p className="st-tz-date">
+                {to.weekday}, {to.date} ({getOffsetLabel(result.toTZ, result.targetDate)})
+              </p>
+            </div>
+            <div>
+              <p className="st-tz-diff">{getTimeDifference()}.</p>
+              <dl className="st-also st-tz-from">
+                <div>
+                  <dt>{result.fromName}</dt>
+                  <dd>{from.time}</dd>
+                </div>
+              </dl>
+              <p className="st-note">
+                {from.weekday}, {from.date} ({getOffsetLabel(result.fromTZ, result.targetDate)})
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="st-tz-diff">{getTimeDifference()}.</p>
-            <dl className="st-also st-tz-from">
-              <div>
-                <dt>{getFromZoneDisplayName()}</dt>
-                <dd>{result.from.time}</dd>
-              </div>
-            </dl>
-            <p className="st-note">
-              {result.from.weekday}, {result.from.date} ({fromTZ && getOffsetLabel(fromTZ, result.targetDate)})
-            </p>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
 
     </div>
