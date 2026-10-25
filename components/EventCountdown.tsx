@@ -250,7 +250,15 @@ export function useEventCountdown({ target, recurring, weekly, nthWeekday, dateR
       const midnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
       return Math.round((t - midnight) / 86400000);
     }
-    return Math.ceil((t - n) / 86400000);
+    // A fixed instant: calendar days on the viewer's clock too. Rounding the
+    // time left up (Math.ceil) said "2 days" for tomorrow evening from this
+    // afternoon (Oct 2026: a time picked in the countdown tool); for the
+    // event pages' midnight targets the two counts are the same.
+    const today = new Date(n);
+    const target = new Date(t);
+    const fromMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const toMidnight = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime();
+    return Math.round((toMidnight - fromMidnight) / 86400000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetMs, nowMs, recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
 
