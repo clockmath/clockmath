@@ -701,6 +701,9 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             const fid = `ts-${shift.id}`;
             // A break as long as the shift (600 typed for 60) left 0 hours, silently
             const breakTooLong = shift.breakMins > 0 && shift.breakMins >= elapsedMinutes(shift) && elapsedMinutes(shift) > 0;
+            // Start and end on the same time (easy to leave on a phone's time
+            // wheel) counted 0 hours with no word
+            const sameTime = toMinutes(shift.start) != null && toMinutes(shift.start) === toMinutes(shift.end);
             return (
               // Phones: date across the top, then start and end side by side,
               // then break and hours (a shift was 417px tall; a week, 3,000)
@@ -740,6 +743,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                     </div>
                   )}
                 </div>
+                {sameTime && (
+                  <p role="status" className="col-span-2 sm:basis-full sm:order-last m-0 text-sm text-red-700 dark:text-red-300">
+                    Start and end are both {formatClock(shift.start)}, so this shift counts as 0 hours. Check the end time.
+                  </p>
+                )}
                 {breakTooLong && (
                   <p role="status" className="col-span-2 sm:basis-full sm:order-last m-0 text-sm text-red-700 dark:text-red-300">
                     The break is as long as the shift, so it counts as 0 hours. Did you mean a shorter break?
