@@ -8,7 +8,7 @@ import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { RollingNumber } from '@/components/RollingNumber';
-import { computeWeeklyOvertime } from '@/lib/overtime';
+import { computeWeeklyOvertime, parseAmount } from '@/lib/overtime';
 import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
 import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
@@ -417,7 +417,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     toolUsed('timesheet', { device });
   }, [totalMins, shifts.length]);
 
-  const rateNum = parseFloat(rate);
+  // Read as the overtime tool reads it (parseAmount): the number field made
+  // a "18,50" rate $1,850 an hour
+  const parsedRate = parseAmount(rate);
+  const rateNum = parsedRate ?? NaN;
+  const rateNote = rate.trim() && (parsedRate === null || Number.isNaN(parsedRate)) ? 'Use a rate like 18.50.' : null;
   const flatGross = rate.trim() && !Number.isNaN(rateNum) && rateNum > 0 ? (totalMins / 60) * rateNum : null;
 
   // Weekly overtime split (optional). The threshold applies to each
@@ -438,7 +442,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
   const otSplit = useMemo(() => {
     if (!otEnabled || totalMins <= 0) return null;
-    const threshold = otThreshold.trim() === '' ? 40 : parseFloat(otThreshold);
+    const threshold = otThreshold.trim() === '' ? 40 : (parseAmount(otThreshold) ?? NaN);
     if (Number.isNaN(threshold) || threshold < 0) return null;
     return computeWeeklyOvertime(
       weeklyMins.map((m) => m / 60),
@@ -783,9 +787,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
               <input
                 id="ts-rate"
-                type="number"
-                min={0}
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                aria-invalid={rateNote ? true : undefined}
+                aria-describedby={rateNote ? 'ts-rate-note' : undefined}
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
                 placeholder="0.00"
@@ -795,6 +801,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             </div>
           </div>
         </div>
+        {rateNote && (
+          <p id="ts-rate-note" role="status" className="-mt-1 mb-3 text-sm text-right text-red-700 dark:text-red-300">
+            {rateNote}
+          </p>
+        )}
 
         {/* Optional weekly overtime split */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm">
@@ -815,9 +826,9 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
               <span className="text-muted-foreground dark:text-muted-foreground">after</span>
               <div className="relative w-20">
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  min={0}
+                  autoComplete="off"
                   value={otThreshold}
                   onChange={(e) => setOtThreshold(e.target.value)}
                   aria-label="Overtime threshold in hours"
