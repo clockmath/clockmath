@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
@@ -156,6 +157,77 @@ const hhmm = (mins: number): string => `${Math.floor(mins / 60)}h ${mins % 60}m`
 
 const newShift = (id: string, date: Date): Shift => ({ id, date, start: '09:00:00', end: '17:00:00', breakMins: 30 });
 
+/**
+ * A typed break as minutes: "45", "45m", "1h", "1.5h", "1:00", "1h30",
+ * "1h 30m". Empty is no break. Null when it isn't a length of time.
+ */
+const parseBreak = (text: string): number | null => {
+  const t = text.trim().toLowerCase().replace(/\s+/g, '');
+  if (t === '') return 0;
+  let m: RegExpMatchArray | null;
+  if ((m = t.match(/^(\d{1,3})(?:m|min|mins)?$/))) return Number(m[1]);
+  if ((m = t.match(/^(\d{1,2}):(\d{2})$/))) return Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null;
+  if ((m = t.match(/^(\d{1,2}(?:\.\d+)?)h$/))) return Math.round(Number(m[1]) * 60);
+  if ((m = t.match(/^(\d{1,2})h(\d{1,2})(?:m|min|mins)?$/))) return Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null;
+  return null;
+};
+
+/** Shifts in date and start-time order, for the summary, copy and CSV (the
+ * rows above stay in the order they were entered, so nothing jumps while
+ * editing). */
+const byDate = (list: Shift[]): Shift[] =>
+  [...list].sort(
+    (a, b) => toDateInputValue(a.date).localeCompare(toDateInputValue(b.date)) || (toMinutes(a.start) ?? 0) - (toMinutes(b.start) ?? 0),
+  );
+
+/**
+ * The break field: typed freely (it can be empty while you type, and takes
+ * "1h" or "1:00" as well as minutes), saved as minutes when it's a length of
+ * time. Something else is put back on blur with a note.
+ */
+function BreakInput({ id, value, onChange }: { id: string; value: number; onChange: (mins: number) => void }) {
+  const [text, setText] = useState(String(value));
+  const [focused, setFocused] = useState(false);
+  const [bad, setBad] = useState(false);
+  useEffect(() => {
+    if (!focused) setText(String(value));
+  }, [value, focused]);
+  return (
+    <>
+      <input
+        id={id}
+        type="text"
+        inputMode="text"
+        autoComplete="off"
+        value={text}
+        placeholder="0"
+        aria-invalid={bad || undefined}
+        onFocus={(e) => {
+          setFocused(true);
+          e.target.select();
+        }}
+        onChange={(e) => {
+          setText(e.target.value);
+          setBad(false);
+          const mins = parseBreak(e.target.value);
+          if (mins !== null) onChange(mins);
+        }}
+        onBlur={() => {
+          setFocused(false);
+          if (parseBreak(text) === null) setBad(true);
+          setText(String(value));
+        }}
+        className="w-full px-3 py-2.5 rounded-lg bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/50"
+      />
+      {bad && (
+        <span role="status" className="block mt-1 text-sm text-red-700 dark:text-red-300">
+          Minutes, or like 1h or 1:00
+        </span>
+      )}
+    </>
+  );
+}
+
 const serializeShift = (s: Shift): SavedShift => ({
   id: s.id,
   date: toDateInputValue(s.date),
@@ -286,6 +358,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           otEnabled?: boolean;
           otThreshold?: string;
           otMultiplier?: number;
+          is24h?: boolean;
         } = JSON.parse(raw);
         if (d && Array.isArray(d.shifts) && d.shifts.length) {
           setShifts(d.shifts.map(deserializeShift));
@@ -295,6 +368,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           if (d.otEnabled) setOtEnabled(true);
           if (d.otThreshold) setOtThreshold(d.otThreshold);
           if (d.otMultiplier === 1.5 || d.otMultiplier === 2) setOtMultiplier(d.otMultiplier);
+          if (typeof d.is24h === 'boolean') setIs24h(d.is24h);
           restored = true;
         }
       }
@@ -320,14 +394,17 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           otEnabled,
           otThreshold,
           otMultiplier,
+          // The clock format too: 12-hour users had to switch it back every visit
+          is24h,
         }),
       );
     } catch {
       /* ignore */
     }
-  }, [loaded, shifts, rate, saveName, otEnabled, otThreshold, otMultiplier]);
+  }, [loaded, shifts, rate, saveName, otEnabled, otThreshold, otMultiplier, is24h]);
 
   const totalMins = useMemo(() => shifts.reduce((sum, s) => sum + shiftMinutes(s), 0), [shifts]);
+  const ordered = useMemo(() => byDate(shifts), [shifts]);
 
   // Track real timesheet usage: fire once per session when the user has entered
   // shifts that produce a non-zero total (the tool's primary action).
@@ -390,12 +467,15 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   const formatShiftDate = (date: Date): string =>
     date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
+  // A new shift is the day after the last one, with its times and break:
+  // most weeks repeat, and every added row used to come back as 9–5 with 30 min
   const addShift = useCallback(() => {
     setShifts((prev) => {
       const last = prev[prev.length - 1];
       const next = last ? new Date(last.date) : new Date();
       next.setDate(next.getDate() + 1);
-      return [...prev, newShift(`row-${seq}`, next)];
+      const fresh = newShift(`row-${seq}`, next);
+      return [...prev, last ? { ...fresh, start: last.start, end: last.end, breakMins: last.breakMins } : fresh];
     });
     setSeq((n) => n + 1);
   }, [seq]);
@@ -404,9 +484,34 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     setShifts((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   }, []);
 
-  const removeShift = useCallback((id: string) => {
-    setShifts((prev) => (prev.length > 1 ? prev.filter((s) => s.id !== id) : prev));
-  }, []);
+  // One tap removes a shift, so the toast offers it back
+  const removeShift = useCallback(
+    (id: string) => {
+      const index = shifts.findIndex((s) => s.id === id);
+      if (shifts.length <= 1 || index < 0) return;
+      const shift = shifts[index];
+      setShifts((prev) => prev.filter((s) => s.id !== id));
+      toast({
+        title: 'Shift removed',
+        description: `${shift.date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}, ${formatClock(shift.start)}–${formatClock(shift.end)}`,
+        action: (
+          <ToastAction
+            altText="Undo removing the shift"
+            onClick={() =>
+              setShifts((prev) =>
+                prev.some((s) => s.id === shift.id)
+                  ? prev
+                  : [...prev.slice(0, Math.min(index, prev.length)), shift, ...prev.slice(Math.min(index, prev.length))],
+              )
+            }
+          >
+            Undo
+          </ToastAction>
+        ),
+      });
+    },
+    [shifts, formatClock],
+  );
 
   const persistSaved = useCallback((next: SavedTimesheet[]) => {
     setSaved(next);
@@ -476,7 +581,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   const handleExport = useCallback(async () => {
     const lines: string[] = [];
     lines.push(`Timesheet${saveName.trim() ? ` — ${saveName.trim()}` : ''}`);
-    shifts.forEach((s) => {
+    ordered.forEach((s) => {
       const mins = shiftMinutes(s);
       const dst = dstLabel(s);
       const oc = `${isOvernight(s) ? ' (+1 day)' : ''}${dst ? ` (${dst})` : ''}`;
@@ -505,14 +610,14 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     } catch {
       toast({ title: 'Copy this summary', description: text });
     }
-  }, [saveName, shifts, totalMins, gross, rateNum, formatClock, otSplit, otMultiplier, offerSupport]);
+  }, [saveName, shifts, ordered, totalMins, gross, rateNum, formatClock, otSplit, otMultiplier, offerSupport]);
 
   const handleDownloadCsv = useCallback(() => {
     const csvEscape = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
     const headers = ['Date', 'Start', 'End', 'Break (min)', 'Hours'];
     if (gross != null) headers.push('Pay ($)');
 
-    const rows = shifts.map((s) => {
+    const rows = ordered.map((s) => {
       const mins = shiftMinutes(s);
       const row = [
         toDateInputValue(s.date),
@@ -553,7 +658,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     gaEvent({ action: 'timesheet_exported', params: { device: getDevice(), shifts: shifts.length, format: 'csv' } });
     toast({ title: 'CSV downloaded', description: 'Open it in Excel or Google Sheets.' });
     offerSupport('csv');
-  }, [shifts, totalMins, gross, rateNum, saveName, formatClock, otSplit, otMultiplier, offerSupport]);
+  }, [shifts, ordered, totalMins, gross, rateNum, saveName, formatClock, otSplit, otMultiplier, offerSupport]);
 
   return (
     <div className={className}>
@@ -592,37 +697,36 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           {shifts.map((shift, i) => {
             const mins = shiftMinutes(shift);
             const overnight = isOvernight(shift);
+            const fid = `ts-${shift.id}`;
+            // A break as long as the shift (600 typed for 60) left 0 hours, silently
+            const breakTooLong = shift.breakMins > 0 && shift.breakMins >= elapsedMinutes(shift) && elapsedMinutes(shift) > 0;
             return (
+              // Phones: date across the top, then start and end side by side,
+              // then break and hours (a shift was 417px tall; a week, 3,000)
               <div
                 key={shift.id}
-                className="relative rounded-xl border border-border/50 dark:border-border/50 bg-background/60 dark:bg-background/40 p-3 flex flex-col gap-2 sm:flex-row sm:items-end"
+                className="relative rounded-xl border border-border/50 dark:border-border/50 bg-background/60 dark:bg-background/40 p-3 grid grid-cols-2 gap-x-2 gap-y-2 sm:flex sm:flex-row sm:flex-wrap sm:items-end"
               >
-                <div className="sm:w-48">
-                  <label className="block text-xs text-muted-foreground mb-1">Date</label>
-                  <InlineDatePicker ariaLabel={`Shift ${i + 1} date`} value={shift.date} onChange={(d) => updateShift(shift.id, { date: d })} startOnCalendar />
+                <div className="col-span-2 pr-10 sm:pr-0 sm:w-48">
+                  <label htmlFor={`${fid}-date`} className="block text-xs text-muted-foreground mb-1">Date</label>
+                  <InlineDatePicker id={`${fid}-date`} ariaLabel={`Shift ${i + 1} date`} value={shift.date} onChange={(d) => updateShift(shift.id, { date: d })} startOnCalendar />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <label className="block text-xs text-muted-foreground mb-1">Start</label>
-                  <InlineTimePicker ariaLabel={`Shift ${i + 1} start time`} value={shift.start} onChange={(v) => updateShift(shift.id, { start: v })} is24h={is24h} />
+                <div className="min-w-0 sm:flex-1">
+                  <label htmlFor={`${fid}-start`} className="block text-xs text-muted-foreground mb-1">Start</label>
+                  <InlineTimePicker id={`${fid}-start`} ariaLabel={`Shift ${i + 1} start time`} value={shift.start} onChange={(v) => updateShift(shift.id, { start: v })} is24h={is24h} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <label className="block text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                <div className="min-w-0 sm:flex-1">
+                  <label htmlFor={`${fid}-end`} className="block text-xs text-muted-foreground mb-1 flex items-center gap-1">
                     End
                     {overnight && <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">+1 day</span>}
                   </label>
-                  <InlineTimePicker ariaLabel={`Shift ${i + 1} end time`} value={shift.end} onChange={(v) => updateShift(shift.id, { end: v })} is24h={is24h} />
+                  <InlineTimePicker id={`${fid}-end`} ariaLabel={`Shift ${i + 1} end time`} value={shift.end} onChange={(v) => updateShift(shift.id, { end: v })} is24h={is24h} />
                 </div>
-                <div className="sm:w-24">
-                  <label className="block text-xs text-muted-foreground mb-1">Break (min)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={shift.breakMins}
-                    onChange={(e) => updateShift(shift.id, { breakMins: Math.max(0, parseInt(e.target.value, 10) || 0) })}
-                    className="w-full px-3 py-2.5 rounded-lg bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/50"
-                  />
+                <div className="min-w-0 sm:w-24">
+                  <label htmlFor={`${fid}-break`} className="block text-xs text-muted-foreground mb-1">Break (min)</label>
+                  <BreakInput id={`${fid}-break`} value={shift.breakMins} onChange={(m) => updateShift(shift.id, { breakMins: m })} />
                 </div>
-                <div className="sm:w-20 text-center">
+                <div className="self-end sm:self-auto sm:w-20 sm:text-center">
                   <div className="text-xs text-muted-foreground mb-1 sm:mb-2">Hours</div>
                   <div className="font-bold tabular-nums text-primary"><RollingNumber value={decimalHours(mins)} /></div>
                   <div className="text-[11px] text-muted-foreground">{hhmm(mins)}</div>
@@ -635,6 +739,11 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
                     </div>
                   )}
                 </div>
+                {breakTooLong && (
+                  <p role="status" className="col-span-2 sm:basis-full sm:order-last m-0 text-sm text-red-700 dark:text-red-300">
+                    The break is as long as the shift, so it counts as 0 hours. Did you mean a shorter break?
+                  </p>
+                )}
                 <button
                   onClick={() => removeShift(shift.id)}
                   aria-label={`Remove shift ${i + 1}`}
@@ -746,7 +855,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
 
         {/* Breakdown — stacked cards on mobile */}
         <div className="sm:hidden space-y-2">
-          {shifts.map((s) => {
+          {ordered.map((s) => {
             const mins = shiftMinutes(s);
             const pay = gross != null ? (mins / 60) * rateNum : null;
             return (
@@ -794,7 +903,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 dark:divide-border/40">
-              {shifts.map((s) => {
+              {ordered.map((s) => {
                 const mins = shiftMinutes(s);
                 const pay = gross != null ? (mins / 60) * rateNum : null;
                 return (

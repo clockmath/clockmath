@@ -15,6 +15,8 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
  *  - the panel is wide enough for its controls and anchored inside the
  *    field's right edge (at 156px it spilled off phones);
  *  - on touch screens it is the phone's own time wheel (input type="time").
+ * The panel's button is out of the Tab order (one stop per field, not two:
+ * a week of shifts was 14 extra Tabs); from the keyboard, Alt+↓ opens it.
  * The value in and out is "HH:MM:SS", 24-hour, as before.
  */
 
@@ -26,6 +28,8 @@ interface InlineTimePickerProps {
   className?: string;
   /** Accessible field name (e.g. "Start time") — announced with the value. */
   ariaLabel?: string;
+  /** id for the input, so a <label htmlFor> can point at it. */
+  id?: string;
 }
 
 const DAY = 1440;
@@ -71,7 +75,7 @@ export function parseTime(text: string, is24h: boolean, current: number | null):
   return h > 23 ? null : h * 60 + min;
 }
 
-export function InlineTimePicker({ value, onChange, is24h, className = "", ariaLabel }: InlineTimePickerProps) {
+export function InlineTimePicker({ value, onChange, is24h, className = "", ariaLabel, id }: InlineTimePickerProps) {
   const current = toMinutes(value);
   const shown = current === null ? "" : formatTime(current, is24h);
   const [text, setText] = useState(shown);
@@ -83,7 +87,7 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
   // server and first client render match
   const [native, setNative] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const toggleRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const noteId = useId();
 
@@ -129,7 +133,7 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
 
   const close = useCallback((returnFocus: boolean) => {
     setIsOpen(false);
-    if (returnFocus) toggleRef.current?.focus();
+    if (returnFocus) inputRef.current?.focus();
   }, []);
 
   // Outside click or focus leaving the panel: close without saving
@@ -163,6 +167,7 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
       <div className={`st-time-box relative flex items-center w-full bg-background dark:bg-muted border border-border rounded-xl ${className}`}>
         <input
           type="time"
+          id={id}
           aria-label={ariaLabel}
           value={current === null ? "" : `${pad(Math.floor(current / 60))}:${pad(current % 60)}`}
           onChange={(e) => {
@@ -179,13 +184,16 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
     <div ref={containerRef} className={`relative ${className}`}>
       <div className="st-time-box flex items-center w-full bg-background dark:bg-muted border border-border rounded-xl transition-colors hover:border-primary/50 focus-within:ring-2 focus-within:ring-primary/50">
         <input
+          ref={inputRef}
           type="text"
+          id={id}
           inputMode="text"
           autoComplete="off"
           spellCheck={false}
           aria-label={ariaLabel}
           aria-invalid={note ? true : undefined}
           aria-describedby={note ? noteId : undefined}
+          aria-keyshortcuts="Alt+ArrowDown"
           value={text}
           placeholder={is24h ? "09:00" : "9:00 AM"}
           maxLength={10}
@@ -202,7 +210,10 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
             commit();
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "ArrowDown" && e.altKey) {
+              e.preventDefault();
+              open();
+            } else if (e.key === "Enter") {
               // Take the time; inside a form the Enter then submits it
               commit();
             } else if (e.key === "Escape") {
@@ -216,8 +227,8 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
           className="st-time-input min-w-0 flex-1 px-4 py-3 bg-transparent font-mono text-foreground outline-none"
         />
         <button
-          ref={toggleRef}
           type="button"
+          tabIndex={-1}
           aria-haspopup="dialog"
           aria-expanded={isOpen}
           aria-label={`${ariaLabel ? `${ariaLabel}: ` : ""}choose with buttons`}
