@@ -16,6 +16,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Trophy, Share2, Check, X, ArrowRight, RefreshCw, GraduationCap } from 'lucide-react';
 import { RollingNumber } from '@/components/RollingNumber';
+import { Flap } from '@/components/station/Flap';
 import { toolUsed, event as gaEvent } from '@/lib/gtag';
 import {
   generateDailyQuiz,
@@ -38,7 +39,7 @@ import { storageGet } from '@/lib/safeStorage';
  * answer to "What time does this clock show?". Quiz minutes are multiples
  * of 5, so the minute hand always points straight at a number.
  */
-function ClockFace({ h, m }: { h: number; m: number }) {
+function ClockFace({ h, m, decorative = false }: { h: number; m: number; decorative?: boolean }) {
   const minuteAngle = m * 6;
   const hourAngle = (h % 12) * 30 + m * 0.5;
   const hand = (angle: number, length: number, width: number) => {
@@ -54,9 +55,8 @@ function ClockFace({ h, m }: { h: number; m: number }) {
   return (
     <svg
       viewBox="0 0 120 120"
-      className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-6"
-      role="img"
-      aria-label={label}
+      className={decorative ? 'st-quiz-intro-clock' : 'w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-6'}
+      {...(decorative ? { 'aria-hidden': true } : { role: 'img', 'aria-label': label })}
     >
       <circle cx="60" cy="60" r="56" className="fill-background dark:fill-slate-900/60 stroke-border dark:stroke-slate-600" strokeWidth="2.5" />
       {Array.from({ length: 12 }, (_, i) => {
@@ -175,6 +175,10 @@ export function QuizTool({ className = '' }: { className?: string }) {
   // Done state
   const [stored, setStored] = useState<StoredResult | null>(null);
   const [streak, setStreak] = useState(0);
+  // The start screen: a streak that today's game would extend (played
+  // yesterday), and the time now on its clock face
+  const [keepStreak, setKeepStreak] = useState(0);
+  const [introNow, setIntroNow] = useState<Date | null>(null);
   const [board, setBoard] = useState<BoardState | null>(null);
   const [boardDown, setBoardDown] = useState(false);
   // Percentile recomputed by the server against everyone who has played so
@@ -245,6 +249,9 @@ export function QuizTool({ className = '' }: { className?: string }) {
         setPhase('done');
         return;
       }
+      const st = readJSON<{ last: string; streak: number }>(STREAK_KEY);
+      const [y, m, d] = day.split('-').map(Number);
+      if (st && st.last === new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10)) setKeepStreak(st.streak);
       setPhase('intro');
     }
     const savedInitials = storageGet(INITIALS_KEY);
@@ -270,6 +277,14 @@ export function QuizTool({ className = '' }: { className?: string }) {
     }, 250);
     return () => clearInterval(id);
   }, [phase, answered, questionIndex, quiz, results, picks]);
+
+  // The start screen's clock keeps the time
+  useEffect(() => {
+    if (phase !== 'intro') return;
+    setIntroNow(new Date());
+    const id = setInterval(() => setIntroNow(new Date()), 15_000);
+    return () => clearInterval(id);
+  }, [phase]);
 
   // Fetch the board on the intro (social-proof preview) and result screens.
   // On the result screen the caller's own score/time ride along so the
@@ -555,9 +570,9 @@ export function QuizTool({ className = '' }: { className?: string }) {
 
   if (!quiz || phase === 'loading') {
     return (
-      // Holds the start screen's height (250px on phones, 214px from sm up)
-      // so the page below doesn't jump when the quiz loads.
-      <div className={`st-result st-quiz-card ${cardClass} ${className} min-h-[250px] sm:min-h-[214px]`} aria-busy="true">
+      // Holds the start screen's height (about 280px on phones, 216px from sm
+      // up, with its clock face) so the page below doesn't jump when the quiz loads.
+      <div className={`st-result st-quiz-card ${cardClass} ${className} min-h-[280px] sm:min-h-[216px]`} aria-busy="true">
         <p className="text-sm text-muted-foreground">Loading today&apos;s quiz…</p>
       </div>
     );
@@ -671,13 +686,18 @@ export function QuizTool({ className = '' }: { className?: string }) {
     <div className={className}>
       {/* ------------------------------------------------ intro */}
       {phase === 'intro' && (
-        <div className={`st-result st-quiz-card ${cardClass}`}>
+        <div className={`st-result st-quiz-card st-quiz-intro ${cardClass}`}>
+          <div className="st-quiz-intro-head">
           <p className="text-sm text-muted-foreground tabular-nums mb-1">
             Daily #{quiz.number} · {dayLabel}
           </p>
           <p className="text-base text-foreground mb-5">
             5 questions · about a minute · the same for everyone today
           </p>
+          </div>
+          {/* The clock the questions are about, showing the time now */}
+          {introNow && <ClockFace h={introNow.getHours()} m={introNow.getMinutes()} decorative />}
+          <div className="st-quiz-intro-body">
           {crowd && board && board.top.length > 0 && (
             <p className="text-sm mb-5 flex items-center gap-2 text-muted-foreground">
               <Trophy className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
@@ -709,6 +729,12 @@ export function QuizTool({ className = '' }: { className?: string }) {
             </button>{' '}
             — untimed, and they don&apos;t count.
           </p>
+          {keepStreak > 0 && (
+            <p className="st-quiz-streak">
+              <Flap value={String(keepStreak + 1)} /> Play today for a {keepStreak + 1}-day streak.
+            </p>
+          )}
+          </div>
         </div>
       )}
 

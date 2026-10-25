@@ -158,7 +158,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   }, [fromTZ]);
 
   // Centralized calculation helper so we can reuse for swap
-  const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string; fromName?: string; toName?: string }) => {
+  const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string; fromName?: string; toName?: string; silent?: boolean }) => {
     if (!from || !to) {
       toast({
         title: 'Select locations',
@@ -201,6 +201,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         clock,
       });
 
+      // The answer shown on arrival isn't a conversion anyone asked for
+      if (opts?.silent) return;
       const device = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop';
       gaEvent({
         action: 'tz_convert',
@@ -220,6 +222,16 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
       setResult(null);
     }
   }, [hour12, inputDate, inputTime, fromLocationDisplay, toLocationDisplay, displayForTZ]);
+
+  // The page opens on an answer, as the homepage does: the detected place
+  // against UTC, now (it showed an empty gap under Calculate until pressed).
+  // Once, when the place and time are in; Calculate does every later change.
+  const shownOnArrival = useRef(false);
+  useEffect(() => {
+    if (shownOnArrival.current || !fromTZ || !toTZ || !inputDate || !inputTime || timeZoneOptions.length === 0) return;
+    shownOnArrival.current = true;
+    if (!result) computeConversion(fromTZ, toTZ, { silent: true });
+  }, [fromTZ, toTZ, inputDate, inputTime, timeZoneOptions.length, result, computeConversion]);
 
   // Calculate conversion manually when user clicks Calculate
   // Text typed in a box but not picked from the list isn't a place yet:
@@ -419,39 +431,6 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
   return (
     <div className={`st-panel relative z-20 bg-card dark:bg-card rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-border/50 dark:border-border/50 hover:shadow-md transition-all duration-300 ${className}`}>
-      {/* Card toolbar — the page header already carries the title/subtitle;
-          repeating them here was the page's third title. */}
-      <div className="flex items-center justify-end gap-4 mb-4 sm:mb-6">
-        <div className="flex items-center justify-center">
-          <div className="bg-muted/50 dark:bg-muted/50 rounded-xl p-1.5 flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setHour12(true)}
-            aria-pressed={hour12}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                hour12
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              12h
-            </button>
-            <button
-              type="button"
-              onClick={() => setHour12(false)}
-            aria-pressed={!hour12}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                !hour12
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              24h
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* The places and the time, as a form: Enter calculates, as on the homepage */}
       <form
         className="grid gap-4 sm:gap-6 mb-6"
@@ -592,9 +571,30 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             <h2 className="text-sm font-semibold text-foreground dark:text-foreground">
               Date & Time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
             </h2>
-            <button type="button" className="st-now" onClick={handleNowClick} aria-label="Set the date and time to now">
-              Now
-            </button>
+            {/* The shared 12h/24h switch beside Now (it had a toolbar row of
+                its own at the top of the card) */}
+            <div className="flex items-center gap-4 shrink-0">
+              <div className="bg-muted/50 dark:bg-muted/50 rounded-lg p-1 flex items-center gap-1" role="group" aria-label="Clock format">
+                {([true, false] as const).map((twelve) => (
+                  <button
+                    key={String(twelve)}
+                    type="button"
+                    onClick={() => setHour12(twelve)}
+                    aria-pressed={hour12 === twelve}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                      hour12 === twelve
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    {twelve ? '12h' : '24h'}
+                  </button>
+                ))}
+              </div>
+              <button type="button" className="st-now" onClick={handleNowClick} aria-label="Set the date and time to now">
+                Now
+              </button>
+            </div>
           </div>
 
         <div className="grid sm:grid-cols-2 gap-4">

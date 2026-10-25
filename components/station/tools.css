@@ -155,3 +155,93 @@ html:not(.classic) .station .st-departures .st-dot { width: 12px; height: 12px; 
 
 /* The work hours total: hours and pay side by side on the line's board */
 html:not(.classic) .station .st-ts-board { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 48px; }
+
+/* ---- Market hours: the departures board, one row per exchange ----
+   Built on .st-departures (the holidays board); a light per state, the
+   countdown in the board's lettering, the 12h/24h switch in its header. */
+html:not(.classic) .station .st-markets-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-bottom: 16px; }
+html:not(.classic) .station .st-markets-head h2 { margin: 0; }
+html:not(.classic) .station .st-markets-head p { margin: 4px 0 0; font-size: 15px; color: var(--dep-quiet); }
+html:not(.classic) .station .st-departures.st-markets .st-seg { height: 40px; border-color: var(--dep-rule); }
+html:not(.classic) .station .st-departures.st-markets .st-seg button { color: var(--dep-quiet); }
+html:not(.classic) .station[data-line] .st-departures.st-markets .st-seg button[aria-pressed="true"] { background: var(--line); color: var(--line-ink); }
+html:not(.classic) .station .st-markets tbody th { white-space: nowrap; }
+.station .st-mk-pin { background: none; border: 0; padding: 8px; margin: -8px 2px -8px -8px; color: var(--dep-quiet, var(--quiet)); cursor: pointer; vertical-align: -2px; }
+.station .st-mk-pin:hover { color: var(--dep-ink, var(--ink)); }
+.station .st-mk-pin[aria-pressed="true"] { color: #f3c64a; }
+.station .st-mk-name { font-size: 19px; font-weight: 700; }
+.station .st-mk-city { display: block; margin-left: 26px; font-size: 14px; font-weight: 400; color: var(--dep-quiet, var(--quiet)); }
+.station .st-mk-state { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.station .st-mk-state i { width: 10px; height: 10px; border-radius: 50%; background: rgb(255 255 255 / 0.3); }
+.station .st-markets tr[data-state="open"] .st-mk-state i { background: #3ddc84; box-shadow: 0 0 0 3px rgb(61 220 132 / 0.25); }
+.station .st-markets tr:is([data-state="pre-market"], [data-state="after-hours"]) .st-mk-state i { background: #f5b942; }
+.station .st-markets tr[data-state="lunch"] .st-mk-state i { background: #7cc4ff; }
+.station .st-mk-hours small { display: block; margin-top: 2px; font-size: 13px; color: var(--dep-quiet, var(--quiet)); }
+.station .st-mk-hours small.st-mk-note { color: #ffb27a; }
+.station .st-mk-next { white-space: nowrap; }
+.station .st-mk-next small { display: block; font-size: 13px; color: var(--dep-quiet, var(--quiet)); }
+html:not(.classic) .station .st-mk-next b { font-family: var(--display); font-size: 28px; font-weight: 800; line-height: 1; color: #ffb27a; }
+html:not(.classic) .station .st-markets tr[data-state="open"] .st-mk-next b { color: #3ddc84; }
+@media (max-width: 640px) {
+  /* Name, status and hours on the left; the countdown on the right */
+  .station .st-markets tbody td:nth-child(3) { grid-column: 1; }
+  .station .st-markets tbody td:last-child { grid-row: 1 / span 3; align-self: center; }
+  html:not(.classic) .station .st-mk-next b { font-size: 24px; }
+  /* Shorter rows: the city on the name's line, the hours a size down */
+  .station .st-mk-city { display: inline; margin-left: 8px; }
+  .station .st-markets tbody td.st-mk-hours { font-size: 14px; }
+  .station .st-markets tbody tr { row-gap: 2px; }
+}
+
+/* ---- Decimal hours chart: a departures-style board on the page ---- */
+html:not(.classic) .station .st-chart-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 20px; margin-bottom: 14px; }
+html:not(.classic) .station .st-chart-head h2 { margin: 0; }
+html:not(.classic) .station .st-chart-head p { margin: 4px 0 0; font-size: 15px; color: var(--dep-quiet); max-width: 52ch; }
+html:not(.classic) .station .st-chart-head button { color: var(--dep-ink); border-color: var(--dep-rule); background: transparent; }
+html:not(.classic) .station .st-chart-head button:hover { background: rgb(255 255 255 / 0.08); }
+.station .st-chart-scroll { overflow-x: auto; }
+html:not(.classic) .station .st-chart tbody :is(th, td) { padding: 5px 10px 5px 0; }
+html:not(.classic) .station .st-chart thead th { padding-bottom: 8px; }
+html:not(.classic) .station .st-chart td.st-chart-min { color: var(--dep-quiet); font-size: 15px; }
+html:not(.classic) .station .st-chart td.st-chart-dec { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--dep-ink); padding-right: 22px; }
+html:not(.classic) .station .st-chart td.st-chart-dec:last-child { padding-right: 0; }
+/* The quarter hours: 15, 30, 45 and 60 minutes */
+html:not(.classic) .station .st-chart td.q { color: #ffb27a; font-weight: 800; }
+@media (max-width: 640px) {
+  /* Keep it a table on phones (the holidays board turns its rows into cards) */
+  .station .st-chart table { display: table; }
+  .station .st-chart thead { display: table-header-group; position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  .station .st-chart tbody { display: table-row-group; }
+  .station .st-chart tbody tr { display: table-row; padding: 0; }
+  html:not(.classic) .station .st-chart :is(thead th, tbody td) { display: table-cell; padding: 4px 4px 4px 0; }
+  html:not(.classic) .station .st-chart td.st-chart-dec { font-size: 17px; padding-right: 8px; }
+  html:not(.classic) .station .st-chart td.st-chart-min { font-size: 13px; }
+}
+
+/* ---- Sleep planner: the suggested times as a small departures board ---- */
+html:not(.classic) .station .st-sleep-board { list-style: none; margin: 0; padding: 4px 18px !important; }
+.station .st-sleep-board li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
+html:not(.classic) .station .st-sleep-board li + li { border-top: 1px solid color-mix(in srgb, var(--line-ink, #fff) 22%, transparent); }
+html:not(.classic) .station .st-sleep-board .st-figure { font-size: 34px !important; line-height: 1; white-space: nowrap; }
+.station .st-sleep-ap { margin-left: 4px; font-size: 0.5em; font-weight: 700; }
+.station .st-sleep-board li:not(.best) { opacity: 0.72; }
+.station .st-sleep-sub { font-size: 14px; text-align: right; }
+.station .st-sleep-best { display: inline-block; margin-left: 8px; padding: 1px 8px; border: 1px solid currentColor; border-radius: 999px; font-size: 12px; font-weight: 700; }
+@media (max-width: 400px) {
+  .station .st-sleep-best { display: block; width: max-content; margin: 4px 0 0 auto; }
+}
+
+/* ---- Quiz start screen: a clock face beside the start button ---- */
+html:not(.classic) .station .st-quiz-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 40px; align-items: start; }
+.station .st-quiz-intro-head { grid-column: 1; grid-row: 1; }
+.station .st-quiz-intro-body { grid-column: 1; grid-row: 2; }
+.station .st-quiz-intro-clock { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: 168px; height: 168px; }
+html:not(.classic) .station .st-quiz-streak { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; font-size: 15px; font-weight: 600; }
+html:not(.classic) .station .st-quiz-streak .st-flap { font-family: var(--display); font-size: 30px; font-weight: 800; }
+@media (max-width: 640px) {
+  /* Phones: a small clock beside the heading lines only; the button keeps the full width */
+  html:not(.classic) .station .st-quiz-intro { column-gap: 14px; }
+  .station .st-quiz-intro-body { grid-column: 1 / -1; }
+  .station .st-quiz-intro-clock { grid-row: 1; align-self: start; width: 76px; height: 76px; }
+}
+.classic .st-quiz-intro-clock { display: none; }
