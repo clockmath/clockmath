@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 export const metadata: Metadata = {
   title: "Freelancer Time Tracking – Calculate Billable Hours Accurately",
@@ -58,9 +60,7 @@ export default function FreelancerTimeTrackingPage() {
           <div><strong>Task:</strong> Website design review</div>
           <div><strong>Start:</strong> 2:15 PM</div>
           <div><strong>End:</strong> 4:45 PM</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>➡ Billable Time = 2 hours 30 minutes (2.5 hours)</strong>
-          </div>
+          <ExampleAnswer>Billable time <Flap value="2" /> hours <Flap value="30" /> minutes (2.5 hours)</ExampleAnswer>
           <div className="text-slate-600 dark:text-muted-foreground">
             At $75/hour = $187.50
           </div>

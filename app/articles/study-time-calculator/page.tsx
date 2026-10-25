@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 export const metadata: Metadata = {
   title: "Study Time Calculator – Track Your Sessions Easily",
@@ -57,9 +59,7 @@ export default function StudyTimeCalculatorPage() {
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 2:10 PM</div>
           <div><strong>End:</strong> 5:05 PM</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>➡ Total Study Time = 2 hours 55 minutes</strong>
-          </div>
+          <ExampleAnswer>Total study time <Flap value="2" /> hours <Flap value="55" /> minutes</ExampleAnswer>
         </div>
       </div>
 

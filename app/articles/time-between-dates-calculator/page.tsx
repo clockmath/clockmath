@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 // This guide used to be titled "Time Between Two Dates Calculator – Free
 // Online Tool", which pitted it against the homepage (the actual tool) for
@@ -64,9 +66,7 @@ export default function TimeBetweenDatesCalculatorPage() {
           <div>March has 31 days, so 31 − 1 = <strong>30</strong> days left in March</div>
           <div>No full months in between</div>
           <div>April 15 adds <strong>15</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>30 + 15 = 45 days</strong>
-          </div>
+          <ExampleAnswer>30 + 15 = <Flap value="45" /> days</ExampleAnswer>
         </div>
       </div>
 
