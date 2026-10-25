@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 /**
  * Time field: type straight into it ("930", "9:30", "17:45", "5:30pm"),
@@ -55,12 +55,12 @@ export function formatTime(t: number, is24h: boolean): string {
 
 /**
  * What someone typed, as minutes since midnight, or null if it isn't a time:
- * "9", "930", "0930", "9:30", "9.30", "21:30", "5:30pm", "5 pm", "5p".
+ * "9", "930", "0930", "9:30", "9.30", "9 30", "21:30", "5:30pm", "5 pm", "5p".
  * Without am/pm in 12-hour mode, 1–11 keeps the field's current half of the
  * day (so "5:30" in an afternoon field is 5:30 PM) and a bare 12 is noon.
  */
 export function parseTime(text: string, is24h: boolean, current: number | null): number | null {
-  const m = text.trim().toLowerCase().match(/^(\d{1,2})(?:[:.h]?(\d{2}))?\s*(a|p|am|pm|a\.m\.|p\.m\.)?$/);
+  const m = text.trim().toLowerCase().match(/^(\d{1,2})(?:[:.h ]?(\d{2}))?\s*(a|p|am|pm|a\.m\.|p\.m\.)?$/);
   if (!m) return null;
   let h = Number(m[1]);
   const min = m[2] === undefined ? 0 : Number(m[2]);
@@ -94,6 +94,15 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
   useEffect(() => {
     setNative(window.matchMedia("(pointer: coarse)").matches);
   }, []);
+
+  // After Enter, select the field's text once it shows the taken time (its
+  // new value would put the caret at the end)
+  const reselect = useRef(false);
+  useLayoutEffect(() => {
+    if (!reselect.current) return;
+    reselect.current = false;
+    if (document.activeElement === inputRef.current) inputRef.current?.select();
+  });
 
   useEffect(() => {
     if (!note) return;
@@ -214,8 +223,12 @@ export function InlineTimePicker({ value, onChange, is24h, className = "", ariaL
               e.preventDefault();
               open();
             } else if (e.key === "Enter") {
-              // Take the time; inside a form the Enter then submits it
+              // Take the time; inside a form the Enter then submits it. The
+              // field's text is selected again, so the next time typed
+              // replaces it (it went on the end: "9:45 PM10")
+              reselect.current = true;
               commit();
+              inputRef.current?.select();
             } else if (e.key === "Escape") {
               setText(shown);
               setNote(null);
