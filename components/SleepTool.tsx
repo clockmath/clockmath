@@ -183,27 +183,27 @@ export function SleepTool({ className = '' }: SleepToolProps) {
 
   return (
     <div className={className}>
-      {/* Shared format toggle */}
-      <div className="flex justify-end mb-4">
-        <div className="flex bg-muted/50 dark:bg-muted/50 rounded-lg p-1">
-          <button onClick={() => setHourFormat(true)} aria-pressed={hour12} className={modeButton(hour12)}>
-            12h
-          </button>
-          <button onClick={() => setHourFormat(false)} aria-pressed={!hour12} className={modeButton(!hour12)}>
-            24h
-          </button>
-        </div>
-      </div>
-
       <div className="grid gap-6 lg:grid-cols-2">
         {/* How long did I sleep */}
         <section
           aria-labelledby="slept-heading"
           className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
         >
-          <h2 id="slept-heading" className="text-lg font-bold text-foreground mb-4">
-            How long did I sleep?
-          </h2>
+          {/* The shared 12h/24h switch sits in this heading row (it had a row
+              of its own above both panels) */}
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h2 id="slept-heading" className="text-lg font-bold text-foreground m-0">
+              How long did I sleep?
+            </h2>
+            <div className="flex shrink-0 bg-muted/50 dark:bg-muted/50 rounded-lg p-1" role="group" aria-label="Clock format">
+              <button type="button" onClick={() => setHourFormat(true)} aria-pressed={hour12} className={modeButton(hour12)}>
+                12h
+              </button>
+              <button type="button" onClick={() => setHourFormat(false)} aria-pressed={!hour12} className={modeButton(!hour12)}>
+                24h
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
               <div className="flex items-baseline justify-between gap-2 mb-1">
