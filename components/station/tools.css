@@ -145,3 +145,7 @@ html:not(.classic) .station .st-departures .st-dot { width: 12px; height: 12px; 
 /* Sleep: "Did you mean bed at 11:00 PM?" — the time is the one-tap fix */
 .station .st-slip-fix { font: inherit; font-weight: 700; color: inherit; background: none; border: 0; padding: 0; cursor: pointer;
   text-decoration: underline; text-underline-offset: 3px; }
+
+/* Copy on an answer board (decimal hours): outlined in the board's own ink */
+.station .st-copy { background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 45%, transparent); cursor: pointer; }
+.station .st-copy:hover { border-color: currentColor; }
