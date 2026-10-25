@@ -18,6 +18,7 @@ import { RollingNumber } from '@/components/RollingNumber';
 import { toolUsed } from '@/lib/gtag';
 import { getDevice } from '@/lib/device';
 import { parseAmount, parseHours } from '@/lib/overtime';
+import { copyText } from '@/lib/clipboard';
 
 
 interface DecimalHoursToolProps {
@@ -47,27 +48,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       className="st-copy mt-3 inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium"
       aria-label={label}
       onClick={async () => {
-        let ok = false;
-        try {
-          await navigator.clipboard.writeText(text);
-          ok = true;
-        } catch {
-          // The clipboard API is blocked in some browsers (embedded and
-          // in-app ones): copy through a selected, hidden field instead
-          const area = document.createElement('textarea');
-          area.value = text;
-          area.setAttribute('readonly', '');
-          area.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
-          document.body.appendChild(area);
-          area.select();
-          try {
-            ok = document.execCommand('copy');
-          } catch {
-            /* the figure is on screen to copy by hand */
-          }
-          area.remove();
-        }
-        if (ok) {
+        if (await copyText(text)) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         }

@@ -18,6 +18,7 @@ import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSite
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useClockFormat } from "@/hooks/use-clock-format"
 import { storageRemove } from "@/lib/safeStorage"
+import { copyText } from "@/lib/clipboard"
 import { getDevice } from "@/lib/device"
 
 // Interface for calculator-specific data
@@ -379,12 +380,10 @@ export default function ClockMathPage() {
 
   const copyResult = useCallback(async () => {
     if ("error" in span || !span.detailed || stale) return
-    try {
-      await navigator.clipboard.writeText(`${span.summary} (${span.detailed.hours.toFixed(2)} hours)`)
+    // copyText falls back where the clipboard API is blocked
+    if (await copyText(`${span.summary} (${span.detailed.hours.toFixed(2)} hours)`)) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Clipboard blocked: the answer is on screen to copy by hand
     }
   }, [span, stale])
 
