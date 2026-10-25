@@ -398,26 +398,19 @@ export function SleepTool({ className = '' }: SleepToolProps) {
             </p>
           )}
 
-          <ul className="space-y-2" aria-live="polite">
+          {/* A small departures board in the night line's colour: the times
+              on flap tiles, the recommended ones at full strength */}
+          <ul className="st-result st-sleep-board" aria-live="polite">
             {planRows.map((row) => (
-              <li
-                key={row.cycles}
-                className={`flex items-center justify-between rounded-xl border px-4 py-2.5 ${
-                  row.best
-                    ? 'border-primary/30 bg-primary/10 '
-                    : 'border-border/50 dark:border-border/50 bg-background/60 dark:bg-background/40'
-                }`}
-              >
-                <span className="text-lg font-bold font-mono text-foreground">
-                  <RollingNumber value={row.time} />
+              <li key={row.cycles} className={row.best ? 'best' : undefined}>
+                <span className="st-figure">
+                  {/* AM/PM set small beside the tiles, as on the time zone board */}
+                  <RollingNumber value={row.time.replace(/\s*[AP]M$/, '')} />
+                  {/[AP]M$/.test(row.time) && <span className="st-sleep-ap">{row.time.slice(-2)}</span>}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="st-sleep-sub">
                   {row.cycles} cycles · {row.sleep}
-                  {row.best && (
-                    <span className="ml-2 text-xs font-semibold text-primary">
-                      Recommended
-                    </span>
-                  )}
+                  {row.best && <span className="st-sleep-best">Recommended</span>}
                 </span>
               </li>
             ))}

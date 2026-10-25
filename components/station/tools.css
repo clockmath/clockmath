@@ -217,3 +217,16 @@ html:not(.classic) .station .st-chart td.q { color: #ffb27a; font-weight: 800; }
   html:not(.classic) .station .st-chart td.st-chart-dec { font-size: 17px; padding-right: 8px; }
   html:not(.classic) .station .st-chart td.st-chart-min { font-size: 13px; }
 }
+
+/* ---- Sleep planner: the suggested times as a small departures board ---- */
+html:not(.classic) .station .st-sleep-board { list-style: none; margin: 0; padding: 4px 18px !important; }
+.station .st-sleep-board li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
+html:not(.classic) .station .st-sleep-board li + li { border-top: 1px solid color-mix(in srgb, var(--line-ink, #fff) 22%, transparent); }
+html:not(.classic) .station .st-sleep-board .st-figure { font-size: 34px !important; line-height: 1; white-space: nowrap; }
+.station .st-sleep-ap { margin-left: 4px; font-size: 0.5em; font-weight: 700; }
+.station .st-sleep-board li:not(.best) { opacity: 0.72; }
+.station .st-sleep-sub { font-size: 14px; text-align: right; }
+.station .st-sleep-best { display: inline-block; margin-left: 8px; padding: 1px 8px; border: 1px solid currentColor; border-radius: 999px; font-size: 12px; font-weight: 700; }
+@media (max-width: 400px) {
+  .station .st-sleep-best { display: block; width: max-content; margin: 4px 0 0 auto; }
+}
