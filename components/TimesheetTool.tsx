@@ -861,6 +861,29 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           )}
         </div>
 
+        {/* The answer on the line's board, as on every tool: the hours payroll
+            wants, the same in hours and minutes, and the pay once there's a rate */}
+        <div className="st-result st-ts-board mb-3" aria-live="polite">
+          <div>
+            <p className="st-figure text-5xl font-bold m-0">
+              <RollingNumber value={decimalHours(totalMins)} />
+            </p>
+            <p className="text-sm mt-2 mb-0">
+              hours ({hhmm(totalMins)}) across {ordered.length} {ordered.length === 1 ? 'shift' : 'shifts'}
+            </p>
+          </div>
+          {gross != null && (
+            <div>
+              <p className="st-figure text-5xl font-bold m-0">
+                $<RollingNumber value={gross.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} />
+              </p>
+              <p className="text-sm mt-2 mb-0">
+                gross pay{otSplit && otSplit.overtimeHours > 0 ? `, with ${otSplit.overtimeHours} h of overtime` : ''}
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Breakdown — stacked cards on mobile */}
         <div className="sm:hidden space-y-2">
           {ordered.map((s) => {
