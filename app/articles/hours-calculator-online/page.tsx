@@ -65,7 +65,7 @@ export default function HoursCalculatorOnlinePage() {
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 11:45 PM</div>
           <div><strong>End:</strong> 6:20 AM</div>
-          <ExampleAnswer>Total <Flap value="6" /> hours <Flap value="35" /> minutes</ExampleAnswer>
+          <ExampleAnswer label="Total: 6 hours 35 minutes">Total <Flap value="6" /> hours <Flap value="35" /> minutes</ExampleAnswer>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
           Try calculating this by hand—it's much harder than it looks!

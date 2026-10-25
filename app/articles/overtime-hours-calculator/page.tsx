@@ -74,7 +74,7 @@ export default function OvertimeHoursCalculatorPage() {
           <div>Regular: 40 hours × $20 = <strong>$800</strong></div>
           <div>Overtime rate: $20 × 1.5 = $30/hour</div>
           <div>Overtime: 6 hours × $30 = <strong>$180</strong></div>
-          <ExampleAnswer>Total <Flap value="$980" /></ExampleAnswer>
+          <ExampleAnswer label="Total: $980">Total <Flap value="$980" /></ExampleAnswer>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export default function OvertimeHoursCalculatorPage() {
           <div>First 8 hours × $20 = <strong>$160</strong></div>
           <div>Hours 9–12: 4 × $30 = <strong>$120</strong></div>
           <div>Hour 13: 1 × $40 (double time) = <strong>$40</strong></div>
-          <ExampleAnswer>Total for the day <Flap value="$320" /></ExampleAnswer>
+          <ExampleAnswer label="Total for the day: $320">Total for the day <Flap value="$320" /></ExampleAnswer>
         </div>
       </div>
 

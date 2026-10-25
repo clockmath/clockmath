@@ -368,6 +368,7 @@ html:not(.classic) .station .st-example-answer {
   display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 14px 0 0 !important; padding: 10px 14px;
   background: var(--line, var(--ink)); color: var(--line-ink, var(--dial)); border-radius: 6px; font-size: 17px; font-weight: 700; line-height: 1.3;
 }
+html:not(.classic) .station .st-example-answer > [aria-hidden] { display: contents; }
 html:not(.classic) .station .st-example-answer .st-flap { font-family: var(--display); font-size: 34px; font-weight: 800; }
 .classic .st-example-answer { font-weight: 700; padding-top: 0.5rem; border-top: 1px solid var(--rule); }
 .classic .st-example-answer .st-flap { display: inline; }

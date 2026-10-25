@@ -60,7 +60,7 @@ export default function FreelancerTimeTrackingPage() {
           <div><strong>Task:</strong> Website design review</div>
           <div><strong>Start:</strong> 2:15 PM</div>
           <div><strong>End:</strong> 4:45 PM</div>
-          <ExampleAnswer>Billable time <Flap value="2" /> hours <Flap value="30" /> minutes (2.5 hours)</ExampleAnswer>
+          <ExampleAnswer label="Billable time: 2 hours 30 minutes (2.5 hours)">Billable time <Flap value="2" /> hours <Flap value="30" /> minutes (2.5 hours)</ExampleAnswer>
           <div className="text-slate-600 dark:text-muted-foreground">
             At $75/hour = $187.50
           </div>

@@ -66,7 +66,7 @@ export default function TimeBetweenDatesCalculatorPage() {
           <div>March has 31 days, so 31 − 1 = <strong>30</strong> days left in March</div>
           <div>No full months in between</div>
           <div>April 15 adds <strong>15</strong></div>
-          <ExampleAnswer>30 + 15 = <Flap value="45" /> days</ExampleAnswer>
+          <ExampleAnswer label="30 + 15 = 45 days">30 + 15 = <Flap value="45" /> days</ExampleAnswer>
         </div>
       </div>
 

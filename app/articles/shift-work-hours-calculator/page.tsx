@@ -77,7 +77,7 @@ export default function ShiftWorkHoursCalculatorPage() {
           <div>End 7:30 + 24 = 31:30</div>
           <div>31:30 − 23:00 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid break: − 30 minutes</div>
-          <ExampleAnswer>Hours worked <Flap value="8" /> hours</ExampleAnswer>
+          <ExampleAnswer label="Hours worked: 8 hours">Hours worked <Flap value="8" /> hours</ExampleAnswer>
         </div>
       </div>
 

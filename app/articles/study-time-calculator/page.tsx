@@ -59,7 +59,7 @@ export default function StudyTimeCalculatorPage() {
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 2:10 PM</div>
           <div><strong>End:</strong> 5:05 PM</div>
-          <ExampleAnswer>Total study time <Flap value="2" /> hours <Flap value="55" /> minutes</ExampleAnswer>
+          <ExampleAnswer label="Total study time: 2 hours 55 minutes">Total study time <Flap value="2" /> hours <Flap value="55" /> minutes</ExampleAnswer>
         </div>
       </div>
 

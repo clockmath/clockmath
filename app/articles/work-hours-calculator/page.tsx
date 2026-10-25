@@ -82,7 +82,7 @@ export default function WorkHoursCalculatorPage() {
         <div className="space-y-2 text-sm">
           <div>In 24-hour time: 17:45 − 9:15 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid lunch: − 30 minutes</div>
-          <ExampleAnswer>Hours worked <Flap value="8.00" /> hours</ExampleAnswer>
+          <ExampleAnswer label="Hours worked: 8.00 hours">Hours worked <Flap value="8.00" /> hours</ExampleAnswer>
         </div>
       </div>
 
@@ -98,7 +98,7 @@ export default function WorkHoursCalculatorPage() {
         <div className="space-y-2 text-sm">
           <div>16:20 − 7:50 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid lunch: − 45 minutes = 7 hours 45 minutes</div>
-          <ExampleAnswer>In decimal: 7 + 45 ÷ 60 = <Flap value="7.75" /> hours</ExampleAnswer>
+          <ExampleAnswer label="In decimal: 7 + 45 ÷ 60 = 7.75 hours">In decimal: 7 + 45 ÷ 60 = <Flap value="7.75" /> hours</ExampleAnswer>
         </div>
       </div>
 
