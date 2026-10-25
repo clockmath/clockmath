@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export type Place = {
   name: string;
@@ -107,6 +107,10 @@ export function LocationSearch({
   const [items, setItems] = useState<Place[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // The suggestion the arrow keys are on (-1: none). Until Oct 2026 the list
+  // had no keyboard at all: a keyboard user couldn't choose a place.
+  const [active, setActive] = useState(-1);
+  const listId = useId();
 
   // control when searches should happen
   const [focused, setFocused] = useState(false);
@@ -138,8 +142,10 @@ export function LocationSearch({
   }, [externalValue]);
 
   useEffect(() => {
-    // do not search if not focused or empty query
-    if (!focused || !q.trim()) {
+    // do not search if not focused, empty, or the place just picked (picking
+    // sets the text, which re-ran the search and reopened the list, so the
+    // next Enter picked again instead of submitting)
+    if (!focused || !q.trim() || q === selectedLabelRef.current) {
       setItems([]);
       setOpen(false);
       return;
@@ -181,6 +187,7 @@ export function LocationSearch({
           if (reqId !== reqIdRef.current || ac.signal.aborted) return;
 
           setItems(results);
+          setActive(-1);
           setOpen(focused && results.length > 0);
         } catch {
           if (ac.signal.aborted) return;
@@ -204,8 +211,10 @@ export function LocationSearch({
     setQ(p.name);
     setItems([]);
     setOpen(false);
+    setActive(-1);
     onSelect(p);
   };
+  const showList = open && items.length > 0;
 
   return (
     <div className={`relative ${className}`}>
@@ -214,7 +223,32 @@ export function LocationSearch({
         id={id}
         name={name}
         aria-label={ariaLabel}
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded={showList}
+        aria-controls={showList ? listId : undefined}
+        aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
         value={q}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown" && items.length > 0) {
+            e.preventDefault();
+            setOpen(true);
+            setActive((i) => (i + 1) % items.length);
+          } else if (e.key === "ArrowUp" && items.length > 0) {
+            e.preventDefault();
+            setOpen(true);
+            setActive((i) => (i <= 0 ? items.length - 1 : i - 1));
+          } else if (e.key === "Enter" && showList) {
+            // Enter takes the highlighted place, or the first; it doesn't
+            // also submit the form around the field
+            e.preventDefault();
+            pick(items[active >= 0 ? active : 0]);
+          } else if (e.key === "Escape" && showList) {
+            e.preventDefault();
+            setOpen(false);
+            setActive(-1);
+          }
+        }}
         onChange={(e) => {
           const newValue = e.target.value;
           setQ(newValue);
@@ -237,20 +271,23 @@ export function LocationSearch({
       {loading && (
         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs opacity-70 text-muted-foreground">…</div>
       )}
-      {open && items.length > 0 && (
+      {showList && (
         <ul
+          id={listId}
           role="listbox"
           className="absolute z-10 mt-1 w-full rounded-xl border border-border/50 bg-card dark:bg-card shadow-sm max-h-60 overflow-y-auto"
         >
-          {items.map((p) => (
+          {items.map((p, i) => (
             <li
+              id={`${listId}-${i}`}
               role="option"
-              aria-selected={selectedLabelRef.current === p.name}
+              aria-selected={i === active}
               onMouseDown={(e) => {
                 e.preventDefault();
                 pick(p);
               }}
-              className="px-3 py-2 cursor-pointer text-sm hover:bg-muted/50 dark:hover:bg-muted/50 text-foreground dark:text-foreground"
+              onMouseEnter={() => setActive(i)}
+              className={`px-3 py-2 cursor-pointer text-sm text-foreground dark:text-foreground ${i === active ? "bg-muted" : "hover:bg-muted/50 dark:hover:bg-muted/50"}`}
               key={`${p.lat},${p.lon}`}
             >
               {p.name}
