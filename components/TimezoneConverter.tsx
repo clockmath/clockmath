@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Flap } from '@/components/station/Flap';
+import { useClockFormat } from '@/hooks/use-clock-format';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { LocationTimezonePicker } from '@/components/location/LocationTimezonePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
@@ -25,7 +26,6 @@ import {
 import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
-import { storageGet, storageSet } from '@/lib/safeStorage';
 
 interface TimezoneConverterProps {
   className?: string;
@@ -49,7 +49,9 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   const [toTZ, setToTZ] = useState<string>('UTC');
   const [inputDate, setInputDate] = useState<string>('');
   const [inputTime, setInputTime] = useState<string>('');
-  const [hour12, setHour12] = useState<boolean>(true);
+  const [is24h, setIs24h] = useClockFormat();
+  const hour12 = !is24h;
+  const setHour12 = (v: boolean) => setIs24h(!v);
   const [fromLocationDisplay, setFromLocationDisplay] = useState<string>('');
   const [toLocationDisplay, setToLocationDisplay] = useState<string>(''); // State for "To" location display
   const [fromPreset, setFromPreset] = useState<{ lat: number; lon: number } | null>(null);
@@ -93,24 +95,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     const now = new Date();
     setInputDate(formatLocalDate(now));
     setInputTime(now.toTimeString().slice(0, 5));
-    
-    // Load hour12 preference from localStorage
-    const saved12Hour = storageGet('clockmath-hour12');
-    if (saved12Hour !== null) {
-      setHour12(saved12Hour === 'true');
-    } else {
-      // Use locale preference
-      const locale = Intl.DateTimeFormat().resolvedOptions();
-      setHour12(locale.hour12 !== undefined ? locale.hour12 : true);
-    }
+    // The 12h/24h setting is the site's shared one (useClockFormat)
   }, [isHydrated]);
-
-  // Save hour12 preference (only after hydration)
-  useEffect(() => {
-    if (isHydrated && typeof hour12 === 'boolean') {
-      storageSet('clockmath-hour12', hour12.toString());
-    }
-  }, [hour12, isHydrated]);
 
   // Centralized calculation helper so we can reuse for swap
   const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string }) => {
