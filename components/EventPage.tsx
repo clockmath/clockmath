@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast';
 import { event as gaEvent } from '@/lib/gtag';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 import { getDevice } from '@/lib/device';
+import { copyText } from '@/lib/clipboard';
 
 // Cross-linked from every event page (minus the current one). Renders in
 // static HTML, so it also fixes pages otherwise orphaned from internal links.
@@ -60,12 +61,8 @@ export function useShareCountdown() {
         /* user dismissed or unsupported — fall through to copy */
       }
     }
-    try {
-      await navigator.clipboard.writeText(url);
-      toast({ title: 'Link copied!', description: 'Share this countdown anywhere.' });
-    } catch {
-      toast({ title: 'Copy this link', description: url });
-    }
+    if (await copyText(url)) toast({ title: 'Link copied!', description: 'Share this countdown anywhere.' });
+    else toast({ title: 'Copy this link', description: url });
   }, []);
 }
 

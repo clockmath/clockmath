@@ -12,7 +12,7 @@
 [data-line="countdowns"] { --line: #b5541c; --line-ink: #ffffff; }
 [data-line="quiz"]       { --line: #f3c64a; --line-ink: #000000; --line-deep: #1c1a12; }
 [data-line="guides"]     { --line: #8a2c5a; --line-ink: #ffffff; }
-[data-line] { --line-rule: var(--line); --line-text: var(--line); }
+[data-line] { --line-rule: var(--line); --line-text: var(--line); --line-button: var(--line); }
 /* Rust as text on the wash is 4.48:1; its text shade is a step darker */
 [data-line="countdowns"] { --line-text: #9a4616; }
 .dark [data-line] { --line-rule: color-mix(in srgb, var(--line) 55%, #ffffff); --line-text: var(--line-rule); }
@@ -30,6 +30,15 @@ html.dark:not(.classic) .station[data-line]:not([data-line="quiz"]) {
   --enamel-hover: color-mix(in srgb, var(--line-text) 80%, #ffffff);
   --enamel-wash: color-mix(in srgb, var(--line) 22%, #0f1216);
 }
+
+/* An event page takes its own board's colour for its rules, links and
+   buttons, not the Countdowns rust (StationChrome sets the --hero-* shades,
+   each readable on the dial: lib/colour.ts eventLineColours) */
+html:not(.classic) .station[data-line][data-hero] {
+  --line: var(--hero); --line-ink: var(--hero-ink);
+  --line-text: var(--hero-text); --line-rule: var(--hero-text); --line-button: var(--hero-button);
+}
+html.dark:not(.classic) .station[data-line][data-hero] { --line-text: var(--hero-text-dark); --line-rule: var(--hero-text-dark); }
 
 /* The page's colour thread: the rule over its main band */
 html:not(.classic) .station[data-line] :is(.st-calc, .st-panel, .st-article) { border-top-color: var(--line-rule); border-top-width: 3px; }

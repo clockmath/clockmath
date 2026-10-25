@@ -5,7 +5,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner"
 import { ClassicToggle } from "./ClassicToggle"
 import { StationTabs } from "./StationTabs"
 import { ThemeToggle } from "./ThemeToggle"
-import { channels, contrast, luminance } from "@/lib/colour"
+import { channels, contrast, eventLineColours, luminance } from "@/lib/colour"
 import "./station.css"
 import "./tools.css"
 import "./lines.css"
@@ -71,7 +71,15 @@ const mixRgb = (rgb: number[], with_: number, p: number) => `rgb(${rgb.map((c) =
 // board by >= 1.65:1 (checked against every board in Oct 2026).
 function heroStyle(hero: { color: string; ink?: string }): React.CSSProperties {
   const ink = hero.ink ?? "#ffffff"
-  const style: Record<string, string> = { "--hero": hero.color, "--hero-ink": ink }
+  const lineColours = eventLineColours(hero.color, ink)
+  const style: Record<string, string> = {
+    "--hero": hero.color,
+    "--hero-ink": ink,
+    // The page's links, rules and buttons (lines.css)
+    "--hero-text": lineColours.text,
+    "--hero-text-dark": lineColours.textDark,
+    "--hero-button": lineColours.button,
+  }
   const rgb = channels(hero.color)
   const lum = luminance(rgb)
   style["--hero-sign"] = lum < 0.05 ? mixRgb(rgb, 255, 0.8) : mixRgb(rgb, 0, 0.6)
@@ -105,6 +113,7 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
     <div
       className={`station ${Archivo.variable} ${BigShoulders.variable}`}
       data-line={lineForTool(currentTool) ?? undefined}
+      data-hero={hero ? "" : undefined}
       style={hero ? heroStyle(hero) : undefined}
     >
       <AnnouncementBanner />
