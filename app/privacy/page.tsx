@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         <div className="st-article article-prose">
           <div>
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
-              <strong>Effective date:</strong> October 18, 2026
+              <strong>Effective date:</strong> October 25, 2026
             </p>
 
             <p className="mb-6">
@@ -131,9 +131,12 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold mb-4">4. Cookies and local storage</h2>
             <p className="mb-6">
               Google Analytics and Clarity set cookies when they run (see above for when that is). The quiz sets one
-              cookie for two days. Everything else is local storage on your device: your tool settings and drafts, and
-              your consent choice. You can clear both in your browser settings; the tools still work, they just
-              won&apos;t remember anything.
+              cookie for two days. Everything else is local storage on your device: your tool settings and drafts, a
+              count of how often you&apos;ve used the tools (so the site can offer to install itself as an app once
+              you&apos;re a regular), and your consent choice. The site also keeps copies of the pages you open in your
+              browser&apos;s cache, so they can open without a connection; nothing in that copy leaves your device. You
+              can clear all of it in your browser settings; the tools still work, they just won&apos;t remember
+              anything.
             </p>
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
