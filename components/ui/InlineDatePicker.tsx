@@ -39,6 +39,8 @@ interface InlineDatePickerProps {
   startOnCalendar?: boolean;
   /** Accessible field name (e.g. "Start date") — announced with the value. */
   ariaLabel?: string;
+  /** id for the field's button, so a <label htmlFor> can point at it. */
+  id?: string;
 }
 
 export function InlineDatePicker({
@@ -48,6 +50,7 @@ export function InlineDatePicker({
   className = "",
   startOnCalendar = false,
   ariaLabel,
+  id,
 }: InlineDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showCalendar, setShowCalendar] = useState(startOnCalendar);
@@ -249,6 +252,7 @@ export function InlineDatePicker({
     <>
       <button
         ref={triggerRef}
+        id={id}
         type="button"
         aria-label={`${ariaLabel ? ariaLabel + ', ' : ''}${displayValue}`}
         aria-haspopup="dialog"
