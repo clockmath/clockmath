@@ -105,6 +105,8 @@ const post = (url, body, headers = {}) =>
   for (const k of ['Content-Security-Policy', 'Strict-Transport-Security', 'X-Frame-Options', 'Cross-Origin-Opener-Policy']) {
     assert.ok(h.get(k), `${k} set`);
   }
+  // Clarity's Bing sync pixel (c.bing.com/c.gif) may load
+  assert.match(h.get('Content-Security-Policy'), /img-src [^;]*https:\/\/c\.bing\.com/, 'img-src allows c.bing.com');
 
   // Embeds may be framed by any site; nothing else may.
   const embed = api.withSecurityHeaders(new Response('x', { headers: { 'Content-Type': 'text/html' } }), '/embed/countdown/thanksgiving/').headers;
