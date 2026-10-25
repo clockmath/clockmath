@@ -12,7 +12,7 @@
 [data-line="countdowns"] { --line: #b5541c; --line-ink: #ffffff; }
 [data-line="quiz"]       { --line: #f3c64a; --line-ink: #000000; --line-deep: #1c1a12; }
 [data-line="guides"]     { --line: #8a2c5a; --line-ink: #ffffff; }
-[data-line] { --line-rule: var(--line); --line-text: var(--line); }
+[data-line] { --line-rule: var(--line); --line-text: var(--line); --line-button: var(--line); }
 /* Rust as text on the wash is 4.48:1; its text shade is a step darker */
 [data-line="countdowns"] { --line-text: #9a4616; }
 .dark [data-line] { --line-rule: color-mix(in srgb, var(--line) 55%, #ffffff); --line-text: var(--line-rule); }
@@ -30,6 +30,31 @@ html.dark:not(.classic) .station[data-line]:not([data-line="quiz"]) {
   --enamel-hover: color-mix(in srgb, var(--line-text) 80%, #ffffff);
   --enamel-wash: color-mix(in srgb, var(--line) 22%, #0f1216);
 }
+
+/* Dark mode: a primary button is the line's own colour with its ink, as the
+   boards are. It had been the lifted text shade with dark text, which looked
+   pale and switched off (Oct 2026). Buttons on a board keep the board's own
+   styling. */
+html.dark:not(.classic) .station[data-line]:not([data-line="quiz"]) :is(.st-btn.primary, .bg-primary.text-primary-foreground):not(:is(.st-answer, .st-result, .st-callout, .st-board) *) {
+  background: var(--line-button); border-color: var(--line-button); color: var(--line-ink) !important;
+}
+html.dark:not(.classic) .station[data-line]:not([data-line="quiz"]) :is(.st-btn.primary, .bg-primary.text-primary-foreground):not(:is(.st-answer, .st-result, .st-callout, .st-board) *):hover {
+  background: color-mix(in srgb, var(--line-button) 85%, #ffffff); border-color: color-mix(in srgb, var(--line-button) 85%, #ffffff);
+}
+
+/* The homepage's 12h/24h switch: the chosen side in the line's colour, like
+   every tool's switch (it was ink black, or white in dark mode) */
+html:not(.classic) .station[data-line]:not([data-line="quiz"]) .st-seg button[aria-pressed="true"] { background: var(--enamel); color: var(--primary-foreground); }
+html.dark:not(.classic) .station[data-line]:not([data-line="quiz"]) .st-seg button[aria-pressed="true"] { background: var(--line-button); color: var(--line-ink); }
+
+/* An event page takes its own board's colour for its rules, links and
+   buttons, not the Countdowns rust (StationChrome sets the --hero-* shades,
+   each readable on the dial: lib/colour.ts eventLineColours) */
+html:not(.classic) .station[data-line][data-hero] {
+  --line: var(--hero); --line-ink: var(--hero-ink);
+  --line-text: var(--hero-text); --line-rule: var(--hero-text); --line-button: var(--hero-button);
+}
+html.dark:not(.classic) .station[data-line][data-hero] { --line-text: var(--hero-text-dark); --line-rule: var(--hero-text-dark); }
 
 /* The page's colour thread: the rule over its main band */
 html:not(.classic) .station[data-line] :is(.st-calc, .st-panel, .st-article) { border-top-color: var(--line-rule); border-top-width: 3px; }
@@ -64,6 +89,18 @@ html.dark:not(.classic) .station[data-line] :is(.st-answer, .st-result) { box-sh
 
 /* ---- Every line on one map: the tools hub and guides lists ---- */
 html:not(.classic) .station .st-hub li[data-line] a { border-left: 6px solid var(--line); padding-left: 16px; }
+/* Each tool's sample answer, on tiles of its line colour */
+html:not(.classic) .station .st-hub-sample {
+  display: inline-flex; align-items: baseline; gap: 12px; justify-self: end; white-space: nowrap;
+  font-family: var(--display); font-size: 30px; font-weight: 800; line-height: 1;
+  color: var(--line-ink); --tile: var(--line); --tile-hinge: rgb(0 0 0 / 0.3);
+}
+html:not(.classic) .station .st-hub-sample > span { display: inline-flex; align-items: baseline; gap: 4px; }
+html:not(.classic) .station .st-hub-sample small { font-family: var(--font-archivo), sans-serif; font-size: 15px; font-weight: 700; color: var(--ink); }
+.classic .st-hub-sample { display: none; }
+@media (max-width: 760px) {
+  html:not(.classic) .station .st-hub-sample { justify-self: start; margin-top: 6px; font-size: 26px; }
+}
 
 /* The guide call-out takes the line of the tool it points to */
 html:not(.classic) .station .st-callout[data-line] { background: var(--line); color: var(--line-ink); }

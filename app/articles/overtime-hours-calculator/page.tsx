@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 // This guide used to be titled "Overtime Hours Calculator – Fast & Simple
 // Online Tool" and every in-body link pointed at the homepage duration
@@ -25,13 +27,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/overtime-hours-calculator/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,
@@ -72,9 +74,7 @@ export default function OvertimeHoursCalculatorPage() {
           <div>Regular: 40 hours × $20 = <strong>$800</strong></div>
           <div>Overtime rate: $20 × 1.5 = $30/hour</div>
           <div>Overtime: 6 hours × $30 = <strong>$180</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>Total: $980</strong>
-          </div>
+          <ExampleAnswer label="Total: $980">Total <Flap value="$980" /></ExampleAnswer>
         </div>
       </div>
 
@@ -95,9 +95,7 @@ export default function OvertimeHoursCalculatorPage() {
           <div>First 8 hours × $20 = <strong>$160</strong></div>
           <div>Hours 9–12: 4 × $30 = <strong>$120</strong></div>
           <div>Hour 13: 1 × $40 (double time) = <strong>$40</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>Total for the day: $320</strong>
-          </div>
+          <ExampleAnswer label="Total for the day: $320">Total for the day <Flap value="$320" /></ExampleAnswer>
         </div>
       </div>
 

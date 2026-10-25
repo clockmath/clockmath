@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live countdown to the LA 2028 Summer Olympics — opening ceremony July 14, 2028. See exactly how many days remain until the Games begin.',
   path: '/countdown/olympics-2028',
-  ogImage: '/og/countdown/olympics-2028.png?v=2',
+  ogImage: '/og/countdown/olympics-2028.png?v=3',
   keywords:
     'la 2028 olympics countdown, 2028 olympics countdown, time until 2028 olympics, days until la28, summer olympics 2028 countdown, los angeles olympics countdown',
 });

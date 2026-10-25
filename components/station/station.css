@@ -94,7 +94,11 @@
 .st-header .st-wrap { display: flex; align-items: center; gap: 36px; height: 64px; }
 .st-mark { display: flex; align-items: center; gap: 10px; flex-shrink: 0; text-decoration: none; color: var(--ink) !important;
            font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
-.st-mark svg { width: 28px; height: 28px; }
+.st-mark svg { width: 30px; height: 30px; }
+.st-mark-tile { fill: currentColor; }
+.st-mark-hands { stroke: var(--dial); }
+html:not(.classic) .station[data-line] .st-mark-tile { fill: var(--line); }
+html:not(.classic) .station[data-line] .st-mark-hands { stroke: var(--line-ink); }
 .st-tabs { display: flex; gap: 26px; font-size: 15px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .st-tabs::-webkit-scrollbar { display: none; }
 .st-tabs a { white-space: nowrap; text-decoration: none; color: var(--quiet); padding: 20px 0 18px; border-bottom: 3px solid transparent; }
@@ -352,11 +356,22 @@
 .station .article-prose strong { color: var(--ink); }
 .station .article-prose .bg-card, .station .article-prose [class*="bg-primary/"] { border-radius: 8px; }
 /* Guides' worked examples, tips and tool prompts (st-aside) sit beside the
-   text on an ink rule rather than in a grey card; small tiles in a grid
+   text on a rule in the guide's colour, over a wash of it (Oct 2026: they
+   had been on an ink rule and read as quotes); small tiles in a grid
    (st-aside-tile) get a light top rule. Classic view keeps the boxes. Their
    text-sm/text-xs copy was 12-14px against 18px body text: 16px in both. */
-html:not(.classic) .station .st-aside { background: none; border: 0; border-left: 3px solid var(--ink); border-radius: 0;
-                                        padding: 2px 0 2px 20px; }
+html:not(.classic) .station .st-aside { background: var(--enamel-wash); border: 0; border-left: 4px solid var(--line-rule, var(--ink));
+                                        border-radius: 0 6px 6px 0; padding: 18px 22px 20px; }
+/* The answer an example ends on: a strip of the guide's board colour, its
+   figures on flap tiles (ExampleAnswer) */
+html:not(.classic) .station .st-example-answer {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 14px 0 0 !important; padding: 10px 14px;
+  background: var(--line, var(--ink)); color: var(--line-ink, var(--dial)); border-radius: 6px; font-size: 17px; font-weight: 700; line-height: 1.3;
+}
+html:not(.classic) .station .st-example-answer > [aria-hidden] { display: contents; }
+html:not(.classic) .station .st-example-answer .st-flap { font-family: var(--display); font-size: 34px; font-weight: 800; }
+.classic .st-example-answer { font-weight: 700; padding-top: 0.5rem; border-top: 1px solid var(--rule); }
+.classic .st-example-answer .st-flap { display: inline; }
 html:not(.classic) .station .st-aside-tile { background: none; border: 0; border-top: 1px solid var(--rule); border-radius: 0;
                                              padding: 12px 0 0; }
 .station .st-article :is(.st-aside, .st-aside-tile) :is(.text-sm, .text-xs) { font-size: 16px; line-height: 1.55; }
@@ -419,6 +434,12 @@ html:not(.classic) .station .st-aside-tile { background: none; border: 0; border
   .st-clock { gap: 16px; }
   .st-clock div { min-width: 0; flex: 1; }
   .st-clock dd { font-size: 36px; }
+}
+
+/* Tablet widths: a three-digit day count and the clock don't fit side by
+   side, so the clock goes under the days */
+@media (min-width: 761px) and (max-width: 900px) {
+  .st-board { grid-template-columns: 1fr; }
 }
 
 /* A black or midnight board would sink into the dark dial: give it an edge */

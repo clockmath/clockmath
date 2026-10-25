@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 // This guide used to be titled "Time Between Two Dates Calculator – Free
 // Online Tool", which pitted it against the homepage (the actual tool) for
@@ -22,13 +24,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/time-between-dates-calculator/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,
@@ -64,9 +66,7 @@ export default function TimeBetweenDatesCalculatorPage() {
           <div>March has 31 days, so 31 − 1 = <strong>30</strong> days left in March</div>
           <div>No full months in between</div>
           <div>April 15 adds <strong>15</strong></div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>30 + 15 = 45 days</strong>
-          </div>
+          <ExampleAnswer label="30 + 15 = 45 days">30 + 15 = <Flap value="45" /> days</ExampleAnswer>
         </div>
       </div>
 

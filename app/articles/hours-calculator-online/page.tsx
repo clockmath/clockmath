@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 export const metadata: Metadata = {
   title: "Hours Calculator Online – Faster Than Manual Math",
@@ -17,13 +19,13 @@ export const metadata: Metadata = {
     description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
     type: "article",
     url: "https://clockmath.com/articles/hours-calculator-online/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Hours Calculator Online – Faster Than Manual Math",
     description: "Avoid mistakes with manual time subtraction. ClockMath's free hours calculator online gives instant, accurate results for any start and end time.",
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,
@@ -63,9 +65,7 @@ export default function HoursCalculatorOnlinePage() {
         <div className="space-y-2 text-sm">
           <div><strong>Start:</strong> 11:45 PM</div>
           <div><strong>End:</strong> 6:20 AM</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>➡ Total = 6 hours 35 minutes</strong>
-          </div>
+          <ExampleAnswer label="Total: 6 hours 35 minutes">Total <Flap value="6" /> hours <Flap value="35" /> minutes</ExampleAnswer>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
           Try calculating this by hand—it's much harder than it looks!

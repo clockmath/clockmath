@@ -28,7 +28,10 @@ html:not(.classic) .station .st-big { font-size: clamp(92px, 15vw, 188px); }
 html:not(.classic) .station .st-big.long { font-size: clamp(70px, 10vw, 130px); }
 html:not(.classic) .station .st-days { font-size: clamp(150px, 24vw, 300px); line-height: 0.86; }
 html:not(.classic) .station .st-days small { font-family: var(--font-archivo), sans-serif; }
-html:not(.classic) .station .st-clock dd { font-size: 54px; }
+/* The hours, minutes and seconds grow with the board, so they fill the space
+   beside the days instead of sitting small in a field of colour */
+html:not(.classic) .station .st-board { container-type: inline-size; }
+html:not(.classic) .station .st-clock dd { font-size: clamp(54px, 8cqi, 96px); }
 html:not(.classic) .station :is(.st-also dd, .st-units dd) { font-size: 32px; }
 html:not(.classic) .station .st-history-result { font-size: 28px; }
 html:not(.classic) .station .st-departures [data-live="days"] { font-size: 36px; }

@@ -152,3 +152,6 @@ html:not(.classic) .station .st-departures .st-dot { width: 12px; height: 12px; 
 
 /* The countdown tool's board while the fields no longer match it */
 .station .st-faded { opacity: 0.4; transition: opacity 0.15s; }
+
+/* The work hours total: hours and pay side by side on the line's board */
+html:not(.classic) .station .st-ts-board { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 48px; }

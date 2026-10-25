@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 // This guide used to be titled "Calculate Work Hours Instantly – Free Online
 // Tool", competing with /tools/timesheet (the actual work hours calculator)
@@ -27,13 +29,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/work-hours-calculator/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,
@@ -80,9 +82,7 @@ export default function WorkHoursCalculatorPage() {
         <div className="space-y-2 text-sm">
           <div>In 24-hour time: 17:45 − 9:15 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid lunch: − 30 minutes</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>Hours worked: 8 hours (8.00)</strong>
-          </div>
+          <ExampleAnswer label="Hours worked: 8.00 hours">Hours worked <Flap value="8.00" /> hours</ExampleAnswer>
         </div>
       </div>
 
@@ -98,9 +98,7 @@ export default function WorkHoursCalculatorPage() {
         <div className="space-y-2 text-sm">
           <div>16:20 − 7:50 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid lunch: − 45 minutes = 7 hours 45 minutes</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>In decimal: 7 + 45 ÷ 60 = 7.75 hours</strong>
-          </div>
+          <ExampleAnswer label="In decimal: 7 + 45 ÷ 60 = 7.75 hours">In decimal: 7 + 45 ÷ 60 = <Flap value="7.75" /> hours</ExampleAnswer>
         </div>
       </div>
 

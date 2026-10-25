@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 // This guide used to be titled "Shift Work Hours Calculator – Track Overnight
 // & Rotating Shifts", competing with /tools/timesheet for the same query while
@@ -28,13 +30,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/shift-work-hours-calculator/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,
@@ -75,9 +77,7 @@ export default function ShiftWorkHoursCalculatorPage() {
           <div>End 7:30 + 24 = 31:30</div>
           <div>31:30 − 23:00 = <strong>8 hours 30 minutes</strong></div>
           <div>Minus the unpaid break: − 30 minutes</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>Hours worked: 8 hours</strong>
-          </div>
+          <ExampleAnswer label="Hours worked: 8 hours">Hours worked <Flap value="8" /> hours</ExampleAnswer>
         </div>
       </div>
 

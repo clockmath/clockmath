@@ -23,7 +23,7 @@ export function generateSEOMetadata({
   publishDate,
   keywords,
   noindex = false,
-  ogImage = '/og-v4.png?v=2',
+  ogImage = '/og-v4.png?v=3',
 }: SEOConfig): Metadata {
   // Ensure canonical URL is properly formatted (non-www, with trailing slash)
   const cleanPath = path.startsWith('/') ? path : `/${path}`;

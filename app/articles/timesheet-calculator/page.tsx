@@ -2,6 +2,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import ArticleLayout from "../../../components/ArticleLayout";
+import { ExampleAnswer } from "@/components/station/ExampleAnswer";
+import { Flap } from "@/components/station/Flap";
 
 // This guide used to be titled "Timesheet Calculator – Calculate Weekly Hours
 // for Payroll", competing with /tools/timesheet for the same query while
@@ -25,13 +27,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "https://clockmath.com/articles/timesheet-calculator/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,
@@ -68,9 +70,7 @@ export default function TimesheetCalculatorPage() {
           <div><strong>Wednesday:</strong> 8:45 AM – 5:15 PM = 8h 30m − 30m = 8h 00m</div>
           <div><strong>Thursday:</strong> 8:30 AM – 5:00 PM = 8h 30m − 30m = 8h 00m</div>
           <div><strong>Friday:</strong> 9:00 AM – 4:00 PM = 7h 00m − 30m = 6h 30m</div>
-          <div className="pt-2 border-t border-slate-200 dark:border-border">
-            <strong>Week: 38 hours 30 minutes = 38.5 hours</strong>
-          </div>
+          <ExampleAnswer label="Week: 38 hours 30 minutes = 38.5 hours">Week: 38 hours 30 minutes = <Flap value="38.5" /> hours</ExampleAnswer>
         </div>
       </div>
 
