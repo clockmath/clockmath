@@ -3,6 +3,7 @@
 import { buildDayCount, useEventCountdown, type CountdownTarget } from '@/components/EventCountdown';
 import { changeDirection, clockPlaceName, useNextClockChange } from '@/components/ClockChangeCountdown';
 import { Archivo, BigShoulders } from '@/components/station/fonts';
+import { parseWallClock } from '@/lib/wallClock';
 import { Flap } from '@/components/station/Flap';
 import { tileShade } from '@/lib/colour';
 import { getCountdown, type CountdownEntry } from '@/lib/countdowns';
@@ -151,13 +152,13 @@ function inkFor(hex: string): string {
  * Same parameters as the tool's share link, plus an optional board colour.
  */
 export function CustomCountdownEmbed({ to, title, color }: { to: string | null; title: string | null; color: string | null }) {
-  const parsed = to ? new Date(to) : null;
+  const parsed = parseWallClock(to);
   const board = color && /^#[0-9a-f]{6}$/i.test(color) ? { color, ink: inkFor(color) } : { color: '#1849a9' };
   const share = new URLSearchParams();
   if (to) share.set('to', to);
   if (title) share.set('title', title);
   const href = `https://clockmath.com/tools/countdown/?${share.toString()}&${CREDIT_QUERY}`;
-  if (!parsed || Number.isNaN(parsed.getTime())) {
+  if (!parsed) {
     return <EmbedBoard title="your date" board={board} href="https://clockmath.com/tools/countdown/" notice="This countdown's date is missing" />;
   }
   const name = title?.trim().slice(0, 80) || 'the big day';
