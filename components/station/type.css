@@ -34,6 +34,27 @@ html:not(.classic) .station .st-history-result { font-size: 28px; }
 html:not(.classic) .station .st-departures [data-live="days"] { font-size: 36px; }
 html:not(.classic) .station .st-404 { font-size: clamp(140px, 22vw, 250px); }
 
+/* ---- Every other heading in the page's content ----
+   Tool panels, guides, contact, FAQs and the explainers: one heading voice
+   across the site. The board's small "Until …" label stays in Archivo.
+   Sizes step up because Big Shoulders sets smaller than Archivo. */
+html:not(.classic) .station .st-main :is(h2, h3, h4):not(.st-board h2) {
+  font-family: var(--display); font-stretch: 100%; letter-spacing: 0; text-transform: none;
+}
+html:not(.classic) .station .st-main h2:is(.text-sm, .text-base, .text-lg, .text-xl) { font-size: 26px; line-height: 1.1; font-weight: 800; }
+html:not(.classic) .station .st-main h2:is(.text-2xl, .sm\:text-2xl) { font-size: 30px; line-height: 1.05; font-weight: 800; }
+html:not(.classic) .station .st-main h3:is(.text-sm, .text-base) { font-size: 20px; line-height: 1.15; font-weight: 800; }
+html:not(.classic) .station .st-main .st-tile h2 { font-size: 22px; font-weight: 800; }
+/* The explainers' section headings match .st-more's (station.css sets these
+   with !important, against the components' Tailwind sizes) */
+html:not(.classic) .station .st-main :is(.st-extra section, section.max-w-3xl.mx-auto) > h2 { font-size: 30px !important; line-height: 1.05; font-weight: 800; }
+html:not(.classic) .station .st-main :is(.st-faq h3, section.max-w-3xl.mx-auto .bg-card h3, .st-legacy h3) { font-size: 22px; line-height: 1.15; font-weight: 800; }
+html:not(.classic) .station .st-main .st-callout h2 { font-size: 30px; }
+html:not(.classic) .station .article-prose h2 { font-size: 34px; line-height: 1.05; font-weight: 800; }
+html:not(.classic) .station .article-prose h3 { font-size: 25px; line-height: 1.1; font-weight: 800; }
+html:not(.classic) .station .article-prose h4 { font-size: 21px; line-height: 1.15; font-weight: 800; }
+html:not(.classic) .station .article-prose .st-aside-tile > :is(h3, h4):first-child { font-size: 21px; }
+
 /* ---- Split-flap tiles ----
    --tile is a shade of the board the tile sits on (set below and by
    EventPage's --board-tile); the hinge is a dark line across the middle. */
@@ -65,4 +86,6 @@ html:not(.classic) .station .st-tz-colon { margin: 0 0.04em; }
   html:not(.classic) .station .st-big.long { font-size: 64px; }
   html:not(.classic) .station .st-days { font-size: 160px; }
   html:not(.classic) .station :is(.st-more > h2, .st-history-head h2, .st-departures h2) { font-size: 26px; }
+  html:not(.classic) .station .st-main :is(.st-extra section, section.max-w-3xl.mx-auto) > h2 { font-size: 26px !important; }
+  html:not(.classic) .station .article-prose h2 { font-size: 29px; }
 }
