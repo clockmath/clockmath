@@ -1,5 +1,6 @@
 // lib/gtag.ts
 import { analyticsSafeUrl } from "@/lib/analyticsUrl";
+import { noteToolUse } from "@/lib/installPrompt";
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 
 type GtagEvent = {
@@ -120,4 +121,7 @@ export const toolUsed = (
   params: Record<string, unknown> = {},
 ) => {
   event({ action: "tool_used", params: { tool, ...params } });
+  // Counted on the device whether or not analytics runs: repeat users are
+  // offered the app install (components/station/InstallPrompt)
+  if (typeof window !== "undefined") noteToolUse();
 };

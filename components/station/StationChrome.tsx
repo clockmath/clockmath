@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Archivo, BigShoulders } from "./fonts"
 import { lineForTool } from "@/lib/lines"
 import AnnouncementBanner from "@/components/AnnouncementBanner"
+import InstallPrompt from "@/components/station/InstallPrompt"
 import { ClassicToggle } from "./ClassicToggle"
 import { StationTabs } from "./StationTabs"
 import { ThemeToggle } from "./ThemeToggle"
@@ -133,6 +134,7 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
         </div>
       </header>
       <main className="st-wrap st-main">{children}</main>
+      <InstallPrompt />
     </div>
   )
 }
