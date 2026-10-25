@@ -306,6 +306,36 @@ export default function ClockMathPage() {
     })
   }, [startDate, startTime, endDate, endTime, spanFor])
 
+  // Calculate and Enter submit the form. A time typed and entered in the same
+  // keystroke reaches state in that event, so the calculation runs in an
+  // effect, on the render that has it.
+  const [submits, setSubmits] = useState(0)
+  useEffect(() => {
+    if (submits) calculate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submits])
+
+  // A start date moved while both dates were the same day takes the end date
+  // with it: Oct 20, 9:00–17:30 read "4 days 8h 30m" with the end left on
+  // Today. Overnight spans still roll to the next day on their own.
+  const changeStartDate = useCallback((d: Date) => {
+    if (startDate.toDateString() === endDate.toDateString()) setEndDate(d)
+    setStartDate(d)
+  }, [startDate, endDate])
+
+  // "How long since 8:15?": the current minute, today
+  const setNow = useCallback((which: "start" | "end") => {
+    const now = new Date()
+    const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:00`
+    if (which === "start") {
+      setStartDate(now)
+      setStartTime(time)
+    } else {
+      setEndDate(now)
+      setEndTime(time)
+    }
+  }, [])
+
   // This exact span is in the history already: the button says Saved
   const alreadySaved = history.some(
     (h) =>
@@ -427,16 +457,30 @@ export default function ClockMathPage() {
 
         {/* One ruled band: inputs, Calculate, the answer */}
         <section className="st-calc" aria-label="Duration calculator">
+          {/* A form, so Enter in a field calculates as the button does */}
+          <form
+            id="st-calc-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              setSubmits((n) => n + 1)
+            }}
+          >
           <div className="st-fields">
             <div className="st-field">
-              <span>Start</span>
+              <div className="st-field-head">
+                <span>Start</span>
+                <button type="button" className="st-now" onClick={() => setNow("start")} aria-label="Set start to now">Now</button>
+              </div>
               <div className="st-pair">
-                <InlineDatePicker ariaLabel="Start date" value={startDate} onChange={setStartDate} placeholder="Select date" startOnCalendar />
+                <InlineDatePicker ariaLabel="Start date" value={startDate} onChange={changeStartDate} placeholder="Select date" startOnCalendar />
                 <InlineTimePicker ariaLabel="Start time" value={startTime} onChange={setStartTime} is24h={is24HourFormat} placeholder="Time" />
               </div>
             </div>
             <div className="st-field">
-              <span>End</span>
+              <div className="st-field-head">
+                <span>End</span>
+                <button type="button" className="st-now" onClick={() => setNow("end")} aria-label="Set end to now">Now</button>
+              </div>
               <div className="st-pair">
                 <InlineDatePicker ariaLabel="End date" value={endDate} onChange={setEndDate} placeholder="Select date" startOnCalendar />
                 <InlineTimePicker ariaLabel="End time" value={endTime} onChange={setEndTime} is24h={is24HourFormat} placeholder="Time" />
@@ -449,9 +493,10 @@ export default function ClockMathPage() {
           </div>
 
           <div className="st-go">
-            <button type="button" className="st-btn primary" onClick={calculate}>Calculate</button>
+            <button type="submit" className="st-btn primary">Calculate</button>
             {stale && <p>Times changed. Press Calculate for the new answer.</p>}
           </div>
+          </form>
 
           {"error" in span ? (
             <div className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
