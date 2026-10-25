@@ -7,6 +7,7 @@ import { StationBoard } from '@/components/station/StationBoard';
 import { EmbedCode } from '@/components/embed/EmbedCode';
 import StationFold from '@/components/station/StationFold';
 import { eventColour, getCountdown } from '@/lib/countdowns';
+import { tileShade } from '@/lib/colour';
 import StationChrome from '@/components/station/StationChrome';
 import SiteFooter from '@/components/SiteFooter';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
@@ -170,7 +171,7 @@ export default function EventPage({
       {/* --board reaches custom countdowns (eclipses, clock change) too */}
       <div
         className="st-board-wrap"
-        style={board ? ({ '--board': board.color, '--board-ink': board.ink ?? '#ffffff' } as React.CSSProperties) : undefined}
+        style={board ? ({ '--board': board.color, '--board-ink': board.ink ?? '#ffffff', '--board-tile': tileShade(board.color) } as React.CSSProperties) : undefined}
       >
         {countdownSlot ?? (
           <StationBoard

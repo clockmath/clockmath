@@ -1,0 +1,68 @@
+/* ---------------------------------------------------------------------------
+   Station lettering and split-flap figures (Oct 2026: "still a bit plain…
+   maybe it's the font"). Headings and the big figures are set in Big
+   Shoulders, the tall condensed lettering of Chicago's transit signs; body
+   text stays Archivo. The answers on boards sit on split-flap tiles: Flap
+   (components/station/Flap.tsx) on the homepage, countdown and time zone
+   boards, and RollingNumber's digit cells on the tools' answer boards.
+   Classic view keeps Geist and plain digits: every rule skips html.classic.
+--------------------------------------------------------------------------- */
+
+html:not(.classic) .station { --display: var(--font-shoulders), var(--font-archivo), system-ui, sans-serif; }
+
+/* ---- Lettering ---- */
+html:not(.classic) .station :is(
+  .st-h1, .st-404, .st-big, .st-days, .st-clock dd, .st-also dd, .st-units dd,
+  .st-history-result, .st-mark span, .st-more > h2, .st-history-head h2,
+  .st-departures h2, .st-departures [data-live="days"], .st-hub-title, .st-fold-summary span
+) { font-family: var(--display); font-stretch: 100%; letter-spacing: 0; }
+html:not(.classic) .station .st-figure { font-family: var(--display) !important; font-stretch: 100%; letter-spacing: 0; }
+
+/* Big Shoulders is narrower than Archivo at a size: set the lettering up */
+html:not(.classic) .station .st-h1 { font-size: 60px; font-weight: 900; line-height: 0.98; }
+html:not(.classic) .station .st-mark span { font-size: 24px; font-weight: 900; }
+html:not(.classic) .station :is(.st-more > h2, .st-history-head h2, .st-departures h2) { font-size: 30px; font-weight: 800; line-height: 1.05; }
+html:not(.classic) .station .st-fold-summary span { font-size: 24px; font-weight: 800; }
+html:not(.classic) .station .st-hub-title { font-size: 26px; font-weight: 800; }
+html:not(.classic) .station .st-big { font-size: clamp(92px, 15vw, 188px); }
+html:not(.classic) .station .st-big.long { font-size: clamp(70px, 10vw, 130px); }
+html:not(.classic) .station .st-days { font-size: clamp(150px, 24vw, 300px); line-height: 0.86; }
+html:not(.classic) .station .st-days small { font-family: var(--font-archivo), sans-serif; }
+html:not(.classic) .station .st-clock dd { font-size: 54px; }
+html:not(.classic) .station :is(.st-also dd, .st-units dd) { font-size: 32px; }
+html:not(.classic) .station .st-history-result { font-size: 28px; }
+html:not(.classic) .station .st-departures [data-live="days"] { font-size: 36px; }
+html:not(.classic) .station .st-404 { font-size: clamp(140px, 22vw, 250px); }
+
+/* ---- Split-flap tiles ----
+   --tile is a shade of the board the tile sits on (set below and by
+   EventPage's --board-tile); the hinge is a dark line across the middle. */
+html:not(.classic) .station .st-flap { display: inline-flex; gap: 0.05em; }
+html:not(.classic) .station :is(.st-flap-c, .st-result .st-figure .digit-cell) {
+  display: inline-block; min-width: 0.6em; text-align: center; padding: 0.06em 0.05em 0.03em; border-radius: 0.06em;
+  line-height: 0.92; vertical-align: baseline;
+  background: linear-gradient(var(--tile) 0 calc(50% - 0.012em), var(--tile-hinge) calc(50% - 0.012em) calc(50% + 0.012em), var(--tile) calc(50% + 0.012em));
+  box-shadow: inset 0 -0.03em 0 rgb(0 0 0 / 0.22);
+}
+html:not(.classic) .station .st-result .st-figure .digit-cell { margin-right: 0.05em; }
+/* A turning tile drops into place, as a flap does */
+html:not(.classic) .station .st-flap-c { animation: st-flap 200ms cubic-bezier(0.2, 0, 0, 1); }
+@keyframes st-flap { from { transform: perspective(400px) rotateX(-70deg); transform-origin: 50% 0; opacity: 0.4; } }
+@media (prefers-reduced-motion: reduce) { html:not(.classic) .station .st-flap-c { animation: none; } }
+
+html:not(.classic) .station { --tile-hinge: rgb(0 0 0 / 0.38); }
+html:not(.classic) .station[data-line] { --tile: color-mix(in srgb, var(--line) 70%, #000000); }
+html:not(.classic) .station[data-line="quiz"] { --tile: color-mix(in srgb, var(--line) 50%, #ffffff); --tile-hinge: rgb(0 0 0 / 0.2); }
+/* The sleep line's indigo is near-black (luminance 0.04): its tiles go
+   lighter, as tileShade does for near-black event boards */
+html:not(.classic) .station[data-line="sleep"] { --tile: color-mix(in srgb, var(--line) 84%, #ffffff); }
+html:not(.classic) .station .st-board { --tile: var(--board-tile, color-mix(in srgb, var(--board) 70%, #000000)); }
+html:not(.classic) .station .st-tz-colon { margin: 0 0.04em; }
+
+@media (max-width: 760px) {
+  html:not(.classic) .station .st-h1 { font-size: 42px; }
+  html:not(.classic) .station .st-big { font-size: 100px; }
+  html:not(.classic) .station .st-big.long { font-size: 64px; }
+  html:not(.classic) .station .st-days { font-size: 160px; }
+  html:not(.classic) .station :is(.st-more > h2, .st-history-head h2, .st-departures h2) { font-size: 26px; }
+}

@@ -1,10 +1,13 @@
 'use client';
 
-import { useEventCountdown, type CountdownTarget } from '@/components/EventCountdown';
+import { buildDayCount, useEventCountdown, type CountdownTarget } from '@/components/EventCountdown';
 import { changeDirection, clockPlaceName, useNextClockChange } from '@/components/ClockChangeCountdown';
-import { Archivo } from '@/components/station/fonts';
+import { Archivo, BigShoulders } from '@/components/station/fonts';
+import { Flap } from '@/components/station/Flap';
+import { tileShade } from '@/lib/colour';
 import { getCountdown, type CountdownEntry } from '@/lib/countdowns';
 import '@/components/station/station.css';
+import '@/components/station/type.css';
 import './embed.css';
 
 const DAY = 86_400_000;
@@ -28,20 +31,22 @@ interface BoardProps extends CountdownTarget {
 // analytics run here (the root layout skips them on /embed/), so an embed
 // sets no cookies on someone else's site.
 function EmbedBoard({ title, arrivedLabel, board, href, notice, disclaimer, ...target }: BoardProps) {
-  const { ready, noUpcoming, isPast, dateLabel, targetMs, nowMs, totalDays } = useEventCountdown(target);
+  const { ready, noUpcoming, isPast, dateLabel, targetMs, nowMs } = useEventCountdown(target);
   const left = ready && !isPast ? (targetMs as number) - (nowMs as number) : null;
   const clock = left !== null ? [Math.floor(left / 3_600_000) % 24, Math.floor(left / 60_000) % 60, Math.floor(left / 1000) % 60] : null;
   const hand = nowMs !== null ? new Date(nowMs).getSeconds() : -1;
-  // Before the clock starts (and in the static HTML) the build-time calendar
-  // count less today stands in, as on the event pages; blank if unknown.
-  const days = left !== null ? Math.floor(left / DAY) : totalDays !== null ? Math.max(totalDays - 1, 0) : null;
+  // Before the clock starts (and in the static HTML) the count from the build
+  // day stands in, as on the event pages: the same on server and client, which
+  // the tiles need to hydrate. Blank if unknown.
+  const fromBuild = buildDayCount(target);
+  const days = left !== null ? Math.floor(left / DAY) : fromBuild !== null ? Math.max(fromBuild - 1, 0) : null;
   const heading = notice ?? (isPast ? (arrivedLabel ?? `${title} is here`) : noUpcoming ? 'No date announced yet' : `Until ${title}`);
   const showTimer = !notice && !isPast && !noUpcoming;
 
   return (
     <div
-      className={`station st-embed ${Archivo.variable}`}
-      style={{ '--board': board.color, '--board-ink': board.ink ?? '#ffffff' } as React.CSSProperties}
+      className={`station st-embed ${Archivo.variable} ${BigShoulders.variable}`}
+      style={{ '--board': board.color, '--board-ink': board.ink ?? '#ffffff', '--tile': tileShade(board.color) } as React.CSSProperties}
     >
       <div className="st-embed-in">
         <div className="st-embed-top">
@@ -53,13 +58,13 @@ function EmbedBoard({ title, arrivedLabel, board, href, notice, disclaimer, ...t
         {showTimer && (
           <div className="st-embed-row" aria-live="off">
             <p className="st-embed-days">
-              {days === null ? '' : days.toLocaleString()}
+              {days !== null && <Flap value={String(days)} />}
               <small>{days === 1 ? 'day' : 'days'}</small>
             </p>
             <dl className="st-embed-clock">
               {(['hours', 'minutes', 'seconds'] as const).map((unit, i) => (
                 <div key={unit}>
-                  <dd>{clock ? pad(clock[i]) : '\u00a0'}</dd>
+                  <dd>{clock ? <Flap value={pad(clock[i])} /> : '\u00a0'}</dd>
                   <dt>{unit}</dt>
                 </div>
               ))}

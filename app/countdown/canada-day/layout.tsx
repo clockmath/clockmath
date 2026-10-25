@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live countdown to Canada Day (July 1). See exactly how many days, hours, minutes, and seconds are left until Canada Day this year.',
   path: '/countdown/canada-day',
-  ogImage: '/og/countdown/canada-day.png',
+  ogImage: '/og/countdown/canada-day.png?v=2',
   keywords:
     'canada day countdown, how many days until canada day, days until canada day, july 1 countdown, canada day timer',
 });

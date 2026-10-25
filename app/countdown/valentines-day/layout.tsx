@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     "Live countdown to Valentine's Day, February 14: the days and weeks left, what day it falls on each year, and when Galentine's Day and White Day are.",
   path: '/countdown/valentines-day',
-  ogImage: '/og/countdown/valentines-day.png',
+  ogImage: '/og/countdown/valentines-day.png?v=2',
   keywords:
     "valentine's day countdown, how many days until valentine's day, days until valentines day, when is valentine's day 2027, valentines day 2027",
 });

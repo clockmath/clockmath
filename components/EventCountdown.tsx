@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { buildDay } from '@/lib/buildDay';
 import { intervalToDuration } from 'date-fns';
 
 export interface EventCountdownProps {
@@ -48,8 +49,7 @@ export { buildEventDisclaimer } from '@/lib/disclaimer';
 
 // Next upcoming occurrence of an annual date, rolling to next year only once
 // the day has fully ended (so the page reads correctly on the day itself).
-function nextOccurrence(month: number, day: number): number {
-  const now = new Date();
+function nextOccurrence(month: number, day: number, now = new Date()): number {
   const year = now.getFullYear();
   const endOfDay = new Date(year, month, day, 23, 59, 59, 999);
   const targetYear = now.getTime() > endOfDay.getTime() ? year + 1 : year;
@@ -61,8 +61,7 @@ function nextOccurrence(month: number, day: number): number {
 // is the window's start midnight — already passed → reads as arrived. The
 // weekend page spans Sat+Sun, so Sunday still reads "It's the weekend!"
 // instead of counting 6 days to the next Saturday.
-function nextWeekday(weekday: number, spanDays = 1): number {
-  const now = new Date();
+function nextWeekday(weekday: number, spanDays = 1, now = new Date()): number {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const daysSinceLast = (today.getDay() - weekday + 7) % 7;
   if (daysSinceLast < spanDays) {
@@ -99,8 +98,8 @@ const ymd = (d: Date): string =>
 
 // Start (local midnight, ms) of the first range that hasn't ended yet — so
 // during the event it returns this year's start (reads as arrived).
-function nextRangeStart(ranges: ReadonlyArray<{ start: string; end?: string }>): number | null {
-  const today = ymd(new Date());
+function nextRangeStart(ranges: ReadonlyArray<{ start: string; end?: string }>, now = new Date()): number | null {
+  const today = ymd(now);
   const r = ranges.find((x) => (x.end ?? x.start) >= today);
   if (!r) return null;
   const [y, m, d] = r.start.split('-').map(Number);
@@ -109,8 +108,7 @@ function nextRangeStart(ranges: ReadonlyArray<{ start: string; end?: string }>):
 
 // Next upcoming nth-weekday occurrence, rolling to next year only once the
 // day has fully ended (same convention as nextOccurrence).
-function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 0): number {
-  const now = new Date();
+function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 0, now = new Date()): number {
   const thisYear = nthWeekdayOfMonth(now.getFullYear(), month, weekday, n, offsetDays);
   const endOfDay = new Date(thisYear.getFullYear(), thisYear.getMonth(), thisYear.getDate(), 23, 59, 59, 999);
   if (now.getTime() > endOfDay.getTime()) {
@@ -120,6 +118,32 @@ function nextNthWeekday(month: number, weekday: number, n: number, offsetDays = 
 }
 
 export type CountdownTarget = Pick<EventCountdownProps, 'target' | 'recurring' | 'weekly' | 'nthWeekday' | 'dateRanges'>;
+
+/**
+ * Calendar days from the build day to the target: the same number on the
+ * server and in the browser's first render, whatever the visitor's clock or
+ * timezone, so markup built from it (the board's split-flap tiles, one
+ * element per digit) hydrates cleanly. Fixed instants count UTC dates;
+ * local-midnight targets count local calendar days from the build date.
+ * Replaced by the live count once the countdown mounts.
+ */
+export function buildDayCount({ target, recurring, weekly, nthWeekday, dateRanges }: CountdownTarget): number | null {
+  const from = buildDay();
+  if (target) {
+    const utc = Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate());
+    return Math.round((utc - Date.UTC(from.getFullYear(), from.getMonth(), from.getDate())) / 86400000);
+  }
+  const t = recurring
+    ? nextOccurrence(recurring.month, recurring.day, from)
+    : weekly
+      ? nextWeekday(weekly.weekday, weekly.spanDays, from)
+      : nthWeekday
+        ? nextNthWeekday(nthWeekday.month, nthWeekday.weekday, nthWeekday.n, nthWeekday.offsetDays, from)
+        : dateRanges
+          ? nextRangeStart(dateRanges, from)
+          : null;
+  return t === null ? null : Math.round((t - from.getTime()) / 86400000);
+}
 
 // The live state behind an event countdown: the resolved target, the tiles,
 // the answer sentence's day count, and the spec the worker uses to keep that

@@ -8,6 +8,7 @@ import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import StationChrome from "@/components/station/StationChrome"
 import StationFold from "@/components/station/StationFold"
+import { Flap } from "@/components/station/Flap"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
@@ -459,14 +460,16 @@ export default function ClockMathPage() {
           ) : (
             <>
               <div className={`st-answer${stale ? " stale" : ""}`} aria-live="polite">
-                <p className={`st-big${bigParts.length > 3 ? " long" : ""}`}>
+                {/* The figures on split-flap tiles; the plain answer for screen readers */}
+                <p className={`st-big${bigParts.length > 3 ? " long" : ""}`} aria-hidden="true">
                   {bigParts.map(([n, u]) => (
                     <span key={u}>
-                      {n.toLocaleString()}
+                      <Flap value={String(n)} />
                       <span className="u">{u}</span>
                     </span>
                   ))}
                 </p>
+                <span className="sr-only">{span.summary}</span>
                 <div>
                   {span.detailed && (
                     <dl className="st-also">

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'ClockMath',
     images: [
       {
-        url: '/og/tool/guides.png',
+        url: '/og/tool/guides.png?v=2',
         width: 1200,
         height: 630,
         alt: 'ClockMath Gaming Timezone Converter',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/og/tool/guides.png'],
+    images: ['/og/tool/guides.png?v=2'],
   },
   robots: {
     index: true,

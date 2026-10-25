@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Upcoming holidays and events with the days left until each, updated daily, plus all 11 US federal holidays for 2027 and the days they are observed.',
   path: '/countdown/holidays',
-  ogImage: '/og/countdown/holidays.png',
+  ogImage: '/og/countdown/holidays.png?v=2',
   keywords:
     'holidays 2026, holidays 2027, federal holidays 2027, upcoming holidays, us holidays 2027, days until holidays, list of holidays 2027, when is the next holiday',
 });

@@ -7,6 +7,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Flap } from '@/components/station/Flap';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { LocationTimezonePicker } from '@/components/location/LocationTimezonePicker';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
@@ -605,7 +606,21 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         <div className="st-answer st-tz-answer" aria-live="polite">
           <div>
             <p className="st-tz-place">{getToZoneDisplayName()}</p>
-            <p className="st-big st-tz-time">{result.to.time}</p>
+            <p className="st-big st-tz-time">
+              {/* "12:00 PM": the hours and minutes on tiles, AM/PM beside them */}
+              {(() => {
+                const m = result.to.time.match(/^(\d+):(\d+)\s*(.*)$/);
+                if (!m) return result.to.time;
+                return (
+                  <>
+                    <Flap value={m[1]} />
+                    <span className="st-tz-colon">:</span>
+                    <Flap value={m[2]} />
+                    {m[3] && <span className="u">{m[3]}</span>}
+                  </>
+                );
+              })()}
+            </p>
             <p className="st-tz-date">
               {result.to.weekday}, {result.to.date} ({toTZ && getOffsetLabel(toTZ, result.targetDate)})
             </p>

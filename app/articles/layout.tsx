@@ -9,7 +9,7 @@ export const metadata = generateSEOMetadata({
   description:
     "Browse every ClockMath guide: calculator tutorials, timezone playbooks, and productivity tips to master time across work and life.",
   path: "/articles",
-  ogImage: "/og/tool/guides.png",
+  ogImage: "/og/tool/guides.png?v=2",
 });
 
 export default function ArticlesLayout({ children }: { children: ReactNode }) {

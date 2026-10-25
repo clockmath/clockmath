@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Free retirement countdown timer. Enter your retirement date and see exactly how many years, months, days, hours, minutes, and seconds are left until you retire.',
   path: '/countdown/retirement',
-  ogImage: '/og/countdown/retirement.png',
+  ogImage: '/og/countdown/retirement.png?v=2',
   keywords:
     'retirement countdown, days until retirement, retirement timer, countdown to retirement, how long until i retire, retirement date calculator',
 });
