@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
+import { useClockFormat } from '@/hooks/use-clock-format';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
@@ -298,7 +299,7 @@ const shareOrCopy = async (url: string, title: string) => {
 
 export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   const [shifts, setShifts] = useState<Shift[]>([newShift('row-1', buildDay())]);
-  const [is24h, setIs24h] = useState(true);
+  const [is24h, setIs24h] = useClockFormat();
   const [rate, setRate] = useState('');
   const [saved, setSaved] = useState<SavedTimesheet[]>([]);
   const [saveName, setSaveName] = useState('');
@@ -358,7 +359,6 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           otEnabled?: boolean;
           otThreshold?: string;
           otMultiplier?: number;
-          is24h?: boolean;
         } = JSON.parse(raw);
         if (d && Array.isArray(d.shifts) && d.shifts.length) {
           setShifts(d.shifts.map(deserializeShift));
@@ -368,7 +368,6 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           if (d.otEnabled) setOtEnabled(true);
           if (d.otThreshold) setOtThreshold(d.otThreshold);
           if (d.otMultiplier === 1.5 || d.otMultiplier === 2) setOtMultiplier(d.otMultiplier);
-          if (typeof d.is24h === 'boolean') setIs24h(d.is24h);
           restored = true;
         }
       }
@@ -394,14 +393,12 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
           otEnabled,
           otThreshold,
           otMultiplier,
-          // The clock format too: 12-hour users had to switch it back every visit
-          is24h,
         }),
       );
     } catch {
       /* ignore */
     }
-  }, [loaded, shifts, rate, saveName, otEnabled, otThreshold, otMultiplier, is24h]);
+  }, [loaded, shifts, rate, saveName, otEnabled, otThreshold, otMultiplier]);
 
   const totalMins = useMemo(() => shifts.reduce((sum, s) => sum + shiftMinutes(s), 0), [shifts]);
   const ordered = useMemo(() => byDate(shifts), [shifts]);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useClockFormat } from '@/hooks/use-clock-format';
 import Link from 'next/link';
 import { formatDistance } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
@@ -83,7 +84,7 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
   const [dateValue, setDateValue] = useState<Date>(() => buildDay());
   const [timeStr, setTimeStr] = useState('00:00:00');
   const [title, setTitle] = useState('');
-  const [is24h, setIs24h] = useState(true);
+  const [is24h, setIs24h] = useClockFormat();
 
   // The live countdown being displayed.
   const [active, setActive] = useState<ActiveCountdown | null>(null);

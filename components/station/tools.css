@@ -141,3 +141,7 @@ html:not(.classic) .station .st-form button[type="submit"]:disabled { background
 html.dark:not(.classic) .station .st-departures { --dep-board: #2a313c; }
 /* Dots on the dark board always get the light ring */
 html:not(.classic) .station .st-departures .st-dot { width: 12px; height: 12px; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.5); margin-right: 10px; vertical-align: 0; }
+
+/* Sleep: "Did you mean bed at 11:00 PM?" — the time is the one-tap fix */
+.station .st-slip-fix { font: inherit; font-weight: 700; color: inherit; background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px; }

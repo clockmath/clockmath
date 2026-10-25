@@ -16,6 +16,7 @@ import { format, intervalToDuration, type Duration } from "date-fns"
 import { event as gaEvent, toolUsed } from "@/lib/gtag"
 import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSiteSchema } from "@/components/JsonLd"
 import { useDarkMode } from "@/hooks/use-dark-mode"
+import { useClockFormat } from "@/hooks/use-clock-format"
 import { storageRemove } from "@/lib/safeStorage"
 import { getDevice } from "@/lib/device"
 
@@ -73,8 +74,8 @@ export default function ClockMathPage() {
 
 
 
-  // Global time format for both start and end times
-  const [is24HourFormat, setIs24HourFormat] = useState(true)
+  // The site's shared 12h/24h setting (useClockFormat)
+  const [is24HourFormat, setIs24HourFormat] = useClockFormat()
 
   const parseTimeToSeconds = useCallback((str: string): number => {
     if (!str) return Number.NaN
