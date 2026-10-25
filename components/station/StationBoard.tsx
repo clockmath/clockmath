@@ -100,7 +100,13 @@ export function StationBoard({
                 {'\u00a0'}
               </p>
             )}
-            {totalDays !== null && (
+            {/* A time later today (a countdown made in the tool): no "0 days" */}
+            {totalDays === 0 && (
+              <p className="st-sentence" data-days-until={liveSpec} suppressHydrationWarning>
+                {title.charAt(0).toUpperCase() + title.slice(1)} is later today.
+              </p>
+            )}
+            {totalDays !== null && totalDays > 0 && (
               <p className="st-sentence" data-days-until={liveSpec} suppressHydrationWarning>
                 There{' '}
                 <span data-live="verb" suppressHydrationWarning>
