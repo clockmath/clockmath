@@ -40,14 +40,18 @@ interface StationChromeProps {
 }
 
 // The mark is the dial itself: black hands, the red second hand.
+/** The mark: the station clock on a split-flap tile, its halves apart at the
+ * hinge. The tile takes the page's line colour (Oct 2026; it had been a plain
+ * outline clock), so it is green on work hours, rust on countdowns. Same
+ * geometry as scripts/brand/generate.mjs markSvg, which draws the icons. */
 function Mark() {
   return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <circle cx="14" cy="14" r="12.6" fill="none" stroke="currentColor" strokeWidth="2.4" />
-      <line x1="14" y1="14" x2="14" y2="6.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
-      <line x1="14" y1="14" x2="19.5" y2="14" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
-      <line x1="14" y1="17.5" x2="14" y2="5" style={{ stroke: "var(--signal)" }} strokeWidth="1.2" />
-      <circle cx="14" cy="5.6" r="2" style={{ fill: "var(--signal)" }} />
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <path className="st-mark-tile" d="M2 31V10a8 8 0 0 1 8-8h44a8 8 0 0 1 8 8v21ZM2 33h60v21a8 8 0 0 1-8 8H10a8 8 0 0 1-8-8Z" />
+      <circle className="st-mark-hands" cx="32" cy="32" r="20" fill="none" strokeWidth="4.4" />
+      <path className="st-mark-hands" d="M32 32V20M32 32h9" fill="none" strokeWidth="5" strokeLinecap="round" />
+      <line x1="32" y1="38" x2="32" y2="15" style={{ stroke: "var(--signal)" }} strokeWidth="2.4" />
+      <circle cx="32" cy="16" r="3.4" style={{ fill: "var(--signal)" }} />
     </svg>
   )
 }

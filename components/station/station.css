@@ -94,7 +94,11 @@
 .st-header .st-wrap { display: flex; align-items: center; gap: 36px; height: 64px; }
 .st-mark { display: flex; align-items: center; gap: 10px; flex-shrink: 0; text-decoration: none; color: var(--ink) !important;
            font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
-.st-mark svg { width: 28px; height: 28px; }
+.st-mark svg { width: 30px; height: 30px; }
+.st-mark-tile { fill: currentColor; }
+.st-mark-hands { stroke: var(--dial); }
+html:not(.classic) .station[data-line] .st-mark-tile { fill: var(--line); }
+html:not(.classic) .station[data-line] .st-mark-hands { stroke: var(--line-ink); }
 .st-tabs { display: flex; gap: 26px; font-size: 15px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .st-tabs::-webkit-scrollbar { display: none; }
 .st-tabs a { white-space: nowrap; text-decoration: none; color: var(--quiet); padding: 20px 0 18px; border-bottom: 3px solid transparent; }

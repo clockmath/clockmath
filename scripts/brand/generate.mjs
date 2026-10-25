@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // node scripts/brand/generate.mjs — renders every brand image from code:
 //   app/icon.png, app/apple-icon.png, public/icon-192.png,
-//   public/icon-512.png       the station-clock mark
+//   public/icon-512.png       the mark (station clock on a split-flap tile)
 //   public/og-v4.png          the default share card (homepage, site pages)
 //   public/og-quiz-v3.png     the daily quiz share card
 //   public/og/tool/*.png      one share card per tool, in its line colour,
@@ -38,18 +38,24 @@ const TILE_CSS = `.t{display:inline-block;min-width:0.6em;text-align:center;padd
 const INK = '#000000';
 const SIGNAL = '#d51f26';
 
-// ---- The mark: same geometry as StationChrome's header mark (28-unit box),
-// drawn on a 64 box with heavier strokes so it survives 16px.
-function markSvg({ size, plate = false }) {
-  const dial = `
-    <circle cx="32" cy="32" r="28.6" fill="#ffffff" stroke="${INK}" stroke-width="5.6"/>
-    <line x1="32" y1="32" x2="32" y2="15.4" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>
-    <line x1="32" y1="32" x2="44.2" y2="32" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>
-    <line x1="32" y1="40" x2="32" y2="11.6" stroke="${SIGNAL}" stroke-width="2.8"/>
-    <circle cx="32" cy="12.8" r="4.6" fill="${SIGNAL}"/>`;
-  // App icons sit on an opaque white plate (iOS and Android crop the corners
-  // themselves); the dial takes ~72% of it.
-  const body = plate ? `<rect width="64" height="64" fill="#ffffff"/><g transform="translate(9 9) scale(0.71875)">${dial}</g>` : dial;
+// ---- The mark: the station clock on a split-flap tile, same geometry as
+// StationChrome's header mark (64-unit box).
+const TILE_HALVES = 'M2 31V10a8 8 0 0 1 8-8h44a8 8 0 0 1 8 8v21ZM2 33h60v21a8 8 0 0 1-8 8H10a8 8 0 0 1-8-8Z';
+function markSvg({ size, plate = false, tile = INK }) {
+  // Black hands on a light tile (a white wordmark, gold numerals), white on a dark one
+  const hex = tile.length === 4 ? tile.replace(/[0-9a-f]/gi, '$&$&') : tile;
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const hands = 0.299 * r + 0.587 * g + 0.114 * b > 0.6 ? INK : '#ffffff';
+  const clock = `
+    <circle cx="32" cy="32" r="20" fill="none" stroke="${hands}" stroke-width="4.4"/>
+    <path d="M32 32V20M32 32h9" fill="none" stroke="${hands}" stroke-width="5" stroke-linecap="round"/>
+    <line x1="32" y1="38" x2="32" y2="15" stroke="${SIGNAL}" stroke-width="2.4"/>
+    <circle cx="32" cy="16" r="3.4" fill="${SIGNAL}"/>`;
+  // App icons are opaque and full-bleed (iOS and Android round the corners
+  // themselves): the tile fills them, the hinge a lighter line across it.
+  const body = plate
+    ? `<rect width="64" height="64" fill="${tile}"/><rect y="31" width="64" height="2" fill="#3a3a3a"/>${clock}`
+    : `<path d="${TILE_HALVES}" fill="${tile}"/>${clock}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${size}" height="${size}">${body}</svg>`;
 }
 
@@ -88,7 +94,7 @@ function icons() {
 
 // ---- Shared pieces of the share cards
 const wordmark = (ink) =>
-  `<div class="wm" style="color:${ink}">${markSvg({ size: 52 }).replace('<svg', '<svg class="m"')}<span>ClockMath</span></div>`;
+  `<div class="wm" style="color:${ink}">${markSvg({ size: 52, tile: ink }).replace('<svg', '<svg class="m"')}<span>ClockMath</span></div>`;
 const ticks = (ink, current = 37) =>
   `<svg class="ticks" viewBox="0 0 1000 40" preserveAspectRatio="none">${Array.from({ length: 60 }, (_, i) => {
     const x = 4 + (i / 59) * 992;

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://clockmath.com/terms",
     siteName: "ClockMath",
-    images: [{ url: "/og-v4.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og-v4.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary",

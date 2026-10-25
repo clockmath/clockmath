@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     description: "Stay productive by tracking exact study hours. Use ClockMath's free duration calculator to measure and log your study sessions.",
     type: "article",
     url: "https://clockmath.com/articles/study-time-calculator/",
-    images: [{ url: "/og/tool/guides.png?v=2", width: 1200, height: 630, alt: "ClockMath" }],
+    images: [{ url: "/og/tool/guides.png?v=3", width: 1200, height: 630, alt: "ClockMath" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Study Time Calculator – Track Your Sessions Easily",
     description: "Stay productive by tracking exact study hours. Use ClockMath's free duration calculator to measure and log your study sessions.",
-    images: ["/og/tool/guides.png?v=2"],
+    images: ["/og/tool/guides.png?v=3"],
   },
   robots: {
     index: true,

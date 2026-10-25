@@ -8,7 +8,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Split your week into regular and overtime hours and see what time-and-a-half or double time pays. Set your own threshold and rate. Free, no signup.',
   path: '/tools/overtime',
-  ogImage: '/og/tool/overtime.png?v=2',
+  ogImage: '/og/tool/overtime.png?v=3',
   keywords:
     'overtime calculator, time and a half calculator, overtime pay calculator, ot calculator, time and a half of 18, overtime hours calculator, double time calculator, 1.5x pay calculator',
 });

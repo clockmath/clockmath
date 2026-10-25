@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live countdown to the 4th of July (Independence Day). See exactly how many days, hours, minutes, and seconds are left until July 4th this year.',
   path: '/countdown/july-4th',
-  ogImage: '/og/countdown/july-4th.png?v=2',
+  ogImage: '/og/countdown/july-4th.png?v=3',
   keywords:
     '4th of july countdown, fourth of july countdown, how many days until 4th of july, days until independence day, july 4th timer',
 });

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'ClockMath',
     images: [
       {
-        url: '/og/tool/guides.png?v=2',
+        url: '/og/tool/guides.png?v=3',
         width: 1200,
         height: 630,
         alt: 'ClockMath Travel Timezone Converter',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/og/tool/guides.png?v=2'],
+    images: ['/og/tool/guides.png?v=3'],
   },
   robots: {
     index: true,

@@ -6,7 +6,7 @@ export const metadata = generateSEOMetadata({
   description:
     'Live countdown to the weekend. See exactly how many days, hours, minutes, and seconds are left until Saturday.',
   path: '/countdown/weekend',
-  ogImage: '/og/countdown/weekend.png?v=2',
+  ogImage: '/og/countdown/weekend.png?v=3',
   keywords:
     'weekend countdown, how long until the weekend, time until the weekend, days until saturday, countdown to the weekend, friday countdown',
 });
