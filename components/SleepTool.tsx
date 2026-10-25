@@ -291,7 +291,18 @@ export function SleepTool({ className = '' }: SleepToolProps) {
                     <button
                       type="button"
                       className="st-slip-fix"
-                      onClick={() => (slip.field === 'bed' ? setBedTime(slip.value) : setWakeTime(slip.value))}
+                      onClick={() => {
+                        if (slip.field === 'bed') setBedTime(slip.value);
+                        else setWakeTime(slip.value);
+                        // This button goes once used: keep the keyboard on the
+                        // field it fixed, not the top of the page, once the field
+                        // shows the fixed time (focused sooner, it kept the old
+                        // text and put it back on leaving). Not on touch screens,
+                        // where focusing a time field can open its wheel.
+                        const field = slip.field;
+                        if (!window.matchMedia('(pointer: coarse)').matches)
+                          setTimeout(() => document.getElementById(`sleep-${field}`)?.focus(), 0);
+                      }}
                     >
                       {clock(toMinutes(slip.value) ?? 0, hour12)}
                     </button>
