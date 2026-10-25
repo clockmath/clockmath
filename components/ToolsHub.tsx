@@ -23,22 +23,36 @@ import {
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import { lineForHref } from '@/lib/lines';
+import { Flap } from '@/components/station/Flap';
 import JsonLd from '@/components/JsonLd';
 import { MARKETS, getMarketStatus } from '@/lib/markets';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
-const TILES = [
+// Each tool's answer for its own starting inputs (9:00 AM to 5:30 PM, the
+// default shift, 7h 45m, 11 PM to 6:30 AM, 46.5 hours…), on tiles in its line
+// colour: what the tool does, at a glance. Live or varying answers (markets,
+// time zones, countdowns) have none.
+const TILES: Array<{
+  href: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType;
+  live?: boolean;
+  sample?: Array<[string, string]>;
+}> = [
   {
     href: '/',
     title: 'Time Duration Calculator',
     description: 'The exact time between two times or dates — handles overnight automatically',
     icon: Clock,
+    sample: [['8', 'h'], ['30', 'm']],
   },
   {
     href: '/tools/timesheet',
     title: 'Work Hours Calculator',
     description: 'Add up shifts with breaks; decimal hours and gross pay for payroll',
     icon: ClipboardList,
+    sample: [['7.50', 'h']],
   },
   {
     href: '/tools/market-hours',
@@ -58,12 +72,14 @@ const TILES = [
     title: 'Decimal Hours Converter',
     description: 'Minutes to decimal (and back) with the full payroll chart',
     icon: Percent,
+    sample: [['7.75', '']],
   },
   {
     href: '/tools/sleep',
     title: 'Sleep Calculator',
     description: 'Hours slept, plus bedtimes that fit 90-minute sleep cycles',
     icon: Bed,
+    sample: [['7', 'h'], ['30', 'm']],
   },
   {
     href: '/tools/countdown',
@@ -76,12 +92,14 @@ const TILES = [
     title: 'Overtime Calculator',
     description: 'Regular vs overtime split, and what time and a half really pays',
     icon: AlarmClockPlus,
+    sample: [['40', '+'], ['6.5', 'h']],
   },
   {
     href: '/tools/quiz',
     title: 'Daily Time Quiz',
     description: 'Five clock-math questions a day, with an arcade-style leaderboard',
     icon: Trophy,
+    sample: [['60', 's']],
   },
   {
     href: '/articles',
@@ -133,6 +151,16 @@ export default function ToolsHub() {
             <Link href={tile.href}>
               <span className="st-hub-title">{tile.title}</span>
               <span className="st-hub-desc">{tile.description}</span>
+              {tile.sample && (
+                <span className="st-hub-sample" aria-hidden="true">
+                  {tile.sample.map(([value, unit]) => (
+                    <span key={value}>
+                      <Flap value={value} />
+                      {unit && <small>{unit}</small>}
+                    </span>
+                  ))}
+                </span>
+              )}
               {tile.live && marketsOpen !== null && (
                 <span className="st-hub-live">
                   <i className={marketsOpen > 0 ? 'open' : undefined} aria-hidden="true" />

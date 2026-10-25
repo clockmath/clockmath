@@ -89,6 +89,18 @@ html.dark:not(.classic) .station[data-line] :is(.st-answer, .st-result) { box-sh
 
 /* ---- Every line on one map: the tools hub and guides lists ---- */
 html:not(.classic) .station .st-hub li[data-line] a { border-left: 6px solid var(--line); padding-left: 16px; }
+/* Each tool's sample answer, on tiles of its line colour */
+html:not(.classic) .station .st-hub-sample {
+  display: inline-flex; align-items: baseline; gap: 12px; justify-self: end; white-space: nowrap;
+  font-family: var(--display); font-size: 30px; font-weight: 800; line-height: 1;
+  color: var(--line-ink); --tile: var(--line); --tile-hinge: rgb(0 0 0 / 0.3);
+}
+html:not(.classic) .station .st-hub-sample > span { display: inline-flex; align-items: baseline; gap: 4px; }
+html:not(.classic) .station .st-hub-sample small { font-family: var(--font-archivo), sans-serif; font-size: 15px; font-weight: 700; color: var(--ink); }
+.classic .st-hub-sample { display: none; }
+@media (max-width: 760px) {
+  html:not(.classic) .station .st-hub-sample { justify-self: start; margin-top: 6px; font-size: 26px; }
+}
 
 /* The guide call-out takes the line of the tool it points to */
 html:not(.classic) .station .st-callout[data-line] { background: var(--line); color: var(--line-ink); }
