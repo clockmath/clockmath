@@ -94,6 +94,53 @@ export default function DecimalHoursPage() {
 
       <DecimalHoursTool className="mb-section" />
 
+      {/* The chart the page is named for, on the page (Oct 2026: it sat inside
+          the closed "How it works" fold). A departures-style board; the
+          quarter hours, the values people look up most, picked out. */}
+      <section className="st-departures st-chart mb-section" aria-labelledby="dh-chart-title">
+        <div className="st-chart-head">
+          <div>
+            <h2 id="dh-chart-title">Minutes to decimal hours chart</h2>
+            <p>Two decimal places, as most timesheet software uses. Print it on one page to keep by the time clock.</p>
+          </div>
+          <PrintChartButton />
+        </div>
+        <div className="st-chart-scroll">
+          <table>
+            <thead>
+              <tr>
+                {[0, 1, 2, 3].map((c) => (
+                  <React.Fragment key={c}>
+                    <th scope="col">Min</th>
+                    <th scope="col">Hours</th>
+                  </React.Fragment>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 15 }, (_, row) => (
+                <tr key={row}>
+                  {[0, 1, 2, 3].map((col) => {
+                    const minute = row + 1 + col * 15;
+                    const quarter = minute % 15 === 0;
+                    return (
+                      <React.Fragment key={col}>
+                        <td className={quarter ? 'st-chart-min q' : 'st-chart-min'}>{minute}</td>
+                        <td className={quarter ? 'st-chart-dec q' : 'st-chart-dec'}>{minutesToDecimal(minute).toFixed(2)}</td>
+                      </React.Fragment>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Payroll systems that round punch times (to 6 or 15 minutes) do so before converting; this chart shows the values
+          before that rounding.
+        </p>
+      </section>
+
       <StationFold>
       <QuickAnswers heading="Common minutes to decimal hours" items={COMMON} />
 
@@ -116,52 +163,6 @@ export default function DecimalHoursPage() {
         </p>
       </section>
 
-      {/* Full chart — static, server-rendered */}
-      <section className="max-w-3xl mx-auto mb-section">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground">
-            Minutes to decimal hours chart
-          </h2>
-          <PrintChartButton />
-        </div>
-        <p className="text-muted-foreground mb-4">
-          Values to two decimal places, the convention most timesheet software uses. Print it on one page to keep by the time clock.
-        </p>
-        <div className="overflow-x-auto bg-card dark:bg-card rounded-2xl p-4 border border-border/50 dark:border-border/50">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-border dark:border-border">
-                {[0, 1, 2, 3].map((c) => (
-                  <React.Fragment key={c}>
-                    <th scope="col" className="text-left py-2 px-2 font-semibold text-foreground">Min</th>
-                    <th scope="col" className="text-left py-2 px-2 font-semibold text-foreground">Decimal</th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: 15 }, (_, row) => (
-                <tr key={row} className="border-b border-border/40 dark:border-border/40">
-                  {[0, 1, 2, 3].map((col) => {
-                    const minute = row + 1 + col * 15;
-                    return (
-                      <React.Fragment key={col}>
-                        <td className="py-1 px-2 text-muted-foreground">{minute}</td>
-                        <td className="py-1 px-2 font-mono text-foreground">
-                          {minutesToDecimal(minute).toFixed(2)}
-                        </td>
-                      </React.Fragment>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="text-xs text-muted-foreground mt-3">
-          Payroll systems that round punch times (to 6 or 15 minutes) do so before converting; this chart shows the values before that rounding.
-        </p>
-      </section>
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto mb-section">

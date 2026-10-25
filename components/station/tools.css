@@ -192,3 +192,28 @@ html:not(.classic) .station .st-markets tr[data-state="open"] .st-mk-next b { co
   .station .st-markets tbody td.st-mk-hours { font-size: 14px; }
   .station .st-markets tbody tr { row-gap: 2px; }
 }
+
+/* ---- Decimal hours chart: a departures-style board on the page ---- */
+html:not(.classic) .station .st-chart-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 20px; margin-bottom: 14px; }
+html:not(.classic) .station .st-chart-head h2 { margin: 0; }
+html:not(.classic) .station .st-chart-head p { margin: 4px 0 0; font-size: 15px; color: var(--dep-quiet); max-width: 52ch; }
+html:not(.classic) .station .st-chart-head button { color: var(--dep-ink); border-color: var(--dep-rule); background: transparent; }
+html:not(.classic) .station .st-chart-head button:hover { background: rgb(255 255 255 / 0.08); }
+.station .st-chart-scroll { overflow-x: auto; }
+html:not(.classic) .station .st-chart tbody :is(th, td) { padding: 5px 10px 5px 0; }
+html:not(.classic) .station .st-chart thead th { padding-bottom: 8px; }
+html:not(.classic) .station .st-chart td.st-chart-min { color: var(--dep-quiet); font-size: 15px; }
+html:not(.classic) .station .st-chart td.st-chart-dec { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--dep-ink); padding-right: 22px; }
+html:not(.classic) .station .st-chart td.st-chart-dec:last-child { padding-right: 0; }
+/* The quarter hours: 15, 30, 45 and 60 minutes */
+html:not(.classic) .station .st-chart td.q { color: #ffb27a; font-weight: 800; }
+@media (max-width: 640px) {
+  /* Keep it a table on phones (the holidays board turns its rows into cards) */
+  .station .st-chart table { display: table; }
+  .station .st-chart thead { display: table-header-group; position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  .station .st-chart tbody { display: table-row-group; }
+  .station .st-chart tbody tr { display: table-row; padding: 0; }
+  html:not(.classic) .station .st-chart :is(thead th, tbody td) { display: table-cell; padding: 4px 4px 4px 0; }
+  html:not(.classic) .station .st-chart td.st-chart-dec { font-size: 17px; padding-right: 8px; }
+  html:not(.classic) .station .st-chart td.st-chart-min { font-size: 13px; }
+}
