@@ -149,3 +149,6 @@ html:not(.classic) .station .st-departures .st-dot { width: 12px; height: 12px; 
 /* Copy on an answer board (decimal hours): outlined in the board's own ink */
 .station .st-copy { background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 45%, transparent); cursor: pointer; }
 .station .st-copy:hover { border-color: currentColor; }
+
+/* The countdown tool's board while the fields no longer match it */
+.station .st-faded { opacity: 0.4; transition: opacity 0.15s; }
