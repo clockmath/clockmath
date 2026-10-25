@@ -41,6 +41,9 @@ interface InlineDatePickerProps {
   ariaLabel?: string;
   /** id for the field's button, so a <label htmlFor> can point at it. */
   id?: string;
+  /** Say "Today", "Tomorrow" or "Yesterday" for those dates (the device's
+   *  days); false shows the date itself, for a date in another place. */
+  relative?: boolean;
 }
 
 export function InlineDatePicker({
@@ -51,6 +54,7 @@ export function InlineDatePicker({
   startOnCalendar = false,
   ariaLabel,
   id,
+  relative = true,
 }: InlineDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showCalendar, setShowCalendar] = useState(startOnCalendar);
@@ -62,11 +66,11 @@ export function InlineDatePicker({
   // Format the display value
   const displayValue = useMemo(() => {
     if (!value) return placeholder;
-    if (isToday(value)) return "Today";
-    if (isTomorrow(value)) return "Tomorrow";
-    if (isYesterday(value)) return "Yesterday";
+    if (relative && isToday(value)) return "Today";
+    if (relative && isTomorrow(value)) return "Tomorrow";
+    if (relative && isYesterday(value)) return "Yesterday";
     return format(value, "MMM d, yyyy");
-  }, [value, placeholder]);
+  }, [value, placeholder, relative]);
 
   // Quick date options
   const quickOptions = [

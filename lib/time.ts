@@ -330,7 +330,42 @@ export function getTimeZoneOptions(): Array<{ id: string; label: string }> {
 }
 
 /**
- * Parse a datetime string in a specific timezone
+ * A wall-clock date and time in a zone, as an instant, and whether that time
+ * is an ordinary one, one the clocks skip (2:30 AM when they jump from 2:00
+ * to 3:00) or one they pass twice (1:30 AM when they go back from 2:00).
+ *
+ * Oct 2026 audit: a skipped time came out an hour early west of UTC (2:30 AM
+ * in New York on the spring-forward day was 1:30 AM EST) and an hour late
+ * east of it, depending on which side of the change the first guess fell.
+ * Both cases now use the offset from before the change, as calendars and
+ * JavaScript's Temporal do: a skipped time moves forward by the gap (2:30
+ * becomes 3:30 AM), and a doubled one is the first of the two.
+ */
+export function zonedWallTime(
+  dateStr: string,
+  timeStr: string,
+  timeZone: string,
+): { date: Date; kind: 'normal' | 'skipped' | 'repeated' } {
+  const [year, month, day] = dateStr.split('-').map((v) => parseInt(v, 10));
+  const [hour, minute] = timeStr.split(':').map((v) => parseInt(v, 10));
+  // The wall time read as if it were UTC; the real instant is this minus the
+  // zone's offset at that instant
+  const guess = Date.UTC(year, month - 1, day, hour, minute, 0);
+  const HOURS_14 = 14 * 3600000;
+  const before = getTimezoneOffset(timeZone, new Date(guess - HOURS_14));
+  const after = getTimezoneOffset(timeZone, new Date(guess + HOURS_14));
+  const fits = (offset: number) => getTimezoneOffset(timeZone, new Date(guess - offset * 60000)) === offset;
+  const fitting = [...new Set([before, after])].filter(fits);
+  if (fitting.length === 1) return { date: new Date(guess - fitting[0] * 60000), kind: 'normal' };
+  return {
+    date: new Date(guess - before * 60000),
+    kind: fitting.length === 0 ? 'skipped' : 'repeated',
+  };
+}
+
+/**
+ * Parse a datetime string in a specific timezone (see zonedWallTime for
+ * times the clocks skip or pass twice)
  */
 export function parseDateTimeInZone(
   dateStr: string,
@@ -341,29 +376,7 @@ export function parseDateTimeInZone(
     if (!dateStr || !timeStr) {
       return new Date();
     }
-
-    // Parse basics
-    const [year, month, day] = dateStr.split('-').map(v => parseInt(v, 10));
-    const [hour, minute] = timeStr.split(':').map(v => parseInt(v, 10));
-
-    // First, create a UTC "guess" for that wall time
-    // This represents yyyy-mm-dd hh:mm in UTC
-    const utcGuess = new Date(Date.UTC(year, (month - 1), day, hour, minute, 0));
-
-    // Compute the timezone offset for the target zone at the guess instant
-    const offset1 = getTimezoneOffset(timeZone, utcGuess); // minutes (e.g., -240 for EDT)
-
-    // Apply the offset to get the candidate UTC instant that would display as the desired wall time
-    let candidate = new Date(utcGuess.getTime() - offset1 * 60000);
-
-    // DST-safe refinement: recompute with the candidate instant and adjust if needed
-    const offset2 = getTimezoneOffset(timeZone, candidate);
-    if (offset2 !== offset1) {
-      candidate = new Date(utcGuess.getTime() - offset2 * 60000);
-    }
-
-    return candidate;
-    
+    return zonedWallTime(dateStr, timeStr, timeZone).date;
   } catch {
     return new Date();
   }

@@ -11,14 +11,14 @@ import { Flap } from '@/components/station/Flap';
 import { useClockFormat } from '@/hooks/use-clock-format';
 import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { LocationTimezonePicker } from '@/components/location/LocationTimezonePicker';
-import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
+import { InlineTimePicker, formatTime } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import {
   getUserTimeZone,
   getTimeZoneOptions,
   formatZoned,
   convertDateBetweenZones,
-  parseDateTimeInZone,
+  zonedWallTime,
   getTimezoneOffset,
   getOffsetLabel,
   resolveTimeZone,
@@ -39,6 +39,9 @@ const formatLocalDate = (date: Date): string => {
   const d = `${date.getDate()}`.padStart(2, '0');
   return `${y}-${m}-${d}`;
 };
+/** Today's date in a zone, "YYYY-MM-DD" */
+const zoneToday = (tz: string): string =>
+  new Intl.DateTimeFormat('sv-SE', { timeZone: resolveTimeZone(tz, new Date()), year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const parseLocalDate = (s: string): Date => {
   const [y, m, d] = s.split('-').map((n) => parseInt(n, 10));
   return new Date(y, (m || 1) - 1, d || 1);
@@ -77,7 +80,14 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     toName: string;
     inputDate: string;
     inputTime: string;
+    /** The typed time is one the clocks skip or pass twice (zonedWallTime) */
+    clock: 'normal' | 'skipped' | 'repeated';
   } | null>(null);
+  // While the date and time are still "now" (untouched since the page opened
+  // or Now was pressed), they follow the From place. They had stayed on the
+  // device's clock: pick Tokyo from Halifax and the field said 1:11 PM today
+  // "in Tokyo", where it was already 1:11 AM tomorrow.
+  const [followNow, setFollowNow] = useState(true);
   
   // Custom time picker state
   
@@ -118,6 +128,35 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     // The 12h/24h setting is the site's shared one (useClockFormat)
   }, [isHydrated]);
 
+  // The date and time it is now in a zone (the device's own without one)
+  const setNowIn = useCallback((tz: string) => {
+    const now = new Date();
+    if (tz) {
+      const formatted = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: resolveTimeZone(tz, now),
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23',
+      }).format(now);
+      const [dateStr, timeStr] = formatted.split(' ');
+      setInputDate(dateStr);
+      setInputTime(timeStr);
+    } else {
+      // Host-local, not UTC (toISOString() would be a day off near midnight)
+      setInputDate(formatLocalDate(now));
+      setInputTime(now.toTimeString().slice(0, 5));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (followNow && fromTZ) setNowIn(fromTZ);
+    // Only when the place changes: pressing Now or editing sets followNow itself
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromTZ]);
+
   // Centralized calculation helper so we can reuse for swap
   const computeConversion = useCallback((from: string, to: string, opts?: { dateStr?: string; timeStr?: string; fromName?: string; toName?: string }) => {
     if (!from || !to) {
@@ -131,12 +170,15 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
     try {
       let sourceDate: Date;
+      let clock: 'normal' | 'skipped' | 'repeated' = 'normal';
 
       const dateStr = opts?.dateStr ?? inputDate;
       const timeStr = opts?.timeStr ?? inputTime;
 
       if (dateStr && timeStr) {
-        sourceDate = parseDateTimeInZone(dateStr, timeStr, from);
+        const wall = zonedWallTime(dateStr, timeStr, from);
+        sourceDate = wall.date;
+        clock = wall.kind;
       } else {
         sourceDate = new Date();
       }
@@ -156,6 +198,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         toName: opts?.toName ?? (toLocationDisplay || displayForTZ(to)),
         inputDate: dateStr,
         inputTime: timeStr,
+        clock,
       });
 
       const device = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop';
@@ -239,7 +282,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           day: '2-digit',
           hour: '2-digit',
           minute: '2-digit',
-          hour12: false,
+          hourCycle: 'h23', // hour12: false can read midnight as "24:05"
         });
         const formatted = fmt.format(result.targetDate);
         const [dateStr, timeStr] = formatted.split(' ');
@@ -332,33 +375,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   };
 
   const handleNowClick = () => {
-    const now = new Date();
-    
-    if (fromTZ) {
-      // Get what time it currently is in the "from" timezone
-      const formatter = new Intl.DateTimeFormat('sv-SE', {
-        timeZone: resolveTimeZone(fromTZ, now),
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-      
-      const formatted = formatter.format(now);
-      const [dateStr, timeStr] = formatted.split(' ');
-      
-      setInputDate(dateStr);
-      setInputTime(timeStr);
-    } else {
-      // Fallback to local time if no timezone selected (host-local, not UTC)
-      const dateStr = formatLocalDate(now);
-      const timeStr = now.toTimeString().slice(0, 5);
-
-      setInputDate(dateStr);
-      setInputTime(timeStr);
-    }
+    setNowIn(fromTZ);
+    setFollowNow(true);
     
     gaEvent({
       action: 'tz_now_clicked',
@@ -588,9 +606,15 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               id="tz-date"
               ariaLabel="Date"
               value={inputDate ? parseLocalDate(inputDate) : new Date()}
-              onChange={(date) => setInputDate(formatLocalDate(date))}
+              onChange={(date) => {
+                setInputDate(formatLocalDate(date));
+                setFollowNow(false);
+              }}
               placeholder="Select date"
               startOnCalendar
+              // "Today" and "Tomorrow" are the device's days: when it's
+              // already another day in the From place, the date itself
+              relative={!fromTZ || fromTZ === getUserTimeZone() || zoneToday(fromTZ) === formatLocalDate(new Date())}
             />
           </div>
 
@@ -607,6 +631,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                 const [hour, minute] = timeStr.split(':');
                 const formattedTime = `${hour}:${minute}`;
                 setInputTime(formattedTime);
+                setFollowNow(false);
               }}
               is24h={!hour12}
               placeholder={hour12 ? "9:00 AM" : "09:00"}
@@ -673,6 +698,17 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               <p className="st-note">
                 {from.weekday}, {from.date} ({getOffsetLabel(result.fromTZ, result.targetDate)})
               </p>
+              {result.clock !== 'normal' && (() => {
+                const [h, mm] = result.inputTime.split(':').map(Number);
+                const typed = formatTime(h * 60 + mm, !hour12);
+                return (
+                  <p className="st-note st-tz-clock-note">
+                    {result.clock === 'skipped'
+                      ? `${typed} doesn't happen in ${result.fromName} that day: the clocks jump forward past it, so this uses ${from.time}.`
+                      : `${typed} happens twice in ${result.fromName} that day, as the clocks go back. This is the first one, before the change.`}
+                  </p>
+                );
+              })()}
             </div>
           </div>
         );
