@@ -19,6 +19,9 @@ import { toolUsed } from '@/lib/gtag';
 import InfoTip from '@/components/InfoTip';
 import { getDevice } from '@/lib/device';
 import { storageGet, storageSet } from '@/lib/safeStorage';
+import { Flap } from '@/components/station/Flap';
+import { AnswerBar } from '@/components/station/AnswerBar';
+import { flashClass, useSettledChange } from '@/hooks/use-answer-feedback';
 
 const MULTIPLIERS = [
   { value: 1.5, label: '1.5× (time and a half)' },
@@ -104,6 +107,12 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
     return computeOvertime({ hoursWorked: hours, threshold, multiplier, rate: rate ?? null });
   }, [hours, threshold, multiplier, rate, notes.rate]);
 
+  // The split answers as you type: its boards glow once a change settles, and
+  // on a phone it rides along at the foot of the screen while it's out of sight
+  const formRef = useRef<HTMLElement>(null);
+  const splitRef = useRef<HTMLElement>(null);
+  const splitFlash = useSettledChange(split ? `${split.regularHours}|${split.overtimeHours}|${split.totalPay ?? ''}` : '');
+
   const inputClass =
     'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-primary/50';
   const labelClass = 'block text-sm font-medium text-foreground mb-1';
@@ -117,6 +126,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
   return (
     <div className={className}>
       <section
+        ref={formRef}
         aria-labelledby="overtime-form-heading"
         className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50 mb-6"
       >
@@ -245,6 +255,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
 
       {/* Results */}
       <section
+        ref={splitRef}
         aria-labelledby="overtime-result-heading"
         aria-live="polite"
         className="st-panel bg-card dark:bg-card rounded-2xl p-5 sm:p-6 shadow-sm border border-border/50 dark:border-border/50"
@@ -264,7 +275,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
         {split && (
           <>
             <div className="grid grid-cols-2 gap-4 mb-2">
-              <div className="st-result rounded-xl bg-background dark:bg-background/40 border border-border/50 dark:border-border/50 p-4 text-center">
+              <div className={`st-result rounded-xl bg-background dark:bg-background/40 border border-border/50 dark:border-border/50 p-4 text-center${flashClass(splitFlash)}`}>
                 <div className="st-figure text-2xl font-bold text-foreground">
                   <RollingNumber value={split.regularHours} />
                 </div>
@@ -272,7 +283,7 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
                   regular hours ({decimalToHmLabel(split.regularHours)})
                 </div>
               </div>
-              <div className="st-result rounded-xl bg-primary/10 border border-primary/30 p-4 text-center">
+              <div className={`st-result rounded-xl bg-primary/10 border border-primary/30 p-4 text-center${flashClass(splitFlash)}`}>
                 <div className="st-figure text-2xl font-bold text-primary">
                   <RollingNumber value={split.overtimeHours} />
                 </div>
@@ -315,6 +326,13 @@ export function OvertimeTool({ className = '' }: OvertimeToolProps) {
           </>
         )}
       </section>
+
+      {split && (
+        <AnswerBar formRef={formRef} answerRef={splitRef}>
+          Overtime <Flap value={String(split.overtimeHours)} /> h
+          {split.totalPay !== null && <span>· ${money(split.totalPay)}</span>}
+        </AnswerBar>
+      )}
     </div>
   );
 }

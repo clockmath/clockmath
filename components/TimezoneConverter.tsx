@@ -27,6 +27,7 @@ import {
 import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
+import { useCalculateFeedback } from '@/hooks/use-answer-feedback';
 
 interface TimezoneConverterProps {
   className?: string;
@@ -88,6 +89,10 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   // device's clock: pick Tokyo from Halifax and the field said 1:11 PM today
   // "in Tokyo", where it was already 1:11 AM tomorrow.
   const [followNow, setFollowNow] = useState(true);
+  // Calculate and Swap show they worked: the answer's tiles flip again, the
+  // button says "Updated", and the answer is scrolled into view
+  const answerRef = useRef<HTMLDivElement>(null);
+  const { round, updated, confirm } = useCalculateFeedback(answerRef);
   
   // Custom time picker state
   
@@ -241,7 +246,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     if (toTyped !== null && toTyped.trim() !== toLocationDisplay) return setPickNote('to');
     setPickNote(null);
     computeConversion(fromTZ, toTZ);
-  }, [computeConversion, fromTZ, toTZ, fromTyped, toTyped, fromLocationDisplay, toLocationDisplay]);
+    confirm();
+  }, [computeConversion, fromTZ, toTZ, fromTyped, toTyped, fromLocationDisplay, toLocationDisplay, confirm]);
 
   // Enter in a field submits; a time typed and entered in the same keystroke
   // reaches state in that event, so the calculation runs in an effect
@@ -310,6 +316,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
       computeConversion(newFrom, newTo, { fromName: newFromName, toName: newToName });
     }
 
+    confirm();
     gaEvent({
       action: 'tz_swap_clicked',
       params: { device: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop' }
@@ -649,8 +656,9 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
                 <circle cx="12" cy="12" r="10" />
               </svg>
-              Calculate Time Difference
+              {updated ? 'Updated' : 'Calculate Time Difference'}
             </button>
+            <span className="sr-only" role="status">{updated ? 'Answer updated' : ''}</span>
             {stale && (
               <p className="mt-3 mb-0 text-sm text-foreground">Places or time changed. Press Calculate for the new answer.</p>
             )}
@@ -667,10 +675,10 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         const from = formatZoned(result.sourceDate, result.fromTZ, { hour12 });
         const m = to.time.match(/^(\d+):(\d+)\s*(.*)$/);
         return (
-          <div className={`st-answer st-tz-answer${stale ? ' stale' : ''}`} aria-live="polite">
+          <div ref={answerRef} className={`st-answer st-tz-answer${stale ? ' stale' : ''}`} aria-live="polite">
             <div>
               <p className="st-tz-place">{result.toName}</p>
-              <p className="st-big st-tz-time">
+              <p key={round} className="st-big st-tz-time">
                 {/* "12:00 PM": the hours and minutes on tiles, AM/PM beside them */}
                 {m ? (
                   <>

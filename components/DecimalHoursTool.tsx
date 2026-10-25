@@ -19,6 +19,7 @@ import { toolUsed } from '@/lib/gtag';
 import { getDevice } from '@/lib/device';
 import { parseAmount, parseHours } from '@/lib/overtime';
 import { copyText } from '@/lib/clipboard';
+import { flashClass, useSettledChange } from '@/hooks/use-answer-feedback';
 
 
 interface DecimalHoursToolProps {
@@ -101,6 +102,10 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
     return { ...decimalToHm(d), d };
   }, [decimalStr]);
 
+  // Each answer glows once a change settles (they update as you type)
+  const toDecimalFlash = useSettledChange(`${hoursStr}|${minutesStr}`);
+  const toTimeFlash = useSettledChange(decimalStr);
+
   const inputClass =
     'w-full px-4 py-2.5 rounded-xl bg-background dark:bg-background/60 border border-border dark:border-border text-foreground text-lg font-mono outline-none focus:ring-2 focus:ring-primary/50';
   const noteFor = (id: string, note: string | null | undefined) =>
@@ -175,7 +180,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
         <div
           role="status"
           aria-live="polite"
-          className="st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
+          className={`st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3${flashClass(toDecimalFlash)}`}
         >
           {'value' in toDecimal && toDecimal.value !== undefined ? (
             <>
@@ -228,7 +233,7 @@ export function DecimalHoursTool({ className = '' }: DecimalHoursToolProps) {
         <div
           role="status"
           aria-live="polite"
-          className="st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3"
+          className={`st-result text-center rounded-xl bg-primary/10 border border-primary/30 py-4 px-3${flashClass(toTimeFlash)}`}
         >
           {toTime === null ? (
             <p className="text-sm text-muted-foreground">Enter decimal hours above</p>
