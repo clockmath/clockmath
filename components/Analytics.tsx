@@ -1,11 +1,10 @@
 "use client";
 
-import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
+import { useEffect, useLayoutEffect, Suspense } from "react";
 import { GA_MEASUREMENT_ID, pageview } from "@/lib/gtag";
 import { CONSENT_CHANGED_EVENT, CONSENT_STORAGE_KEY, RESTRICTED_REGIONS, analyticsAllowedNow } from "@/lib/consent";
-import { ANALYTICS_URL_SNIPPET } from "@/lib/analyticsUrl";
+import { analyticsSafeUrl } from "@/lib/analyticsUrl";
 
 function AnalyticsTracker() {
   const pathname = usePathname();
@@ -18,6 +17,62 @@ function AnalyticsTracker() {
     pageview(url);
   }, [pathname, searchParams]);
 
+  return null;
+}
+
+/**
+ * The gtag() queue, Consent Mode defaults and config. Until Oct 2026 this was
+ * an inline <Script>, which the CSP had to allow with 'unsafe-inline' (the
+ * page is built ahead of time, so the script couldn't carry the nonce). As a
+ * layout effect it still runs before any component's ordinary effects, so
+ * the first page_view (AnalyticsTracker) finds gtag defined.
+ */
+function initGtag() {
+  if (window.gtag) return;
+  const w = window as unknown as { dataLayer: unknown[] };
+  w.dataLayer = w.dataLayer || [];
+  // gtag.js reads each entry as an `arguments` object, not an array
+  window.gtag = function gtag() {
+    // eslint-disable-next-line prefer-rest-params
+    w.dataLayer.push(arguments);
+  };
+  const gtag = window.gtag;
+  gtag("js", new Date());
+
+  // Consent Mode v2: set defaults BEFORE config so gtag.js honors them.
+  const denied = { ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", analytics_storage: "denied" };
+  const granted = { ad_storage: "granted", ad_user_data: "granted", ad_personalization: "granted", analytics_storage: "granted" };
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+  } catch {}
+
+  if (stored === "granted") {
+    gtag("consent", "default", granted);
+  } else if (stored === "denied") {
+    gtag("consent", "default", denied);
+  } else {
+    // No stored choice: granted by default, but denied in EEA/UK/CH
+    // (region-scoped defaults take precedence for those visitors) until
+    // they accept via the banner. Google resolves the region by IP.
+    gtag("consent", "default", granted);
+    gtag("consent", "default", { ...denied, region: RESTRICTED_REGIONS, wait_for_update: 500 });
+  }
+
+  // Every event inherits page_location/page_referrer from config; give it
+  // the cleaned URLs so visitor data never reaches GA (other sites'
+  // referrers are left as they are).
+  const ref = document.referrer;
+  gtag("config", GA_MEASUREMENT_ID, {
+    send_page_view: false,
+    page_location: analyticsSafeUrl(location.href),
+    page_referrer: ref && ref.indexOf(location.origin) === 0 ? analyticsSafeUrl(ref) : ref,
+    ...(process.env.NEXT_PUBLIC_GA_DEBUG === "true" ? { debug_mode: true } : {}),
+  });
+}
+
+function GtagInit() {
+  useLayoutEffect(initGtag, []);
   return null;
 }
 
@@ -60,41 +115,7 @@ export default function Analytics() {
 
   return (
     <>
-      <Script id="ga4-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          // Consent Mode v2 — set defaults BEFORE config so gtag.js honors them.
-          var denied = { ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied', analytics_storage:'denied' };
-          var granted = { ad_storage:'granted', ad_user_data:'granted', ad_personalization:'granted', analytics_storage:'granted' };
-          var stored = null;
-          try { stored = localStorage.getItem('${CONSENT_STORAGE_KEY}'); } catch (e) {}
-
-          if (stored === 'granted') {
-            gtag('consent', 'default', granted);
-          } else if (stored === 'denied') {
-            gtag('consent', 'default', denied);
-          } else {
-            // No stored choice: granted by default, but denied in EEA/UK/CH
-            // (region-scoped defaults take precedence for those visitors) until
-            // they accept via the banner. Google resolves the region by IP.
-            gtag('consent', 'default', granted);
-            gtag('consent', 'default', Object.assign({}, denied, {
-              region: ${JSON.stringify(RESTRICTED_REGIONS)},
-              wait_for_update: 500
-            }));
-          }
-
-          // Every event inherits page_location/page_referrer from config;
-          // give it the cleaned URLs so visitor data never reaches GA.
-          ${ANALYTICS_URL_SNIPPET}
-          gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false, page_location: cmLoc, page_referrer: cmRef${
-            process.env.NEXT_PUBLIC_GA_DEBUG === "true" ? ", debug_mode: true" : ""
-          } });
-        `}
-      </Script>
+      <GtagInit />
       <GtagLoader />
       <Suspense fallback={null}>
         <AnalyticsTracker />
