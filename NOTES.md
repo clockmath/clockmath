@@ -27,7 +27,6 @@
 ## Known issues
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
-- **Spacing audit:** `npm run spacing:audit` reports 19 values outside the spacing scale (report only)
 - **CSP:** `script-src` and `style-src` allow `'unsafe-inline'`; no nonce yet
 - **Feedback email:** feedback is saved to KV but not emailed. The email step needs `EMAIL_SEND_TOKEN` and `CF_ACCOUNT_ID` set in Cloudflare Pages
 - **Install offer:** Chrome's install dialog on the live domain hasn't been seen working yet; the service worker is live

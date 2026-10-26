@@ -492,7 +492,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             onClick={handleSwapTimezones}
             aria-label="Swap From and To"
             title="Swap From and To"
-            className="justify-self-center sm:mt-9 w-11 h-11 grid place-items-center bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-sm transition-colors"
+            // spacing-audit: allow (centres it on the 64px inputs: 32px label row + (64 - 44) / 2; mt-9 sat 6px high)
+            className="justify-self-center sm:mt-10.5 w-11 h-11 grid place-items-center bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-sm transition-colors"
           >
             <ArrowLeftRight className="w-4 h-4 rotate-90 sm:rotate-0" aria-hidden="true" />
           </button>
