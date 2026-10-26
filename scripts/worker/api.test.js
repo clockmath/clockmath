@@ -17,7 +17,7 @@ const code = fs.readFileSync(path.join(__dirname, 'api.js'), 'utf8');
 // withSecurityHeaders uses cacheControlFor from live-counts.js, as in the worker.
 const liveCounts = fs.readFileSync(path.join(__dirname, 'live-counts.js'), 'utf8');
 const api = new Function(
-  `${quizLib}\n${liveCounts}\n${code}\nreturn { handleQuizApi, handlePlacesApi, handleFeedbackApi, redirectTarget, rateLimited, withSecurityHeaders, cspNonce, __cmQuiz };`,
+  `${quizLib}\n${liveCounts}\n${code}\nreturn { handleQuizApi, handlePlacesApi, handleFeedbackApi, fbSendEmailCopy, redirectTarget, rateLimited, withSecurityHeaders, cspNonce, __cmQuiz };`,
 )();
 
 function memoryKV() {
@@ -78,6 +78,50 @@ const post = (url, body, headers = {}) =>
   res = await api.handleFeedbackApi(new Request('https://clockmath.com/api/feedback', { method: 'OPTIONS', headers: { Origin: 'https://evil.example' } }), env);
   assert.strictEqual(res.status, 204);
   assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), null, 'other origins get no CORS grant');
+
+  // ---- Feedback email copy: the REST payload, and failures are logged ----
+  const entry = { message: 'The sleep tool is great', email: 'visitor@example.com', topic: 'feedback', country: 'CA', ts: '2026-10-26T00:00:00.000Z' };
+  const realFetch = globalThis.fetch;
+  const realError = console.error;
+  const realWarn = console.warn;
+  const logged = [];
+  console.error = console.warn = (m) => logged.push(m);
+  let sent = null;
+  let reply = { status: 200, body: { success: true, errors: [], result: { delivered: ['hello@clockmath.com'], permanent_bounces: [], queued: [] } } };
+  globalThis.fetch = async (url, init) => {
+    sent = { url, init };
+    return new Response(JSON.stringify(reply.body), { status: reply.status, headers: { 'Content-Type': 'application/json' } });
+  };
+  try {
+    assert.strictEqual(await api.fbSendEmailCopy({}, entry), false, 'not configured');
+    assert.strictEqual(sent, null, 'nothing sent without a token');
+    assert.match(logged.pop(), /EMAIL_SEND_TOKEN/);
+
+    const mailEnv = { EMAIL_SEND_TOKEN: 'tok', CF_ACCOUNT_ID: 'acct' };
+    assert.strictEqual(await api.fbSendEmailCopy(mailEnv, entry), true);
+    assert.strictEqual(sent.url, 'https://api.cloudflare.com/client/v4/accounts/acct/email/sending/send');
+    assert.strictEqual(sent.init.headers.Authorization, 'Bearer tok');
+    const payload = JSON.parse(sent.init.body);
+    assert.strictEqual(payload.to, 'hello@clockmath.com');
+    assert.deepStrictEqual(payload.from, { address: 'feedback@clockmath.com', name: 'ClockMath Feedback' }, 'REST uses address, not email');
+    assert.strictEqual(payload.reply_to, 'visitor@example.com', 'REST uses reply_to');
+    assert.ok(payload.text.includes('The sleep tool is great'));
+    assert.strictEqual(logged.length, 0);
+
+    reply = { status: 403, body: { success: false, errors: [{ code: 10000, message: 'Authentication error' }] } };
+    assert.strictEqual(await api.fbSendEmailCopy(mailEnv, entry), false);
+    const line = logged.pop();
+    assert.match(line, /HTTP 403 \(10000 Authentication error\)/);
+    assert.ok(!line.includes('sleep tool') && !line.includes('visitor@'), 'the log never carries the message or address');
+
+    reply = { status: 200, body: { success: true, errors: [], result: { delivered: [], permanent_bounces: ['hello@clockmath.com'], queued: [] } } };
+    assert.strictEqual(await api.fbSendEmailCopy(mailEnv, entry), false);
+    assert.match(logged.pop(), /bounced/);
+  } finally {
+    globalThis.fetch = realFetch;
+    console.error = realError;
+    console.warn = realWarn;
+  }
 
   // ---- Places: long queries rejected before any upstream call ----
   res = await api.handlePlacesApi(new Request(`https://clockmath.com/api/places?q=${'a'.repeat(120)}`), { GEOAPIFY_API_KEY: 'test' });

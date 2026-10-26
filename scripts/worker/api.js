@@ -473,13 +473,20 @@ async function handleQuizApi(request, env) {
 //   EMAIL_SEND_TOKEN — API token with Email Sending permission
 //   CF_ACCOUNT_ID    — Cloudflare account id
 // Email failure never fails the request; the KV copy is the source of truth.
+// Until Oct 2026 a missing token or a refused send was silent, and no email
+// had ever gone out (EMAIL_SEND_TOKEN was never set, and clockmath.com wasn't
+// onboarded to Email Sending). Both now log, so `wrangler pages deployment
+// tail` shows why, without the message itself.
 const fbIpHits = new Map();
 function fbRateLimited(ip) {
   return rateLimited(fbIpHits, ip, 5, 3600000);
 }
 
 async function fbSendEmailCopy(env, entry) {
-  if (!env.EMAIL_SEND_TOKEN || !env.CF_ACCOUNT_ID) return;
+  if (!env.EMAIL_SEND_TOKEN || !env.CF_ACCOUNT_ID) {
+    console.warn('[feedback] saved to KV only: EMAIL_SEND_TOKEN or CF_ACCOUNT_ID is not set');
+    return false;
+  }
   const label = entry.topic === 'feature' ? 'Feature request' : 'Feedback';
   const payload = {
     to: 'hello@clockmath.com',
@@ -490,11 +497,21 @@ async function fbSendEmailCopy(env, entry) {
       'Country: ' + entry.country + '  ·  ' + entry.ts].join('\n'),
   };
   if (entry.email) payload.reply_to = entry.email;
-  await fetch('https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/email/sending/send', {
+  const res = await fetch('https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/email/sending/send', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + env.EMAIL_SEND_TOKEN, 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+  let data = null;
+  try { data = await res.json(); } catch (e) { /* not JSON */ }
+  // A 200 can still bounce: the result lists each recipient's outcome
+  const bounced = data && data.result && data.result.permanent_bounces && data.result.permanent_bounces.length;
+  if (!res.ok || (data && data.success === false) || bounced) {
+    const why = data && Array.isArray(data.errors) ? data.errors.map((e) => e.code + ' ' + e.message).join('; ') : '';
+    console.error('[feedback] email copy not sent: HTTP ' + res.status + (bounced ? ', bounced' : '') + (why ? ' (' + why + ')' : ''));
+    return false;
+  }
+  return true;
 }
 
 async function handleFeedbackApi(request, env) {
