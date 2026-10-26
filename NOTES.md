@@ -28,6 +28,10 @@
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
 - **CSP nonce, GA and Clarity:** since Oct 26 the CSP uses a per-page nonce instead of `'unsafe-inline'`. Checked on a local Pages preview with GA consent denied, so gtag.js and Clarity weren't loaded there (they're external scripts from allowed hosts and shouldn't need the nonce). Confirm in GA Realtime / Clarity that data still arrives
-- **Feedback email:** feedback is saved to KV but not emailed. The email step needs `EMAIL_SEND_TOKEN` and `CF_ACCOUNT_ID` set in Cloudflare Pages
+- **Feedback email:** feedback is saved to KV but not yet emailed; it has never sent. The code is ready, and since Oct 26 it logs why a copy wasn't sent. `CF_ACCOUNT_ID` is set; still to do, in the Cloudflare dashboard:
+  1. Email Service > Email Sending > Onboard Domain > clockmath.com (adds the `cf-bounce` records; none exist yet)
+  2. Create an API token with Email Sending permission, then `npx wrangler pages secret put EMAIL_SEND_TOKEN --project-name clockmath`
+  3. Deploy, send a test from "Feedback or feature request" in the site footer, and check hello@clockmath.com
+- **Proton mail DNS:** the root SPF record only includes Cloudflare (`include:_spf.mx.cloudflare.net`) and there are no `protonmail._domainkey` records, while DMARC is `p=quarantine`. Mail sent from hello@clockmath.com through Proton may fail SPF/DKIM and land in spam. Proton's domain settings list the records to add
 - **Install offer:** Chrome's install dialog on the live domain hasn't been seen working yet; the service worker is live
 - **Phone time wheel:** phones use the native time wheel, which follows the phone's 12h/24h setting, not the site's (a deliberate choice)

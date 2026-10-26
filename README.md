@@ -92,8 +92,8 @@ Worker, set in the Cloudflare Pages dashboard (never committed):
 
 | Variable | Purpose |
 |---|---|
-| `GEOAPIFY_KEY` | Place search in the time zone tool (`/api/places`). Without it, search falls back to a built-in city list. |
-| `EMAIL_SEND_TOKEN`, `CF_ACCOUNT_ID` | Email feedback-form messages to the site inbox. Without them, messages are only saved to KV. |
+| `GEOAPIFY_API_KEY` | Place search in the time zone tool (`/api/places`; `GEOAPIFY_KEY` also works). Without it, search falls back to a built-in city list. |
+| `EMAIL_SEND_TOKEN`, `CF_ACCOUNT_ID` | Email feedback-form messages to the site inbox. Needs clockmath.com onboarded to Cloudflare Email Sending and an API token with Email Sending permission. Without them, messages are only saved to KV (failures are logged). |
 
 ## Project structure
 
