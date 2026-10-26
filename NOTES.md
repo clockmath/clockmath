@@ -11,7 +11,7 @@
   - Calculation feedback: re-flip, "Updated", scroll to the answer, phone answer bar, change glow (#135)
   - "Install ClockMath" offer plus a service worker for offline pages (#134)
 - **Docs:** CLAUDE.md, NOTES.md and an up-to-date README (Oct 26)
-- **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` is clean
+- **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; `scripts/` isn't linted) is clean
 
 ## In progress
 - No open PRs or uncommitted work
@@ -27,7 +27,6 @@
 ## Known issues
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
-- **Lint command:** `npm run lint` uses `next lint`, which Next marks as deprecated (it prints a migration notice)
 - **Spacing audit:** `npm run spacing:audit` reports 19 values outside the spacing scale (report only)
 - **CSP:** `script-src` and `style-src` allow `'unsafe-inline'`; no nonce yet
 - **Feedback email:** feedback is saved to KV but not emailed. The email step needs `EMAIL_SEND_TOKEN` and `CF_ACCOUNT_ID` set in Cloudflare Pages

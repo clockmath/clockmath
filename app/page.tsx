@@ -1,6 +1,5 @@
 "use client"
 
-/* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import Link from "next/link"
 import InfoTip from "@/components/InfoTip"

@@ -1,7 +1,5 @@
 'use client';
 
-/* eslint-disable react/no-unescaped-entities */
-
 import { TimezoneConverter } from '@/components/TimezoneConverter';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
