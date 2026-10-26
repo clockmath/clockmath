@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { generateSEOMetadata } from '@/lib/seo';
