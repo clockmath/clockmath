@@ -104,7 +104,7 @@ export default function InfoTip({
         // `left`, not a transform: a transformed panel still widens the page
         // by its original box while open (sideways scroll on phones).
         style={{ left: shift }}
-        className="absolute top-full mt-1.5 z-50 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border dark:border-border bg-card dark:bg-card shadow-md px-3 py-2 text-xs leading-relaxed font-normal normal-case tracking-normal text-left text-muted-foreground dark:text-foreground"
+        className="absolute top-full mt-2 z-50 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border dark:border-border bg-card dark:bg-card shadow-md px-3 py-2 text-xs leading-relaxed font-normal normal-case tracking-normal text-left text-muted-foreground dark:text-foreground"
       >
         {children}
       </span>

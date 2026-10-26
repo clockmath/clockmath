@@ -691,7 +691,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           <p className="text-sm text-muted-foreground tabular-nums mb-1">
             Daily #{quiz.number} · {dayLabel}
           </p>
-          <p className="text-base text-foreground mb-5">
+          <p className="text-base text-foreground mb-4">
             5 questions · about a minute · the same for everyone today
           </p>
           </div>
@@ -699,7 +699,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           {introNow && <ClockFace h={introNow.getHours()} m={introNow.getMinutes()} decorative />}
           <div className="st-quiz-intro-body">
           {crowd && board && board.top.length > 0 && (
-            <p className="text-sm mb-5 flex items-center gap-2 text-muted-foreground">
+            <p className="text-sm mb-4 flex items-center gap-2 text-muted-foreground">
               <Trophy className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
               <span>
                 <span className="font-semibold text-foreground tabular-nums">{board.count}</span> players so far — the
@@ -712,7 +712,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
           )}
           <button
             onClick={startDaily}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-lg font-semibold transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-lg font-semibold transition-colors"
           >
             <Trophy className="w-5 h-5" aria-hidden="true" />
             {resumable
@@ -902,12 +902,12 @@ export function QuizTool({ className = '' }: { className?: string }) {
               </div>
             )}
             {!fullBoard && (needsInitials || (board && board.top.length > 0)) && (
-              <div className="mt-5 pt-5 border-t border-border/50 dark:border-border/50 space-y-4">
+              <div className="mt-6 pt-6 border-t border-border/50 dark:border-border/50 space-y-4">
                 {needsInitials && initialsForm}
                 {!boardDown && board && board.top.length > 0 && boardRows(board.top, true, 'Scores today')}
               </div>
             )}
-            <p className="text-xs text-muted-foreground mt-5" aria-live="off">
+            <p className="text-xs text-muted-foreground mt-4" aria-live="off">
               {nextPuzzleMs !== null ? (
                 <>
                   Next puzzle in{' '}

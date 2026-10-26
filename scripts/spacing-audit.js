@@ -41,13 +41,20 @@ function walk(dir, out = []) {
   return out;
 }
 
+// A justified exception: `// spacing-audit: allow (why)` on the line itself
+// or the line above (inside a JSX opening tag, above the className).
+const ALLOW_MARK = 'spacing-audit: allow';
+
 const files = [...walk('app'), ...walk('components')];
 const violations = [];
 for (const file of files) {
   const lines = fs.readFileSync(file, 'utf8').split('\n');
   lines.forEach((line, i) => {
+    if (line.includes(ALLOW_MARK) || (i > 0 && lines[i - 1].includes(ALLOW_MARK))) return;
     for (const m of line.matchAll(RX)) {
       const [, prefix, value] = m;
+      // 0 removes spacing (mb-0 on a <p> inside a spaced stack); it isn't a step
+      if (value === '0') continue;
       if (ALLOWED[prefix] && !ALLOWED[prefix].includes(value)) {
         violations.push(`${file}:${i + 1}  ${prefix}-${value}`);
       }
