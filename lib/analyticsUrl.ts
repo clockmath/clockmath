@@ -27,14 +27,3 @@ export function urlHasVisitorData(search: string = typeof window === 'undefined'
   const params = new URLSearchParams(search);
   return ['d', 'title', 'to'].some((k) => params.has(k));
 }
-
-/**
- * The same cleaning as inline script source, for the GA init snippet that
- * runs before any bundle: sets `u` to the cleaned location and `r` to the
- * cleaned referrer (same-origin only; other sites' URLs are left to GA).
- */
-export const ANALYTICS_URL_SNIPPET = `
-  function cmClean(h){try{var u=new URL(h);Array.from(u.searchParams.keys()).forEach(function(k){if(!${ANALYTICS_PARAM_ALLOWLIST.toString()}.test(k))u.searchParams.delete(k)});u.hash='';return u.toString()}catch(e){return ''}}
-  var cmLoc=cmClean(location.href);
-  var cmRef=document.referrer&&document.referrer.indexOf(location.origin)===0?cmClean(document.referrer):document.referrer;
-`;

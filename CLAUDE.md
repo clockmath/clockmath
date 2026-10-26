@@ -41,6 +41,7 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 - Analytics: `event`/`toolUsed` from `lib/gtag` (blocked on localhost). Consent Mode v2: no GA or Clarity before consent in the EEA/UK/CH
 - Comments explain why, often dated ("Oct 2026 audit: …"). Keep that style
 - The worker ignores `functions/` and `public/_headers`/`_redirects`: change headers, CSP, APIs and redirects in `scripts/worker/api.js` (and update its test). A new third-party script needs a CSP change there
+- The CSP has no `'unsafe-inline'` for scripts: the worker gives a per-request nonce to every `<script>`/`<style>` in the served HTML. An inline script in the built page is fine; one inserted at runtime (`next/script` with inline content, `createElement('script')` with text) is blocked, so run that code from the bundle instead
 - Share-card URLs carry `?v=N`: bump it everywhere after regenerating the cards. Revert pixel-noise changes to cards you didn't mean to touch
 
 ## Commands

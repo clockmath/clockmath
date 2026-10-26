@@ -22,17 +22,72 @@ const SECURITY_HEADERS = {
   // No page here needs a handle on a window it opens or that opened it
   // (sharing uses navigator.share; outbound links are noopener).
   'Cross-Origin-Opener-Policy': 'same-origin',
+};
+
+// Content-Security-Policy, built per response around a fresh nonce (Oct
+// 2026; until then script-src and style-src allowed 'unsafe-inline', so any
+// injected <script> would have run). Every inline script on a page is either
+// Next's own data (self.__next_f), the theme script in app/layout.tsx or the
+// stale-page guard, and withNonce gives each the nonce (GA's set-up runs
+// from the bundle: components/Analytics.tsx). Scripts from 'self'
+// and the hosts below still load by URL: no 'strict-dynamic', so the beacon
+// Cloudflare's edge adds after the worker (static.cloudflareinsights.com,
+// no nonce) keeps working. Style *attributes* stay allowed (React's style
+// props render as style="…" on 684 elements); <style> elements need the
+// nonce. Browsers without style-src-elem/-attr fall back to style-src.
+const CSP_HOSTS = {
   // Microsoft Clarity (added to the CSP Oct 2026 — it was blocked on every page from its Aug 2026 launch):
   // the tag at www.clarity.ms loads scripts.clarity.ms/<ver>/clarity.js, uploads to <letter>.clarity.ms/collect
   // (XHR/sendBeacon) and fires c.clarity.ms/c.gif. The upload host's letter varies, hence *.clarity.ms for
   // connect/img; scripts stay pinned to the two exact hosts. Any new third-party script needs adding here.
   // c.bing.com/c.gif is Clarity's Bing sync pixel (it links Clarity to Bing; blocked until Oct 24 2026).
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://c.bing.com; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://*.clarity.ms; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests",
+  script: 'https://www.googletagmanager.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms',
+  img: 'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://c.bing.com',
+  connect: 'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://*.clarity.ms',
 };
+
+function contentSecurityPolicy(nonce, frameAncestors) {
+  const n = `'nonce-${nonce}'`;
+  return [
+    "default-src 'self'",
+    `script-src 'self' ${n} ${CSP_HOSTS.script}`,
+    "style-src 'self' 'unsafe-inline'",
+    `style-src-elem 'self' ${n}`,
+    "style-src-attr 'unsafe-inline'",
+    `img-src 'self' data: ${CSP_HOSTS.img}`,
+    "font-src 'self' data:",
+    `connect-src 'self' ${CSP_HOSTS.connect}`,
+    `frame-ancestors ${frameAncestors}`,
+    "base-uri 'self'",
+    "object-src 'none'",
+    "form-action 'self'",
+    'upgrade-insecure-requests',
+  ].join('; ');
+}
+
+/** 128 random bits, base64: a new one for every response */
+function cspNonce() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return btoa(String.fromCharCode(...bytes));
+}
+
+/** Gives every <script> and <style> on an HTML page the response's nonce (the 404 page too) */
+function withNonce(res, nonce) {
+  const type = res.headers.get('Content-Type') || '';
+  if (!res.body || !type.includes('text/html') || typeof HTMLRewriter === 'undefined') return res;
+  const tag = { element(el) { el.setAttribute('nonce', nonce); } };
+  const out = new HTMLRewriter().on('script', tag).on('style', tag).transform(res);
+  // The body now differs on every request, so it has no validator: a 304
+  // would pair the cached page (old nonce) with a new header (new nonce).
+  const headers = new Headers(out.headers);
+  headers.delete('ETag');
+  headers.delete('Last-Modified');
+  return new Response(out.body, { status: out.status, statusText: out.statusText, headers });
+}
 
 const isEmbedPath = (pathname) => typeof pathname === 'string' && pathname.startsWith('/embed/');
 
-function withSecurityHeaders(res, pathname) {
+function withSecurityHeaders(res, pathname, nonce = cspNonce()) {
   try {
     const headers = new Headers(res.headers);
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
@@ -40,10 +95,10 @@ function withSecurityHeaders(res, pathname) {
     }
     // Embeddable countdowns are meant to be framed by other sites; every
     // other page still refuses framing (clickjacking).
-    if (isEmbedPath(pathname)) {
-      headers.delete('X-Frame-Options');
-      headers.set('Content-Security-Policy', SECURITY_HEADERS['Content-Security-Policy'].replace("frame-ancestors 'none'", 'frame-ancestors *'));
-    }
+    const embed = isEmbedPath(pathname);
+    if (embed) headers.delete('X-Frame-Options');
+    // A 304 keeps the browser's stored header, which matches its stored page
+    if (res.status !== 304) headers.set('Content-Security-Policy', contentSecurityPolicy(nonce, embed ? '*' : "'none'"));
     const cacheControl = cacheControlFor(pathname, res);
     if (cacheControl) headers.set('Cache-Control', cacheControl);
     return new Response(res.body, { status: res.status, statusText: res.statusText, headers });

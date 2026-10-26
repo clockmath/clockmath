@@ -38,7 +38,7 @@ const log = (message: string) => {
   }
 };
 
-// gtag() is the dataLayer shim defined by the inline init script. Calls made
+// gtag() is the dataLayer shim defined by initGtag (components/Analytics.tsx). Calls made
 // before the GTM library finishes loading are queued in dataLayer and replayed
 // automatically, so there is no need to wait/poll for the library.
 // Cleaned URL of the previous page view, sent as page_referrer on the next.

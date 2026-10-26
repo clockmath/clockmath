@@ -78,7 +78,8 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   // Next.js pages/assets below) gets the security headers and cache policy,
   // and HTML gets today's countdown numbers (scripts/worker/live-counts.js).
   // HTML also gets the reload-once guard for pages left over from an earlier
-  // deploy (scripts/worker/stale-assets.js).
+  // deploy (scripts/worker/stale-assets.js), then every script on it gets the
+  // response's CSP nonce (withNonce, after the guard so the guard gets it too).
   const exportPattern = new RegExp(`export\\{${varName} as default\\}`);
   if (!exportPattern.test(workerContent)) {
     console.error(`[inject-api] Could not find "export{${varName} as default}" — security headers NOT applied.`);
@@ -86,7 +87,7 @@ var ${varName}={async fetch(${reqParam},${envParam},${ctxParam}){
   }
   workerContent = workerContent.replace(
     exportPattern,
-    `var __securedDefault={async fetch(req,env,ctx){const res=await ${varName}.fetch(req,env,ctx);return withSecurityHeaders(withStaleGuard(withLiveCounts(res,req)),new URL(req.url).pathname);}};export{__securedDefault as default}`
+    `var __securedDefault={async fetch(req,env,ctx){const res=await ${varName}.fetch(req,env,ctx);const nonce=cspNonce();return withSecurityHeaders(withNonce(withStaleGuard(withLiveCounts(res,req)),nonce),new URL(req.url).pathname,nonce);}};export{__securedDefault as default}`
   );
 
   fs.writeFileSync(workerPath, workerContent);

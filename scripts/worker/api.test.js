@@ -17,7 +17,7 @@ const code = fs.readFileSync(path.join(__dirname, 'api.js'), 'utf8');
 // withSecurityHeaders uses cacheControlFor from live-counts.js, as in the worker.
 const liveCounts = fs.readFileSync(path.join(__dirname, 'live-counts.js'), 'utf8');
 const api = new Function(
-  `${quizLib}\n${liveCounts}\n${code}\nreturn { handleQuizApi, handlePlacesApi, handleFeedbackApi, redirectTarget, rateLimited, withSecurityHeaders, __cmQuiz };`,
+  `${quizLib}\n${liveCounts}\n${code}\nreturn { handleQuizApi, handlePlacesApi, handleFeedbackApi, redirectTarget, rateLimited, withSecurityHeaders, cspNonce, __cmQuiz };`,
 )();
 
 function memoryKV() {
@@ -116,6 +116,25 @@ const post = (url, body, headers = {}) =>
   assert.strictEqual(h.get('X-Frame-Options'), 'DENY');
   const lookalike = api.withSecurityHeaders(new Response('x'), '/embedded-thing/').headers;
   assert.strictEqual(lookalike.get('X-Frame-Options'), 'DENY', 'only /embed/ itself');
+
+  // No 'unsafe-inline' for scripts: inline scripts need the response's nonce
+  const csp = api.withSecurityHeaders(new Response('x', { headers: { 'Content-Type': 'text/html' } }), '/', 'abc123').headers.get('Content-Security-Policy');
+  const directive = (name) => (csp.split('; ').find((d) => d.split(' ')[0] === name) || '');
+  assert.match(directive('script-src'), /'nonce-abc123'/);
+  assert.doesNotMatch(directive('script-src'), /unsafe-inline|unsafe-eval|strict-dynamic/);
+  assert.match(directive('style-src-elem'), /'nonce-abc123'/);
+  assert.doesNotMatch(directive('style-src-elem'), /unsafe-inline/);
+  assert.strictEqual(directive('style-src-attr'), "style-src-attr 'unsafe-inline'", 'style="…" attributes still apply');
+  for (const host of ['https://www.googletagmanager.com', 'https://static.cloudflareinsights.com', 'https://www.clarity.ms', 'https://scripts.clarity.ms']) {
+    assert.ok(directive('script-src').includes(host), `script-src allows ${host}`);
+  }
+  // A fresh, unguessable nonce each time
+  const n1 = api.cspNonce();
+  assert.match(n1, /^[A-Za-z0-9+/]{22}==$/);
+  assert.notStrictEqual(n1, api.cspNonce());
+  // A 304 sends no CSP, so the browser keeps the one that came with its stored page
+  const notModified = api.withSecurityHeaders(new Response(null, { status: 304 }), '/').headers;
+  assert.strictEqual(notModified.get('Content-Security-Policy'), null);
 
   console.log('api: all checks passed');
 })().catch((e) => {
