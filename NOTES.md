@@ -27,10 +27,6 @@
 ## Known issues
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
-- **Leftovers:**
-  - An empty, untracked `functions/` folder (only `.DS_Store`)
-  - `public/_redirects` is kept only as a record; its comment points to `scripts/inject-api.js`, but the redirects now live in `scripts/worker/api.js`
-  - `wrangler.toml` (git-ignored) has a comment naming `functions/api/quiz.js`
 - **Legacy icon script:** `scripts/gen-icons.js` and `public/logo.svg` are the old emerald icon pipeline. The script needs `sharp`, which isn't a dependency; icons now come from `scripts/brand/generate.mjs`
 - **Lint command:** `npm run lint` uses `next lint`, which Next marks as deprecated (it prints a migration notice)
 - **Spacing audit:** `npm run spacing:audit` reports 19 values outside the spacing scale (report only)
