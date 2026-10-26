@@ -1,6 +1,6 @@
 # Notes
 
-## Current status (Oct 26 2026, main at #135, deployed)
+## Current status (Oct 26 2026, deployed)
 - **Tools live:**
   - Time duration calculator (homepage, Calculate button)
   - Work hours / timesheet, overtime, decimal hours, sleep (hours slept + cycle planner)
@@ -10,6 +10,7 @@
 - **Recent features:**
   - Calculation feedback: re-flip, "Updated", scroll to the answer, phone answer bar, change glow (#135)
   - "Install ClockMath" offer plus a service worker for offline pages (#134)
+- **Docs:** CLAUDE.md, NOTES.md and an up-to-date README (Oct 26)
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` is clean
 
 ## In progress
@@ -26,9 +27,6 @@
 ## Known issues
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
-- **README.md is out of date:**
-  - It describes `functions/api/` as the API (`scripts/worker/api.js` handles it now), and `PageChrome`/`ToolsNavigation`, which no longer exist
-  - It lists four tools, Radix UI and "Node 18+", and shows `og-v3.png`
 - **Leftovers:**
   - An empty, untracked `functions/` folder (only `.DS_Store`)
   - `public/_redirects` is kept only as a record; its comment points to `scripts/inject-api.js`, but the redirects now live in `scripts/worker/api.js`
