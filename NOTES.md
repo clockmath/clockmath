@@ -39,7 +39,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
 - [x] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
 - [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
-- [ ] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
+- [x] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
 - [x] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
 - [ ] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
 - [ ] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
@@ -60,7 +60,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
 - **CSP nonce, GA and Clarity:** since Oct 26 the CSP uses a per-page nonce instead of `'unsafe-inline'`. Checked on a local Pages preview with GA consent denied, so gtag.js and Clarity weren't loaded there (they're external scripts from allowed hosts and shouldn't need the nonce). Confirm in GA Realtime / Clarity that data still arrives
-- **Feedback email:** feedback is saved to KV but not yet emailed; it has never sent. The code is ready, and since Oct 26 it logs why a copy wasn't sent. `CF_ACCOUNT_ID` is set; still to do, in the Cloudflare dashboard:
+- **Feedback email:** feedback is saved to KV (90 days) but not yet emailed; it has never sent. Until it does, `npm run feedback` reads it, and every deploy prints how many are waiting (Oct 26: 1 message, deleted in 28 days). The code is ready, and since Oct 26 it logs why a copy wasn't sent. `CF_ACCOUNT_ID` is set; still to do, in the Cloudflare dashboard:
   1. Email Service > Email Sending > Onboard Domain > clockmath.com (adds the `cf-bounce` records; none exist yet)
   2. Create an API token with Email Sending permission, then `npx wrangler pages secret put EMAIL_SEND_TOKEN --project-name clockmath`
   3. Deploy, send a test from "Feedback or feature request" in the site footer, and check hello@clockmath.com

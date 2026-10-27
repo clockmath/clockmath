@@ -482,7 +482,8 @@ async function handleQuizApi(request, env) {
 
 // ---- Feedback form ----
 // Every valid submission is stored durably in KV (QUIZ_KV, `feedback:` prefix,
-// 90-day TTL) so nothing is ever lost. When the two email env vars are
+// 90-day TTL, as the privacy page promises; every deploy prints how many are
+// waiting, and `node scripts/feedback.mjs` reads them). When the two email env vars are
 // configured on the Pages project, a copy is also emailed to the site owner
 // via Cloudflare Email Sending's REST API (the `send_email` binding is
 // Workers-only — Pages Functions don't support it, so REST it is):

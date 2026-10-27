@@ -51,7 +51,8 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 - `npm run lint` (includes `scripts/worker/`); `npm run spacing:audit` (report only)
 - CI (`.github/workflows/checks.yml`): tests, lint and a static build on every PR and push to `main`
 - `npm run preview`: Pages build served by wrangler, locally
-- `npm run deploy`: tests and lint → stale-date check → Pages build → `wrangler pages deploy` → IndexNow ping. Run from `main` only
+- `npm run deploy`: tests and lint → stale-date check (and upcoming date switches) → feedback count → Pages build → `wrangler pages deploy` → IndexNow ping. Run from `main` only
+- `npm run feedback`: read the feedback form's messages from KV (kept 90 days)
 - `node scripts/brand/generate.mjs`: regenerate icons and share cards
 
 ## Workflow
