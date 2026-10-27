@@ -15,8 +15,9 @@
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
-- **Open PR:** `fix/oct-26-review` (the Oct 26 review fixes), waiting for "merge and deploy"
-- **Own branches still to do** (review items M1, M5, L7, L8): commit `wrangler.toml`; move timesheet/duration logic into `lib/` with tests; replace next-on-pages with a hand-written `_worker.js`; then Next 16 / React upgrades
+- **Open PR:** #144 `fix/oct-26-review` (the Oct 26 review fixes), waiting for "merge and deploy"
+- **Also open:** #145 (track `wrangler.toml`), #147 (hand-written worker, on #145), #146 (logic in `lib/` + tests, on #144), #148 (quiz same in every engine). Merge order: #144, #145, then #146 and #147 (GitHub retargets them to `main`), #148 any time just after 00:00 UTC
+- **Next:** L8, Next 16 / React upgrades, once #147 is merged
 - **Dated work, waiting:**
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
@@ -40,11 +41,11 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
 - [x] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
 - [x] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
-- [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
+- [x] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker → hand-written `_worker.js` (#147, stacked on #145)
 - [x] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
 - [x] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
 - [x] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
-- [ ] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
+- [x] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (#146, stacked on this PR)
 - [x] M6. `RollingNumber` names a plain span with `aria-label`; screen readers may not read gross pay, overtime or quiz score
 - [x] L1. Geist Sans is preloaded on every page but the station design uses Archivo
 - [x] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight
@@ -52,8 +53,11 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] L4. Dead code and duplication: `convertDateBetweenZones` is a no-op, `pointer: coarse` repeated instead of `lib/device.ts`, `navigator.clipboard` used directly instead of `copyText`
 - [x] L5. `sw.js`: page cache had no cap, and the static cache evicted the oldest-stored files (the shared framework chunks) first; both now drop the least recently used
 - [x] L6. Homepage, noon to noon across the fall-back night: "1 day" next to 25.00 decimal hours, unexplained
-- [ ] L7. ~~No Node version pinned~~ (done with H2: `.nvmrc` 24, `engines` >=22.18); `wrangler.toml` is gitignored (**own branch** to commit it)
-- [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**, after M1)
+- [x] L7. No Node version pinned (done with H2: `.nvmrc` 24, `engines` >=22.18); `wrangler.toml` was gitignored (#145)
+- [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**, once #147 is merged)
+
+**Found while fixing**
+- [x] Q1. The daily quiz differed by JS engine (`sort(() => rand() - 0.5)` in `lib/quiz.ts`): `workerd` built a different quiz from Chrome's, so `/api/quiz` scored right answers wrong (#148; deploy just after 00:00 UTC)
 
 ## Next up
 - Work through the Oct 26 review list above
