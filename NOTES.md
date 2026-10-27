@@ -45,7 +45,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [ ] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
 - [ ] M6. `RollingNumber` names a plain span with `aria-label`; screen readers may not read gross pay, overtime or quiz score
 - [ ] L1. Geist Sans is preloaded on every page but the station design uses Archivo
-- [ ] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight
+- [x] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight
 - [ ] L3. `parseAmount("1.234,50")` gives 1.2345; ambiguous European formats are guessed
 - [ ] L4. Dead code and duplication: `convertDateBetweenZones` is a no-op, `pointer: coarse` repeated instead of `lib/device.ts`, `navigator.clipboard` used directly instead of `copyText`
 - [ ] L5. `sw.js` page cache has no size limit

@@ -26,15 +26,18 @@ function ymdInZone(ms, timeZone) {
 const ymdToUtc = (s) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
 
 // Days until the event described by `spec`, or null once it has arrived —
-// matching EventCountdown's client-side maths (targets are local midnight,
-// so whole calendar days; fixed instants round up like Math.ceil there).
+// matching EventCountdown's client-side maths: whole calendar days in the
+// visitor's zone. Fixed instants too (Oct 2026 review: they rounded the time
+// left up, so "2 days" here beside the page's "1 day" for tomorrow evening);
+// one later today is 0, which the page words as "later today".
 function liveDays(spec, nowMs, timeZone) {
   if (!spec) return null;
-  if (spec.startsWith('t:')) {
-    const diff = Number(spec.slice(2)) - nowMs;
-    return diff > 0 ? Math.ceil(diff / DAY_MS) : null;
-  }
   const today = ymdInZone(nowMs, timeZone);
+  if (spec.startsWith('t:')) {
+    const target = Number(spec.slice(2));
+    if (!(target > nowMs)) return null;
+    return Math.round((ymdToUtc(ymdInZone(target, timeZone)) - ymdToUtc(today)) / DAY_MS);
+  }
   if (spec.startsWith('d:')) {
     // Entries are "YYYY-MM-DD" or "start/end" (inclusive, e.g. Hanukkah).
     for (const entry of spec.slice(2).split(',')) {
