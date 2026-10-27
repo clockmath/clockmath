@@ -26,7 +26,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 
 **First-time user**
 - [x] U1. Countdown board says "59 full days" while the sentence below says "60 days"
-- [ ] U2. Time zone converter keeps the old answer after a new city is picked ("Press Calculate"); it should update by itself
+- [x] U2. Time zone converter keeps the old answer after a new city is picked ("Press Calculate"); it should update by itself
 - [x] U3. `/countdown/` is a 404; header "Countdowns" goes to `/tools/countdown/`, footer "Countdowns" to `/countdown/holidays/`
 - [ ] U4. Quiz shows the UTC day ("Tue, Oct 27" on Monday evening in the Americas)
 - [ ] U5. Phones: "Quiz" and "All tools" are off-screen in the sideways-scrolling tab bar, with no sign it scrolls

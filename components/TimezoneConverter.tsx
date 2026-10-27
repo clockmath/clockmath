@@ -27,7 +27,7 @@ import {
 import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
 import { toast } from '@/hooks/use-toast';
-import { useCalculateFeedback } from '@/hooks/use-answer-feedback';
+import { flashClass, useCalculateFeedback, useSettledChange } from '@/hooks/use-answer-feedback';
 
 interface TimezoneConverterProps {
   className?: string;
@@ -260,6 +260,20 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   const stale =
     !!result &&
     (result.fromTZ !== fromTZ || result.toTZ !== toTZ || result.inputDate !== inputDate || result.inputTime !== inputTime);
+
+  // Oct 2026 review: a new place or time left the old answer up with "Press
+  // Calculate for the new answer". The answer now follows the inputs once
+  // they settle; a place typed but not yet picked from the list still waits.
+  // Calculate stays, for Enter and its scroll-to-the-answer feedback.
+  const pendingPick =
+    (fromTyped !== null && fromTyped.trim() !== fromLocationDisplay) ||
+    (toTyped !== null && toTyped.trim() !== toLocationDisplay);
+  useEffect(() => {
+    if (!stale || pendingPick || !fromTZ || !toTZ) return;
+    const id = setTimeout(() => computeConversion(fromTZ, toTZ), 350);
+    return () => clearTimeout(id);
+  }, [stale, pendingPick, fromTZ, toTZ, computeConversion]);
+  const answerFlash = useSettledChange(result ? `${result.fromTZ}|${result.toTZ}|${result.inputDate}|${result.inputTime}` : '');
 
 
   const handleSwapTimezones = () => {
@@ -660,8 +674,8 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               {updated ? 'Updated' : 'Calculate Time Difference'}
             </button>
             <span className="sr-only" role="status">{updated ? 'Answer updated' : ''}</span>
-            {stale && (
-              <p className="mt-3 mb-0 text-sm text-foreground">Places or time changed. Press Calculate for the new answer.</p>
+            {stale && pendingPick && (
+              <p className="mt-3 mb-0 text-sm text-foreground">Pick a place from the list for the new answer.</p>
             )}
           </div>
         </div>
@@ -669,14 +683,14 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
       {/* Conversion Result: the time over there is the answer, so it goes on
           the line's board; the difference in words, and your own time, beside
-          it. Formatted here, so it follows the 12h/24h switch; faded once the
-          places or time change, until Calculate. */}
+          it. Formatted here, so it follows the 12h/24h switch; faded while a
+          change settles or a typed place waits to be picked. */}
       {result && (() => {
         const to = formatZoned(result.targetDate, result.toTZ, { hour12 });
         const from = formatZoned(result.sourceDate, result.fromTZ, { hour12 });
         const m = to.time.match(/^(\d+):(\d+)\s*(.*)$/);
         return (
-          <div ref={answerRef} className={`st-answer st-tz-answer${stale ? ' stale' : ''}`} aria-live="polite">
+          <div ref={answerRef} className={`st-answer st-tz-answer${stale ? ' stale' : ''}${flashClass(answerFlash)}`} aria-live="polite">
             <div>
               <p className="st-tz-place">{result.toName}</p>
               <p key={round} className="st-big st-tz-time">
