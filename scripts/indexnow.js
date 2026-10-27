@@ -26,7 +26,7 @@ const crypto = require('crypto');
 const HOST = 'clockmath.com';
 const ENDPOINT = 'https://api.indexnow.org/indexnow';
 const ROOT = path.join(__dirname, '..');
-const OUT = path.join(ROOT, '.vercel/output/static');
+const OUT = path.join(ROOT, 'out');
 const STATE_FILE = path.join(ROOT, '.indexnow-state.json');
 
 const args = new Set(process.argv.slice(2));

@@ -1,6 +1,6 @@
 // ---- Live countdown answers + cache policy (injected into _worker.js) ----
 // Plain worker code, read and concatenated into the generated worker by
-// scripts/inject-api.js; scripts/worker/live-counts.test.js loads it in Node.
+// scripts/build-worker.js; scripts/worker/live-counts.test.js loads it in Node.
 
 // Countdown pages are static HTML built once per deploy, but their answer
 // sentence ("There are 42 days until Thanksgiving") is what crawlers index and

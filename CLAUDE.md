@@ -7,7 +7,7 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 - Next.js 15.5 (App Router) + React 19, TypeScript (strict), static export (`output: 'export'`, `trailingSlash`, built to `out/`)
 - Tailwind CSS v4 (`@theme inline` in `app/globals.css`) plus hand-written "station" CSS in `components/station/*.css`
 - date-fns 4, react-day-picker 9 (loaded on demand), lucide-react icons, tz-lookup, Radix only for Toast/Slot
-- Cloudflare Pages via `@cloudflare/next-on-pages` (Advanced Mode `_worker.js`), Wrangler 4, KV `QUIZ_KV`
+- Cloudflare Pages: the static export in `out/` plus a hand-written Advanced Mode `_worker.js` (`scripts/build-worker.js`; no adapter since Oct 2026), Wrangler 4, KV `QUIZ_KV`
 - Fonts via `next/font`: Archivo (body) and Big Shoulders (headings, figures)
 - Node: tests run `.ts` files straight through `node --test` (type stripping), so a current Node is needed (built and tested on 23.10)
 
@@ -19,7 +19,7 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
   - `components/embed/`, `components/location/`
 - `hooks/`: `use-*.ts` (`use-clock-format`, `use-answer-feedback`, `use-dark-mode`, `use-toast`, `use-classic-view`)
 - `lib/`: camelCase logic modules (`time.ts`, `overtime.ts`, `countdowns.ts`, `holidays.ts`, `markets.ts`, `quiz.ts`, `colour.ts`, `lines.ts`, `gtag.ts`, `seo.ts`, `wallClock.ts`, `safeStorage.ts`, `clipboard.ts`, …)
-- `scripts/worker/`: Cloudflare worker code, each file with a `*.test.js` (`api.js`: security headers/CSP, `/api/*`, redirects; `live-counts.js`: live countdown numbers in HTML; `stale-assets.js`: reload guard). `scripts/inject-api.js` puts them into the built worker
+- `scripts/worker/`: Cloudflare worker code, each file with a `*.test.js` (`api.js`: security headers/CSP, `/api/*`, redirects; `live-counts.js`: live countdown numbers in HTML; `stale-assets.js`: reload guard). `scripts/build-worker.js` writes them into `out/_worker.js`, which serves everything else through `env.ASSETS`
 - `scripts/brand/generate.mjs`: renders icons and every share card (`public/og/**`) with headless Chrome
 - `tests/`: `node --test` unit tests for `lib/` (import with relative `../lib/x.ts` paths, not `@/`)
 - `public/`: static files, `sw.js` (service worker), share cards

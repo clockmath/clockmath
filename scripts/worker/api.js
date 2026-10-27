@@ -1,16 +1,16 @@
 // ---- Security headers, API handlers and redirects (injected into _worker.js) ----
 // Plain worker code, concatenated into the generated worker by
-// scripts/inject-api.js; scripts/worker/api.test.js loads it in Node.
+// scripts/build-worker.js; scripts/worker/api.test.js loads it in Node.
 //
-// next-on-pages emits a _worker.js (Cloudflare Pages "Advanced Mode"), which
+// The site runs a _worker.js (Cloudflare Pages "Advanced Mode"), which
 // makes Cloudflare IGNORE both functions/ and public/_redirects, so every API
 // endpoint and redirect lives here. Until Oct 2026 this was a template string
-// inside inject-api.js (no syntax check, lint or tests) with drifting copies
-// in functions/api/; those copies are gone.
+// inside scripts/inject-api.js (no syntax check, lint or tests) with
+// drifting copies in functions/api/; those copies are gone.
 //
-// Expects `__cmQuiz` (lib/quiz.ts, compiled by inject-api.js) in scope.
+// Expects `__cmQuiz` (lib/quiz.ts, compiled by build-worker.js) in scope.
 // ---- Injected security headers ----
-// _headers is unreliable in next-on-pages Advanced Mode (the _worker.js
+// _headers is unreliable in Advanced Mode (the _worker.js
 // overrides response headers), so security headers are applied here on every
 // response instead. This is the authoritative source for these headers.
 const SECURITY_HEADERS = {
@@ -262,7 +262,7 @@ function handleGeoApi(request) {
 // Design notes (no-signup site, so enforcement is best-effort by design):
 // - Only TODAY (UTC) accepts submissions; the date is the puzzle id.
 // - The score is computed here from `picks` against the quiz regenerated from
-//   the date (__cmQuiz = lib/quiz.ts, compiled in by inject-api.js).
+//   the date (__cmQuiz = lib/quiz.ts, compiled in by build-worker.js).
 // - Once-per-day: HttpOnly cookie + client-side localStorage. A determined
 //   cheater can clear both; the plausibility gates below bound the damage.
 // - Plausibility: ≥2 s per question, ≤1 h total.
