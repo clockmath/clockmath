@@ -11,7 +11,7 @@
   - Calculation feedback: re-flip, "Updated", scroll to the answer, phone answer bar, change glow (#135)
   - "Install ClockMath" offer plus a service worker for offline pages (#134)
 - **Docs:** CLAUDE.md, NOTES.md and an up-to-date README (Oct 26)
-- **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; `scripts/` isn't linted) is clean
+- **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
 - No open PRs or uncommitted work
@@ -36,7 +36,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 
 **Senior developer**
 - [x] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
-- [ ] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
+- [x] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
 - [ ] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
 - [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
 - [ ] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
