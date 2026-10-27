@@ -9,7 +9,10 @@
  * Digits are keyed by their value inside a clipping cell: a change remounts
  * the inner span, which replays the `digit-roll` CSS animation defined in
  * globals.css (disabled under prefers-reduced-motion). Screen readers get the
- * whole value via aria-label; the per-character spans are aria-hidden.
+ * whole value as visually hidden text; the per-character spans are
+ * aria-hidden. (Until the Oct 2026 review it was an aria-label on a plain
+ * span, which ARIA doesn't allow and many screen readers skip, so figures
+ * like gross pay and the quiz score could go unread.)
  */
 
 import React from 'react';
@@ -22,7 +25,8 @@ interface RollingNumberProps {
 export function RollingNumber({ value, className = '' }: RollingNumberProps) {
   const text = String(value);
   return (
-    <span className={`tabular-nums ${className}`} aria-label={text}>
+    <span className={`tabular-nums ${className}`}>
+      <span className="sr-only">{text}</span>
       <span aria-hidden="true">
         {text.split('').map((ch, i) =>
           /\d/.test(ch) ? (
