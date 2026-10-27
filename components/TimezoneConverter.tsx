@@ -466,7 +466,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
           <div className="space-y-3 min-w-0">
             <div className="flex items-center justify-between">
               <label htmlFor="from-location" className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
-                From Location
+                From location
               </label>
               <button
                 type="button"
@@ -514,7 +514,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
           <div className="space-y-3 min-w-0">
             <label htmlFor="to-location" className="block text-xs sm:text-sm font-semibold text-foreground dark:text-foreground">
-              To Location
+              To location
             </label>
             <LocationTimezonePicker
               label=""
@@ -553,11 +553,11 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            Advanced: Select timezone manually
+            Advanced: choose the time zone yourself
           </summary>
           <div className="mt-4 grid sm:grid-cols-2 gap-4 sm:gap-6 p-4 bg-muted/30 dark:bg-muted/30 rounded-lg">
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-muted-foreground">From Timezone</label>
+              <label className="block text-xs font-medium text-muted-foreground">From time zone</label>
               <SearchableSelect
                 value={fromTZ}
                 onChange={(tz) => {
@@ -566,12 +566,12 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                   setFromTyped(null);
                 }}
                 options={timeZoneOptions}
-                placeholder="Select timezone..."
+                placeholder="Select a time zone…"
                 ariaLabel="Select source timezone"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-muted-foreground">To Timezone</label>
+              <label className="block text-xs font-medium text-muted-foreground">To time zone</label>
               <SearchableSelect
                 value={toTZ}
                 onChange={(tz) => {
@@ -580,7 +580,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                   setToTyped(null);
                 }}
                 options={timeZoneOptions}
-                placeholder="Select timezone..."
+                placeholder="Select a time zone…"
                 ariaLabel="Select target timezone"
               />
             </div>
@@ -591,7 +591,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-semibold text-foreground dark:text-foreground">
-              Date & Time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
+              Date and time{getFromZoneDisplayName() ? ` (in ${getFromZoneDisplayName()})` : ''}
             </h2>
             {/* The shared 12h/24h switch beside Now (it had a toolbar row of
                 its own at the top of the card) */}
@@ -671,7 +671,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
                 <circle cx="12" cy="12" r="10" />
               </svg>
-              {updated ? 'Updated' : 'Calculate Time Difference'}
+              {updated ? 'Updated' : 'Calculate'}
             </button>
             <span className="sr-only" role="status">{updated ? 'Answer updated' : ''}</span>
             {stale && pendingPick && (

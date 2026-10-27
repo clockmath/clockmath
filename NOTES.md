@@ -31,7 +31,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] U4. Quiz shows the UTC day ("Tue, Oct 27" on Monday evening in the Americas)
 - [x] U5. Phones: "Quiz" and "All tools" are off-screen in the sideways-scrolling tab bar, with no sign it scrolls
 - [x] U6. Phones: "Classic view" is an unlabelled icon
-- [ ] U7. Mixed capitalisation ("From Location", "Calculate Time Difference" vs "Shifts", "Summary")
+- [x] U7. Mixed capitalisation ("From Location", "Calculate Time Difference" vs "Shifts", "Summary")
 - [ ] U8. Tools hub: preview tiles are faint, and two tools have none
 
 **Senior developer**
