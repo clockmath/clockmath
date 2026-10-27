@@ -37,7 +37,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 **Senior developer**
 - [x] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
 - [x] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
-- [ ] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
+- [x] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
 - [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
 - [ ] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
 - [ ] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
