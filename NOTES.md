@@ -21,8 +21,40 @@
   - **When the NFL announces it:** add the Super Bowl LXI kickoff time; the page says it isn't announced yet
 - **Nov 3:** check whether the Oct 17–25 title and design changes moved Bing, Google and Copilot numbers (Thanksgiving, sleep, decimal hours)
 
+## Oct 26 review: findings
+A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-developer code review. Fixed on `fix/oct-26-review`, one commit per item, unless marked as its own branch.
+
+**First-time user**
+- [ ] U1. Countdown board says "59 full days" while the sentence below says "60 days"
+- [ ] U2. Time zone converter keeps the old answer after a new city is picked ("Press Calculate"); it should update by itself
+- [ ] U3. `/countdown/` is a 404; header "Countdowns" goes to `/tools/countdown/`, footer "Countdowns" to `/countdown/holidays/`
+- [ ] U4. Quiz shows the UTC day ("Tue, Oct 27" on Monday evening in the Americas)
+- [ ] U5. Phones: "Quiz" and "All tools" are off-screen in the sideways-scrolling tab bar, with no sign it scrolls
+- [ ] U6. Phones: "Classic view" is an unlabelled icon
+- [ ] U7. Mixed capitalisation ("From Location", "Calculate Time Difference" vs "Shifts", "Summary")
+- [ ] U8. Tools hub: preview tiles are faint, and two tools have none
+
+**Senior developer**
+- [ ] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
+- [ ] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
+- [ ] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
+- [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
+- [ ] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
+- [ ] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
+- [ ] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
+- [ ] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
+- [ ] M6. `RollingNumber` names a plain span with `aria-label`; screen readers may not read gross pay, overtime or quiz score
+- [ ] L1. Geist Sans is preloaded on every page but the station design uses Archivo
+- [ ] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight
+- [ ] L3. `parseAmount("1.234,50")` gives 1.2345; ambiguous European formats are guessed
+- [ ] L4. Dead code and duplication: `convertDateBetweenZones` is a no-op, `pointer: coarse` repeated instead of `lib/device.ts`, `navigator.clipboard` used directly instead of `copyText`
+- [ ] L5. `sw.js` page cache has no size limit
+- [ ] L6. Homepage, noon to noon across the fall-back night: "1 day" next to 25.00 decimal hours, unexplained
+- [ ] L7. No Node version pinned (`engines`, `.nvmrc`); `wrangler.toml` is gitignored (**own branch** to commit it)
+- [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**, after M1)
+
 ## Next up
-- _(for Mark to fill in)_
+- Work through the Oct 26 review list above
 
 ## Known issues
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
