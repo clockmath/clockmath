@@ -41,7 +41,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
 - [x] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
 - [x] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
-- [ ] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
+- [x] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
 - [ ] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
 - [x] M6. `RollingNumber` names a plain span with `aria-label`; screen readers may not read gross pay, overtime or quiz score
 - [x] L1. Geist Sans is preloaded on every page but the station design uses Archivo
