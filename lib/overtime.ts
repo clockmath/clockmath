@@ -104,15 +104,23 @@ export function decimalToHmLabel(decimal: number): string {
  * field dropped a comma, so "18,50" became 1850 — $92,037.50 gross for a
  * 46.5-hour week (Oct 2026 audit). A comma is a decimal mark before one or
  * two digits ("18,50") and a thousands mark before three ("1,850"); with
- * both marks, the comma groups thousands ("1,234.50"). "$" and spaces are
- * ignored. Negative values return NaN, so callers can say so.
+ * both marks, the last one is the decimal mark: "1,234.50" and "1.234,50"
+ * (Oct 2026 review: that read as 1.2345). A lone "1.850" stays 1.85, the
+ * US reading, as "1,850" stays 1850. "$" and spaces are ignored. Negative
+ * values return NaN, so callers can say so.
  */
 export function parseAmount(text: string): number | null {
   let t = text.trim().replace(/[$\s]/g, '');
   if (t === '') return null;
   const negative = t.startsWith('-');
   if (negative) t = t.slice(1);
-  if (t.includes(',') && t.includes('.')) t = t.replace(/,/g, '');
+  if (t.includes(',') && t.includes('.')) {
+    const dec = t.lastIndexOf(',') > t.lastIndexOf('.') ? ',' : '.';
+    const group = dec === ',' ? '.' : ',';
+    const [whole, frac, extra] = t.split(dec);
+    if (extra !== undefined || !new RegExp(`^\\d{1,3}(\\${group}\\d{3})+$`).test(whole)) return null;
+    t = `${whole.split(group).join('')}.${frac}`;
+  } else if (/^\d{1,3}(\.\d{3}){2,}$/.test(t)) t = t.replace(/\./g, '');
   else if (/^\d+,\d{1,2}$/.test(t)) t = t.replace(',', '.');
   else if (/^\d{1,3}(,\d{3})+$/.test(t)) t = t.replace(/,/g, '');
   if (!/^(\d+\.?\d*|\.\d+)$/.test(t)) return null;

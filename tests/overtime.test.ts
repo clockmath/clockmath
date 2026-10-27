@@ -56,6 +56,13 @@ test('parseAmount reads comma decimals, thousands and $ (18,50 was 1850)', () =>
   assert.equal(parseAmount('abc'), null);
   assert.equal(parseAmount('18,5,0'), null);
   assert.ok(Number.isNaN(parseAmount('-5')));
+  // European grouping (Oct 2026 review: '1.234,50' read as 1.2345)
+  assert.equal(parseAmount('1.234,50'), 1234.5);
+  assert.equal(parseAmount('1.234.567'), 1234567);
+  assert.equal(parseAmount('1,234,567.5'), 1234567.5);
+  assert.equal(parseAmount('1.850'), 1.85);
+  assert.equal(parseAmount('12,34.5'), null);
+  assert.equal(parseAmount('1.234,5,6'), null);
 });
 
 test('parseHours reads decimals, h:mm and 46h 30m (46:30 was 4630)', () => {
