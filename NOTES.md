@@ -15,8 +15,8 @@
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
-- **#144 merged and deployed** Oct 26 (live checks: pages, `/countdown/` 301, CSP nonce, sitemap dates, "counting today", quiz API)
-- **Open PRs:** #145 (track `wrangler.toml`), #147 (hand-written worker, stacked on #145), #149 (logic in `lib/` + tests), #148 (quiz same in every engine; deploy just after 00:00 UTC)
+- **#144 merged and deployed** Oct 26; **#148** (quiz scoring) Oct 27 01:08 UTC (live checks: pages, `/countdown/` 301, CSP nonce, sitemap dates, "counting today", quiz API)
+- **Open PRs:** #145 (track `wrangler.toml`), #147 (hand-written worker, stacked on #145), #149 (logic in `lib/` + tests)
   - Merge #145 and #147 together: merging a stacked PR's base with "delete branch" makes GitHub **close** the stacked PR, not retarget it (that's how #146 was closed; #149 replaces it). Retarget #147 to `main` before merging #145, or merge #147 into #145's branch first
   - After merging #147, run `npm ci` before the next deploy: it removes `@cloudflare/next-on-pages`, and switching branches doesn't update `node_modules` (an Oct 26 deploy failed at the build that way, nothing uploaded)
 - **Local `wrangler.toml`:** until #145 merges it's untracked on `main` but tracked on #145/#147, so checking out `main` from those branches deletes it. Restore it with `git show origin/chore/commit-wrangler-toml:wrangler.toml > wrangler.toml`
@@ -60,7 +60,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**, once #147 is merged)
 
 **Found while fixing**
-- [x] Q1. The daily quiz differed by JS engine (`sort(() => rand() - 0.5)` in `lib/quiz.ts`): `workerd` built a different quiz from Chrome's, so `/api/quiz` scored right answers wrong (#148; deploy just after 00:00 UTC)
+- [x] Q1. The daily quiz differed by JS engine (`sort(() => rand() - 0.5)` in `lib/quiz.ts`): `workerd` built a different quiz from Chrome's, so `/api/quiz` scored right answers wrong (#148, merged and deployed Oct 27 01:08 UTC; quiz scores are right from then on, earlier boards keep their scores)
 
 ## Next up
 - Work through the Oct 26 review list above
