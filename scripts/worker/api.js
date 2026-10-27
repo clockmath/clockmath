@@ -602,6 +602,10 @@ const EXACT_REDIRECTS = {
   // Retired Oct 2026 once every date had passed (theatrical Jul 31, digital
   // Oct 6); its searchers are Marvel fans, so they go to the next release.
   '/countdown/spider-man-brand-new-day': '/countdown/avengers-doomsday/',
+  // Oct 2026 review: the folder of every event page was a 404 for anyone
+  // trimming the URL; the header tab and breadcrumbs call the tool page
+  // "Countdowns", so that's where it goes.
+  '/countdown': '/tools/countdown/',
   // Legacy URLs carried over from the old _redirects file.
   '/timezone-converter': '/tools/timezone/',
   '/time-calculator': '/',
