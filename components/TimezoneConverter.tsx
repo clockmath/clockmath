@@ -17,7 +17,6 @@ import {
   getUserTimeZone,
   getTimeZoneOptions,
   formatZoned,
-  convertDateBetweenZones,
   zonedWallTime,
   getTimezoneOffset,
   getOffsetLabel,
@@ -26,6 +25,7 @@ import {
 } from '@/lib/time';
 import { ArrowLeftRight, MapPin } from 'lucide-react';
 import { event as gaEvent, toolUsed } from '@/lib/gtag';
+import { getDevice } from '@/lib/device';
 import { toast } from '@/hooks/use-toast';
 import { flashClass, useCalculateFeedback, useSettledChange } from '@/hooks/use-answer-feedback';
 
@@ -188,11 +188,9 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
         sourceDate = new Date();
       }
 
-      const targetDate = convertDateBetweenZones({
-        fromTZ: from,
-        toTZ: to,
-        at: sourceDate
-      });
+      // One instant, shown on two clocks: formatZoned does the converting
+      // (convertDateBetweenZones, removed Oct 2026, returned its input)
+      const targetDate = new Date(sourceDate);
 
       setResult({
         sourceDate,
@@ -208,7 +206,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
       // The answer shown on arrival isn't a conversion anyone asked for
       if (opts?.silent) return;
-      const device = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop';
+      const device = getDevice();
       gaEvent({
         action: 'tz_convert',
         params: {
@@ -333,7 +331,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     confirm();
     gaEvent({
       action: 'tz_swap_clicked',
-      params: { device: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop' }
+      params: { device: getDevice() }
     });
   };
 
@@ -356,7 +354,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
 
           gaEvent({
             action: 'tz_geolocation_used',
-            params: { device: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop' }
+            params: { device: getDevice() }
           });
         } catch {
           toast({
@@ -413,7 +411,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     
     gaEvent({
       action: 'tz_now_clicked',
-      params: { device: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches ? 'mobile' : 'desktop' }
+      params: { device: getDevice() }
     });
   };
 

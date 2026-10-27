@@ -47,7 +47,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] L1. Geist Sans is preloaded on every page but the station design uses Archivo
 - [x] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight
 - [x] L3. `parseAmount("1.234,50")` gave 1.2345 (now 1234.5); a lone "1.850" keeps the US reading, 1.85
-- [ ] L4. Dead code and duplication: `convertDateBetweenZones` is a no-op, `pointer: coarse` repeated instead of `lib/device.ts`, `navigator.clipboard` used directly instead of `copyText`
+- [x] L4. Dead code and duplication: `convertDateBetweenZones` is a no-op, `pointer: coarse` repeated instead of `lib/device.ts`, `navigator.clipboard` used directly instead of `copyText`
 - [ ] L5. `sw.js` page cache has no size limit
 - [ ] L6. Homepage, noon to noon across the fall-back night: "1 day" next to 25.00 decimal hours, unexplained
 - [ ] L7. No Node version pinned (`engines`, `.nvmrc`); `wrangler.toml` is gitignored (**own branch** to commit it)

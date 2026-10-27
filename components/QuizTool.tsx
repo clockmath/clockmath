@@ -30,6 +30,7 @@ import {
   type QuizQuestion,
 } from '@/lib/quiz';
 import { storageGet } from '@/lib/safeStorage';
+import { copyText } from '@/lib/clipboard';
 
 /**
  * Minimal analog dial for clock-reading questions. A screen-reader user
@@ -503,7 +504,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
         await navigator.share({ text });
         gaEvent({ action: 'quiz_shared' });
       } else {
-        await navigator.clipboard.writeText(text);
+        if (!(await copyText(text))) throw new Error('clipboard blocked');
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
         gaEvent({ action: 'quiz_shared' });
