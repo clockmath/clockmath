@@ -161,8 +161,23 @@ const cardClass =
 
 type Phase = 'loading' | 'intro' | 'playing' | 'done' | 'practice';
 
+// Oct 2026 review: the quiz day is the UTC date, so the label read "Tue, Oct
+// 27" on Monday evening across the Americas. When the next one starts is
+// what a player can use.
+function nextQuizIn(now: number): string {
+  const d = new Date(now);
+  const left = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) - now;
+  const h = Math.floor(left / 3_600_000);
+  return h >= 1 ? `${h}h` : `${Math.max(1, Math.ceil(left / 60_000))}m`;
+}
+
 export function QuizTool({ className = '' }: { className?: string }) {
   const [quiz, setQuiz] = useState<DailyQuiz | null>(null);
+  const [clockNow, setClockNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setClockNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
   const [phase, setPhase] = useState<Phase>('loading');
 
   // Playing state
@@ -580,13 +595,7 @@ export function QuizTool({ className = '' }: { className?: string }) {
 
   const question = quiz.questions[questionIndex];
   const crowd = board !== null && board.count >= CROWD_MIN;
-  const [qy, qm, qd] = quiz.day.split('-').map(Number);
-  const dayLabel = new Date(Date.UTC(qy, qm - 1, qd)).toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  });
+  const dayLabel = `next quiz in ${nextQuizIn(clockNow)}`;
 
   const optionButton = (
     q: QuizQuestion,
