@@ -35,7 +35,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [ ] U8. Tools hub: preview tiles are faint, and two tools have none
 
 **Senior developer**
-- [ ] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
+- [x] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
 - [ ] H2. `npm run deploy` runs no tests or lint; `scripts/worker` is never linted; no CI on PRs
 - [ ] H3. Date switches still need a manual deploy: the stale check should list upcoming ones (Halloween title, GTA 6 launch) so they're hard to miss
 - [ ] M1. `@cloudflare/next-on-pages` is deprecated and `inject-api.js` regex-patches its minified worker (**own branch**: hand-written `_worker.js`)
