@@ -96,6 +96,14 @@ export function weeksPhrase(days: number): string {
 const ymd = (d: Date): string =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+// A release-day target (`new Date(2026, 10, 19)`) is local midnight wherever
+// it is evaluated: the build machine's zone in the static HTML, the
+// visitor's in the browser. Oct 2026 review: its instant used to be baked
+// into the worker's "t:" spec and the pre-mount count, so both followed the
+// build machine's zone; as a calendar day they follow the visitor's.
+const isLocalMidnight = (d: Date): boolean =>
+  d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0 && d.getMilliseconds() === 0;
+
 // Start (local midnight, ms) of the first range that hasn't ended yet — so
 // during the event it returns this year's start (reads as arrived).
 function nextRangeStart(ranges: ReadonlyArray<{ start: string; end?: string }>, now = new Date()): number | null {
@@ -124,13 +132,16 @@ export type CountdownTarget = Pick<EventCountdownProps, 'target' | 'recurring' |
  * server and in the browser's first render, whatever the visitor's clock or
  * timezone, so markup built from it (the board's split-flap tiles, one
  * element per digit) hydrates cleanly. Fixed instants count UTC dates;
- * local-midnight targets count local calendar days from the build date.
+ * local-midnight targets (release days included) count local calendar days
+ * from the build date.
  * Replaced by the live count once the countdown mounts.
  */
 export function buildDayCount({ target, recurring, weekly, nthWeekday, dateRanges }: CountdownTarget): number | null {
   const from = buildDay();
   if (target) {
-    const utc = Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate());
+    const utc = isLocalMidnight(target)
+      ? Date.UTC(target.getFullYear(), target.getMonth(), target.getDate())
+      : Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate());
     return Math.round((utc - Date.UTC(from.getFullYear(), from.getMonth(), from.getDate())) / 86400000);
   }
   const t = recurring
@@ -284,7 +295,8 @@ export function useEventCountdown({ target, recurring, weekly, nthWeekday, dateR
       return `d:${dates.join(',')}`;
     }
     if (weekly) return `w:${weekly.weekday}:${weekly.spanDays ?? 1}`;
-    return target ? `t:${target.getTime()}` : undefined;
+    if (target) return isLocalMidnight(target) ? `d:${ymd(target)}` : `t:${target.getTime()}`;
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
   const fixedTarget = !recurring && !weekly && !nthWeekday && !dateRanges && target ? target.getTime() : undefined;

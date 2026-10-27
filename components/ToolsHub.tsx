@@ -66,6 +66,8 @@ const TILES: Array<{
     title: 'Time Zone Converter',
     description: 'Any two places, with automatic daylight-saving handling',
     icon: Globe,
+    // Oct 2026 review: the only rows without a sample read as unfinished
+    sample: [['+5', 'h']],
   },
   {
     href: '/tools/decimal-hours',
@@ -86,6 +88,7 @@ const TILES: Array<{
     title: 'Countdown Timer',
     description: 'Count down to any date — then share it with a link',
     icon: Hourglass,
+    sample: [['42', 'd']],
   },
   {
     href: '/tools/overtime',

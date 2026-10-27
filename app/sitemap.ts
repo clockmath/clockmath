@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
+import { execFileSync } from 'child_process';
 
 // Define the base URL for the site
 const baseUrl = 'https://clockmath.com';
@@ -59,13 +60,30 @@ function getArticleMetadata(articlePath: string) {
     const publishDateMatch = content.match(/publishDate['":\s]*['"]([^'"]+)['"]/);
     const publishDate = publishDateMatch ? publishDateMatch[1] : null;
     
-    return {
-      lastmod: publishDate || '2025-01-15',
-    };
+    return { lastmod: publishDate };
   } catch {
-    return {
-      lastmod: '2025-01-15',
-    };
+    return { lastmod: null };
+  }
+}
+
+/**
+ * Last commit date (YYYY-MM-DD) of a page's own folder and the tool
+ * component it renders, or null without git. Oct 2026 review: every tool
+ * page said 2025-01-15 after a month of changes, and the homepage said
+ * "today" on every build; Bing (most of the traffic) reads lastmod. Shared
+ * chrome (header, footer) is left out so one footer edit doesn't touch
+ * every page.
+ */
+function gitLastmod(page: string): string | null {
+  const dir = path.join('app', page.substring(1));
+  const files = [page === '/' ? 'app/page.tsx' : dir];
+  try {
+    const src = fs.readFileSync(path.join(process.cwd(), dir, 'page.tsx'), 'utf-8');
+    for (const m of src.matchAll(/@\/components\/(\w+(?:Tool|Converter|Hub))['"]/g)) files.push(`components/${m[1]}.tsx`);
+    const date = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...files], { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
+  } catch {
+    return null;
   }
 }
 
@@ -78,13 +96,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapEntries: MetadataRoute.Sitemap = pages.map((page) => {
     let priority = 0.5;
     let changeFreq: 'daily' | 'weekly' | 'monthly' | 'yearly' = 'monthly';
-    let lastmod = '2025-01-15';
+    let lastmod = gitLastmod(page) ?? '2025-01-15';
     
     // Determine priority and change frequency based on page type
     if (page === '/') {
       priority = 1.0;
       changeFreq = 'weekly';
-      lastmod = new Date().toISOString().split('T')[0];
     } else if (page === '/tools' || page.startsWith('/tools/')) {
       priority = 0.9;
       changeFreq = 'monthly';
@@ -109,7 +126,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFreq = 'monthly';
       // Get specific article metadata
       const articleMetadata = getArticleMetadata(page.substring(1)); // Remove leading slash
-      lastmod = articleMetadata.lastmod;
+      // Edited after publishing: the later date is the modification
+      if (articleMetadata.lastmod && articleMetadata.lastmod > lastmod) lastmod = articleMetadata.lastmod;
     } else if (page === '/contact') {
       priority = 0.7;
       changeFreq = 'monthly';

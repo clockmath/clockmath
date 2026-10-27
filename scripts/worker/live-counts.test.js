@@ -38,10 +38,13 @@ assert.strictEqual(liveNextDate(hanukkah, at('2026-12-13T12:00:00-05:00'), NY), 
 assert.strictEqual(liveNextDate(thanksgiving, at('2026-11-27T12:00:00-05:00'), NY), '2027-11-25');
 assert.strictEqual(liveNextDate('w:6:2', at('2026-10-15T12:00:00-04:00'), NY), null);
 
-// Fixed instants: Math.ceil of the remaining time, like the client.
+// Fixed instants: calendar days in the visitor's zone, like the client.
+// The eclipse is 22:55 on Jul 21 in New York, Jul 22 in Sydney.
 const eclipse = `t:${Date.UTC(2028, 6, 22, 2, 55, 23)}`;
 assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 21, 2, 55, 24), NY), 1);
-assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 21, 2, 55, 22), NY), 2);
+assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 21, 2, 55, 22), NY), 1); // was 2 with Math.ceil
+assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 21, 12, 0, 0), NY), 0); // later today
+assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 21, 12, 0, 0), 'Australia/Sydney'), 1); // Jul 21 22:00 → Jul 22
 assert.strictEqual(liveDays(eclipse, Date.UTC(2028, 6, 22, 3, 0, 0), NY), null);
 
 // Weekly (the weekend: Saturday, spanning 2 days). Oct 15 2026 is a Thursday.

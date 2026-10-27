@@ -13,6 +13,9 @@ const VERSION = 'v1';
 const PAGES = `clockmath-pages-${VERSION}`;
 const STATIC = `clockmath-static-${VERSION}`;
 const STATIC_LIMIT = 200;
+// Oct 2026 review: pages had no cap. Keyed by path and only kept when the
+// page loads, so it's about the size of the site, but a cap costs nothing.
+const PAGES_LIMIT = 120;
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -45,10 +48,14 @@ a{display:inline-block;background:#1849a9;color:#fff;padding:12px 20px;border-ra
   return new Response(html, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
 }
 
-// Oldest first: drop the earliest entries once the cache passes its limit
-async function trim(cache) {
+// Oldest first: drop the earliest entries once the cache passes its limit.
+// keys() is in insertion order, so a hit is put back (below) to count as
+// recent: otherwise the framework chunks every page needs, stored on the
+// first visit, were the first to go once a few deploys passed 200 files,
+// and offline pages lost their scripts (Oct 2026 review).
+async function trim(cache, limit) {
   const keys = await cache.keys();
-  for (let i = 0; i < keys.length - STATIC_LIMIT; i++) await cache.delete(keys[i]);
+  for (let i = 0; i < keys.length - limit; i++) await cache.delete(keys[i]);
 }
 
 self.addEventListener('fetch', (event) => {
@@ -67,7 +74,14 @@ self.addEventListener('fetch', (event) => {
           // lives only in the address, never in the stored page
           if (response.ok && response.type === 'basic') {
             const copy = response.clone();
-            caches.open(PAGES).then((cache) => cache.put(url.pathname, copy)).catch(() => {});
+            caches
+              .open(PAGES)
+              .then(async (cache) => {
+                await cache.delete(url.pathname);
+                await cache.put(url.pathname, copy);
+                await trim(cache, PAGES_LIMIT);
+              })
+              .catch(() => {});
           }
           return response;
         } catch {
@@ -84,10 +98,14 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         const cache = await caches.open(STATIC);
         const hit = await cache.match(request);
-        if (hit) return hit;
+        if (hit) {
+          const again = hit.clone();
+          cache.delete(request).then(() => cache.put(request, again)).catch(() => {});
+          return hit;
+        }
         const response = await fetch(request);
         if (response.ok) {
-          cache.put(request, response.clone()).then(() => trim(cache)).catch(() => {});
+          cache.put(request, response.clone()).then(() => trim(cache, STATIC_LIMIT)).catch(() => {});
         }
         return response;
       })(),
