@@ -32,7 +32,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] U5. Phones: "Quiz" and "All tools" are off-screen in the sideways-scrolling tab bar, with no sign it scrolls
 - [x] U6. Phones: "Classic view" is an unlabelled icon
 - [x] U7. Mixed capitalisation ("From Location", "Calculate Time Difference" vs "Shifts", "Summary")
-- [ ] U8. Tools hub: preview tiles are faint, and two tools have none
+- [x] U8. Tools hub: two tools had no preview tiles (the faint look was only the flip-in animation)
 
 **Senior developer**
 - [x] H1. Build day is the UTC date but read as local: an evening deploy in the Americas ships tomorrow's pages (GTA 6 "launched" a day early). Use one named zone everywhere at build time
