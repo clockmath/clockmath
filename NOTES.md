@@ -8,15 +8,18 @@
 - **Countdown pages:** 22 event pages under `/countdown/` (holidays, launches, eclipses, clock changes, retirement), a holidays board, and embeddable widgets at `/embed/countdown/…`. 14 guides under `/articles/`
 - **Design:** station design with line colours, split-flap answer boards, a classic-view toggle and dark mode
 - **Recent features:**
-  - Oct 26 review fixes (`fix/oct-26-review`, one commit each; list below): build day in Eastern time, deploy runs tests and lint, CI on PRs, quiz limit per IP, live counts in calendar days, converter answers as you pick, pinned "All tools" on phones, sitemap dates from git, and more
+  - Oct 26 review fixes (#144, merged and deployed Oct 26; list below): build day in Eastern time, deploy runs tests and lint, CI on PRs, quiz limit per IP, live counts in calendar days, converter answers as you pick, pinned "All tools" on phones, sitemap dates from git, and more
   - Calculation feedback: re-flip, "Updated", scroll to the answer, phone answer bar, change glow (#135)
   - "Install ClockMath" offer plus a service worker for offline pages (#134)
 - **Docs:** CLAUDE.md, NOTES.md and an up-to-date README (Oct 26)
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
-- **Open PR:** #144 `fix/oct-26-review` (the Oct 26 review fixes), waiting for "merge and deploy"
-- **Also open:** #145 (track `wrangler.toml`), #147 (hand-written worker, on #145), #146 (logic in `lib/` + tests, on #144), #148 (quiz same in every engine). Merge order: #144, #145, then #146 and #147 (GitHub retargets them to `main`), #148 any time just after 00:00 UTC
+- **#144 merged and deployed** Oct 26 (live checks: pages, `/countdown/` 301, CSP nonce, sitemap dates, "counting today", quiz API)
+- **Open PRs:** #145 (track `wrangler.toml`), #147 (hand-written worker, stacked on #145), #149 (logic in `lib/` + tests), #148 (quiz same in every engine; deploy just after 00:00 UTC)
+  - Merge #145 and #147 together: merging a stacked PR's base with "delete branch" makes GitHub **close** the stacked PR, not retarget it (that's how #146 was closed; #149 replaces it). Retarget #147 to `main` before merging #145, or merge #147 into #145's branch first
+  - After merging #147, run `npm ci` before the next deploy: it removes `@cloudflare/next-on-pages`, and switching branches doesn't update `node_modules` (an Oct 26 deploy failed at the build that way, nothing uploaded)
+- **Local `wrangler.toml`:** until #145 merges it's untracked on `main` but tracked on #145/#147, so checking out `main` from those branches deletes it. Restore it with `git show origin/chore/commit-wrangler-toml:wrangler.toml > wrangler.toml`
 - **Next:** L8, Next 16 / React upgrades, once #147 is merged
 - **Dated work, waiting:**
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
@@ -45,7 +48,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
 - [x] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
 - [x] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
-- [x] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (#146, stacked on this PR)
+- [x] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (#149; #146 was closed by GitHub)
 - [x] M6. `RollingNumber` names a plain span with `aria-label`; screen readers may not read gross pay, overtime or quiz score
 - [x] L1. Geist Sans is preloaded on every page but the station design uses Archivo
 - [x] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight
