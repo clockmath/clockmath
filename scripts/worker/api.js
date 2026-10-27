@@ -274,6 +274,12 @@ const QUIZ_BLOCKED_INITIALS = __cmQuiz.BLOCKED_INITIALS;
 const QUIZ_MAX_STORED_SCORES = 5000;
 const QUIZ_MAX_TOP = 25;
 const QUIZ_COOKIE = 'cmq_day';
+// Oct 2026 review: the cookie is easy to leave out and quizIpHits only
+// counts per isolate, so a script could fill the top 25. The board itself
+// now counts submissions per hashed IP for the day (no extra KV write: the
+// board is rewritten on every submission anyway). 3, not 1, so a household
+// or office behind one address can all play.
+const QUIZ_MAX_PER_IP = 3;
 const quizIpHits = new Map();
 const quizChampionCache = new Map();
 
@@ -299,17 +305,24 @@ function quizJson(request, status, body, extraHeaders) {
 
 async function quizLoadBoard(env, day) {
   const raw = await env.QUIZ_KV.get('board:' + day);
-  if (!raw) return { count: 0, scores: [], top: [] };
+  if (!raw) return { count: 0, scores: [], top: [], ips: {} };
   try {
     const parsed = JSON.parse(raw);
     return {
       count: parsed.count || 0,
       scores: Array.isArray(parsed.scores) ? parsed.scores : [],
       top: Array.isArray(parsed.top) ? parsed.top : [],
+      ips: parsed.ips && typeof parsed.ips === 'object' ? parsed.ips : {},
     };
   } catch (e) {
-    return { count: 0, scores: [], top: [] };
+    return { count: 0, scores: [], top: [], ips: {} };
   }
+}
+
+/** Short one-way hash of the IP for one day's board; the address itself is never stored. */
+async function quizIpKey(ip, day) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(day + '|' + ip));
+  return Array.from(new Uint8Array(digest).slice(0, 8), (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 function quizBeats(a, b) {
@@ -432,6 +445,9 @@ async function handleQuizApi(request, env) {
   if (cookieMatch && cookieMatch[1] === today) return quizJson(request, 409, { error: 'already submitted today' });
 
   const board = await quizLoadBoard(env, day);
+  const ipKey = await quizIpKey(ip, day);
+  if ((board.ips[ipKey] || 0) >= QUIZ_MAX_PER_IP) return quizJson(request, 409, { error: 'already submitted today' });
+  if (Object.keys(board.ips).length < QUIZ_MAX_STORED_SCORES) board.ips[ipKey] = (board.ips[ipKey] || 0) + 1;
   const entry = { s: score, t: timeMs };
   const beaten = board.scores.filter((row) => quizBeats(entry, { s: row[0], t: row[1] })).length;
   const percentile = board.scores.length === 0 ? 100 : Math.round((beaten / board.scores.length) * 100);
