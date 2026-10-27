@@ -11,7 +11,8 @@ import { Flap } from "@/components/station/Flap"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
 import { DetailedDurationBreakdown } from "@/components/DetailedDurationBreakdown"
-import { format, intervalToDuration, type Duration } from "date-fns"
+import { format, intervalToDuration } from "date-fns"
+import { formatDetailedDuration, formatDurationParts, spanBetween } from "@/lib/duration"
 import { event as gaEvent, toolUsed } from "@/lib/gtag"
 import JsonLd, { getSoftwareApplicationSchema, getOrganizationSchema, getWebSiteSchema } from "@/components/JsonLd"
 import { useDarkMode } from "@/hooks/use-dark-mode"
@@ -82,72 +83,6 @@ export default function ClockMathPage() {
   // The site's shared 12h/24h setting (useClockFormat)
   const [is24HourFormat, setIs24HourFormat] = useClockFormat()
 
-  const parseTimeToSeconds = useCallback((str: string): number => {
-    if (!str) return Number.NaN
-    const parts = str.split(":")
-    if (parts.length < 2) return Number.NaN
-    const hours = parseInt(parts[0], 10)
-    const minutes = parseInt(parts[1], 10)
-    const seconds = parts[2] !== undefined ? parseInt(parts[2], 10) : 0
-    if ([hours, minutes, seconds].some(Number.isNaN)) return Number.NaN
-    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) {
-      return Number.NaN
-    }
-    return hours * 3600 + minutes * 60 + seconds
-  }, [])
-
-  // Format a calendar-accurate breakdown (from date-fns intervalToDuration)
-  // into a friendly summary string. Single source of truth for the summary.
-  const formatDurationParts = useCallback((d: Duration): string => {
-    const years = d.years ?? 0
-    const months = d.months ?? 0
-    const days = d.days ?? 0
-    const hours = d.hours ?? 0
-    const minutes = d.minutes ?? 0
-    const seconds = d.seconds ?? 0
-
-    const parts: string[] = []
-    if (years) parts.push(`${years} year${years !== 1 ? 's' : ''}`)
-    if (months) parts.push(`${months} month${months !== 1 ? 's' : ''}`)
-    if (days) parts.push(`${days} day${days !== 1 ? 's' : ''}`)
-    if (hours) parts.push(`${hours}h`)
-    if (minutes) parts.push(`${minutes}m`)
-    // Show seconds only for sub-day durations (avoids noise on long spans).
-    if (seconds && !years && !months && !days) parts.push(`${seconds}s`)
-    return parts.length ? parts.join(" ") : "0s"
-  }, [])
-
-  // Calendar-accurate duration between two datetimes (handles real month
-  // lengths, leap years, DST) — replaces average-constant division.
-  const formatDuration = useCallback(
-    (start: Date, end: Date): string => {
-      if (end.getTime() < start.getTime()) return "Invalid"
-      return formatDurationParts(intervalToDuration({ start, end }))
-    },
-    [formatDurationParts],
-  )
-
-  const formatDetailedDuration = useCallback((seconds: number) => {
-    if (isNaN(seconds) || seconds < 0) return null
-
-    // Calculate all time units with appropriate precision
-    const years = seconds / (365.25 * 24 * 3600)
-    const months = seconds / (30.44 * 24 * 3600)
-    const weeks = seconds / (7 * 24 * 3600)
-    const days = seconds / (24 * 3600)
-    const hours = seconds / 3600
-    const minutes = seconds / 60
-
-    return {
-      years: parseFloat(years.toFixed(4)),
-      months: parseFloat(months.toFixed(3)),
-      weeks: parseFloat(weeks.toFixed(2)),
-      days: parseFloat(days.toFixed(2)),
-      hours: parseFloat(hours.toFixed(2)),
-      minutes: parseFloat(minutes.toFixed(1)),
-      seconds: Math.round(seconds)
-    }
-  }, [])
 
   // Handle calculation selection
   const toggleCalculationSelection = useCallback((id: string) => {
@@ -206,7 +141,7 @@ export default function ClockMathPage() {
         detailed: detailedDuration
       })
     }
-  }, [selectedCalculations, history, formatDurationParts, formatDetailedDuration])
+  }, [selectedCalculations, history])
 
   // Clear selection
   const clearSelection = useCallback(() => {
@@ -254,47 +189,9 @@ export default function ClockMathPage() {
     calculated.startDate.toDateString() !== startDate.toDateString() ||
     calculated.endDate.toDateString() !== endDate.toDateString()
 
-  // The span between a set of inputs. Same date with an earlier end time is
-  // an overnight span (22:00 → 06:00), as the FAQ promises: the end is the
-  // next day. A genuinely earlier end date is an error.
-  const spanFor = useCallback((inputs: typeof calculated) => {
-    const { startDate, startTime, endDate, endTime } = inputs
-    const startSeconds = parseTimeToSeconds(startTime)
-    const endSeconds = parseTimeToSeconds(endTime)
-    if (isNaN(startSeconds) || isNaN(endSeconds)) return { error: "Enter a start and end time, like 09:00." } as const
+  // The span maths (overnight, clock changes) is spanBetween in lib/duration.ts
 
-    const at = (date: Date, secs: number) => {
-      const d = new Date(date)
-      d.setHours(Math.floor(secs / 3600), Math.floor((secs % 3600) / 60), secs % 60, 0)
-      return d
-    }
-    const start = at(startDate, startSeconds)
-    const end = at(endDate, endSeconds)
-    let overnight = false
-    if (end < start && end.toDateString() === start.toDateString()) {
-      end.setDate(end.getDate() + 1)
-      overnight = true
-    }
-    const seconds = Math.floor((end.getTime() - start.getTime()) / 1000)
-    if (seconds < 0) return { error: "The end is before the start. Pick a later end date or time." } as const
-    // Oct 2026 review: noon to noon across the fall-back night showed
-    // "1 day" beside 25.00 decimal hours, unexplained. Real time less
-    // clock-face time is the clock change in between (+60 back, -60 forward).
-    const wall = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
-    const clockShift = Math.round((seconds - (wall(end) - wall(start)) / 1000) / 60)
-    return {
-      start,
-      end,
-      seconds,
-      overnight,
-      clockShift,
-      parts: intervalToDuration({ start, end }),
-      summary: formatDuration(start, end),
-      detailed: formatDetailedDuration(seconds),
-    }
-  }, [parseTimeToSeconds, formatDuration, formatDetailedDuration])
-
-  const span = useMemo(() => spanFor(calculated), [spanFor, calculated])
+  const span = useMemo(() => spanBetween(calculated), [calculated])
 
   const calculate = useCallback(() => {
     const inputs = { startDate, startTime, endDate, endTime }
@@ -304,7 +201,7 @@ export default function ClockMathPage() {
       toolUsedRef.current = true
       toolUsed("calculator", { device: getDevice() })
     }
-    const result = spanFor(inputs)
+    const result = spanBetween(inputs)
     if ("error" in result) return
     const daysDiff = Math.floor(result.seconds / 86400)
     gaEvent({
@@ -317,7 +214,7 @@ export default function ClockMathPage() {
         device: getDevice(),
       },
     })
-  }, [startDate, startTime, endDate, endTime, spanFor, confirm])
+  }, [startDate, startTime, endDate, endTime, confirm])
 
   // Calculate and Enter submit the form. A time typed and entered in the same
   // keystroke reaches state in that event, so the calculation runs in an
