@@ -42,3 +42,25 @@ test('initials: three letters A–Z, blocklist applies', () => {
   assert.equal(isValidInitials('AB'), false);
   assert.equal(isValidInitials('KKK'), false);
 });
+
+// Oct 2026: a comparator-random sort made the quiz depend on the JS engine
+// (workerd and Chrome disagreed). Run the generator under a different sort
+// algorithm (a plain insertion sort, as other engines might use for short
+// arrays): the questions must not change.
+test('the daily quiz is the same whatever sort algorithm the engine uses', () => {
+  const native = Array.prototype.sort;
+  const days = ['2026-09-14', '2026-10-20', '2026-10-27', '2027-02-14'];
+  const expected = days.map((d) => generateDailyQuiz(d));
+  Array.prototype.sort = function <T>(this: T[], cmp?: (a: T, b: T) => number) {
+    const c = cmp ?? ((a: T, b: T) => (String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0));
+    for (let i = 1; i < this.length; i++) {
+      for (let j = i; j > 0 && c(this[j - 1], this[j]) > 0; j--) [this[j - 1], this[j]] = [this[j], this[j - 1]];
+    }
+    return this;
+  };
+  try {
+    days.forEach((d, i) => assert.deepEqual(generateDailyQuiz(d), expected[i], d));
+  } finally {
+    Array.prototype.sort = native;
+  }
+});
