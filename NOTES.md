@@ -44,7 +44,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] M2. Feedback is stored in KV for 90 days and never emailed, so it can expire unread
 - [x] M3. Quiz leaderboard: the once-a-day check is a cookie and the rate limit is per isolate. Add a KV marker per hashed IP per day (plus a Cloudflare rate-limit rule, set up in the dashboard)
 - [x] M4. Sitemap: 28 URLs, every tool page included, have lastmod `2025-01-15`
-- [ ] M5. Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
+- [x] M5. (branch `fix/testable-time-logic`) Untested logic inside big components (TimesheetTool 1160 lines, app/page.tsx 704); no tests for holidays, countdowns, markets (**own branch**)
 - [x] M6. `RollingNumber` names a plain span with `aria-label`; screen readers may not read gross pay, overtime or quiz score
 - [x] L1. Geist Sans is preloaded on every page but the station design uses Archivo
 - [x] L2. Worker live counts round up (`Math.ceil`) while the page counts calendar days; fixed-date targets use the build machine's local midnight

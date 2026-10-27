@@ -9,7 +9,27 @@ import { InlineTimePicker } from '@/components/ui/InlineTimePicker';
 import { InlineDatePicker } from '@/components/ui/InlineDatePicker';
 import { RollingNumber } from '@/components/RollingNumber';
 import { computeWeeklyOvertime, parseAmount } from '@/lib/overtime';
-import { getUserTimeZone, parseDateTimeInZone } from '@/lib/time';
+import {
+  byDate,
+  decimalHours,
+  decodeShareParam,
+  deserializeShift,
+  dstLabel,
+  elapsedMinutes,
+  encodeShareParam,
+  hhmm,
+  isOvernight,
+  newShift,
+  parseBreak,
+  serializeShift,
+  shiftMinutes,
+  toDateInputValue,
+  toMinutes,
+  workweekMinutes,
+  type SavedShift,
+  type SavedTimesheet,
+  type Shift,
+} from '@/lib/timesheet';
 import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
 import { Coffee, X } from 'lucide-react';
@@ -24,41 +44,6 @@ interface TimesheetToolProps {
   className?: string;
 }
 
-interface Shift {
-  id: string;
-  date: Date;
-  start: string; // "HH:MM:SS"
-  end: string;
-  breakMins: number;
-}
-
-interface SavedShift {
-  id: string;
-  date: string; // "YYYY-MM-DD"
-  start: string;
-  end: string;
-  breakMins: number;
-}
-interface SavedTimesheet {
-  id: string;
-  name: string;
-  shifts: SavedShift[];
-  rate: string;
-}
-
-// Compact shapes used for share links (?d=...).
-interface ShareShift {
-  d?: string;
-  st?: string;
-  en?: string;
-  b?: number;
-}
-interface ShareDoc {
-  n?: string;
-  r?: string;
-  s?: ShareShift[];
-}
-
 const SAVED_KEY = 'clockmath-saved-timesheets';
 const DRAFT_KEY = 'clockmath-timesheet-draft';
 
@@ -71,119 +56,6 @@ const SUPPORT_DISMISSED_KEY = 'clockmath-support-nudge-dismissed'; // localStora
 const SUPPORT_SNOOZE_MS = 30 * 24 * 60 * 60 * 1000;
 const SUPPORT_URL = 'https://www.buymeacoffee.com/clockmath?utm_source=clockmath&utm_medium=site&utm_campaign=work_hours_nudge';
 
-
-const toDateInputValue = (date: Date): string => {
-  const y = date.getFullYear();
-  const m = `${date.getMonth() + 1}`.padStart(2, '0');
-  const d = `${date.getDate()}`.padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
-const parseLocalDate = (s: string): Date => {
-  const [y, m, d] = s.split('-').map((n) => parseInt(n, 10));
-  return new Date(y, (m || 1) - 1, d || 1);
-};
-
-const toMinutes = (t: string): number | null => {
-  if (!t) return null;
-  const [h, m] = t.split(':').map((n) => parseInt(n, 10));
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-};
-
-const isOvernight = (shift: { start: string; end: string }): boolean => {
-  const s = toMinutes(shift.start);
-  const e = toMinutes(shift.end);
-  return s != null && e != null && e < s;
-};
-
-/** Minutes between start and end as the clock reads them (overnight = +24h). */
-const clockMinutes = (shift: { start: string; end: string }): number => {
-  const s = toMinutes(shift.start);
-  const e = toMinutes(shift.end);
-  if (s == null || e == null) return 0;
-  let diff = e - s;
-  if (diff < 0) diff += 1440; // overnight
-  return diff;
-};
-
-const nextDayYmd = (ymd: string): string => {
-  const [y, m, d] = ymd.split('-').map((n) => parseInt(n, 10));
-  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-};
-
-/**
- * Minutes actually elapsed, measured in the visitor's own timezone. A shift
- * that spans a daylight-saving change is an hour longer or shorter than the
- * clock says — 10 PM–6 AM is 9 hours on the fall-back night and 7 on the
- * spring-forward night — and pay is owed for hours worked, not clock time.
- *
- * Goes through lib/time, so it also picks up the BC permanent-UTC−7
- * correction for browsers with stale tz data. Falls back to clock time when
- * the date is unusable or the result is implausible.
- */
-const elapsedMinutes = (shift: { date: Date | string; start: string; end: string }): number => {
-  const clock = clockMinutes(shift);
-  if (clock === 0) return 0;
-  const startDay = typeof shift.date === 'string' ? shift.date : toDateInputValue(shift.date);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDay)) return clock;
-
-  // Fast path: no offset change anywhere from the start day through the next
-  // day means no DST transition can fall inside the shift. (The BC correction
-  // only ever removes transitions, so a browser that sees none is right.)
-  const [y, m, d] = startDay.split('-').map((n) => parseInt(n, 10));
-  if (new Date(y, m - 1, d).getTimezoneOffset() === new Date(y, m - 1, d + 2).getTimezoneOffset()) {
-    return clock;
-  }
-
-  const tz = getUserTimeZone();
-  const endDay = isOvernight(shift) ? nextDayYmd(startDay) : startDay;
-  const startAt = parseDateTimeInZone(startDay, shift.start, tz).getTime();
-  const endAt = parseDateTimeInZone(endDay, shift.end, tz).getTime();
-  const real = Math.round((endAt - startAt) / 60000);
-  if (!Number.isFinite(real) || real < 0 || Math.abs(real - clock) > 120) return clock;
-  return real;
-};
-
-/** Signed minutes a daylight-saving change adds to (+60) or removes from (−60) a shift. */
-const dstAdjustment = (shift: { date: Date | string; start: string; end: string }): number =>
-  elapsedMinutes(shift) - clockMinutes(shift);
-
-const dstLabel = (shift: { date: Date | string; start: string; end: string }): string => {
-  const adj = dstAdjustment(shift);
-  if (adj === 0) return '';
-  return `${adj > 0 ? '+' : '−'}${Math.abs(adj) / 60}h clock change`;
-};
-
-const shiftMinutes = (shift: { date: Date | string; start: string; end: string; breakMins: number }): number =>
-  Math.max(0, elapsedMinutes(shift) - (shift.breakMins || 0));
-
-const decimalHours = (mins: number): string => (mins / 60).toFixed(2);
-const hhmm = (mins: number): string => `${Math.floor(mins / 60)}h ${mins % 60}m`;
-
-const newShift = (id: string, date: Date): Shift => ({ id, date, start: '09:00:00', end: '17:00:00', breakMins: 30 });
-
-/**
- * A typed break as minutes: "45", "45m", "1h", "1.5h", "1:00", "1h30",
- * "1h 30m". Empty is no break. Null when it isn't a length of time.
- */
-const parseBreak = (text: string): number | null => {
-  const t = text.trim().toLowerCase().replace(/\s+/g, '');
-  if (t === '') return 0;
-  let m: RegExpMatchArray | null;
-  if ((m = t.match(/^(\d{1,3})(?:m|min|mins)?$/))) return Number(m[1]);
-  if ((m = t.match(/^(\d{1,2}):(\d{2})$/))) return Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null;
-  if ((m = t.match(/^(\d{1,2}(?:\.\d+)?)h$/))) return Math.round(Number(m[1]) * 60);
-  if ((m = t.match(/^(\d{1,2})h(\d{1,2})(?:m|min|mins)?$/))) return Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null;
-  return null;
-};
-
-/** Shifts in date and start-time order, for the summary, copy and CSV (the
- * rows above stay in the order they were entered, so nothing jumps while
- * editing). */
-const byDate = (list: Shift[]): Shift[] =>
-  [...list].sort(
-    (a, b) => toDateInputValue(a.date).localeCompare(toDateInputValue(b.date)) || (toMinutes(a.start) ?? 0) - (toMinutes(b.start) ?? 0),
-  );
 
 /**
  * The break field: typed freely (it can be empty while you type, and takes
@@ -233,54 +105,6 @@ function BreakInput({ id, value, onChange }: { id: string; value: number; onChan
   );
 }
 
-const serializeShift = (s: Shift): SavedShift => ({
-  id: s.id,
-  date: toDateInputValue(s.date),
-  start: s.start,
-  end: s.end,
-  breakMins: s.breakMins,
-});
-const deserializeShift = (s: SavedShift): Shift => ({
-  id: s.id,
-  date: parseLocalDate(s.date),
-  start: s.start,
-  end: s.end,
-  breakMins: s.breakMins,
-});
-
-// ---- Share-link encoding (compact JSON in a ?d= param) ----
-const encodeShareParam = (name: string, rate: string, shifts: Shift[]): string => {
-  const doc: ShareDoc = {
-    n: name.trim() || undefined,
-    r: rate.trim() || undefined,
-    s: shifts.map((s) => ({ d: toDateInputValue(s.date), st: s.start.slice(0, 5), en: s.end.slice(0, 5), b: s.breakMins })),
-  };
-  return encodeURIComponent(JSON.stringify(doc));
-};
-const decodeShareParam = (param: string): { name: string; rate: string; shifts: Shift[] } | null => {
-  try {
-    // URLSearchParams.get already decodes once. Decoding again (as until Oct
-    // 2026) threw on any "%" in a name or rate, so the link wouldn't open;
-    // the second decode is only a fallback for a doubly-encoded param.
-    let doc: ShareDoc;
-    try {
-      doc = JSON.parse(param) as ShareDoc;
-    } catch {
-      doc = JSON.parse(decodeURIComponent(param)) as ShareDoc;
-    }
-    if (!doc || !Array.isArray(doc.s) || doc.s.length === 0) return null;
-    const shifts: Shift[] = doc.s.slice(0, 60).map((x, i) => ({
-      id: `row-${i + 1}`,
-      date: parseLocalDate(String(x.d ?? '')),
-      start: `${String(x.st ?? '00:00')}:00`,
-      end: `${String(x.en ?? '00:00')}:00`,
-      breakMins: Math.max(0, Number(x.b) || 0),
-    }));
-    return { name: typeof doc.n === 'string' ? doc.n : '', rate: typeof doc.r === 'string' ? doc.r : '', shifts };
-  } catch {
-    return null;
-  }
-};
 const shareUrlFor = (name: string, rate: string, shifts: Shift[]): string =>
   `${window.location.origin}/tools/timesheet/?d=${encodeShareParam(name, rate, shifts)}`;
 
@@ -436,13 +260,7 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
   // engine so each week matches /tools/overtime penny for penny; per-shift
   // pay stays at base rate since overtime belongs to the week, not a shift.
   const weeklyMins = useMemo(() => {
-    const byWeek = new Map<string, number>();
-    for (const s of shifts) {
-      const sunday = new Date(s.date.getFullYear(), s.date.getMonth(), s.date.getDate() - s.date.getDay());
-      const key = toDateInputValue(sunday);
-      byWeek.set(key, (byWeek.get(key) ?? 0) + shiftMinutes(s));
-    }
-    return [...byWeek.values()].filter((m) => m > 0);
+    return workweekMinutes(shifts);
   }, [shifts]);
 
   const otSplit = useMemo(() => {
