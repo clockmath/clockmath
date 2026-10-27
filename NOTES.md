@@ -8,13 +8,15 @@
 - **Countdown pages:** 22 event pages under `/countdown/` (holidays, launches, eclipses, clock changes, retirement), a holidays board, and embeddable widgets at `/embed/countdown/…`. 14 guides under `/articles/`
 - **Design:** station design with line colours, split-flap answer boards, a classic-view toggle and dark mode
 - **Recent features:**
+  - Oct 26 review fixes (`fix/oct-26-review`, one commit each; list below): build day in Eastern time, deploy runs tests and lint, CI on PRs, quiz limit per IP, live counts in calendar days, converter answers as you pick, pinned "All tools" on phones, sitemap dates from git, and more
   - Calculation feedback: re-flip, "Updated", scroll to the answer, phone answer bar, change glow (#135)
   - "Install ClockMath" offer plus a service worker for offline pages (#134)
 - **Docs:** CLAUDE.md, NOTES.md and an up-to-date README (Oct 26)
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
-- No open PRs or uncommitted work
+- **Open PR:** `fix/oct-26-review` (the Oct 26 review fixes), waiting for "merge and deploy"
+- **Own branches still to do** (review items M1, M5, L7, L8): commit `wrangler.toml`; move timesheet/duration logic into `lib/` with tests; replace next-on-pages with a hand-written `_worker.js`; then Next 16 / React upgrades
 - **Dated work, waiting:**
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
@@ -50,13 +52,14 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] L4. Dead code and duplication: `convertDateBetweenZones` is a no-op, `pointer: coarse` repeated instead of `lib/device.ts`, `navigator.clipboard` used directly instead of `copyText`
 - [x] L5. `sw.js`: page cache had no cap, and the static cache evicted the oldest-stored files (the shared framework chunks) first; both now drop the least recently used
 - [x] L6. Homepage, noon to noon across the fall-back night: "1 day" next to 25.00 decimal hours, unexplained
-- [ ] L7. No Node version pinned (`engines`, `.nvmrc`); `wrangler.toml` is gitignored (**own branch** to commit it)
+- [ ] L7. ~~No Node version pinned~~ (done with H2: `.nvmrc` 24, `engines` >=22.18); `wrangler.toml` is gitignored (**own branch** to commit it)
 - [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**, after M1)
 
 ## Next up
 - Work through the Oct 26 review list above
 
 ## Known issues
+- **Quiz leaderboard limits (M3):** the worker now allows 3 submissions per hashed IP a day, but KV is eventually consistent, so a fast burst can still get a few extra through. For a hard limit, add a Cloudflare rate-limiting rule in the dashboard (Security > WAF > Rate limiting rules) on POST `/api/quiz`, and the same shape on `/api/feedback` and `/api/places`
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed
 - **CSP nonce, GA and Clarity:** since Oct 26 the CSP uses a per-page nonce instead of `'unsafe-inline'`. Checked on a local Pages preview with GA consent denied, so gtag.js and Clarity weren't loaded there (they're external scripts from allowed hosts and shouldn't need the nonce). Confirm in GA Realtime / Clarity that data still arrives
