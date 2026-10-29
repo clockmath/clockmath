@@ -60,7 +60,7 @@ The site can be installed as an app (web manifest and icons). A service worker (
 - **Language:** TypeScript, strict; type and lint errors fail the build
 - **Styling:** Tailwind CSS v4, plus the station CSS in `components/station/`
 - **Libraries:** date-fns, react-day-picker, lucide-react, tz-lookup, Radix (toast only)
-- **Hosting:** Cloudflare Pages via `@cloudflare/next-on-pages`, with a worker for the API, headers and redirects, and KV for the quiz leaderboard and feedback
+- **Hosting:** Cloudflare Pages: the static export plus a small hand-written worker for the API, headers and redirects, and KV for the quiz leaderboard and feedback
 
 ## Getting started
 
@@ -112,7 +112,7 @@ scripts/
   worker/             Cloudflare worker code, each with a test: api.js (headers, CSP,
                       /api/places, /api/geo, /api/quiz, /api/feedback, redirects),
                       live-counts.js, stale-assets.js
-  inject-api.js       puts the worker code into the built _worker.js
+  build-worker.js     writes out/_worker.js, _routes.json and _headers
   brand/generate.mjs  renders the icons and share cards
   stale-check.mjs     flags dates that have run out (runs before each deploy)
   indexnow.js         tells Bing about changed pages after a deploy
@@ -134,7 +134,7 @@ npm run deploy         # stale-date check, Pages build, deploy, IndexNow ping
 
 ## Deployment
 
-Deploys are manual: `npm run deploy` from `main`. It runs `@cloudflare/next-on-pages` (output in `.vercel/output/static`), then `scripts/inject-api.js` adds the API, security headers, redirects, live countdown numbers and cache policy to the generated worker. Then `wrangler pages deploy` publishes it, and `scripts/indexnow.js` pings Bing with the pages that changed.
+Deploys are manual: `npm run deploy` from `main`. It runs `next build` (the static export in `out/`), then `scripts/build-worker.js` writes `out/_worker.js` from `scripts/worker/`: the API, security headers, redirects, live countdown numbers and cache policy, with everything else served from the export. Then `wrangler pages deploy` publishes it, and `scripts/indexnow.js` pings Bing with the pages that changed.
 
 Cloudflare runs the generated `_worker.js` in "Advanced Mode", which ignores `functions/`, `public/_headers` and `public/_redirects`. Headers, the CSP, API routes and redirects all live in `scripts/worker/api.js`.
 

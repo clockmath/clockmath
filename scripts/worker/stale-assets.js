@@ -1,6 +1,6 @@
 // ---- Stale pages after a deploy (injected into _worker.js) ----
 // Plain worker code, concatenated into the generated worker by
-// scripts/inject-api.js; scripts/worker/stale-assets.test.js loads it in Node.
+// scripts/build-worker.js; scripts/worker/stale-assets.test.js loads it in Node.
 
 // Every deploy replaces /_next/static: the hashed script files of the
 // previous build 404 from then on. A page loaded before the deploy (an open
@@ -8,7 +8,7 @@
 // files, so its calculators never start until the visitor refreshes — the
 // "doesn't work until I refresh" report (Oct 2026, several deploys a day).
 //
-// The worker never sees those 404s: next-on-pages' _routes.json sends
+// The worker never sees those 404s: _routes.json (scripts/build-worker.js) sends
 // /_next/static/* straight to the asset store (and routing it through the
 // worker would cost a request per file). So every HTML page instead gets this
 // guard as the first thing in <head>, ahead of Next's own scripts: if a site

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "next build",
-    "pages:build": "npx @cloudflare/next-on-pages && node scripts/inject-api.js",
+    "pages:build": "next build && node scripts/build-worker.js",
     "preview": "npm run pages:build && wrangler pages dev",
     "deploy": "npm test && npm run lint && node scripts/stale-check.mjs && node scripts/feedback.mjs --summary && npm run pages:build && wrangler pages deploy && node scripts/indexnow.js",
     "dev": "next dev",
@@ -35,7 +35,6 @@
     "tz-lookup": "^6.1.25"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
@@ -49,11 +48,5 @@
     "tw-animate-css": "1.3.3",
     "typescript": "^5",
     "wrangler": "^4.151.3"
-  },
-  "overrides": {
-    "@cloudflare/next-on-pages": {
-      "next": "$next",
-      "@cloudflare/workers-types": "^5.20261019.1"
-    }
   }
 }
