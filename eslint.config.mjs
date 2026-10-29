@@ -1,12 +1,10 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { FlatCompat } from '@eslint/eslintrc';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
 import globals from 'globals';
 
-// `next lint` is deprecated (removed in Next 16), so lint runs through the
-// ESLint CLI. eslint-config-next 15 only ships the old config format;
-// FlatCompat translates it.
-const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
+// Lint runs through the ESLint CLI (`next lint` is gone in Next 16, and
+// `next build` no longer lints). eslint-config-next 16 ships flat configs;
+// until Oct 2026 FlatCompat translated 15's old-format ones.
 
 const eslintConfig = [
   {
@@ -19,8 +17,22 @@ const eslintConfig = [
       'scripts/worker/*.test.js',
     ],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript')
+  ...[...nextVitals, ...nextTs]
     .map((c) => ({ ...c, ignores: [...(c.ignores ?? []), 'scripts/worker/**'] })),
+  // Oct 2026 (Next 16 upgrade): eslint-config-next 16 brings the React
+  // Compiler-era hook rules. 48 hits, none new behaviour: mostly the
+  // read-browser-state-after-mount pattern the static export relies on for
+  // hydration (set-state-in-effect, 36 in 24 files), plus refs read inside
+  // event callbacks and a Date.now() fallback before mount. Warnings, so they
+  // show without blocking deploys; reworking them is its own task (NOTES.md).
+  {
+    rules: {
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/refs': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/use-memo': 'warn',
+    },
+  },
   // Oct 2026 review: the worker (headers, CSP, APIs, redirects) reached
   // production unlinted. The files are script fragments pasted one after
   // another into the built _worker.js, so top-level names are shared between

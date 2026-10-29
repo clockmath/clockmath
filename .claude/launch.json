@@ -4,8 +4,23 @@
     {
       "name": "clockmath-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "clockmath-pages-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "wrangler",
+        "pages",
+        "dev",
+        "--port",
+        "8788"
+      ],
+      "port": 8788
     }
   ]
 }

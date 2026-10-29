@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { MARKETS, getMarketStatus } from '../lib/markets.ts';
-import { COUNTDOWNS } from '../lib/countdowns.ts';
+import { COUNTDOWNS, type CountdownEntry } from '../lib/countdowns.ts';
 import { channels, luminance } from '../lib/colour.ts';
 
 const nyse = MARKETS.find((m) => m.id === 'nyse')!;
@@ -52,7 +52,7 @@ test('countdowns: pages exist, targets and board contrast', () => {
     const [l1, l2] = [luminance(channels(a)), luminance(channels(b))].sort((x, y) => y - x);
     return (l1 + 0.05) / (l2 + 0.05);
   };
-  for (const [slug, entry] of Object.entries(COUNTDOWNS)) {
+  for (const [slug, entry] of Object.entries(COUNTDOWNS) as Array<[string, CountdownEntry]>) {
     assert.ok(fs.existsSync(`app${entry.path}page.tsx`), `${slug}: ${entry.path} has a page`);
     const s = entry.spec;
     const kinds = [s.target, s.recurring, s.weekly, s.nthWeekday, s.dateRanges].filter(Boolean).length;
