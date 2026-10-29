@@ -65,4 +65,44 @@ if (problems.length === 0) {
   console.log(`[stale-check] ${problems.length} item(s) need attention:`);
   for (const p of problems) console.log(`[stale-check]   ${p}`);
 }
+
+// ---- Date switches (Oct 2026 review) ----
+// Some pages change on the build day, not the visitor's: a seasonalSEO title
+// moves to next year the day after the event, and a `buildDay() >= X` flag
+// (GTA 6's LAUNCHED) flips on X. Nothing rebuilds on a schedule, so list the
+// next switches at every deploy; each needs a deploy on or after its day.
+const SWITCH_DAYS = 60;
+function nthWeekday(year, month, weekday, n, offsetDays = 0) {
+  const first = new Date(Date.UTC(year, month, 1)).getUTCDay();
+  return new Date(Date.UTC(year, month, 1 + ((weekday - first + 7) % 7) + (n - 1) * 7 + offsetDays));
+}
+function sourceFiles(dir) {
+  return fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap((e) => {
+    const rel = `${dir}/${e.name}`;
+    if (e.isDirectory()) return sourceFiles(rel);
+    return /\.tsx?$/.test(e.name) ? [rel] : [];
+  });
+}
+const switches = [];
+const year = new Date(todayUtc).getUTCFullYear();
+for (const f of sourceFiles('app')) {
+  const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
+  for (const m of src.matchAll(/seasonalSEO\(\s*'([^']+)'\s*,\s*(\(y\)\s*=>[^;]+?)\);/g)) {
+    const dateFor = new Function('nthWeekday', `return ${m[2]}`)(nthWeekday);
+    for (const y of [year - 1, year]) {
+      switches.push({ day: dateFor(y).getTime() + DAY, what: `${m[1]} title moves to ${y + 1}`, f });
+    }
+  }
+  for (const m of src.matchAll(/const (\w+) = buildDay\(\)\.getTime\(\)\s*>=\s*(\w+)\.getTime\(\)/g)) {
+    const d = src.match(new RegExp(`const ${m[2]} = new Date\\((20\\d\\d),\\s*(\\d{1,2}),\\s*(\\d{1,2})\\)`));
+    if (d) switches.push({ day: Date.UTC(+d[1], +d[2], +d[3]), what: `${m[1]} turns true (${m[2]})`, f });
+  }
+}
+const upcoming = switches
+  .filter((s) => s.day > todayUtc && s.day - todayUtc <= SWITCH_DAYS * DAY)
+  .sort((a, b) => a.day - b.day);
+if (upcoming.length) {
+  console.log(`[stale-check] date switches in the next ${SWITCH_DAYS} days (each needs a deploy on or after the day):`);
+  for (const s of upcoming) console.log(`[stale-check]   ${fmt(s.day)}  ${s.what} (${s.f})`);
+}
 if (strict && problems.length) process.exit(1);

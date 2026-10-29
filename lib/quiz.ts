@@ -127,7 +127,17 @@ function buildOptions(
   format: (v: number) => string,
 ): { options: string[]; correctIndex: number } {
   const values = [correct];
-  const shuffledDeltas = [...deltas].sort(() => rand() - 0.5);
+  // Fisher–Yates with the seeded rand. Until Oct 2026 this was
+  // sort(() => rand() - 0.5), whose result depends on how many times the
+  // engine's sort calls the comparator: Cloudflare's workerd built a
+  // different quiz from Chrome's for the same day, so the server (which
+  // re-scores every submission) marked right answers wrong, and Safari and
+  // Firefox players could get a different quiz from Chrome players.
+  const shuffledDeltas = [...deltas];
+  for (let i = shuffledDeltas.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [shuffledDeltas[i], shuffledDeltas[j]] = [shuffledDeltas[j], shuffledDeltas[i]];
+  }
   for (const d of shuffledDeltas) {
     if (values.length === 4) break;
     const candidate = correct + d;

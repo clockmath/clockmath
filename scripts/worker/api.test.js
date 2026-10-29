@@ -63,6 +63,15 @@ const post = (url, body, headers = {}) =>
   res = await api.handleQuizApi(post('https://clockmath.com/api/quiz', { day: '2020-01-01', picks: right, timeMs: 30000 }, { 'CF-Connecting-IP': '1.1.1.7' }), env);
   assert.strictEqual(res.status, 400, "only today's puzzle");
 
+  // No cookie but the same address: 3 submissions a day, then 409 (Oct 2026).
+  for (let n = 0; n < 3; n++) {
+    res = await api.handleQuizApi(post('https://clockmath.com/api/quiz', { day: today, picks: wrong, timeMs: 30000 }, { 'CF-Connecting-IP': '9.9.9.9' }), env);
+    assert.strictEqual(res.status, 200, `submission ${n + 1} from one IP accepted`);
+  }
+  res = await api.handleQuizApi(post('https://clockmath.com/api/quiz', { day: today, picks: right, timeMs: 30000, initials: 'ZZZ' }, { 'CF-Connecting-IP': '9.9.9.9' }), env);
+  assert.strictEqual(res.status, 409, 'fourth from one IP refused');
+  assert.ok(!env.QUIZ_KV.m.get('board:' + today).includes('9.9.9.9'), 'raw IP never stored');
+
   // GET returns the board; KV write failure → 503, not an exception.
   res = await api.handleQuizApi(new Request(`https://clockmath.com/api/quiz?day=${today}`), env);
   data = await res.json();
@@ -138,6 +147,8 @@ const post = (url, body, headers = {}) =>
   assert.strictEqual(api.redirectTarget('/blog/sleep-hours-calculator/'), '/tools/sleep/');
   assert.strictEqual(api.redirectTarget('/tool/timezone/'), '/tools/timezone/');
   assert.strictEqual(api.redirectTarget('/countdown/spider-man-brand-new-day/'), '/countdown/avengers-doomsday/');
+  assert.strictEqual(api.redirectTarget('/countdown/'), '/tools/countdown/');
+  assert.strictEqual(api.redirectTarget('/countdown/christmas/'), null, 'event pages untouched');
   assert.strictEqual(api.redirectTarget('/tools/timezone/'), null);
   for (const p of ['//evil.com', '/blog//evil.com', '/tool/%2F%2Fevil.com']) {
     const t = api.redirectTarget(p);

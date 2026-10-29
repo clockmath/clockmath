@@ -75,8 +75,10 @@ export function StationBoard({
                 <p className="st-days">
                   <Flap value={days === null ? '--' : String(days)} />
                   {/* "Full days": 60 of them beside the sentence's 61 calendar
-                      days reads as two counts, not a mistake (the sentence is
-                      the line search engines quote, so it stays as it is) */}
+                      days. Oct 2026 review: a first-time reader still saw two
+                      numbers that disagree, so the sentence now ends "counting
+                      today"; its quoted part ("There are 61 days until X") is
+                      unchanged */}
                   <small>{days === 1 ? 'full day' : 'full days'}</small>
                 </p>
               </div>
@@ -115,7 +117,7 @@ export function StationBoard({
                 <strong data-live="days" suppressHydrationWarning>
                   {totalDays === 1 ? '1 day' : `${totalDays.toLocaleString()} days`}
                 </strong>{' '}
-                until {title}.
+                until {title}, counting today.
                 <span data-live="weeks" suppressHydrationWarning>
                   {weeksPhrase(totalDays)}
                 </span>
