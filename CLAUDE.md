@@ -18,7 +18,7 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
   - `components/ui/`: `InlineTimePicker`, `InlineDatePicker`, toast, button, calendar, `SearchableSelect`
   - `components/embed/`, `components/location/`
 - `hooks/`: `use-*.ts` (`use-clock-format`, `use-answer-feedback`, `use-dark-mode`, `use-toast`, `use-classic-view`)
-- `lib/`: camelCase logic modules (`time.ts`, `duration.ts` (homepage), `timesheet.ts`, `overtime.ts`, `countdowns.ts`, `holidays.ts`, `markets.ts`, `quiz.ts`, `colour.ts`, `lines.ts`, `gtag.ts`, `seo.ts`, `wallClock.ts`, `safeStorage.ts`, `clipboard.ts`, …)
+- `lib/`: camelCase logic modules (`time.ts`, `overtime.ts`, `countdowns.ts`, `holidays.ts`, `markets.ts`, `quiz.ts`, `colour.ts`, `lines.ts`, `gtag.ts`, `seo.ts`, `wallClock.ts`, `safeStorage.ts`, `clipboard.ts`, …)
 - `scripts/worker/`: Cloudflare worker code, each file with a `*.test.js` (`api.js`: security headers/CSP, `/api/*`, redirects; `live-counts.js`: live countdown numbers in HTML; `stale-assets.js`: reload guard). `scripts/inject-api.js` puts them into the built worker
 - `scripts/brand/generate.mjs`: renders icons and every share card (`public/og/**`) with headless Chrome
 - `tests/`: `node --test` unit tests for `lib/` (import with relative `../lib/x.ts` paths; `tests/alias.mjs` resolves the `@/` imports inside lib files)
