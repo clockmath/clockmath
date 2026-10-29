@@ -29,7 +29,7 @@
     "lucide-react": "^1.64.0",
     "next": "^16.4.3",
     "react": "^19.3.1",
-    "react-day-picker": "9.8.0",
+    "react-day-picker": "^10.0.2",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^2.5.5",
     "tz-lookup": "^6.1.25"
