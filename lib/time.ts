@@ -262,33 +262,6 @@ export function formatZoned(
 }
 
 /**
- * Convert datetime from one timezone to another
- */
-export function convertDateBetweenZones({
-  fromTZ,
-  toTZ,
-  at
-}: {
-  fromTZ: string;
-  toTZ: string;
-  at: Date;
-}): Date {
-  try {
-    // If same timezone, return the same date
-    if (fromTZ === toTZ) {
-      return new Date(at);
-    }
-    
-    // The input date is already in UTC/local time
-    // We just need to return it as-is since Date objects are timezone-agnostic
-    // The formatting functions will handle the timezone display
-    return new Date(at);
-  } catch {
-    return new Date(at);
-  }
-}
-
-/**
  * Get a human-friendly timezone name
  */
 export function getTimeZoneDisplayName(timeZone: string): string {

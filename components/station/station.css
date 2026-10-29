@@ -124,6 +124,17 @@ html:not(.classic) .station[data-line] .st-mark-hands { stroke: var(--line-ink);
   .st-tabs { order: 1; flex: 0 0 100%; }
   .st-tabs a { padding: 14px 0 12px; }
 }
+/* Oct 2026 review: on phones "Quiz" and "All tools" sat past the fade, so a
+   first-time visitor never saw the way to every tool. "All tools" (the last
+   tab) now stays pinned at the right edge while the others scroll under it;
+   its own gradient takes over from the right-hand fade. */
+@media (max-width: 1100px) {
+  html:not(.classic) .st-tabs a:last-child { position: sticky; right: 0; padding-left: 28px;
+                                              background: linear-gradient(90deg, transparent, var(--dial) 24px); }
+  html:not(.classic) .st-tabs[data-more-right] { -webkit-mask-image: none; mask-image: none; }
+  html:not(.classic) .st-tabs[data-more-left][data-more-right] { -webkit-mask-image: linear-gradient(90deg, transparent, #000 44px);
+                                                                 mask-image: linear-gradient(90deg, transparent, #000 44px); }
+}
 
 .st-main { padding-bottom: 40px; }
 .st-h1 { color: var(--ink); font-weight: 800; font-size: 44px; line-height: 1.05; letter-spacing: -0.02em; margin: 0; }

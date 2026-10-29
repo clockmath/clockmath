@@ -80,7 +80,14 @@
            border: 1px solid var(--rule); border-radius: 6px; background: none; color: var(--ink);
            font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
 .st-view:hover { border-color: var(--ink); }
+/* Phones: "Classic" beside the icon (Oct 2026 review: the icon alone meant
+   nothing to a first-time visitor); " view" stays for screen readers. Only
+   the icon below 360px, where the header row has no room for the word. */
 @media (max-width: 760px) {
+  .st-view { padding: 0 10px; gap: 6px; }
+  .st-view-word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
+@media (max-width: 359px) {
   .st-view { width: 40px; padding: 0; justify-content: center; }
-  .st-view span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .st-view-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 }

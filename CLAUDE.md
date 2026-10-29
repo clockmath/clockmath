@@ -9,7 +9,7 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 - date-fns 4, react-day-picker 9 (loaded on demand), lucide-react icons, tz-lookup, Radix only for Toast/Slot
 - Cloudflare Pages via `@cloudflare/next-on-pages` (Advanced Mode `_worker.js`), Wrangler 4, KV `QUIZ_KV`
 - Fonts via `next/font`: Archivo (body) and Big Shoulders (headings, figures)
-- Node: tests run `.ts` files straight through `node --test` (type stripping), so a current Node is needed (built and tested on 23.10)
+- Node: tests run `.ts` files straight through `node --test` (type stripping), so a current Node is needed (`engines` >=22.18; `.nvmrc` and CI use 24; also tested on 23.10)
 
 ## Structure
 - `app/`: one folder per route. `app/page.tsx` is the homepage (duration calculator); `app/tools/<tool>/`, `app/countdown/<event>/`, `app/articles/<slug>/`, `app/embed/countdown/` (noindex widgets), plus privacy, terms, contact, sitemap, robots, manifest
@@ -48,9 +48,11 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 - `npm run dev`: dev server on :3000 (`.claude/launch.json` name: `clockmath-dev`)
 - `npm run build`: static export to `out/`. Stop the dev server first (a build breaks it), then `git checkout -- next-env.d.ts` (builds modify it)
 - `npm test`: lib unit tests plus the worker tests
-- `npm run lint`; `npm run spacing:audit` (report only)
+- `npm run lint` (includes `scripts/worker/`); `npm run spacing:audit` (report only)
+- CI (`.github/workflows/checks.yml`): tests, lint and a static build on every PR and push to `main`
 - `npm run preview`: Pages build served by wrangler, locally
-- `npm run deploy`: stale-date check → Pages build → `wrangler pages deploy` → IndexNow ping. Run from `main` only
+- `npm run deploy`: tests and lint → stale-date check (and upcoming date switches) → feedback count → Pages build → `wrangler pages deploy` → IndexNow ping. Run from `main` only
+- `npm run feedback`: read the feedback form's messages from KV (kept 90 days)
 - `node scripts/brand/generate.mjs`: regenerate icons and share cards
 
 ## Workflow

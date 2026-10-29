@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         <div className="st-article article-prose">
           <div>
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
-              <strong>Effective date:</strong> October 25, 2026
+              <strong>Effective date:</strong> October 26, 2026
             </p>
 
             <p className="mb-6">
@@ -113,8 +113,9 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong>Daily quiz:</strong> when you finish, your score, your time and, if you enter them, three
-                initials for the leaderboard. Each day&apos;s leaderboard is deleted after about two weeks. A cookie
-                (two days) stops the same browser submitting twice in one day.
+                initials for the leaderboard, plus a short one-way hash of your IP address (not the address itself) so one
+                address can submit at most three times a day. Each day&apos;s leaderboard is deleted after about two
+                weeks. A cookie (two days) stops the same browser submitting twice in one day.
               </li>
               <li>
                 <strong>Place search</strong> (time zone converter): the place name you type is sent through our server

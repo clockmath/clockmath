@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { event as gaEvent } from '@/lib/gtag';
+import { copyText } from '@/lib/clipboard';
 
 const ORIGIN = 'https://clockmath.com';
 
@@ -30,12 +31,10 @@ export function EmbedCode({ src, creditHref, label, id }: EmbedCodeProps) {
   );
 
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
+    // Clipboard blocked: the code is selectable in the box
+    if (await copyText(code)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* clipboard blocked: the code is selectable in the box */
     }
     gaEvent({ action: 'embed_code_copied', params: { countdown: id } });
   };

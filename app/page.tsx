@@ -277,11 +277,17 @@ export default function ClockMathPage() {
     }
     const seconds = Math.floor((end.getTime() - start.getTime()) / 1000)
     if (seconds < 0) return { error: "The end is before the start. Pick a later end date or time." } as const
+    // Oct 2026 review: noon to noon across the fall-back night showed
+    // "1 day" beside 25.00 decimal hours, unexplained. Real time less
+    // clock-face time is the clock change in between (+60 back, -60 forward).
+    const wall = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
+    const clockShift = Math.round((seconds - (wall(end) - wall(start)) / 1000) / 60)
     return {
       start,
       end,
       seconds,
       overnight,
+      clockShift,
       parts: intervalToDuration({ start, end }),
       summary: formatDuration(start, end),
       detailed: formatDetailedDuration(seconds),
@@ -530,6 +536,14 @@ export default function ClockMathPage() {
                   )}
                   {span.overnight && (
                     <p className="st-note">The end is earlier than the start, so it counts to {formatTime(calculated.endTime)} the next day.</p>
+                  )}
+                  {span.clockShift !== 0 && (
+                    <p className="st-note">
+                      The clocks go {span.clockShift > 0 ? "back" : "forward"}{" "}
+                      {Math.abs(span.clockShift) === 60 ? "an hour" : `${Math.abs(span.clockShift)} minutes`} in between: the
+                      decimal hours and total minutes count real time, {span.clockShift > 0 ? "with" : "without"} that{" "}
+                      {Math.abs(span.clockShift) === 60 ? "hour" : "time"}.
+                    </p>
                   )}
                   <div className="st-actions">
                     <button type="button" className="st-btn primary" onClick={saveToHistory} disabled={stale || alreadySaved}>

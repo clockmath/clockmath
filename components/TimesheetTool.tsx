@@ -15,6 +15,7 @@ import { buildDay } from '@/lib/buildDay';
 import { Coffee, X } from 'lucide-react';
 import InfoTip from '@/components/InfoTip';
 import { getDevice } from '@/lib/device';
+import { copyText } from '@/lib/clipboard';
 import { Flap } from '@/components/station/Flap';
 import { AnswerBar } from '@/components/station/AnswerBar';
 import { flashClass, useSettledChange } from '@/hooks/use-answer-feedback';
@@ -292,12 +293,8 @@ const shareOrCopy = async (url: string, title: string) => {
       /* fall through */
     }
   }
-  try {
-    await navigator.clipboard.writeText(url);
-    toast({ title: 'Link copied!', description: 'Share your timesheet anywhere.' });
-  } catch {
-    toast({ title: 'Copy this link', description: url });
-  }
+  if (await copyText(url)) toast({ title: 'Link copied!', description: 'Share your timesheet anywhere.' });
+  else toast({ title: 'Copy this link', description: url });
 };
 
 export function TimesheetTool({ className = '' }: TimesheetToolProps) {
@@ -613,11 +610,10 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     const text = lines.join('\n');
 
     gaEvent({ action: 'timesheet_exported', params: { device: getDevice(), shifts: shifts.length, format: 'text' } });
-    try {
-      await navigator.clipboard.writeText(text);
+    if (await copyText(text)) {
       toast({ title: 'Copied to clipboard', description: 'Paste your timesheet anywhere.' });
       offerSupport('copy');
-    } catch {
+    } else {
       toast({ title: 'Copy this summary', description: text });
     }
   }, [saveName, shifts, ordered, totalMins, gross, rateNum, formatClock, otSplit, otMultiplier, offerSupport]);

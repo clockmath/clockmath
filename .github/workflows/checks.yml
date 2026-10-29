@@ -1,0 +1,24 @@
+# Oct 2026 review: nothing ran the tests or lint before code reached main.
+# Every PR (and every push to main) now runs them plus a static build.
+# Deploys stay manual (`npm run deploy`, which also runs the tests and lint).
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build

@@ -15,7 +15,8 @@ import './station/footer.css';
 
 const LINKS: Array<{ label: string; href: string }> = [
   { label: 'All tools', href: '/tools/' },
-  { label: 'Countdowns', href: '/countdown/holidays/' },
+  // Not "Countdowns": the header tab of that name goes to /tools/countdown/
+  { label: 'Holiday countdowns', href: '/countdown/holidays/' },
   { label: 'Guides', href: '/articles/' },
   { label: 'Contact', href: '/contact/' },
   { label: 'Privacy', href: '/privacy/' },

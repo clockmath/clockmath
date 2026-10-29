@@ -26,3 +26,17 @@ export const GeistMono = localFont({
   ],
   weight: "100 900",
 });
+
+/**
+ * Geist Sans, likewise (Oct 2026 review): the package's `GeistSans` export
+ * preloads its 58 KB file on every page, but the station design renders in
+ * Archivo; Geist is only for classic view and the few things outside
+ * `.station` (embeds, the consent banner). Same file and settings as the
+ * package, `preload: false`.
+ */
+export const GeistSans = localFont({
+  src: "../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2",
+  variable: "--font-geist-sans",
+  preload: false,
+  weight: "100 900",
+});
