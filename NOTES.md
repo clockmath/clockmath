@@ -60,11 +60,15 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 
 **Found while fixing**
 - [x] Q1. The daily quiz differed by JS engine (`sort(() => rand() - 0.5)` in `lib/quiz.ts`): `workerd` built a different quiz from Chrome's, so `/api/quiz` scored right answers wrong (#148, merged and deployed Oct 27 01:08 UTC; quiz scores are right from then on, earlier boards keep their scores)
+- [x] L8 done (branch `fix/upgrade-next-16`): Next 16.4 (Turbopack), React 19.3, eslint-config-next 16 (flat config), lucide-react 1.64, react-day-picker 10. No more `distDir: 'out'`: Next 16's dev server wrote 87 MB into `out/dev`, the folder that gets uploaded; build and dev files are now in `.next/`, `out/` is the export only, and a build no longer breaks a running dev server
 
 ## Next up
 - Work through the Oct 26 review list above
 
 ## Known issues
+- **React Compiler hook rules (since the Next 16 upgrade):** 48 lint warnings, set to warn on purpose (`eslint.config.mjs`). 36 are `set-state-in-effect`, the read-browser-state-after-mount pattern used for hydration in 24 files (`useSyncExternalStore` would replace most); the rest are refs read in event callbacks, a `Date.now()` fallback before mount, and one dependency list. No behaviour problem; worth its own pass
+- **Node 23 locally:** an ESLint dependency (`eslint-visitor-keys` 5) supports Node ^22.13 or >=24, so `npm install` warns on 23.10 (end of life). `.nvmrc` and CI use 24; switching local Node to 24 clears it
+- **Dev font warning:** Turbopack repeats "Failed to find font override values for font `Big Shoulders`" on every dev compile. Known and harmless (`adjustFontFallback: false` in `components/station/fonts.ts`)
 - **Quiz leaderboard limits (M3):** the worker now allows 3 submissions per hashed IP a day, but KV is eventually consistent, so a fast burst can still get a few extra through. For a hard limit, add a Cloudflare rate-limiting rule in the dashboard (Security > WAF > Rate limiting rules) on POST `/api/quiz`, and the same shape on `/api/feedback` and `/api/places`
 - **Thanksgiving title:** 75 characters ("…2026? Live Countdown to Nov 26 | ClockMath"); Bing URL Inspection flags it "Title too long". Left as is until the Nov 3 check
 - **Bing drop since about Oct 17:** search impressions roughly halved and Copilot citations fell about 75%, mostly Thanksgiving, the old sleep article (now a 301 to `/tools/sleep/`) and decimal hours. Cause not confirmed

@@ -18,7 +18,7 @@ const path = require('path');
 
 const OUT = path.join(__dirname, '../out');
 if (!fs.existsSync(path.join(OUT, 'index.html'))) {
-  console.error('[build-worker] out/index.html is missing: run `next build` first (and stop the dev server, which writes to out/ too).');
+  console.error('[build-worker] out/index.html is missing: run `next build` first.');
   process.exit(1);
 }
 

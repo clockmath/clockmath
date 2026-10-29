@@ -12,12 +12,9 @@ const buildDate = new Intl.DateTimeFormat('en-CA', {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // This folder is the project root. Next 15.5 otherwise guesses from the
+  // This folder is the project root. Next otherwise guesses from the
   // nearest lockfile and can pick a stray one in a parent directory.
   outputFileTracingRoot: fileURLToPath(new URL('.', import.meta.url)),
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
   typescript: {
     ignoreBuildErrors: false,
   },
@@ -26,7 +23,11 @@ const nextConfig = {
   },
   output: 'export',
   trailingSlash: true,
-  distDir: 'out',
+  // Oct 2026 (Next 16): no distDir. With distDir 'out' the build's working
+  // files and the export shared out/, and Next 16's dev server writes
+  // out/dev (87 MB) — the folder `wrangler pages deploy` uploads. Builds and
+  // the dev server now use .next/ (dev in .next/dev, so a build no longer
+  // breaks a running dev server); the export alone goes to out/.
   env: {
     // Make GA_ID available on client-side during build
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,

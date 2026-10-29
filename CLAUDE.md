@@ -4,7 +4,7 @@
 clockmath.com: free time calculators (duration, work hours/timesheet, overtime, decimal hours, sleep, time zones, market hours, countdowns, a daily quiz), plus event countdown pages and how-to guides. Most search traffic comes from Bing, about five times Google's.
 
 ## Stack
-- Next.js 15.5 (App Router) + React 19, TypeScript (strict), static export (`output: 'export'`, `trailingSlash`, built to `out/`)
+- Next.js 16 (App Router, Turbopack) + React 19.3, TypeScript (strict), static export (`output: 'export'`, `trailingSlash`) to `out/`; Next's own build and dev files live in `.next/`
 - Tailwind CSS v4 (`@theme inline` in `app/globals.css`) plus hand-written "station" CSS in `components/station/*.css`
 - date-fns 4, react-day-picker 9 (loaded on demand), lucide-react icons, tz-lookup, Radix only for Toast/Slot
 - Cloudflare Pages: the static export in `out/` plus a hand-written Advanced Mode `_worker.js` (`scripts/build-worker.js`; no adapter since Oct 2026), Wrangler 4, KV `QUIZ_KV`
@@ -46,9 +46,9 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 
 ## Commands
 - `npm run dev`: dev server on :3000 (`.claude/launch.json` name: `clockmath-dev`)
-- `npm run build`: static export to `out/`. Stop the dev server first (a build breaks it), then `git checkout -- next-env.d.ts` (builds modify it)
+- `npm run build`: static export to `out/` (fine with the dev server running: it uses `.next/dev`). Then `git checkout -- next-env.d.ts` (builds modify it)
 - `npm test`: lib unit tests plus the worker tests
-- `npm run lint` (includes `scripts/worker/`); `npm run spacing:audit` (report only)
+- `npm run lint` (ESLint flat config, includes `scripts/worker/`; React Compiler hook rules are warnings for now); `npm run spacing:audit` (report only)
 - CI (`.github/workflows/checks.yml`): tests, lint and a static build on every PR and push to `main`
 - `npm run preview`: Pages build served by wrangler, locally
 - `npm run deploy`: tests and lint → stale-date check (and upcoming date switches) → feedback count → Pages build → `wrangler pages deploy` → IndexNow ping. Run from `main` only
