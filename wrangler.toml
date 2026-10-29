@@ -1,0 +1,18 @@
+name = "clockmath"
+compatibility_date = "2025-08-28"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages deployment configuration
+pages_build_output_dir = ".vercel/output/static"
+
+[vars]
+NEXT_PUBLIC_GA_ID = "G-5L3QN6938D"
+
+# Daily quiz leaderboard storage (/api/quiz in scripts/worker/api.js)
+[[kv_namespaces]]
+binding = "QUIZ_KV"
+id = "c81d5a399e944751bcb2b8791a0de3fd"
+# Secrets are never in this file (it's in git): GEOAPIFY_KEY and
+# EMAIL_SEND_TOKEN are Pages secrets, set with
+# `npx wrangler pages secret put NAME --project-name clockmath`.
+

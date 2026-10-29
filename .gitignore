@@ -72,7 +72,9 @@ jspm_packages/
 
 # Cloudflare
 .wrangler/
-wrangler.toml
+# wrangler.toml is tracked again (Oct 2026 review): it holds no secrets
+# (those are Pages secrets, e.g. GEOAPIFY_KEY), and without it the KV
+# binding and vars couldn't be rebuilt from the repo.
 wrangler.toml.bak*
 *.tsbuildinfo
 
