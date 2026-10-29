@@ -1,6 +1,6 @@
 # Notes
 
-## Current status (Oct 26 2026, deployed)
+## Current status (Oct 29 2026, deployed)
 - **Tools live:**
   - Time duration calculator (homepage, Calculate button)
   - Work hours / timesheet, overtime, decimal hours, sleep (hours slept + cycle planner)
@@ -8,6 +8,7 @@
 - **Countdown pages:** 22 event pages under `/countdown/` (holidays, launches, eclipses, clock changes, retirement), a holidays board, and embeddable widgets at `/embed/countdown/…`. 14 guides under `/articles/`
 - **Design:** station design with line colours, split-flap answer boards, a classic-view toggle and dark mode
 - **Recent features:**
+  - Hand-written Pages worker (#147, Oct 29): `next build` + `scripts/build-worker.js` → `out/`; `@cloudflare/next-on-pages` removed. Plus `wrangler.toml` tracked (#145) and duration/timesheet maths in `lib/` with 46 tests (#149)
   - Oct 26 review fixes (#144, merged and deployed Oct 26; list below): build day in Eastern time, deploy runs tests and lint, CI on PRs, quiz limit per IP, live counts in calendar days, converter answers as you pick, pinned "All tools" on phones, sitemap dates from git, and more
   - Calculation feedback: re-flip, "Updated", scroll to the answer, phone answer bar, change glow (#135)
   - "Install ClockMath" offer plus a service worker for offline pages (#134)
@@ -15,12 +16,10 @@
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
-- **#144 merged and deployed** Oct 26; **#148** (quiz scoring) Oct 27 01:08 UTC (live checks: pages, `/countdown/` 301, CSP nonce, sitemap dates, "counting today", quiz API)
-- **Open PRs:** #145 (track `wrangler.toml`), #147 (hand-written worker, stacked on #145), #149 (logic in `lib/` + tests)
-  - Merge #145 and #147 together: merging a stacked PR's base with "delete branch" makes GitHub **close** the stacked PR, not retarget it (that's how #146 was closed; #149 replaces it). Retarget #147 to `main` before merging #145, or merge #147 into #145's branch first
-  - After merging #147, run `npm ci` before the next deploy: it removes `@cloudflare/next-on-pages`, and switching branches doesn't update `node_modules` (an Oct 26 deploy failed at the build that way, nothing uploaded)
-- **Local `wrangler.toml`:** until #145 merges it's untracked on `main` but tracked on #145/#147, so checking out `main` from those branches deletes it. Restore it with `git show origin/chore/commit-wrangler-toml:wrangler.toml > wrangler.toml`
-- **Next:** L8, Next 16 / React upgrades, once #147 is merged
+- **Deployed Oct 29:** #145, #147, #149, #150 (after #144 Oct 26 and #148 Oct 27). Live checks with curl: 19 routes and APIs (pages, 308 slash, 404 page, `/countdown/` and legacy 301s, www → apex, RSC `.txt`, `/api/geo`, `/api/quiz`), all security headers, CSP nonce on all 37 scripts, "counting today", embed `frame-ancestors *`, immutable `/_next/static`, all 32 referenced assets 200, no 2025-01-15 sitemap dates. Headers match the previous deployment (including Pages' own `access-control-allow-origin: *`)
+- **No open feature PRs** (only this notes update)
+- **Wrangler login is per machine:** `npm run deploy` needs `npx wrangler login` as the Cloudflare user that owns `clockmath` (`npx wrangler pages project list` shows it). A Spoventa login replaces it: the Oct 29 deploy failed with "Pages project clockmath does not exist" until the login was switched back
+- **Next:** L8, Next 16 / React upgrades (#147 is merged, so this is unblocked)
 - **Dated work, waiting:**
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
@@ -57,7 +56,7 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] L5. `sw.js`: page cache had no cap, and the static cache evicted the oldest-stored files (the shared framework chunks) first; both now drop the least recently used
 - [x] L6. Homepage, noon to noon across the fall-back night: "1 day" next to 25.00 decimal hours, unexplained
 - [x] L7. No Node version pinned (done with H2: `.nvmrc` 24, `engines` >=22.18); `wrangler.toml` was gitignored (#145)
-- [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**, once #147 is merged)
+- [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**; unblocked since #147 merged Oct 29)
 
 **Found while fixing**
 - [x] Q1. The daily quiz differed by JS engine (`sort(() => rand() - 0.5)` in `lib/quiz.ts`): `workerd` built a different quiz from Chrome's, so `/api/quiz` scored right answers wrong (#148, merged and deployed Oct 27 01:08 UTC; quiz scores are right from then on, earlier boards keep their scores)
