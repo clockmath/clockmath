@@ -21,7 +21,7 @@ clockmath.com: free time calculators (duration, work hours/timesheet, overtime, 
 - `lib/`: camelCase logic modules (`time.ts`, `overtime.ts`, `countdowns.ts`, `holidays.ts`, `markets.ts`, `quiz.ts`, `colour.ts`, `lines.ts`, `gtag.ts`, `seo.ts`, `wallClock.ts`, `safeStorage.ts`, `clipboard.ts`, …)
 - `scripts/worker/`: Cloudflare worker code, each file with a `*.test.js` (`api.js`: security headers/CSP, `/api/*`, redirects; `live-counts.js`: live countdown numbers in HTML; `stale-assets.js`: reload guard). `scripts/build-worker.js` writes them into `out/_worker.js`, which serves everything else through `env.ASSETS`
 - `scripts/brand/generate.mjs`: renders icons and every share card (`public/og/**`) with headless Chrome
-- `tests/`: `node --test` unit tests for `lib/` (import with relative `../lib/x.ts` paths, not `@/`)
+- `tests/`: `node --test` unit tests for `lib/` (import with relative `../lib/x.ts` paths; `tests/alias.mjs` resolves the `@/` imports inside lib files)
 - `public/`: static files, `sw.js` (service worker), share cards
 
 ## Conventions
