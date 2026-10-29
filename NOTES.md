@@ -17,9 +17,10 @@
 
 ## In progress
 - **Deployed Oct 29:** #145, #147, #149, #150 (after #144 Oct 26 and #148 Oct 27). Live checks with curl: 19 routes and APIs (pages, 308 slash, 404 page, `/countdown/` and legacy 301s, www → apex, RSC `.txt`, `/api/geo`, `/api/quiz`), all security headers, CSP nonce on all 37 scripts, "counting today", embed `frame-ancestors *`, immutable `/_next/static`, all 32 referenced assets 200, no 2025-01-15 sitemap dates. Headers match the previous deployment (including Pages' own `access-control-allow-origin: *`)
-- **No open feature PRs** (only this notes update)
+- **Deployed Oct 29, later:** #151 and #152 (Next 16.4, React 19.3, lucide 1.64, react-day-picker 10). Live checks: pages, 308/301/404, Next 16's navigation `.txt` files, `/api/geo` and `/api/quiz`, all security headers, all 19 scripts nonced, "counting today", all 31 referenced assets 200 and immutable
+- **No open PRs** (apart from this notes update)
 - **Wrangler login is per machine:** `npm run deploy` needs `npx wrangler login` as the Cloudflare user that owns `clockmath` (`npx wrangler pages project list` shows it). A Spoventa login replaces it: the Oct 29 deploy failed with "Pages project clockmath does not exist" until the login was switched back
-- **Next:** L8, Next 16 / React upgrades (#147 is merged, so this is unblocked)
+- **Next:** the Oct 26 review list is done. Open follow-ups are under Known issues (React Compiler hook warnings, Node 23 locally) plus Mark's Cloudflare rate-limit rule and feedback email setup
 - **Dated work, waiting:**
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
@@ -56,11 +57,11 @@ A first-time-user walk-through (dev server, desktop, 375px, dark) and a senior-d
 - [x] L5. `sw.js`: page cache had no cap, and the static cache evicted the oldest-stored files (the shared framework chunks) first; both now drop the least recently used
 - [x] L6. Homepage, noon to noon across the fall-back night: "1 day" next to 25.00 decimal hours, unexplained
 - [x] L7. No Node version pinned (done with H2: `.nvmrc` 24, `engines` >=22.18); `wrangler.toml` was gitignored (#145)
-- [ ] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (**own branch**; unblocked since #147 merged Oct 29)
+- [x] L8. Next 15.5 → 16, React 19.3, lucide, react-day-picker 10 (#152, deployed Oct 29)
 
 **Found while fixing**
 - [x] Q1. The daily quiz differed by JS engine (`sort(() => rand() - 0.5)` in `lib/quiz.ts`): `workerd` built a different quiz from Chrome's, so `/api/quiz` scored right answers wrong (#148, merged and deployed Oct 27 01:08 UTC; quiz scores are right from then on, earlier boards keep their scores)
-- [x] L8 done (branch `fix/upgrade-next-16`): Next 16.4 (Turbopack), React 19.3, eslint-config-next 16 (flat config), lucide-react 1.64, react-day-picker 10. No more `distDir: 'out'`: Next 16's dev server wrote 87 MB into `out/dev`, the folder that gets uploaded; build and dev files are now in `.next/`, `out/` is the export only, and a build no longer breaks a running dev server
+- [x] L8 details (#152): Next 16.4 (Turbopack), React 19.3, eslint-config-next 16 (flat config), lucide-react 1.64, react-day-picker 10. No more `distDir: 'out'`: Next 16's dev server wrote 87 MB into `out/dev`, the folder that gets uploaded; build and dev files are now in `.next/`, `out/` is the export only, and a build no longer breaks a running dev server
 
 ## Next up
 - Work through the Oct 26 review list above
