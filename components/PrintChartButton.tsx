@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Printer } from 'lucide-react';
 import { decimalToMinutes, formatMinutes, minutesToDecimal, roundingBands } from '@/lib/decimalTime';
 import { event as gaEvent } from '@/lib/gtag';
+import { usePrintSheet } from '@/hooks/use-print-sheet';
 
 /**
  * "Print chart" for the decimal hours charts. Printable charts are what
@@ -19,25 +20,7 @@ import { event as gaEvent } from '@/lib/gtag';
 export type PrintableChart = 'minutes_to_decimal' | 'decimal_to_minutes' | 'rounding';
 
 export default function PrintChartButton({ chart = 'minutes_to_decimal' }: { chart?: PrintableChart }) {
-  const [printing, setPrinting] = useState(false);
-
-  useEffect(() => {
-    if (!printing) return;
-    const root = document.documentElement;
-    root.classList.add('printing-chart');
-    const done = () => {
-      root.classList.remove('printing-chart');
-      setPrinting(false);
-    };
-    window.addEventListener('afterprint', done, { once: true });
-    // Wait a frame so the portal is in the DOM before the print dialog opens.
-    const id = requestAnimationFrame(() => window.print());
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener('afterprint', done);
-      root.classList.remove('printing-chart');
-    };
-  }, [printing]);
+  const [printing, print] = usePrintSheet();
 
   return (
     <>
@@ -45,7 +28,7 @@ export default function PrintChartButton({ chart = 'minutes_to_decimal' }: { cha
         type="button"
         onClick={() => {
           gaEvent({ action: 'print_chart', params: { chart } });
-          setPrinting(true);
+          print();
         }}
         className="inline-flex items-center gap-1.5 rounded-lg border border-border dark:border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted/60 dark:hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
