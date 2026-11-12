@@ -116,6 +116,17 @@ export const COUNTDOWNS = {
       board: { color: '#2f5d2a' },
     },
   },
+  fable: {
+    name: 'Fable',
+    path: '/countdown/fable/',
+    spec: {
+      target: new Date(2027, 1, 23),
+      countdownTitle: 'Fable',
+      arrivedLabel: 'Fable is out! 🎮',
+      disclaimer: buildEventDisclaimer('Fable', 'Xbox Game Studios, Playground Games or Microsoft'),
+      board: { color: '#3f2a1d', ink: '#f2c45a' },
+    },
+  },
   'gta-6': {
     name: 'GTA 6',
     path: '/countdown/gta-6/',
@@ -125,6 +136,17 @@ export const COUNTDOWNS = {
       arrivedLabel: 'GTA 6 is out! 🎮',
       disclaimer: buildEventDisclaimer('Grand Theft Auto', 'Rockstar Games or Take-Two Interactive', { released: GTA6_LAUNCHED }),
       board: { color: '#b0215f' },
+    },
+  },
+  'final-fantasy-7-revelation': {
+    name: 'Final Fantasy VII Revelation',
+    path: '/countdown/final-fantasy-7-revelation/',
+    spec: {
+      target: new Date(2027, 3, 8),
+      countdownTitle: 'FF7 Revelation',
+      arrivedLabel: 'Final Fantasy VII Revelation is out! 🎮',
+      disclaimer: buildEventDisclaimer('Final Fantasy', 'Square Enix'),
+      board: { color: '#1b3a5c' },
     },
   },
   'avengers-doomsday': {
