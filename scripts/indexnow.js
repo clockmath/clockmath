@@ -46,21 +46,30 @@ function pageUrls() {
   return [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim());
 }
 
+// The page text the fingerprint is taken from: <main>, without scripts,
+// styles, tags, or the values the worker rewrites per request
+// (scripts/worker/live-counts.js). Those are build-time placeholders, not
+// page changes: countdown numbers and dates (data-live, data-live-date),
+// today's date (data-live-today), and the time difference pages' clocks and
+// sentence (data-pair). Nov 2026: the /time/ pages' clocks are baked at the
+// build instant, so all 34 were resubmitted as "updated" on every deploy.
+// data-live-until rows are kept: dropping a passed clock change is a change.
+function visibleText(html) {
+  const main = html.slice(html.indexOf('<main'), html.lastIndexOf('</main>'));
+  return main
+    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ')
+    .replace(/(<[^>]+\sdata-(?:live(?:-date|-today)?|pair)="[^"]*"[^>]*>)[^<]*/g, '$1')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function fingerprint(url) {
   const p = new URL(url).pathname;
   const file = p === '/' ? path.join(OUT, 'index.html') : path.join(OUT, p, 'index.html');
   const html = fs.readFileSync(file, 'utf8');
-  const main = html.slice(html.indexOf('<main'), html.lastIndexOf('</main>'));
-  const text = main
-    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ')
-    // Countdown numbers and dates the worker rewrites per request
-    // (scripts/worker/live-counts.js): build-day values, not page changes.
-    .replace(/(<[^>]+\sdata-live(?:-date)?="[^"]*"[^>]*>)[^<]*/g, '$1')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
-  return crypto.createHash('sha256').update(title + '\n' + text).digest('hex').slice(0, 16);
+  return crypto.createHash('sha256').update(title + '\n' + visibleText(html)).digest('hex').slice(0, 16);
 }
 
 async function main() {
@@ -127,7 +136,7 @@ async function main() {
   }
 }
 
-module.exports = { pageUrls, fingerprint, findKey };
+module.exports = { pageUrls, fingerprint, findKey, visibleText };
 
 if (require.main === module) {
   main().catch((e) => console.log(`[indexnow] skipped: ${e.message}`));
