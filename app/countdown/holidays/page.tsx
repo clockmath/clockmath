@@ -47,6 +47,7 @@ const ITEMS: Array<{ name: string; href: string; ranges: DateRange[] }> = [
   { name: 'Canada Day', href: '/countdown/canada-day/', ranges: fixedDates(6, 1) },
   { name: 'God of War Laufey release', href: '/countdown/god-of-war-laufey/', ranges: [{ start: '2027-05-20' }] },
   { name: '4th of July', href: '/countdown/july-4th/', ranges: fixedDates(6, 4) },
+  { name: "Women's World Cup", href: '/countdown/womens-world-cup-2027/', ranges: [{ start: '2027-06-24', end: '2027-07-25' }] },
 ];
 
 const DAY_MS = 86400000;

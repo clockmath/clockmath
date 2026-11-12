@@ -259,6 +259,7 @@ const SUBTITLES = {
   'olympics-2028': 'Opening ceremony: July 14, 2028',
   'beyond-the-spider-verse': 'In theaters June 18, 2027',
   'solar-eclipse-2027': 'August 2, 2027',
+  'womens-world-cup-2027': 'Brazil, June 24 to July 25, 2027',
   'solar-eclipse-2028': 'July 22, 2028',
   'annular-eclipse-2028': 'January 26, 2028',
   'daylight-saving-time': 'When the clocks change where you are',
