@@ -105,6 +105,17 @@ export const COUNTDOWNS = {
     path: '/countdown/hanukkah/',
     spec: { dateRanges: HANUKKAH, countdownTitle: 'Hanukkah', arrivedLabel: 'Happy Hanukkah! 🕎', board: { color: '#1d4f91' } },
   },
+  'march-madness': {
+    name: 'March Madness 2027',
+    path: '/countdown/march-madness/',
+    spec: {
+      dateRanges: [{ start: '2027-03-16', end: '2027-04-05' }],
+      countdownTitle: 'March Madness 2027',
+      arrivedLabel: "It's March Madness! 🏀",
+      disclaimer: buildEventDisclaimer('March Madness', 'the National Collegiate Athletic Association (NCAA)'),
+      board: { color: '#13294b', ink: '#ff7a1a' },
+    },
+  },
   'super-bowl': {
     name: 'Super Bowl',
     path: '/countdown/super-bowl/',

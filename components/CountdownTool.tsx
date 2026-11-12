@@ -36,6 +36,7 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
   { title: "Valentine's Day", href: '/countdown/valentines-day/', note: 'February 14' },
   { title: 'Super Bowl', href: '/countdown/super-bowl/', note: 'Super Bowl LXI, Feb 14, 2027' },
+  { title: 'March Madness', href: '/countdown/march-madness/', note: 'Selection Sunday, Mar 14, 2027' },
   { title: 'Lunar New Year', href: '/countdown/lunar-new-year/', note: 'Feb 6, 2027' },
   { title: 'Easter', href: '/countdown/easter/', note: 'March 28, 2027' },
   { title: 'Halloween', href: '/countdown/halloween/', note: 'October 31' },

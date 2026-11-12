@@ -9,6 +9,7 @@
 - **Countdown pages:** 22 event pages under `/countdown/` (holidays, launches, eclipses, clock changes, retirement), a holidays board, and embeddable widgets at `/embed/countdown/…`. 14 guides under `/articles/`
 - **Design:** station design with line colours, split-flap answer boards, a classic-view toggle and dark mode
 - **Recent features:**
+  - **March Madness 2027 (Nov 12, open PR):** `/countdown/march-madness/`, "When Does March Madness 2027 Start?". The board counts to the first games (Opening Round, Tue Mar 16) and reads "arrived" through the men's title game (Apr 5, Ford Field, Detroit); a `KeyDates` table has every round of the first 76-team tournaments, men's and women's (women's Final Four Apr 2 and 4, Columbus). Dates from NCAA.com (May 7 and Aug 12 2026). Board `#13294b`/`#ff7a1a`, share card `og/countdown/march-madness.png?v=1`. Carries the same `components/KeyDates.tsx` commit as the Fable PR (identical file, so whichever merges second has no conflict there)
   - Tools hub row highlight (#165, merged and deployed Nov 12): the row under the pointer, or with keyboard focus, takes a wash of its line colour (`--hub-wash` in `lines.css`), so the All tools rows no longer run into each other. Mixed into `--dial` (8% light; 13% of the lifted `--line-rule` in dark, since the deep purple and blue vanished at plain mixes; quiz yellow 18% in light). Hover only under `(hover: hover)` so taps don't leave it stuck; 16px right padding keeps the sample tiles off the edge. The same `.st-hub` list is on the guides index, the time zone guides page and the 404, so they get it too. Classic view unchanged
   - **Copilot gap pages (Nov 12, #155 #158 #160 #161, merged and deployed Nov 12):** pages for the questions Bing Copilot answered from other sites (AI Performance → opportunity queries)
     - Decimal hours (#155): decimal → minutes chart (every hundredth), payroll rounding chart (tenths; quarter hours / 7-minute rule), reverse quick answers, 5 more FAQs, a print button per chart, maths in `lib/decimalTime.ts`. Title 64 characters (was 69). Also fixed Classic view on phones, where the minutes chart showed one figure per line
@@ -36,6 +37,7 @@
   - **First deploy of 2027:** the holidays page's title and heading say "2026–2027" in text (the lists and FAQs follow the build year); change them to 2027–2028. Lunar New Year 2026 is a one-off constant in `lib/holidays.ts` that can go then
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
+  - **After Apr 5 2027:** roll `/countdown/march-madness/` to 2028 (or retire it); add tip-off times after Selection Sunday, Mar 14
   - **When the NFL announces it:** add the Super Bowl LXI kickoff time; the page says it isn't announced yet
 - **Nov 3:** check whether the Oct 17–25 title and design changes moved Bing, Google and Copilot numbers (Thanksgiving, sleep, decimal hours)
 

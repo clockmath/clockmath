@@ -33,6 +33,7 @@ export const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'New Year', href: '/countdown/new-year/' },
   { title: "Valentine's Day", href: '/countdown/valentines-day/' },
   { title: 'Super Bowl', href: '/countdown/super-bowl/' },
+  { title: 'March Madness', href: '/countdown/march-madness/' },
   { title: 'Lunar New Year', href: '/countdown/lunar-new-year/' },
   { title: 'Easter', href: '/countdown/easter/' },
   { title: '4th of July', href: '/countdown/july-4th/' },
