@@ -150,6 +150,11 @@ const post = (url, body, headers = {}) =>
   assert.strictEqual(api.redirectTarget('/countdown/'), '/tools/countdown/');
   assert.strictEqual(api.redirectTarget('/countdown/christmas/'), null, 'event pages untouched');
   assert.strictEqual(api.redirectTarget('/tools/timezone/'), null);
+  // Time difference pages: the reverse order goes to the one page
+  assert.strictEqual(api.redirectTarget('/time/london-to-new-york/'), '/time/new-york-to-london/');
+  assert.strictEqual(api.redirectTarget('/time/toronto-to-calgary'), '/time/calgary-to-toronto/');
+  assert.strictEqual(api.redirectTarget('/time/new-york-to-london/'), null, 'canonical pair untouched');
+  assert.strictEqual(api.redirectTarget('/time/'), null);
   for (const p of ['//evil.com', '/blog//evil.com', '/tool/%2F%2Fevil.com']) {
     const t = api.redirectTarget(p);
     assert.ok(t === null || (t.startsWith('/') && !t.startsWith('//')), `${p} → ${t}`);

@@ -395,3 +395,61 @@ html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { colo
 /* ---- Holidays page year lists (Nov 2026): federal holidays, the days
    off, a weight heavier than the observances around them ---- */
 .station tr[data-federal] > td:first-child { font-weight: 700; }
+
+/* ---- Time difference pages (/time/…, Nov 2026): both clocks on the board
+   with the difference between them; the hour chart shaded for working hours,
+   waking hours and night. Layout and shading use the palette variables, so
+   classic view gets the same chart in its own colours ---- */
+.station .st-tp { padding-top: 0; }
+.station .st-tp-board { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "a d b"; align-items: center; gap: 20px 32px; }
+.station .st-tp-a { grid-area: a; }
+.station .st-tp-b { grid-area: b; }
+.station .st-tp-place { margin: 0 0 10px; font-size: 18px; font-weight: 700; }
+.station .st-tp-board .st-big.st-tp-time { font-size: clamp(56px, 7.5vw, 100px); }
+.station .st-tp-zone { margin: 12px 0 0; font-size: 15px; }
+/* The difference between the two clocks, set as big as they are */
+.station .st-tp-diff { grid-area: d; text-align: center; padding: 0 28px; border-inline: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.station .st-tp-board .st-big.st-tp-diff-fig { font-size: clamp(48px, 6vw, 84px); }
+.station .st-tp-diff-same { margin: 0; font-size: 30px; font-weight: 800; }
+.station .st-tp-diff-cap { margin: 10px 0 0; font-size: 15px; font-weight: 600; white-space: nowrap; }
+html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zone, .st-tp-diff-cap, .st-tp-diff-same) { color: var(--line-ink); }
+.station .st-tp-actions { align-items: center; }
+.station .st-tp-actions .st-seg { height: 46px; }
+.station .st-tp-prose > p { margin: 0 0 14px; }
+.station .st-tp-changes { margin-bottom: 4px; }
+.station .st-tp-changes li > :first-child { color: var(--text); }
+.station .st-tp-changes li > :last-child { white-space: nowrap; }
+.station .st-tp-meet li > :first-child small { display: block; margin-top: 2px; font-size: 14px; color: var(--quiet); }
+.station .st-tp-meet li > :last-child { white-space: nowrap; line-height: 1.45; }
+.station .st-tp-gaps { height: 42px; margin-bottom: 12px; }
+.station .st-tp-hours-cap { margin: 0 0 8px; font-size: 15px; color: var(--quiet); }
+.station .st-tp-table { width: 100%; max-width: 440px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.station .st-tp-table th { text-align: left; font-size: 14px; color: var(--quiet); font-weight: 600; padding: 6px 12px; border-bottom: 1px solid var(--rule); }
+.station .st-tp-table td { padding: 5px 12px; border-bottom: 1px solid var(--dial); color: var(--ink); font-size: 16px; width: 50%; }
+.station .st-tp-table td small { margin-left: 8px; font-size: 12px; color: var(--quiet); }
+.station :is(.st-tp-table td, .st-tp-key span)[data-kind="work"] { background: var(--enamel-wash); font-weight: 700; }
+.station :is(.st-tp-table td, .st-tp-key span)[data-kind="awake"] { background: var(--wash); }
+.station .st-tp-table td[data-kind="night"] { color: var(--quiet); }
+.station .st-tp-key { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 12px 0 0; font-size: 13px; color: var(--quiet); }
+.station .st-tp-key span { padding: 2px 8px; border-radius: 4px; }
+.station .st-tp-key span[data-kind="night"] { border: 1px solid var(--rule); }
+.station .st-tp-index li > :first-child { font-weight: 700; color: var(--ink); }
+.station .st-tp-index li > :last-child { font-weight: 400; color: var(--text); }
+@media (max-width: 760px) {
+  /* Phones: the two clocks side by side, the difference under them, all
+     centred on the board (Mark: left-aligned clocks over a centred
+     difference looked off centre) */
+  .station .st-tp-city { text-align: center; }
+  .station .st-tp-board { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "a b" "d d"; gap: 16px 14px; align-items: start; }
+  .station .st-tp-place { font-size: 15px; margin-bottom: 6px; }
+  .station .st-tp-board .st-big.st-tp-time { font-size: clamp(40px, 11vw, 76px); }
+  .station .st-tp-zone { font-size: 13px; margin-top: 8px; }
+  .station .st-tp-utc { display: none; }
+  .station .st-tp-diff { display: flex; align-items: baseline; justify-content: center; gap: 12px; padding: 12px 0 0; border-inline: 0;
+                         border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+  .station .st-tp-board .st-big.st-tp-diff-fig { font-size: clamp(44px, 10vw, 64px); }
+  .station .st-tp-diff-cap { margin: 0; font-size: 16px; }
+  .station .st-tp-diff-same { font-size: 24px; }
+  .station :is(.st-tp-changes, .st-tp-meet, .st-tp-index) li { grid-template-columns: 1fr; gap: 2px; }
+  .station :is(.st-tp-changes, .st-tp-meet, .st-tp-index) li > :last-child { text-align: left; }
+}

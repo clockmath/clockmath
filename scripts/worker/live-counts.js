@@ -157,6 +157,63 @@ function liveToday(kind, nowMs, timeZone) {
   }
 }
 
+// ---- Time difference pages (/time/<a>-to-<b>/) ----
+// Nov 2026: "London is 5 hours ahead of New York" and the two clocks are the
+// answer Bing and Copilot read, and the gap changes a few times a year. The
+// page carries the build's table of offsets, data-pair-spec="from:a:b,…"
+// (ms, then each city's UTC offset in minutes; lib/timePairs.ts liveSpec),
+// so this needs no time zone data of its own: workerd's could predate the
+// 2026 Canadian changes. Mirror of lib/timePairs.ts; tests/timePairs.test.ts
+// checks the two agree.
+function pairOffsets(spec, nowMs) {
+  let current = null;
+  for (const row of String(spec || '').split(',')) {
+    const [from, a, b] = row.split(':').map(Number);
+    if ([from, a, b].some((n) => !Number.isFinite(n))) return null;
+    if (current === null || from <= nowMs) current = { a, b };
+  }
+  return current;
+}
+
+function pairGap(minutes) {
+  const m = Math.abs(minutes);
+  const h = Math.floor(m / 60);
+  const r = m % 60;
+  const hours = h === 1 ? '1 hour' : h + ' hours';
+  if (r === 0) return hours;
+  if (h === 0) return r + ' minutes';
+  return hours + ' ' + r + ' minutes';
+}
+
+const PAIR_WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function pairClock(nowMs, offset) {
+  const d = new Date(nowMs + offset * 60000);
+  const h = d.getUTCHours();
+  return PAIR_WEEKDAYS[d.getUTCDay()] + ' ' + (h % 12 || 12) + ':' + pad2(d.getUTCMinutes()) + ' ' + (h < 12 ? 'AM' : 'PM');
+}
+
+// Text for a data-pair="<kind>" element, given the offsets now and "A|B".
+function livePair(kind, offsets, names, nowMs) {
+  if (!offsets) return null;
+  const [aName, bName] = String(names || '').split('|');
+  const gap = offsets.b - offsets.a;
+  switch (kind) {
+    case 'sentence':
+      if (!aName || !bName) return null;
+      if (gap === 0) return aName + ' and ' + bName + ' are on the same time';
+      return bName + ' is ' + pairGap(gap) + (gap > 0 ? ' ahead of ' : ' behind ') + aName;
+    case 'gap':
+      return gap === 0 ? 'no difference' : pairGap(gap);
+    case 'time-a':
+      return pairClock(nowMs, offsets.a);
+    case 'time-b':
+      return pairClock(nowMs, offsets.b);
+    default:
+      return null;
+  }
+}
+
 function withLiveCounts(res, request) {
   const type = res.headers.get('Content-Type') || '';
   if (!type.includes('text/html') || typeof HTMLRewriter === 'undefined') return res;
@@ -165,6 +222,8 @@ function withLiveCounts(res, request) {
   let days = null;
   let nextDate = null;
   let keep = false;
+  let pairNow = null;
+  let pairNames = '';
   return new HTMLRewriter()
     .on('[data-days-until]', {
       element(el) {
@@ -215,6 +274,26 @@ function withLiveCounts(res, request) {
       element(el) {
         const text = liveToday(el.getAttribute('data-live-today'), now, timeZone);
         if (text !== null) el.setInnerContent(text);
+      },
+    })
+    .on('[data-pair-spec]', {
+      element(el) {
+        pairNow = pairOffsets(el.getAttribute('data-pair-spec'), now);
+        pairNames = el.getAttribute('data-pair-names') || '';
+      },
+    })
+    .on('[data-pair]', {
+      element(el) {
+        const text = livePair(el.getAttribute('data-pair'), pairNow, pairNames, now);
+        if (text !== null) el.setInnerContent(text);
+      },
+    })
+    // Rows that stop being true at an instant (a clock change that has
+    // happened): gone from the HTML once it has passed
+    .on('[data-live-until]', {
+      element(el) {
+        const until = Number(el.getAttribute('data-live-until'));
+        if (until && now >= until) el.remove();
       },
     })
     .on('[data-live-date]', {

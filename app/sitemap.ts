@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
+import { TIME_PAIRS } from '@/lib/timePairs';
 
 // Define the base URL for the site
 const baseUrl = 'https://clockmath.com';
@@ -90,7 +91,8 @@ function gitLastmod(page: string): string | null {
 export default function sitemap(): MetadataRoute.Sitemap {
   const appDir = path.join(process.cwd(), 'app');
   // Embeds (/embed/…) are noindex widget frames, not pages to list.
-  const pages = Array.from(new Set(getAllPages(appDir))).filter((p) => !p.startsWith('/embed'));
+  // Dynamic routes (/time/[pair]) are listed from their data below.
+  const pages = Array.from(new Set(getAllPages(appDir))).filter((p) => !p.startsWith('/embed') && !p.includes('['));
   
   // Define custom priorities and change frequencies for different page types
   const sitemapEntries: MetadataRoute.Sitemap = pages.map((page) => {
@@ -105,6 +107,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (page === '/tools' || page.startsWith('/tools/')) {
       priority = 0.9;
       changeFreq = 'monthly';
+    } else if (page === '/time') {
+      priority = 0.8;
     } else if (page.startsWith('/countdown/')) {
       // Event countdown landing pages — deliberate traffic-capture pages.
       priority = 0.8;
@@ -144,10 +148,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
   
-  // Add any additional static pages that might not be auto-discovered
-  const additionalPages: MetadataRoute.Sitemap = [
-    // Add any API routes or special pages here if needed
-  ];
+  // Time difference pages (Nov 2026): one per pair in lib/timePairs.ts,
+  // dated by the last commit to the template or the pair data. ':(literal)'
+  // because git reads "[pair]" in a path as a pattern.
+  let pairLastmod = '2026-11-12';
+  try {
+    const d = execFileSync('git', ['log', '-1', '--format=%cs', '--', ':(literal)app/time/[pair]', 'lib/timePairs.ts', 'components/TimePairBoard.tsx', 'components/TimePairHours.tsx'], {
+      encoding: 'utf-8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) pairLastmod = d;
+  } catch {
+    // keep the default
+  }
+  const additionalPages: MetadataRoute.Sitemap = TIME_PAIRS.map((p) => ({
+    url: `${baseUrl}/time/${p.slug}/`,
+    lastModified: pairLastmod,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
   
   return [...sitemapEntries, ...additionalPages];
 }
