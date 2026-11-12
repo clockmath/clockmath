@@ -9,6 +9,7 @@
 - **Countdown pages:** 22 event pages under `/countdown/` (holidays, launches, eclipses, clock changes, retirement), a holidays board, and embeddable widgets at `/embed/countdown/…`. 14 guides under `/articles/`
 - **Design:** station design with line colours, split-flap answer boards, a classic-view toggle and dark mode
 - **Recent features:**
+  - **Fable countdown (Nov 12, open PR):** `/countdown/fable/`, Feb 23 2027 (Xbox Series X|S, PS5, PC, Game Pass day one), with a key-dates table for Premium Edition early access (Feb 18). New `components/KeyDates.tsx`: the dates around an event with live "days left" (rows carry the worker's `data-days-until` + `data-keep`, like the holidays board), shared by the event pages that follow. Board `#3f2a1d`/`#f2c45a`, share card `og/countdown/fable.png?v=1`. First of the Nov 12 event pages Mark approved: Fable, Final Fantasy VII Revelation, God of War Laufey, Beyond the Spider-Verse, March Madness 2027, the 2027 Women's World Cup, then one batched PR for the first day of spring/summer and Ramadan/Eid. Each is its own PR off `main`; they touch the same lists (`lib/countdowns.ts`, the two `POPULAR_COUNTDOWNS`, the holidays board, card subtitles, NOTES.md), so the second to merge may need a rebase
   - **Copilot gap pages (Nov 12, #155 #158 #160 #161, merged and deployed Nov 12):** pages for the questions Bing Copilot answered from other sites (AI Performance → opportunity queries)
     - Decimal hours (#155): decimal → minutes chart (every hundredth), payroll rounding chart (tenths; quarter hours / 7-minute rule), reverse quick answers, 5 more FAQs, a print button per chart, maths in `lib/decimalTime.ts`. Title 64 characters (was 69). Also fixed Classic view on phones, where the minutes chart showed one figure per line
     - Date calculator `/tools/date-calculator/` (#158): a date plus or minus years, months, weeks, days or business days (optionally skipping US federal holidays, observed dates). Month ends clamp, years and months before weeks and days, start day not counted. `lib/dateAdd.ts` on `lib/dateDiff.ts`; linked both ways with days between dates
@@ -34,6 +35,7 @@
   - **First deploy of 2027:** the holidays page's title and heading say "2026–2027" in text (the lists and FAQs follow the build year); change them to 2027–2028. Lunar New Year 2026 is a one-off constant in `lib/holidays.ts` that can go then
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
+  - **On or after Feb 23 2027:** refresh `/countdown/fable/` for release ("is Fable out", past tense, unlock times); Xbox hadn't announced an unlock hour by Nov 12
   - **When the NFL announces it:** add the Super Bowl LXI kickoff time; the page says it isn't announced yet
 - **Nov 3:** check whether the Oct 17–25 title and design changes moved Bing, Google and Copilot numbers (Thanksgiving, sleep, decimal hours)
 
