@@ -2,6 +2,8 @@
 
 import EventPage from '@/components/EventPage';
 import { countdownProps } from '@/lib/countdowns';
+import WorkingDays from '@/components/WorkingDays';
+import { thanksgivingEveAhead } from '@/lib/workingDays';
 
 export default function ThanksgivingCountdownPage() {
   return (
@@ -9,7 +11,7 @@ export default function ThanksgivingCountdownPage() {
       {...countdownProps('thanksgiving')}
       heading={'How Many Days Until Thanksgiving?'}
       tagline="Live countdown to the fourth Thursday of November"
-      lastUpdated="2026-10-17"
+      lastUpdated="2026-11-12"
       breadcrumb="Thanksgiving"
       facts={[
         { label: 'Thanksgiving 2026', value: 'Thursday, November 26' },
@@ -23,6 +25,11 @@ export default function ThanksgivingCountdownPage() {
           fixed date, Thanksgiving moves each year — the timer above always tracks the next one
           automatically, down to the second.
         </>
+      }
+      extraContent={
+        <WorkingDays title="Working days until Thanksgiving" through={thanksgivingEveAhead} throughLabel="the day before Thanksgiving">
+          Many people also take Black Friday off, which makes a four-day weekend.
+        </WorkingDays>
       }
       faqs={[
         {
@@ -39,6 +46,11 @@ export default function ThanksgivingCountdownPage() {
           question: 'How many weeks until Thanksgiving?',
           answer:
             'The line at the top of this page gives the weeks and days left, updated daily. Thanksgiving 2026 is Thursday, November 26: from mid-October that is about six weeks away, and from the start of November about three and a half.',
+        },
+        {
+          question: 'How many working days until Thanksgiving?',
+          answer:
+            'The "Working days until Thanksgiving" section on this page counts Monday to Friday from today through the Wednesday before Thanksgiving, leaving out federal holidays such as Veterans Day. In 2026 that Wednesday is November 25.',
         },
         {
           question: 'What day is the day before Thanksgiving?',

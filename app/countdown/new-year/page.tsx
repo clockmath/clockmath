@@ -3,6 +3,8 @@
 import EventPage from '@/components/EventPage';
 import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesTable';
+import WorkingDays from '@/components/WorkingDays';
+import { yearEnd } from '@/lib/workingDays';
 
 export default function NewYearCountdownPage() {
   return (
@@ -10,7 +12,7 @@ export default function NewYearCountdownPage() {
       {...countdownProps('new-year')}
       heading={'How Many Days Until New Year?'}
       tagline="Live countdown to midnight, January 1 — down to the second"
-      lastUpdated="2026-10-15"
+      lastUpdated="2026-11-12"
       breadcrumb="New Year"
       facts={[
         { label: 'Date', value: 'January 1' },
@@ -24,6 +26,10 @@ export default function NewYearCountdownPage() {
         </>
       }
       extraContent={
+        <>
+        <WorkingDays title="Working days left this year" through={yearEnd} throughLabel="New Year's Eve">
+          Handy for using up vacation days before they reset, or for counting down to the holidays.
+        </WorkingDays>
         <HolidayDatesTable
           name="New Year's Day"
           month={0}
@@ -32,12 +38,18 @@ export default function NewYearCountdownPage() {
           observedLabel="US federal holiday observed"
           note="When January 1 falls on a Saturday, the US federal holiday is the Friday before — December 31 of the old year."
         />
+        </>
       }
       faqs={[
         {
           question: 'How many days until New Year?',
           answer:
             "New Year's Day is January 1. The line at the top of this page gives the days and weeks left, updated daily, and the timer counts down to midnight in your timezone.",
+        },
+        {
+          question: 'How many working days are left in the year?',
+          answer:
+            'The "Working days left this year" section on this page counts Monday to Friday from today through December 31, leaving out US federal holidays such as Thanksgiving and Christmas. New Year’s Day 2028 falls on a Saturday, so the federal holiday is Friday, December 31, 2027, which takes one more working day off the end of 2027.',
         },
         {
           question: 'What day of the week is New Year’s Day 2027?',
