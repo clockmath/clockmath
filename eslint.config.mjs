@@ -10,6 +10,10 @@ const eslintConfig = [
   {
     ignores: [
       '.next/', 'out/', '.vercel/', 'drafts/', 'next-env.d.ts',
+      // Nov 12 2026: Claude Code worktrees (.claude/worktrees/*) are whole
+      // checkouts with their own .next/ and out/; linting them from the main
+      // checkout gave 3,365 errors and stopped `npm run deploy`
+      '.claude/',
       // Plain Node (CommonJS) scripts, never linted by `next lint`. The
       // worker files are linted on their own below; their tests are Node.
       'scripts/*',
