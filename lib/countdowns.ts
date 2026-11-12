@@ -160,6 +160,17 @@ export const COUNTDOWNS = {
       board: { color: '#23402f' },
     },
   },
+  'god-of-war-laufey': {
+    name: 'God of War Laufey',
+    path: '/countdown/god-of-war-laufey/',
+    spec: {
+      target: new Date(2027, 4, 20),
+      countdownTitle: 'God of War Laufey',
+      arrivedLabel: 'God of War Laufey is out! 🪓',
+      disclaimer: buildEventDisclaimer('God of War', 'Sony Interactive Entertainment or Santa Monica Studio'),
+      board: { color: '#5c1a14', ink: '#f3e3c3' },
+    },
+  },
   'olympics-2028': {
     name: 'LA 2028 Olympics',
     path: '/countdown/olympics-2028/',
