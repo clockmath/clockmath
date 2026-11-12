@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { buildDay } from '@/lib/buildDay';
 import { intervalToDuration } from 'date-fns';
+import { isLocalMidnight, liveSpecFor, nthWeekdayOfMonth, ymd } from '@/lib/liveSpec';
 
 export interface EventCountdownProps {
   /** Fixed one-off target (e.g. a game release). Ignored if `recurring` is set. */
@@ -73,13 +74,6 @@ function nextWeekday(weekday: number, spanDays = 1, now = new Date()): number {
   return today.getTime();
 }
 
-// The nth `weekday` of `month` in `year`, plus `offsetDays`, at midnight.
-function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: number, offsetDays = 0): Date {
-  const first = new Date(year, month, 1);
-  const firstOccurrence = 1 + ((weekday - first.getDay() + 7) % 7);
-  return new Date(year, month, firstOccurrence + (n - 1) * 7 + offsetDays, 0, 0, 0, 0);
-}
-
 // " That's 6 weeks." / " That's 5 weeks and 3 days." — empty under a week
 // or beyond a year (nobody counts 91 weeks). Mirrored in
 // scripts/worker/live-counts.js; keep the two in step.
@@ -91,18 +85,6 @@ export function weeksPhrase(days: number): string {
   return rest ? ` That's ${w} and ${rest === 1 ? '1 day' : `${rest} days`}.` : ` That's ${w}.`;
 }
 
-// Calendar date as YYYY-MM-DD, from local fields (the dates above are built
-// with the local-time constructor, so these are the intended calendar days).
-const ymd = (d: Date): string =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-// A release-day target (`new Date(2026, 10, 19)`) is local midnight wherever
-// it is evaluated: the build machine's zone in the static HTML, the
-// visitor's in the browser. Oct 2026 review: its instant used to be baked
-// into the worker's "t:" spec and the pre-mount count, so both followed the
-// build machine's zone; as a calendar day they follow the visitor's.
-const isLocalMidnight = (d: Date): boolean =>
-  d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0 && d.getMilliseconds() === 0;
 
 // Start (local midnight, ms) of the first range that hasn't ended yet — so
 // during the event it returns this year's start (reads as arrived).
@@ -278,27 +260,11 @@ export function useEventCountdown({ target, recurring, weekly, nthWeekday, dateR
   // sentence is what crawlers and AI answers quote, so it must not freeze on
   // the build day. "t:<ms>" fixed instant, "d:<dates>" the next few
   // occurrences of a recurring date, "w:<weekday>:<span>" a weekly event.
-  const liveSpec = useMemo(() => {
-    if (dateRanges) {
-      // "start/end" entries; the worker treats a range like the day itself.
-      return `d:${dateRanges.map((r) => (r.end && r.end !== r.start ? `${r.start}/${r.end}` : r.start)).join(',')}`;
-    }
-    if (recurring || nthWeekday) {
-      const year = new Date().getFullYear();
-      const dates: string[] = [];
-      for (let y = year; y <= year + 5; y++) {
-        const d = recurring
-          ? new Date(y, recurring.month, recurring.day)
-          : nthWeekdayOfMonth(y, nthWeekday!.month, nthWeekday!.weekday, nthWeekday!.n, nthWeekday!.offsetDays);
-        dates.push(ymd(d));
-      }
-      return `d:${dates.join(',')}`;
-    }
-    if (weekly) return `w:${weekly.weekday}:${weekly.spanDays ?? 1}`;
-    if (target) return isLocalMidnight(target) ? `d:${ymd(target)}` : `t:${target.getTime()}`;
-    return undefined;
+  const liveSpec = useMemo(
+    () => liveSpecFor({ target, recurring, weekly, nthWeekday, dateRanges }, new Date().getFullYear()),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey]);
+    [target?.getTime(), recurring?.month, recurring?.day, weekly?.weekday, weekly?.spanDays, nthWeekday?.month, nthWeekday?.weekday, nthWeekday?.n, nthWeekday?.offsetDays, rangesKey],
+  );
   const fixedTarget = !recurring && !weekly && !nthWeekday && !dateRanges && target ? target.getTime() : undefined;
 
   return { ready, noUpcoming, isPast, tiles, dateLabel, totalDays, liveSpec, fixedTarget, targetMs, nowMs };

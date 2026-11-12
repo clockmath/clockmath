@@ -21,6 +21,7 @@ const BY_TOOL: Record<string, LineId> = {
   'market-hours': 'zones',
   sleep: 'sleep',
   countdown: 'countdowns',
+  'countdown-widget': 'countdowns',
   quiz: 'quiz',
   articles: 'guides',
 };
@@ -37,7 +38,7 @@ export function lineForHref(href: string): LineId | null {
   if (/^\/tools\/(timesheet|overtime|decimal-hours)$/.test(path)) return 'work';
   if (/^\/tools\/(timezone|market-hours)$/.test(path) || path === '/time' || path.startsWith('/time/')) return 'zones';
   if (path === '/tools/sleep') return 'sleep';
-  if (path === '/tools/countdown' || path.startsWith('/countdown')) return 'countdowns';
+  if (path === '/tools/countdown' || path === '/tools/countdown-widget' || path.startsWith('/countdown')) return 'countdowns';
   if (path === '/tools/quiz') return 'quiz';
   if (path.startsWith('/articles')) return 'guides';
   return null;
