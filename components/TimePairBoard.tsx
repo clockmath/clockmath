@@ -57,11 +57,11 @@ export function TimePairBoard({
   const offB = now === null ? build.b : getTimezoneOffset(b.zone, new Date(ms));
   const gap = offB - offA;
 
-  // The difference as a figure between the clocks: "+5h", "−3h", "+9h 30m"
-  // (B against A). From the build's gap until mount, like the tiles' "--"
+  // The difference as a figure between the clocks: "5h", "9h 30m", with
+  // "London ahead" beside it (no +/− sign: Mark, Nov 2026, it looked bad and
+  // the words already say which way). From the build's gap until mount
   const gapH = Math.floor(Math.abs(gap) / 60);
   const gapM = Math.abs(gap) % 60;
-  const sign = gap > 0 ? '+' : '−';
 
   const city = (side: Side, offset: number, area: 'a' | 'b') => {
     const d = new Date(ms + offset * 60_000);
@@ -100,7 +100,7 @@ export function TimePairBoard({
             <p className="st-tp-diff-same">Same time</p>
           ) : (
             <p className="st-big st-tp-diff-fig" aria-hidden="true">
-              <Flap value={`${sign}${gapH}`} />
+              <Flap value={String(gapH)} />
               <span className="u">h</span>
               {gapM > 0 && (
                 <>
