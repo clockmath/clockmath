@@ -396,12 +396,12 @@ html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { colo
    off, a weight heavier than the observances around them ---- */
 .station tr[data-federal] > td:first-child { font-weight: 700; }
 
-/* ---- Time difference pages (/time/…, Nov 2026): both clocks on the board,
-   the gap in a sentence across it; the hour chart shaded for working hours,
+/* ---- Time difference pages (/time/…, Nov 2026): both clocks on the board
+   with the difference between them; the hour chart shaded for working hours,
    waking hours and night. Layout and shading use the palette variables, so
    classic view gets the same chart in its own colours ---- */
 .station .st-tp { padding-top: 0; }
-.station .st-tp-board { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "a d b" "s s s"; align-items: center; gap: 20px 32px; }
+.station .st-tp-board { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "a d b"; align-items: center; gap: 20px 32px; }
 .station .st-tp-a { grid-area: a; }
 .station .st-tp-b { grid-area: b; }
 .station .st-tp-place { margin: 0 0 10px; font-size: 18px; font-weight: 700; }
@@ -412,18 +412,15 @@ html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { colo
 .station .st-tp-board .st-big.st-tp-diff-fig { font-size: clamp(48px, 6vw, 84px); }
 .station .st-tp-diff-same { margin: 0; font-size: 30px; font-weight: 800; }
 .station .st-tp-diff-cap { margin: 10px 0 0; font-size: 15px; font-weight: 600; white-space: nowrap; }
-.station .st-tp-sentence { grid-area: s; }
-.station .st-tp-gap { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.3; }
-html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zone, .st-tp-gap, .st-tp-diff-cap, .st-tp-diff-same) { color: var(--line-ink); }
-html:not(.classic) .station[data-line] .st-tp-sentence { padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--line-ink) 35%, transparent); }
+html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zone, .st-tp-diff-cap, .st-tp-diff-same) { color: var(--line-ink); }
 .station .st-tp-actions { align-items: center; }
 .station .st-tp-actions .st-seg { height: 46px; }
-.station .st-tp-prose > p, .station .st-tp-meet p { margin: 0 0 14px; }
+.station .st-tp-prose > p { margin: 0 0 14px; }
 .station .st-tp-changes { margin-bottom: 4px; }
 .station .st-tp-changes li > :first-child { color: var(--text); }
 .station .st-tp-changes li > :last-child { white-space: nowrap; }
-.station .st-tp-meet h3 { margin: 18px 0 4px; font-size: 17px; font-weight: 700; color: var(--ink); }
-.station .st-tp-meet:first-child h3 { margin-top: 0; }
+.station .st-tp-meet li > :first-child small { display: block; margin-top: 2px; font-size: 14px; color: var(--quiet); }
+.station .st-tp-meet li > :last-child { white-space: nowrap; line-height: 1.45; }
 .station .st-tp-gaps { height: 42px; margin-bottom: 12px; }
 .station .st-tp-hours-cap { margin: 0 0 8px; font-size: 15px; color: var(--quiet); }
 .station .st-tp-table { width: 100%; max-width: 440px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -440,7 +437,7 @@ html:not(.classic) .station[data-line] .st-tp-sentence { padding-top: 16px; bord
 .station .st-tp-index li > :last-child { font-weight: 400; color: var(--text); }
 @media (max-width: 760px) {
   /* Phones: the two clocks side by side, the difference under them */
-  .station .st-tp-board { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "a b" "d d" "s s"; gap: 16px 14px; align-items: start; }
+  .station .st-tp-board { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "a b" "d d"; gap: 16px 14px; align-items: start; }
   .station .st-tp-place { font-size: 15px; margin-bottom: 6px; }
   .station .st-tp-board .st-big.st-tp-time { font-size: clamp(40px, 11vw, 76px); }
   .station .st-tp-zone { font-size: 13px; margin-top: 8px; }
@@ -450,7 +447,6 @@ html:not(.classic) .station[data-line] .st-tp-sentence { padding-top: 16px; bord
   .station .st-tp-board .st-big.st-tp-diff-fig { font-size: clamp(44px, 10vw, 64px); }
   .station .st-tp-diff-cap { margin: 0; font-size: 16px; }
   .station .st-tp-diff-same { font-size: 24px; }
-  .station .st-tp-gap { font-size: 18px; }
-  .station .st-tp-changes li, .station .st-tp-index li { grid-template-columns: 1fr; gap: 2px; }
-  .station .st-tp-changes li > :last-child, .station .st-tp-index li > :last-child { text-align: left; }
+  .station :is(.st-tp-changes, .st-tp-meet, .st-tp-index) li { grid-template-columns: 1fr; gap: 2px; }
+  .station :is(.st-tp-changes, .st-tp-meet, .st-tp-index) li > :last-child { text-align: left; }
 }

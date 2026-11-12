@@ -1,10 +1,10 @@
 /**
  * The board on a time difference page (/time/<a>-to-<b>/): the time now in
- * both cities on split-flap tiles, and the gap in a sentence.
+ * both cities on split-flap tiles, with the difference between them.
  *
  * Two clocks keep it right, as on today's date page. In the browser, the
  * device's clock, ticking. In the static HTML (what Bing and Copilot read),
- * the sentence and both times are plain-text spans the worker rewrites per
+ * the answer in words (visually hidden) is plain-text spans the worker rewrites per
  * request from the build's offset table on data-pair-spec
  * (scripts/worker/live-counts.js); they carry suppressHydrationWarning, since
  * the worker's text and the first client render (the build's) can differ.
@@ -69,9 +69,9 @@ export function TimePairBoard({
     const [clock, suffix] = formatClock(minutes, is24h).split(' ');
     const [hh, mm] = now === null ? ['--', '--'] : clock.split(':');
     return (
-      <div className={`st-tp-city st-tp-${area}`}>
+      <div className={`st-tp-city st-tp-${area}`} aria-hidden="true">
         <p className="st-tp-place">{side.name}</p>
-        <p className="st-big st-tp-time" aria-hidden="true">
+        <p className="st-big st-tp-time">
           <Flap value={hh} />
           <span className="st-tz-colon">:</span>
           <Flap value={mm} />
@@ -93,13 +93,32 @@ export function TimePairBoard({
 
   return (
     <section className="st-calc st-tp" aria-label={`Time in ${a.name} and ${b.name}`}>
-      <div className="st-answer st-tp-board">
+      {/* The tiles are what people see; the answer in words is for screen
+          readers, crawlers and Copilot (the tiles are "--" in the static
+          HTML), and the worker rewrites it per request. Not shown as well:
+          it said what the tiles and "5h London ahead" already say (Nov 2026,
+          Mark: no text that repeats what's shown) */}
+      <div className="st-answer st-tp-board" data-pair-spec={spec} data-pair-names={`${a.name}|${b.name}`}>
+        <p className="sr-only">
+          <span data-pair="sentence" suppressHydrationWarning>
+            {relationSentence(a.name, b.name, gap)}
+          </span>
+          . It is{' '}
+          <span data-pair="time-a" suppressHydrationWarning>
+            {wallClockLabel(ms, offA, is24h)}
+          </span>{' '}
+          in {a.name} and{' '}
+          <span data-pair="time-b" suppressHydrationWarning>
+            {wallClockLabel(ms, offB, is24h)}
+          </span>{' '}
+          in {b.name}.
+        </p>
         {city(a, offA, 'a')}
-        <div className="st-tp-diff">
+        <div className="st-tp-diff" aria-hidden="true">
           {gap === 0 ? (
             <p className="st-tp-diff-same">Same time</p>
           ) : (
-            <p className="st-big st-tp-diff-fig" aria-hidden="true">
+            <p className="st-big st-tp-diff-fig">
               <Flap value={String(gapH)} />
               <span className="u">h</span>
               {gapM > 0 && (
@@ -110,31 +129,9 @@ export function TimePairBoard({
               )}
             </p>
           )}
-          <p className="st-tp-diff-cap">
-            {gap === 0 ? 'No difference' : `${b.name} ${gap > 0 ? 'ahead' : 'behind'}`}
-          </p>
+          {gap !== 0 && <p className="st-tp-diff-cap">{`${b.name} ${gap > 0 ? 'ahead' : 'behind'}`}</p>}
         </div>
         {city(b, offB, 'b')}
-        {/* The answer as sentences: what crawlers read and Copilot quotes */}
-        <div className="st-tp-sentence" data-pair-spec={spec} data-pair-names={`${a.name}|${b.name}`}>
-          <p className="st-tp-gap">
-            <span data-pair="sentence" suppressHydrationWarning>
-              {relationSentence(a.name, b.name, gap)}
-            </span>
-            .
-          </p>
-          <p className="st-note">
-            It is{' '}
-            <span data-pair="time-a" suppressHydrationWarning>
-              {wallClockLabel(ms, offA, is24h)}
-            </span>{' '}
-            in {a.name} and{' '}
-            <span data-pair="time-b" suppressHydrationWarning>
-              {wallClockLabel(ms, offB, is24h)}
-            </span>{' '}
-            in {b.name}.
-          </p>
-        </div>
       </div>
       <div className="st-actions st-tp-actions">
         <Link className="st-btn primary" href={converterHref}>

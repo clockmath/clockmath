@@ -12,7 +12,6 @@ import {
   TIME_PAIRS,
   abbrFor,
   dayShiftWords,
-  formatClock,
   formatGap,
   gapChanges,
   gapOf,
@@ -24,12 +23,13 @@ import {
   pairTitle,
   segmentAt,
   segments,
+  shareWords,
   wallDateLabel,
+  windowRange,
   yearOfGaps,
   yearSentence,
   type GapChange,
   type TimePair,
-  type Window,
 } from '@/lib/timePairs';
 
 // Nov 2026: one static page per pair in lib/timePairs.ts. Every figure is
@@ -75,12 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pair: str
   });
 }
 
-/** "9:00 AM to 12:00 PM in New York (2:00 to 5:00 PM in London)" */
-function windowWords(p: TimePair, gap: number, w: Window): string {
-  return `${formatClock(w.aStart)} to ${formatClock(w.aEnd)} in ${p.a.name}, which is ${formatClock(w.aStart + gap)} to ${formatClock(w.aEnd + gap)}${dayShiftWords(w.bDayShift)} in ${p.b.name}`;
-}
-
-/** "Clocks go forward 1 hour, 2:00 AM → 3:00 AM" for the city that moved. */
+/** "New York clocks go forward (EST → EDT)" for the city that moved. */
 function changeWords(p: TimePair, c: GapChange): string {
   const parts: string[] = [];
   for (const side of ['a', 'b'] as const) {
@@ -88,13 +83,7 @@ function changeWords(p: TimePair, c: GapChange): string {
     const after = c.after[side];
     if (before === after) continue;
     const place = p[side];
-    const local = (offset: number) => {
-      const d = new Date(c.at + offset * 60_000);
-      return formatClock(d.getUTCHours() * 60 + d.getUTCMinutes());
-    };
-    parts.push(
-      `${place.name} ${after > before ? 'goes forward' : 'goes back'} ${formatGap(after - before)} (${local(before)} → ${local(after)}, ${abbrFor(place, before)} → ${abbrFor(place, after)})`,
-    );
+    parts.push(`${place.name} clocks go ${after > before ? 'forward' : 'back'} (${abbrFor(place, before)} → ${abbrFor(place, after)})`);
   }
   return parts.join('; ');
 }
@@ -112,7 +101,6 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
   const { segs, year, changes, faqs } = pairData(p);
   const now = segmentAt(segs, BUILD_MS);
   const converterHref = `/tools/timezone/?${new URLSearchParams({ from: p.a.zone, to: p.b.zone, fromName: p.a.name, toName: p.b.name })}`;
-  const gapLabel = (days: number, i: number) => (i === 0 && days > 300 ? 'most of the year' : `about ${days} days a year`);
   const others = TIME_PAIRS.filter((o) => o.slug !== p.slug);
   const related = [...others.filter((o) => [o.a.slug, o.b.slug].some((s) => s === p.a.slug || s === p.b.slug)), ...others.filter((o) => ![o.a.slug, o.b.slug].some((s) => s === p.a.slug || s === p.b.slug))];
 
@@ -139,8 +127,7 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
           {p.a.name} to {p.b.name} Time
         </h1>
         {/* No lede (Nov 2026, Mark): the board with the two times and the
-            difference is the answer, so it comes straight after the heading;
-            the pair's context opens "Through the year" instead */}
+            difference is the answer, so it comes straight after the heading */}
       </div>
 
       <TimePairBoard
@@ -154,15 +141,23 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
       <section className="st-more">
         <h2>Through the year</h2>
         <div className="st-tp-prose">
-          <p>{p.context}</p>
-          <p>{yearSentence(p, year)}</p>
-          {changes.length > 0 ? (
+          {year.length === 1 ? (
+            // One gap all year: the board already shows it, so say only that
+            // it holds, and why. The next date goes once it has passed
+            <p>
+              The difference stays the same all year:{' '}
+              {changes.length === 0 ? (
+                'neither city changes its clocks.'
+              ) : (
+                <>
+                  both change their clocks on the same days
+                  <span data-live-until={String(changes[0].at)}>, next on {changeDay(changes[0])}</span>.
+                </>
+              )}
+            </p>
+          ) : (
             <>
-              <p>
-                {changes.every((c) => c.moved === 'both')
-                  ? 'Both change their clocks on the same days, so the gap stays the same:'
-                  : 'The gap changes when one city changes its clocks and the other doesn’t (yet):'}
-              </p>
+              <p>{yearSentence(p, year)}</p>
               <ul className="st-list st-tp-changes">
                 {changes.map((c) => (
                   // Removed by the worker once the change has happened
@@ -177,44 +172,46 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
                 ))}
               </ul>
             </>
-          ) : (
-            <p>Neither city changes its clocks, so the difference is the same every day of the year.</p>
           )}
         </div>
       </section>
 
       <section className="st-more">
-        <h2>Working hours and meetings</h2>
-        <div className="st-tp-prose">
-          {year.map((g, i) => {
-            const advice = meetingAdvice(g.gap);
-            return (
-              <div key={g.gap} className="st-tp-meet">
-                {year.length > 1 && (
-                  <h3>
-                    {gapShort(p, g.gap)} ({gapLabel(g.days, i)})
-                  </h3>
-                )}
-                {advice.work ? (
-                  <p>
-                    <strong>Shared working hours: {formatGap(advice.work.aEnd - advice.work.aStart)} a day</strong>, from {windowWords(p, g.gap, advice.work)}.
-                    {advice.work.aEnd - advice.work.aStart < 8 * 60 && advice.stretch && advice.stretch.aEnd - advice.stretch.aStart > advice.work.aEnd - advice.work.aStart
-                      ? ` Starting at 8 and staying until 8 stretches it to ${formatGap(advice.stretch.aEnd - advice.stretch.aStart)}: ${windowWords(p, g.gap, advice.stretch)}.`
-                      : ''}
-                  </p>
-                ) : advice.stretch ? (
-                  <p>
-                    <strong>No shared 9-to-5 hours.</strong> The best window is {windowWords(p, g.gap, advice.stretch)}: an early start for one, a late finish for the other.
-                  </p>
-                ) : (
-                  <p>
-                    <strong>Working hours never overlap.</strong>{' '}
-                    {advice.awake ? `Both are awake from ${windowWords(p, g.gap, advice.awake)}.` : 'One of you will be up very early or very late.'}
-                  </p>
-                )}
-              </div>
-            );
-          })}
+        <h2>Best times to meet</h2>
+        <div>
+          <ul className="st-list st-tp-meet">
+            {year.map((g, i) => {
+              const { work, stretch, awake } = meetingAdvice(g.gap);
+              const best = work ?? stretch ?? awake;
+              const label = work ? 'Both at work (9 to 5)' : stretch ? 'Early for one, late for the other' : 'Both awake';
+              return (
+                <li key={g.gap}>
+                  <span>
+                    {label}
+                    {year.length > 1 && (
+                      <small>
+                        {gapShort(p, g.gap)}, {shareWords(year[i])}
+                      </small>
+                    )}
+                  </span>
+                  <span>
+                    {best && g.gap === 0 ? (
+                      `${windowRange(best)} in both`
+                    ) : best ? (
+                      <>
+                        {windowRange(best)} {p.a.name}
+                        <br />
+                        {windowRange(best, g.gap)}
+                        {dayShiftWords(best.bDayShift)} {p.b.name}
+                      </>
+                    ) : (
+                      'No good time'
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </section>
 
@@ -224,28 +221,13 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
           <TimePairHours
             aName={p.a.name}
             bName={p.b.name}
-            gaps={year.map((g, i) => ({ gap: g.gap, label: gapLabel(g.days, i) }))}
+            gaps={year.map((g, i) => ({ gap: g.gap, label: shareWords(year[i]) }))}
           />
         </div>
       </section>
 
-      <p className="st-nudge">
-        Another date or time? The <Link href={converterHref}>time zone converter</Link> opens with {p.a.name} and {p.b.name} set, and
-        uses the clock rules for whatever day you pick.
-      </p>
-
-      <StationFold summary="The two clocks and common questions">
+      <StationFold summary="Common questions">
         <section className="max-w-3xl mx-auto mb-section">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-3">The two clocks</h2>
-          {[p.a, p.b].map((place) => (
-            <p key={place.slug} className="text-muted-foreground mb-3">
-              <strong className="text-foreground">{place.full}.</strong> {place.rules} Also on this clock: {place.sameTime.join(', ')}.
-            </p>
-          ))}
-        </section>
-
-        <section className="max-w-3xl mx-auto mb-section">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-foreground mb-4">Questions</h2>
           <div className="space-y-4">
             {faqs.map((faq) => (
               <div key={faq.question} className="bg-card dark:bg-card rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-border/50">

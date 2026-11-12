@@ -34,7 +34,7 @@ const YEAR = 365 * 86_400_000;
 const NOV_12 = at('2026-11-12T12:00:00Z');
 const tableFor = (a: string, b: string, from = NOV_12) => segments(getPlace(a)!.zone, getPlace(b)!.zone, from, from + 2 * YEAR);
 // A pair that has no page, for the zones the pages don't cover yet
-const pairOf = (a: string, b: string): TimePair => ({ slug: `${a}-to-${b}`, a: getPlace(a)!, b: getPlace(b)!, context: '' });
+const pairOf = (a: string, b: string): TimePair => ({ slug: `${a}-to-${b}`, a: getPlace(a)!, b: getPlace(b)! });
 
 test('words', () => {
   assert.equal(formatGap(300), '5 hours');
@@ -76,7 +76,7 @@ test('New York and London: different change dates make a 4-hour gap twice a year
   const p = getTimePair('new-york-to-london')!;
   assert.equal(
     yearSentence(p, year),
-    'London is 5 hours ahead of New York for most of the year, and 4 hours ahead from March 14 to March 28 and from October 31 to November 7.',
+    'London is 5 hours ahead of New York for most of the year, and 4 hours ahead for about 3 weeks.',
   );
   assert.equal(gapOf(segmentAt(segs, at('2027-03-20T12:00:00Z'))), 240);
   assert.equal(gapOf(segmentAt(segs, at('2027-07-01T12:00:00Z'))), 300);
@@ -91,7 +91,7 @@ test('US zones change at 2 AM local, an hour apart: no overnight blip in the sum
   const changes = gapChanges(segs);
   assert.ok(changes.length >= 2);
   assert.ok(changes.every((c) => c.moved === 'both' && gapOf(c.after) === -60));
-  assert.equal(yearSentence(getTimePair('new-york-to-chicago')!, year), 'Chicago is 1 hour behind New York all year: the gap never changes.');
+  assert.equal(yearSentence(getTimePair('new-york-to-chicago')!, year), 'Chicago is 1 hour behind New York all year.');
 });
 
 test('India: half-hour offset, no clock changes', () => {
@@ -114,7 +114,7 @@ test('Zones without clock changes: one gap all year', () => {
   const year = yearOfGaps(segs, NOV_12);
   assert.deepEqual(year.map((g) => [g.gap, g.days]), [[210, 365]]);
   const p = pairOf('mumbai', 'tokyo');
-  assert.equal(yearSentence(p, year), 'Tokyo is 3 hours 30 minutes ahead of Mumbai all year: the gap never changes.');
+  assert.equal(yearSentence(p, year), 'Tokyo is 3 hours 30 minutes ahead of Mumbai all year.');
   const faq = pairFaqs(p, year, []).find((f) => f.question.startsWith('Do '))!;
   assert.match(faq.answer, /^Neither changes its clocks/);
 });
@@ -128,13 +128,13 @@ test('Alberta and Arizona: no clock changes, whatever the tz data', () => {
   assert.ok(gapChanges(calgary).every((c) => c.moved === 'b'), 'only Toronto changes');
   assert.equal(
     yearSentence(getTimePair('calgary-to-toronto')!, yearOfGaps(calgary, NOV_12)),
-    'Toronto is 2 hours ahead of Calgary from March 14 to November 7, and 1 hour ahead from November 7 to March 14.',
+    'Toronto is 2 hours ahead of Calgary for about 8 months, and 1 hour ahead for about 4 months.',
   );
   const phoenix = tableFor('phoenix', 'los-angeles');
   assert.deepEqual(yearOfGaps(phoenix, NOV_12).map((g) => g.gap), [0, -60]);
   assert.equal(
     yearSentence(getTimePair('phoenix-to-los-angeles')!, yearOfGaps(phoenix, NOV_12)),
-    'Phoenix and Los Angeles are on the same time from March 14 to November 7, and Los Angeles is 1 hour behind Phoenix from November 7 to March 14.',
+    'Phoenix and Los Angeles are on the same time for about 8 months, and Los Angeles is 1 hour behind Phoenix for about 4 months.',
   );
 });
 
@@ -145,6 +145,24 @@ test('Los Angeles and Sydney: opposite seasons, three gaps', () => {
   assert.equal(year.reduce((n, g) => n + g.days, 0), 365);
   assert.equal(gapOf(segmentAt(segs, at('2027-01-15T12:00:00Z'))), 19 * 60);
   assert.equal(gapOf(segmentAt(segs, at('2027-07-15T12:00:00Z'))), 17 * 60);
+});
+
+test('FAQ answers: the example times, without repeating the page', () => {
+  const p = getTimePair('new-york-to-london')!;
+  const segs = tableFor('new-york', 'london');
+  const faqs = pairFaqs(p, yearOfGaps(segs, NOV_12), gapChanges(segs));
+  assert.deepEqual(faqs.slice(0, 2), [
+    { question: 'If it is 9:00 AM in New York, what time is it in London?', answer: '2:00 PM in London for most of the year, or 1:00 PM for about 3 weeks.' },
+    { question: 'If it is 9:00 AM in London, what time is it in New York?', answer: '4:00 AM in New York for most of the year, or 5:00 AM for about 3 weeks.' },
+  ]);
+  assert.match(faqs[2].answer, /^No\. New York is on Eastern Time/);
+  // Clocks that change together
+  const la = getTimePair('new-york-to-los-angeles')!;
+  const laSegs = tableFor('new-york', 'los-angeles');
+  const laFaqs = pairFaqs(la, yearOfGaps(laSegs, NOV_12), gapChanges(laSegs));
+  // 9 AM in New York is 6 AM in LA (night), so the example is 8 PM
+  assert.deepEqual(laFaqs[0], { question: 'If it is 8:00 PM in New York, what time is it in Los Angeles?', answer: '5:00 PM in Los Angeles.' });
+  assert.match(laFaqs[2].answer, /^Yes, so the difference never changes/);
 });
 
 test('working-hours overlap and meeting advice', () => {
@@ -173,7 +191,7 @@ test('every page: title length, unique slugs, FAQs, redirects', () => {
     const segs = tableFor(p.a.slug, p.b.slug);
     const year = yearOfGaps(segs, NOV_12);
     const faqs = pairFaqs(p, year, gapChanges(segs));
-    assert.ok(faqs.length >= 6, `${p.slug}: ${faqs.length} FAQs`);
+    assert.equal(faqs.length, 4, `${p.slug}: ${faqs.length} FAQs`);
     for (const f of faqs) assert.ok(!/undefined|NaN|right now/.test(f.answer), `${p.slug}: ${f.answer}`);
     assert.ok(pairDescription(p, year).length <= 170, `${p.slug}: description too long`);
   }

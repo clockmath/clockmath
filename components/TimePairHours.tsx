@@ -3,7 +3,8 @@
  * city's day and the time in the second, shaded for working hours, waking
  * hours and night. One chart per gap the pair has in a year (New York and
  * London: 5 hours, and 4 for three weeks), the year's main gap first; that
- * one is in the static HTML, so it never goes stale between deploys.
+ * one is in the static HTML, so it never goes stale between deploys. The
+ * buttons name each gap; the caption under them says when it applies.
  * Follows the site's 12h/24h setting (12-hour until mount, as everywhere).
  */
 
@@ -41,9 +42,9 @@ export function TimePairHours({
           ))}
         </div>
       )}
-      <p className="st-tp-hours-cap">
-        {gap === 0 ? `${aName} and ${bName} on the same time` : `${bName} ${formatGap(gap)} ${gap > 0 ? 'ahead' : 'behind'}`}: {label}
-      </p>
+      {/* Which part of the year the shown gap is for; with one gap all year
+          there is nothing to say that the board hasn't */}
+      {gaps.length > 1 && <p className="st-tp-hours-cap">{label[0].toUpperCase() + label.slice(1)}</p>}
       <table className="st-tp-table">
         <thead>
           <tr>
