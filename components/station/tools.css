@@ -436,7 +436,10 @@ html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zon
 .station .st-tp-index li > :first-child { font-weight: 700; color: var(--ink); }
 .station .st-tp-index li > :last-child { font-weight: 400; color: var(--text); }
 @media (max-width: 760px) {
-  /* Phones: the two clocks side by side, the difference under them */
+  /* Phones: the two clocks side by side, the difference under them, all
+     centred on the board (Mark: left-aligned clocks over a centred
+     difference looked off centre) */
+  .station .st-tp-city { text-align: center; }
   .station .st-tp-board { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "a b" "d d"; gap: 16px 14px; align-items: start; }
   .station .st-tp-place { font-size: 15px; margin-bottom: 6px; }
   .station .st-tp-board .st-big.st-tp-time { font-size: clamp(40px, 11vw, 76px); }

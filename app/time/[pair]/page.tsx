@@ -138,118 +138,121 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
         converterHref={converterHref}
       />
 
-      <section className="st-more">
-        <h2>Through the year</h2>
-        <div className="st-tp-prose">
-          {year.length === 1 ? (
-            // One gap all year: the board already shows it, so say only that
-            // it holds, and why. The next date goes once it has passed
-            <p>
-              The difference stays the same all year:{' '}
-              {changes.length === 0 ? (
-                'neither city changes its clocks.'
-              ) : (
-                <>
-                  both change their clocks on the same days
-                  <span data-live-until={String(changes[0].at)}>, next on {changeDay(changes[0])}</span>.
-                </>
-              )}
-            </p>
-          ) : (
-            <>
-              <p>{yearSentence(p, year)}</p>
-              <ul className="st-list st-tp-changes">
-                {changes.map((c) => (
-                  // Removed by the worker once the change has happened
-                  <li key={c.at} data-live-until={String(c.at)}>
-                    <span>
-                      <strong>{changeDay(c)}</strong>
-                      <br />
-                      {changeWords(p, c)}
-                    </span>
-                    <span>{gapShort(p, gapOf(c.after))}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-      </section>
-
-      <section className="st-more">
-        <h2>Best times to meet</h2>
-        <div>
-          <ul className="st-list st-tp-meet">
-            {year.map((g, i) => {
-              const { work, stretch, awake } = meetingAdvice(g.gap);
-              const best = work ?? stretch ?? awake;
-              const label = work ? 'Both at work (9 to 5)' : stretch ? 'Early for one, late for the other' : 'Both awake';
-              return (
-                <li key={g.gap}>
-                  <span>
-                    {label}
-                    {year.length > 1 && (
-                      <small>
-                        {gapShort(p, g.gap)}, {shareWords(year[i])}
-                      </small>
-                    )}
-                  </span>
-                  <span>
-                    {best && g.gap === 0 ? (
-                      `${windowRange(best)} in both`
-                    ) : best ? (
-                      <>
-                        {windowRange(best)} {p.a.name}
+      {/* Nov 2026, Mark: the page ends at the board; the rest is folded. It
+          stays in the HTML, where Bing and Copilot read it, and it is what
+          makes each pair's page its own (dates, meeting times, the chart) */}
+      <StationFold id="details" summary="Clock changes, meeting times and hour chart">
+        <section className="st-more">
+          <h2>Through the year</h2>
+          <div className="st-tp-prose">
+            {year.length === 1 ? (
+              // One gap all year: the board already shows it, so say only that
+              // it holds, and why. The next date goes once it has passed
+              <p>
+                The difference stays the same all year:{' '}
+                {changes.length === 0 ? (
+                  'neither city changes its clocks.'
+                ) : (
+                  <>
+                    both change their clocks on the same days
+                    <span data-live-until={String(changes[0].at)}>, next on {changeDay(changes[0])}</span>.
+                  </>
+                )}
+              </p>
+            ) : (
+              <>
+                <p>{yearSentence(p, year)}</p>
+                <ul className="st-list st-tp-changes">
+                  {changes.map((c) => (
+                    // Removed by the worker once the change has happened
+                    <li key={c.at} data-live-until={String(c.at)}>
+                      <span>
+                        <strong>{changeDay(c)}</strong>
                         <br />
-                        {windowRange(best, g.gap)}
-                        {dayShiftWords(best.bDayShift)} {p.b.name}
-                      </>
-                    ) : (
-                      'No good time'
-                    )}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </section>
+                        {changeWords(p, c)}
+                      </span>
+                      <span>{gapShort(p, gapOf(c.after))}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </section>
 
-      <section className="st-more">
-        <h2>Hour by hour</h2>
-        <div>
-          <TimePairHours
-            aName={p.a.name}
-            bName={p.b.name}
-            gaps={year.map((g, i) => ({ gap: g.gap, label: shareWords(year[i]) }))}
-          />
-        </div>
-      </section>
+        <section className="st-more">
+          <h2>Best times to meet</h2>
+          <div>
+            <ul className="st-list st-tp-meet">
+              {year.map((g, i) => {
+                const { work, stretch, awake } = meetingAdvice(g.gap);
+                const best = work ?? stretch ?? awake;
+                const label = work ? 'Both at work (9 to 5)' : stretch ? 'Early for one, late for the other' : 'Both awake';
+                return (
+                  <li key={g.gap}>
+                    <span>
+                      {label}
+                      {year.length > 1 && (
+                        <small>
+                          {gapShort(p, g.gap)}, {shareWords(year[i])}
+                        </small>
+                      )}
+                    </span>
+                    <span>
+                      {best && g.gap === 0 ? (
+                        `${windowRange(best)} in both`
+                      ) : best ? (
+                        <>
+                          {windowRange(best)} {p.a.name}
+                          <br />
+                          {windowRange(best, g.gap)}
+                          {dayShiftWords(best.bDayShift)} {p.b.name}
+                        </>
+                      ) : (
+                        'No good time'
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
 
-      <StationFold summary="Common questions">
-        <section className="max-w-3xl mx-auto mb-section">
-          <div className="space-y-4">
+        <section className="st-more">
+          <h2>Hour by hour</h2>
+          <div>
+            <TimePairHours
+              aName={p.a.name}
+              bName={p.b.name}
+              gaps={year.map((g, i) => ({ gap: g.gap, label: shareWords(year[i]) }))}
+            />
+          </div>
+        </section>
+
+        <section className="st-more">
+          <h2>Questions</h2>
+          <div className="st-faq">
             {faqs.map((faq) => (
-              <div key={faq.question} className="bg-card dark:bg-card rounded-2xl p-4 sm:p-5 border border-border/50 dark:border-border/50">
-                <h3 className="font-semibold text-foreground mb-1.5">{faq.question}</h3>
-                <p className="text-sm text-muted-foreground">{faq.answer}</p>
+              <div key={faq.question}>
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
               </div>
             ))}
           </div>
         </section>
+        <section className="st-more">
+          <h2>Other time differences</h2>
+          <div className="st-chips">
+            {related.map((o) => (
+              <Link key={o.slug} href={`/time/${o.slug}/`}>
+                {o.a.name} to {o.b.name}
+              </Link>
+            ))}
+            <Link href="/time/">All time differences</Link>
+          </div>
+        </section>
       </StationFold>
-
-      <section className="st-more">
-        <h2>Other time differences</h2>
-        <div className="st-chips">
-          {related.map((o) => (
-            <Link key={o.slug} href={`/time/${o.slug}/`}>
-              {o.a.name} to {o.b.name}
-            </Link>
-          ))}
-          <Link href="/time/">All time differences</Link>
-        </div>
-      </section>
 
       <SiteFooter />
     </StationChrome>
