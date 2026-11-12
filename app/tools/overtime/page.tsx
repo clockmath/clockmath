@@ -5,6 +5,7 @@ import { OvertimeTool } from '@/components/OvertimeTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
+import AdSlot from '@/components/AdSlot';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
@@ -69,6 +70,8 @@ export default function OvertimePage() {
       </div>
 
       <OvertimeTool className="mb-section" />
+
+      <AdSlot />
 
       <StationFold>
       {/* Explanation */}

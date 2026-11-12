@@ -3,6 +3,9 @@ import StationChrome from "@/components/station/StationChrome";
 import SiteFooter from "@/components/SiteFooter";
 import { Metadata } from "next";
 import ManageConsentButton from "@/components/ManageConsentButton";
+// Nov 2026: the advertising text appears only once ads are switched on in
+// lib/ads.ts. Update the effective date below in the same change.
+import { ADS_ENABLED } from "@/lib/ads";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | ClockMath",
@@ -66,7 +69,7 @@ export default function PrivacyPage() {
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
 
-            <h2 className="text-2xl font-semibold mb-4">2. Analytics</h2>
+            <h2 className="text-2xl font-semibold mb-4">{ADS_ENABLED ? "2. Analytics and advertising" : "2. Analytics"}</h2>
             <p className="mb-4">We use three services to understand how the site is used:</p>
             <ul className="mb-4">
               <li>
@@ -89,9 +92,27 @@ export default function PrivacyPage() {
               at all until you choose &ldquo;Accept&rdquo;. Elsewhere they load by default, and you can turn them off at
               any time: <ManageConsentButton />.
             </p>
+            {ADS_ENABLED && (
+              <>
+                <p className="mb-4">
+                  <strong>Advertising:</strong> pages show ads from Google AdSense. Google and its partners use cookies
+                  and similar technologies to serve and measure ads, and, where you allow it, to show ads based on your
+                  earlier visits to this and other sites. In the EEA, the UK and Switzerland, Google asks for your
+                  consent before it uses cookies for ads; elsewhere, turning tracking off above also turns off
+                  personalised ads here. Ads never see what you type into the tools. See{' '}
+                  <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">how Google uses information from sites that use its services</a>
+                  {' '}and manage ad personalisation in{' '}
+                  <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google&apos;s ad settings</a>
+                  {' '}(or opt out of many ad companies at{' '}
+                  <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">aboutads.info</a>).
+                </p>
+              </>
+            )}
             <p className="mb-6">
-              We don&apos;t use advertising features, remarketing or user IDs, and we don&apos;t sell or share visitor
-              data. You can also block Google Analytics everywhere with the{' '}
+              {ADS_ENABLED
+                ? "Our analytics don't use advertising features, remarketing or user IDs, and we don't sell visitor data."
+                : "We don't use advertising features, remarketing or user IDs, and we don't sell or share visitor data."}
+              {' '}You can also block Google Analytics everywhere with the{' '}
               <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google Analytics opt-out add-on</a>. See{' '}
               <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Google's</a> and{' '}
               <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 underline">Microsoft's</a> privacy statements for how they handle
@@ -131,7 +152,8 @@ export default function PrivacyPage() {
 
             <h2 className="text-2xl font-semibold mb-4">4. Cookies and local storage</h2>
             <p className="mb-6">
-              Google Analytics and Clarity set cookies when they run (see above for when that is). The quiz sets one
+              Google Analytics and Clarity set cookies when they run (see above for when that is).
+              {ADS_ENABLED && " Google sets advertising cookies on pages with ads, as described above."} The quiz sets one
               cookie for two days. Everything else is local storage on your device: your tool settings and drafts, a
               count of how often you&apos;ve used the tools (so the site can offer to install itself as an app once
               you&apos;re a regular), and your consent choice. The site also keeps copies of the pages you open in your

@@ -41,7 +41,7 @@ const eslintConfig = [
     files: ['scripts/worker/*.js'],
     languageOptions: {
       sourceType: 'script',
-      globals: { ...globals.serviceworker, __cmQuiz: 'readonly' },
+      globals: { ...globals.serviceworker, __cmQuiz: 'readonly', __cmAds: 'readonly' },
     },
     rules: {
       'no-unused-vars': ['error', { vars: 'local', args: 'none', caughtErrors: 'none' }],

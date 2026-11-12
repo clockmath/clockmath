@@ -4,6 +4,7 @@ import { TimezoneConverter } from '@/components/TimezoneConverter';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
+import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
@@ -86,6 +87,8 @@ export default function TimezonePage() {
         {/* Tools Navigation */}
         {/* Timezone Converter */}
         <TimezoneConverter className="mb-section" />
+
+      <AdSlot />
 
       <StationFold>
       <section className="max-w-3xl mx-auto mb-section">

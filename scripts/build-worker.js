@@ -23,21 +23,31 @@ if (!fs.existsSync(path.join(OUT, 'index.html'))) {
 }
 
 const read = (f) => fs.readFileSync(path.join(__dirname, 'worker', f), 'utf8');
-// The daily quiz generator, compiled from the same lib/quiz.ts the page uses,
-// so the server can re-score a submission from the chosen answers instead
-// of trusting a posted score (Oct 2026 audit: anyone could post 5/5).
-const quizLibCode = require('esbuild').buildSync({
-  entryPoints: [path.join(__dirname, '../lib/quiz.ts')],
+// lib/*.ts files compiled for the worker, each as one global
+const compileLib = (file, globalName) => require('esbuild').buildSync({
+  entryPoints: [path.join(__dirname, '../lib', file)],
   bundle: true,
   format: 'iife',
-  globalName: '__cmQuiz',
+  globalName,
   target: 'es2020',
   write: false,
   logLevel: 'silent',
 }).outputFiles[0].text;
+// The daily quiz generator, compiled from the same lib/quiz.ts the page uses,
+// so the server can re-score a submission from the chosen answers instead
+// of trusting a posted score (Oct 2026 audit: anyone could post 5/5).
+const quizLibCode = compileLib('quiz.ts', '__cmQuiz');
+// The AdSense switch (lib/ads.ts), so the CSP adds Google's ad hosts only
+// while ads are on (Nov 2026), and the ads.txt Google checks for.
+const adsLibCode = compileLib('ads.ts', '__cmAds');
+const ads = new Function(`${adsLibCode}\nreturn __cmAds;`)();
+const adsTxtPath = path.join(OUT, 'ads.txt');
+if (ads.ADS_ENABLED) fs.writeFileSync(adsTxtPath, ads.adsTxt(ads.ADSENSE_CLIENT));
+else fs.rmSync(adsTxtPath, { force: true });
 
 const worker = `// Built by scripts/build-worker.js — edit scripts/worker/*.js, not this file.
 ${quizLibCode}
+${adsLibCode}
 ${read('api.js')}
 ${read('live-counts.js')}
 ${read('stale-assets.js')}
@@ -85,3 +95,4 @@ fs.writeFileSync(
 );
 fs.writeFileSync(path.join(OUT, '_headers'), '/_next/static/*\n  cache-control: public,max-age=31536000,immutable\n');
 console.log('[build-worker] Wrote out/_worker.js (redirects, APIs, live counts, stale-page guard, CSP nonce, security headers, cache policy), _routes.json and _headers.');
+console.log(ads.ADS_ENABLED ? `[build-worker] Ads ON (${ads.ADSENSE_CLIENT}): ad hosts in the CSP, out/ads.txt written.` : '[build-worker] Ads off (lib/ads.ts): no ad hosts in the CSP, no ads.txt.');

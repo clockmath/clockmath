@@ -483,3 +483,17 @@ html:not(.classic) .station .st-aside-tile { background: none; border: 0; border
 /* A fold straight after a tinted section (or another fold) continues it */
 .st-more + .st-fold, .st-fold + .st-fold { margin-top: 0; }
 @media (max-width: 760px) { .st-fold-summary { font-size: 16px; } }
+
+/* AdSlot (Nov 2026): one display ad between a tool and its explainers.
+   Sizing applies in both views: the height is held before the ad loads (no
+   jump; 280px is AdSense's tallest responsive size on phones), and the box
+   goes away when Google reports no ad. Off the live host it's an empty box
+   (data-preview) so the layout can be checked. */
+.st-ad { margin: 48px 0 0; }
+.st-ad-label { margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--quiet); }
+.st-ad ins.adsbygoogle { min-height: 280px; }
+@media (min-width: 761px) { .st-ad ins.adsbygoogle { min-height: 120px; } }
+.st-ad:has(ins[data-ad-status="unfilled"]) { display: none; }
+.st-ad[data-preview] ins.adsbygoogle { border: 1px dashed var(--rule); border-radius: 6px; }
+.st-ad + .st-fold, .st-ad + .st-callout { margin-top: 32px; }
+html:not(.classic) .station .st-ad { max-width: 970px; }

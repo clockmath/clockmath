@@ -7,6 +7,7 @@ import SeoIntro from "@/components/SeoIntro"
 import SiteFooter from "@/components/SiteFooter"
 import StationChrome from "@/components/station/StationChrome"
 import StationFold from "@/components/station/StationFold"
+import AdSlot from "@/components/AdSlot"
 import { Flap } from "@/components/station/Flap"
 import { InlineTimePicker } from "@/components/ui/InlineTimePicker"
 import { InlineDatePicker } from "@/components/ui/InlineDatePicker"
@@ -602,6 +603,8 @@ export default function ClockMathPage() {
             )}
           </section>
         )}
+
+        <AdSlot />
 
         <StationFold>
           <div className="st-legacy">

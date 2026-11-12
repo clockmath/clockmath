@@ -5,6 +5,7 @@ import RelatedArticles from "./RelatedArticles";
 import ArticleAnalytics from "./ArticleAnalytics";
 import ArticleCtaLink from "./ArticleCtaLink";
 import SiteFooter from "./SiteFooter";
+import AdSlot from "./AdSlot";
 import JsonLd, { getArticleSchema } from "./JsonLd";
 import { ARTICLE_LINKS, TOOL_LINKS } from "@/lib/articlesCatalog";
 
@@ -84,6 +85,8 @@ export default function ArticleLayout({
       </div>
 
       <article className="st-article article-prose">{children}</article>
+
+      <AdSlot />
 
       {/* Call to action: the tool this guide is about */}
       <section className="st-callout" data-line={lineForHref(primaryTool.href) ?? undefined}>

@@ -17,6 +17,7 @@ import { event as gaEvent } from '@/lib/gtag';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 import { getDevice } from '@/lib/device';
 import { copyText } from '@/lib/clipboard';
+import AdSlot from './AdSlot';
 
 // Cross-linked from every event page (minus the current one). Renders in
 // static HTML, so it also fixes pages otherwise orphaned from internal links.
@@ -208,6 +209,9 @@ export default function EventPage({
         </Link>
         .
       </p>
+
+      {/* Under the board, before the tinted links and folds */}
+      <AdSlot />
 
       {/* Cross-links between event pages (excludes the page you're on). Every
           countdown, not a top-N slice: a .slice(0, 6) here left half the event

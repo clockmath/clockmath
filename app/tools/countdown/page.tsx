@@ -5,6 +5,7 @@ import { CountdownTool } from '@/components/CountdownTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
+import AdSlot from '@/components/AdSlot';
 import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import { useDarkMode } from '@/hooks/use-dark-mode';
@@ -71,6 +72,8 @@ export default function CountdownPage() {
       </div>
 
       <CountdownTool className="mb-section" />
+
+      <AdSlot />
 
       <StationFold>
       <section className="max-w-3xl mx-auto mb-section">

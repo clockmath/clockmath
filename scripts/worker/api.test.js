@@ -183,6 +183,30 @@ const post = (url, body, headers = {}) =>
   for (const host of ['https://www.googletagmanager.com', 'https://static.cloudflareinsights.com', 'https://www.clarity.ms', 'https://scripts.clarity.ms']) {
     assert.ok(directive('script-src').includes(host), `script-src allows ${host}`);
   }
+  // Ads off (no __cmAds, or lib/ads.ts with empty IDs): no ad hosts, no frame-src
+  assert.doesNotMatch(csp, /googlesyndication|doubleclick|adtrafficquality|frame-src/, 'ads off: CSP unchanged');
+  const adsLib = require('esbuild').buildSync({
+    entryPoints: [path.join(__dirname, '../../lib/ads.ts')],
+    bundle: true, format: 'iife', globalName: '__cmAds', target: 'es2020', write: false, logLevel: 'silent',
+  }).outputFiles[0].text;
+  const withAdsLib = (prelude) => new Function(`${prelude}\n${quizLib}\n${liveCounts}\n${code}\nreturn { withSecurityHeaders };`)();
+  const htmlCsp = (a) => a.withSecurityHeaders(new Response('x', { headers: { 'Content-Type': 'text/html' } }), '/', 'abc123').headers.get('Content-Security-Policy');
+  if (!new Function(`${adsLib}\nreturn __cmAds;`)().ADS_ENABLED) {
+    assert.strictEqual(htmlCsp(withAdsLib(adsLib)), csp, 'checked-in lib/ads.ts (off) leaves the CSP as it was');
+  }
+  // Ads on: Google's ad hosts in script/img/connect, ad frames allowed, nonce rules kept
+  const adsCsp = htmlCsp(withAdsLib('var __cmAds = { ADS_ENABLED: true };'));
+  const adsDirective = (name) => (adsCsp.split('; ').find((d) => d.split(' ')[0] === name) || '');
+  for (const name of ['script-src', 'img-src', 'connect-src', 'frame-src']) {
+    assert.ok(adsDirective(name).includes('https://*.googlesyndication.com'), `ads on: ${name} allows googlesyndication`);
+    assert.ok(adsDirective(name).includes('https://*.adtrafficquality.google'), `ads on: ${name} allows adtrafficquality`);
+  }
+  assert.ok(adsDirective('frame-src').includes('https://*.doubleclick.net'), 'ads on: ad frames from doubleclick');
+  assert.ok(adsDirective('script-src').includes('https://www.clarity.ms'), 'ads on: existing hosts kept');
+  assert.match(adsDirective('script-src'), /'nonce-abc123'/);
+  assert.doesNotMatch(adsDirective('script-src'), /unsafe-inline|unsafe-eval|strict-dynamic/);
+  assert.match(adsCsp, /frame-ancestors 'none'/);
+
   // A fresh, unguessable nonce each time
   const n1 = api.cspNonce();
   assert.match(n1, /^[A-Za-z0-9+/]{22}==$/);

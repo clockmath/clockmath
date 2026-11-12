@@ -46,17 +46,37 @@ const CSP_HOSTS = {
   connect: 'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://*.clarity.ms',
 };
 
+// Google AdSense (Nov 2026), added only while lib/ads.ts has ads switched on
+// (`__cmAds`, compiled into the worker by build-worker.js; absent = off).
+// adsbygoogle.js loads its code from *.googlesyndication.com, runs ad-quality
+// checks on *.adtrafficquality.google, frames ads from doubleclick and
+// googlesyndication, and the EEA consent message comes from
+// fundingchoicesmessages.google.com. Google publishes no fixed host list (its
+// advice is 'strict-dynamic', which would block Cloudflare's un-nonced
+// beacon), so this is best effort: after switching ads on, check the live
+// console for CSP reports and add what's missing here.
+const ADS_ON = typeof __cmAds !== 'undefined' && __cmAds.ADS_ENABLED === true;
+const AD_HOSTS = 'https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://fundingchoicesmessages.google.com';
+const AD_CSP = {
+  script: `${AD_HOSTS} https://*.gstatic.com`,
+  img: `${AD_HOSTS} https://*.gstatic.com`,
+  connect: AD_HOSTS,
+  frame: AD_HOSTS,
+};
+const withAds = (hosts, kind) => (ADS_ON ? `${hosts} ${AD_CSP[kind]}` : hosts);
+
 function contentSecurityPolicy(nonce, frameAncestors) {
   const n = `'nonce-${nonce}'`;
   return [
     "default-src 'self'",
-    `script-src 'self' ${n} ${CSP_HOSTS.script}`,
+    `script-src 'self' ${n} ${withAds(CSP_HOSTS.script, 'script')}`,
     "style-src 'self' 'unsafe-inline'",
     `style-src-elem 'self' ${n}`,
     "style-src-attr 'unsafe-inline'",
-    `img-src 'self' data: ${CSP_HOSTS.img}`,
+    `img-src 'self' data: ${withAds(CSP_HOSTS.img, 'img')}`,
     "font-src 'self' data:",
-    `connect-src 'self' ${CSP_HOSTS.connect}`,
+    `connect-src 'self' ${withAds(CSP_HOSTS.connect, 'connect')}`,
+    ...(ADS_ON ? [`frame-src 'self' ${AD_CSP.frame}`] : []),
     `frame-ancestors ${frameAncestors}`,
     "base-uri 'self'",
     "object-src 'none'",
