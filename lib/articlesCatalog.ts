@@ -168,7 +168,7 @@ export const TOOL_LINKS: ToolLink[] = [
   },
   {
     title: 'Decimal Hours Converter',
-    description: 'Minutes to decimal hours (and back) with the payroll chart',
+    description: 'Minutes to decimal hours and back, with decimal and rounding charts',
     href: '/tools/decimal-hours',
     category: 'calculator',
     priority: 4,
