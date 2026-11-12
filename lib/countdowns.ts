@@ -127,6 +127,17 @@ export const COUNTDOWNS = {
       board: { color: '#2f5d2a' },
     },
   },
+  fable: {
+    name: 'Fable',
+    path: '/countdown/fable/',
+    spec: {
+      target: new Date(2027, 1, 23),
+      countdownTitle: 'Fable',
+      arrivedLabel: 'Fable is out! 🎮',
+      disclaimer: buildEventDisclaimer('Fable', 'Xbox Game Studios, Playground Games or Microsoft'),
+      board: { color: '#3f2a1d', ink: '#f2c45a' },
+    },
+  },
   'gta-6': {
     name: 'GTA 6',
     path: '/countdown/gta-6/',
@@ -136,6 +147,17 @@ export const COUNTDOWNS = {
       arrivedLabel: 'GTA 6 is out! 🎮',
       disclaimer: buildEventDisclaimer('Grand Theft Auto', 'Rockstar Games or Take-Two Interactive', { released: GTA6_LAUNCHED }),
       board: { color: '#b0215f' },
+    },
+  },
+  'final-fantasy-7-revelation': {
+    name: 'Final Fantasy VII Revelation',
+    path: '/countdown/final-fantasy-7-revelation/',
+    spec: {
+      target: new Date(2027, 3, 8),
+      countdownTitle: 'FF7 Revelation',
+      arrivedLabel: 'Final Fantasy VII Revelation is out! 🎮',
+      disclaimer: buildEventDisclaimer('Final Fantasy', 'Square Enix'),
+      board: { color: '#1b3a5c' },
     },
   },
   'avengers-doomsday': {
@@ -149,6 +171,17 @@ export const COUNTDOWNS = {
       board: { color: '#23402f' },
     },
   },
+  'god-of-war-laufey': {
+    name: 'God of War Laufey',
+    path: '/countdown/god-of-war-laufey/',
+    spec: {
+      target: new Date(2027, 4, 20),
+      countdownTitle: 'God of War Laufey',
+      arrivedLabel: 'God of War Laufey is out! 🪓',
+      disclaimer: buildEventDisclaimer('God of War', 'Sony Interactive Entertainment or Santa Monica Studio'),
+      board: { color: '#5c1a14', ink: '#f3e3c3' },
+    },
+  },
   'olympics-2028': {
     name: 'LA 2028 Olympics',
     path: '/countdown/olympics-2028/',
@@ -159,6 +192,17 @@ export const COUNTDOWNS = {
       disclaimer:
         'ClockMath is not affiliated with, endorsed by, or sponsored by the International Olympic Committee (IOC) or the LA28 organizing committee. “Olympic” and related names are trademarks of their respective owners. Dates subject to change.',
       board: { color: '#0e5a8a' },
+    },
+  },
+  'beyond-the-spider-verse': {
+    name: 'Beyond the Spider-Verse',
+    path: '/countdown/beyond-the-spider-verse/',
+    spec: {
+      target: new Date(2027, 5, 18),
+      countdownTitle: 'Beyond the Spider-Verse',
+      arrivedLabel: 'Beyond the Spider-Verse is in theaters! 🕷️',
+      disclaimer: buildEventDisclaimer('Spider-Man', 'Sony Pictures or Marvel'),
+      board: { color: '#1a1f6e', ink: '#ff5fa2' },
     },
   },
   'solar-eclipse-2027': {

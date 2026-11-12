@@ -37,11 +37,15 @@ const ITEMS: Array<{ name: string; href: string; ranges: DateRange[] }> = [
   { name: 'Christmas', href: '/countdown/christmas/', ranges: fixedDates(11, 25) },
   { name: "New Year's Day", href: '/countdown/new-year/', ranges: fixedDates(0, 1) },
   { name: 'Lunar New Year', href: '/countdown/lunar-new-year/', ranges: LUNAR_NEW_YEAR },
+  { name: 'Beyond the Spider-Verse', href: '/countdown/beyond-the-spider-verse/', ranges: [{ start: '2027-06-18' }] },
   { name: "Valentine's Day", href: '/countdown/valentines-day/', ranges: fixedDates(1, 14) },
   { name: 'March Madness', href: '/countdown/march-madness/', ranges: [{ start: '2027-03-16', end: '2027-04-05' }] },
   { name: 'Super Bowl LXI', href: '/countdown/super-bowl/', ranges: [{ start: '2027-02-14' }] },
+  { name: 'Fable release', href: '/countdown/fable/', ranges: [{ start: '2027-02-23' }] },
   { name: 'Easter', href: '/countdown/easter/', ranges: EASTER.map((e) => ({ start: e.easter })) },
+  { name: 'FF7 Revelation release', href: '/countdown/final-fantasy-7-revelation/', ranges: [{ start: '2027-04-08' }] },
   { name: 'Canada Day', href: '/countdown/canada-day/', ranges: fixedDates(6, 1) },
+  { name: 'God of War Laufey release', href: '/countdown/god-of-war-laufey/', ranges: [{ start: '2027-05-20' }] },
   { name: '4th of July', href: '/countdown/july-4th/', ranges: fixedDates(6, 4) },
 ];
 
