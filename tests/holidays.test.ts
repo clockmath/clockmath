@@ -81,3 +81,26 @@ test('full year lists: federal holidays and observances in date order', async ()
   assert.ok(!y2040.includes('lunar-new-year') && !y2040.includes('hanukkah'));
   assert.equal(y2040.length, 21);
 });
+
+test('seasonal titles: year from the build day, 65 characters or fewer', async () => {
+  const { seasonalSEO } = await import('../lib/holidays.ts');
+  const prev = process.env.NEXT_PUBLIC_BUILD_DATE;
+  try {
+    process.env.NEXT_PUBLIC_BUILD_DATE = '2026-11-13';
+    const tg = seasonalSEO('Thanksgiving', (y) => nthWeekday(y, 10, 4, 4));
+    assert.equal(tg.title, 'How Many Days Until Thanksgiving 2026? Live Countdown | ClockMath');
+    assert.equal(tg.short, 'Nov 26');
+    for (const name of ['Thanksgiving', 'Black Friday', 'Christmas', 'Halloween']) {
+      const t = seasonalSEO(name, (y) => new Date(Date.UTC(y, 11, 25))).title;
+      assert.ok(t.length <= 65, `${t} is ${t.length} characters`);
+    }
+    // The day after, the title moves to next year (the Nov 27 switch).
+    process.env.NEXT_PUBLIC_BUILD_DATE = '2026-11-27';
+    assert.equal(seasonalSEO('Thanksgiving', (y) => nthWeekday(y, 10, 4, 4)).year, 2027);
+    process.env.NEXT_PUBLIC_BUILD_DATE = '2026-11-28';
+    assert.equal(seasonalSEO('Black Friday', (y) => nthWeekday(y, 10, 4, 4, 1)).year, 2027);
+  } finally {
+    if (prev === undefined) delete process.env.NEXT_PUBLIC_BUILD_DATE;
+    else process.env.NEXT_PUBLIC_BUILD_DATE = prev;
+  }
+});

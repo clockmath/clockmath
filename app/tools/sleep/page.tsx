@@ -156,6 +156,12 @@ export default function SleepPage() {
         </h2>
         <ul className="space-y-2 text-muted-foreground">
           <li>
+            <Link href="/articles/sleep-hours-calculator" className="text-primary hover:text-primary/80 font-semibold">
+              How many hours did I sleep?
+            </Link>{' '}
+            — the method, worked on common bedtimes
+          </li>
+          <li>
             <Link href="/" className="text-primary hover:text-primary/80 font-semibold">
               Time duration calculator
             </Link>{' '}

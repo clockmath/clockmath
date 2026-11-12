@@ -143,8 +143,9 @@ const post = (url, body, headers = {}) =>
   assert.strictEqual(api.rateLimited(hits, 'other', 3, 60000), false);
 
   // ---- Redirects: known paths only, always to clockmath.com paths ----
-  assert.strictEqual(api.redirectTarget('/articles/sleep-hours-calculator'), '/tools/sleep/');
-  assert.strictEqual(api.redirectTarget('/blog/sleep-hours-calculator/'), '/tools/sleep/');
+  // The sleep guide is a page again (Nov 2026), not a redirect to the tool
+  assert.strictEqual(api.redirectTarget('/articles/sleep-hours-calculator'), null);
+  assert.strictEqual(api.redirectTarget('/blog/sleep-hours-calculator/'), '/articles/sleep-hours-calculator/');
   assert.strictEqual(api.redirectTarget('/tool/timezone/'), '/tools/timezone/');
   assert.strictEqual(api.redirectTarget('/countdown/spider-man-brand-new-day/'), '/countdown/avengers-doomsday/');
   assert.strictEqual(api.redirectTarget('/countdown/'), '/tools/countdown/');

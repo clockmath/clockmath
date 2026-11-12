@@ -596,9 +596,9 @@ async function handleFeedbackApi(request, env) {
 // production (found Oct 2026). This table is the only place a redirect
 // takes effect. Matching ignores a trailing slash; targets carry one.
 const EXACT_REDIRECTS = {
-  // Merged into the tool (Oct 2026): 82% of the article's GSC queries also
-  // showed the tool, and the tool page's content was a superset.
-  '/articles/sleep-hours-calculator': '/tools/sleep/',
+  // (Nov 2026: /articles/sleep-hours-calculator no longer 301s to the sleep
+  // tool. Bing dropped the guide after the Oct 2026 merge without passing
+  // its queries to the tool, so the guide is back at its old URL.)
   // Retired Oct 2026 once every date had passed (theatrical Jul 31, digital
   // Oct 6); its searchers are Marvel fans, so they go to the next release.
   '/countdown/spider-man-brand-new-day': '/countdown/avengers-doomsday/',
@@ -665,8 +665,8 @@ function resolveRedirect(pathname) {
   }
   return null;
 }
-// Follow chains (e.g. /blog/sleep-hours-calculator -> article -> tool) so
-// a visitor or crawler gets a single hop.
+// Follow chains (a prefix rule landing on an exact one, e.g. /article/x ->
+// /articles/x/ -> its new home) so a visitor or crawler gets a single hop.
 function redirectTarget(pathname) {
   let target = resolveRedirect(pathname);
   for (let hops = 0; target && hops < 3; hops++) {
