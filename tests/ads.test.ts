@@ -1,7 +1,15 @@
 // node --test tests/ — the AdSense switch and ads.txt line (lib/ads.ts).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { adsConfigValid, adsTxt, isAdHost } from '../lib/ads.ts';
+import { adsConfigValid, adsTxt, isAdHost, publisherIdValid } from '../lib/ads.ts';
+
+test('a publisher ID alone claims the site (meta tag, ads.txt) but shows no ads', () => {
+  assert.equal(publisherIdValid('ca-pub-1234567890123456'), true);
+  for (const id of ['', 'pub-1234567890123456', 'ca-pub-123', 'ca-pub-12345678901234567', ' ca-pub-1234567890123456']) {
+    assert.equal(publisherIdValid(id), false, JSON.stringify(id));
+  }
+  assert.equal(adsConfigValid('ca-pub-1234567890123456', ''), false, 'no ad unit yet: no ads');
+});
 
 test('ads stay off until both IDs are real', () => {
   assert.equal(adsConfigValid('', ''), false);

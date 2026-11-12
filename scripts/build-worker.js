@@ -37,12 +37,13 @@ const compileLib = (file, globalName) => require('esbuild').buildSync({
 // so the server can re-score a submission from the chosen answers instead
 // of trusting a posted score (Oct 2026 audit: anyone could post 5/5).
 const quizLibCode = compileLib('quiz.ts', '__cmQuiz');
-// The AdSense switch (lib/ads.ts), so the CSP adds Google's ad hosts only
-// while ads are on (Nov 2026), and the ads.txt Google checks for.
+// The AdSense switch (lib/ads.ts, Nov 2026): the CSP adds Google's ad hosts
+// only while ads are on, and ads.txt is written as soon as there's a
+// publisher ID (AdSense can check it before approval, to verify the site).
 const adsLibCode = compileLib('ads.ts', '__cmAds');
 const ads = new Function(`${adsLibCode}\nreturn __cmAds;`)();
 const adsTxtPath = path.join(OUT, 'ads.txt');
-if (ads.ADS_ENABLED) fs.writeFileSync(adsTxtPath, ads.adsTxt(ads.ADSENSE_CLIENT));
+if (ads.ADSENSE_CLAIMED) fs.writeFileSync(adsTxtPath, ads.adsTxt(ads.ADSENSE_CLIENT));
 else fs.rmSync(adsTxtPath, { force: true });
 
 const worker = `// Built by scripts/build-worker.js — edit scripts/worker/*.js, not this file.
@@ -95,4 +96,8 @@ fs.writeFileSync(
 );
 fs.writeFileSync(path.join(OUT, '_headers'), '/_next/static/*\n  cache-control: public,max-age=31536000,immutable\n');
 console.log('[build-worker] Wrote out/_worker.js (redirects, APIs, live counts, stale-page guard, CSP nonce, security headers, cache policy), _routes.json and _headers.');
-console.log(ads.ADS_ENABLED ? `[build-worker] Ads ON (${ads.ADSENSE_CLIENT}): ad hosts in the CSP, out/ads.txt written.` : '[build-worker] Ads off (lib/ads.ts): no ad hosts in the CSP, no ads.txt.');
+console.log(
+  ads.ADS_ENABLED ? `[build-worker] Ads ON (${ads.ADSENSE_CLIENT}): ad hosts in the CSP, out/ads.txt written.`
+    : ads.ADSENSE_CLAIMED ? `[build-worker] AdSense publisher ID only (${ads.ADSENSE_CLIENT}): out/ads.txt written; no ads, CSP unchanged.`
+    : '[build-worker] Ads off (lib/ads.ts): no ad hosts in the CSP, no ads.txt.',
+);

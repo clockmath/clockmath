@@ -7,6 +7,7 @@ import ClarityAnalytics from "@/components/ClarityAnalytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import WebVitals from "@/components/WebVitals";
 import NotOnEmbed from "@/components/NotOnEmbed";
+import { ADSENSE_CLAIMED, ADSENSE_CLIENT } from "@/lib/ads";
 
   
 
@@ -43,6 +44,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  // AdSense site verification (Nov 2026), once lib/ads.ts has a publisher
+  // ID. Next replaces `other` wholesale, so a page that sets its own `other`
+  // metadata must repeat this tag.
+  ...(ADSENSE_CLAIMED ? { other: { "google-adsense-account": ADSENSE_CLIENT } } : {}),
 }
 
 export const viewport: Viewport = {
