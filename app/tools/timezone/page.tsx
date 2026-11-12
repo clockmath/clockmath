@@ -93,7 +93,8 @@ export default function TimezonePage() {
       <section className="st-more">
         <h2>Time differences between cities</h2>
         <div className="st-chips">
-          {TIME_PAIRS.map((p) => (
+          {/* The ten most searched (the first in lib/timePairs); the index has all */}
+          {TIME_PAIRS.slice(0, 10).map((p) => (
             <Link key={p.slug} href={`/time/${p.slug}/`}>
               {p.a.name} to {p.b.name}
             </Link>

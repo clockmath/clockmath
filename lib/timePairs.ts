@@ -126,7 +126,6 @@ const PLACES: Record<string, PairPlace> = {
     sameTime: ['Melbourne', 'Canberra', 'Hobart', 'New South Wales, Victoria, the ACT and Tasmania (not Brisbane, which stays on AEST)'],
     rules: 'Sydney is on AEST (UTC+10) from the first Sunday in April and AEDT (UTC+11) from the first Sunday in October: its summer is the northern winter.',
   },
-  // Used by the tests (half-hour offsets, no clock changes); no page yet
   mumbai: {
     slug: 'mumbai',
     name: 'Mumbai',
@@ -145,6 +144,70 @@ const PLACES: Record<string, PairPlace> = {
     sameTime: ['Osaka', 'Seoul', 'all of Japan and South Korea'],
     rules: 'Tokyo stays on JST (UTC+9) all year: Japan does not change its clocks.',
   },
+  denver: {
+    slug: 'denver',
+    name: 'Denver',
+    zone: 'America/Denver',
+    full: 'Denver, Colorado, USA',
+    abbr: { [-420]: 'MST', [-360]: 'MDT' },
+    sameTime: ['Salt Lake City', 'Albuquerque', 'Boise', 'El Paso', 'Colorado, Utah, New Mexico, Montana and Wyoming (not Arizona, and not Alberta since 2026)'],
+    rules: 'Denver is on Mountain Time: MST (UTC−7) in winter, MDT (UTC−6) from the second Sunday in March to the first Sunday in November.',
+  },
+  vancouver: {
+    slug: 'vancouver',
+    name: 'Vancouver',
+    zone: 'America/Vancouver',
+    full: 'Vancouver, British Columbia, Canada',
+    // No name for the new year-round UTC−7 (shown as "UTC−7")
+    abbr: {},
+    sameTime: ['Victoria', 'Kelowna', 'most of British Columbia (not the East Kootenay, which keeps Alberta time)', 'Phoenix and most of Arizona', 'Whitehorse, Yukon'],
+    rules: 'Vancouver stays on UTC−7 all year: British Columbia kept its summer time in 2026 and no longer changes its clocks (it did not fall back on November 1, 2026).',
+  },
+  winnipeg: {
+    slug: 'winnipeg',
+    name: 'Winnipeg',
+    zone: 'America/Winnipeg',
+    full: 'Winnipeg, Manitoba, Canada',
+    abbr: {},
+    sameTime: ['Brandon', 'all of Manitoba', 'Cancún', 'Panama City', 'Bogotá', 'Lima'],
+    rules: 'Winnipeg stays on UTC−5 all year: Manitoba kept its summer time in 2026 and no longer changes its clocks (it did not fall back on November 1, 2026).',
+  },
+  paris: {
+    slug: 'paris',
+    name: 'Paris',
+    zone: 'Europe/Paris',
+    full: 'Paris, France',
+    abbr: { 60: 'CET', 120: 'CEST' },
+    sameTime: ['Madrid', 'Rome', 'Berlin', 'Amsterdam', 'Brussels', 'Vienna', 'Zurich', 'Stockholm', 'Warsaw', 'most of the EU'],
+    rules: 'Paris is on CET (UTC+1) in winter and CEST (UTC+2) from the last Sunday in March to the last Sunday in October.',
+  },
+  athens: {
+    slug: 'athens',
+    name: 'Athens',
+    zone: 'Europe/Athens',
+    full: 'Athens, Greece',
+    abbr: { 120: 'EET', 180: 'EEST' },
+    sameTime: ['Thessaloniki', 'Helsinki', 'Bucharest', 'Sofia', 'Riga', 'Tallinn', 'Vilnius', 'Nicosia'],
+    rules: 'Athens is on EET (UTC+2) in winter and EEST (UTC+3) from the last Sunday in March to the last Sunday in October, the same days as the rest of the EU.',
+  },
+  manila: {
+    slug: 'manila',
+    name: 'Manila',
+    zone: 'Asia/Manila',
+    full: 'Manila, Philippines',
+    abbr: { 480: 'PHT' },
+    sameTime: ['Cebu', 'Davao', 'all of the Philippines', 'Singapore', 'Hong Kong', 'Beijing', 'Perth'],
+    rules: 'Manila stays on PHT (UTC+8) all year: the Philippines does not change its clocks.',
+  },
+  lusaka: {
+    slug: 'lusaka',
+    name: 'Lusaka',
+    zone: 'Africa/Lusaka',
+    full: 'Lusaka, Zambia',
+    abbr: { 120: 'CAT' },
+    sameTime: ['all of Zambia', 'Harare', 'Lilongwe', 'Maputo', 'Gaborone', 'Kigali', 'Johannesburg'],
+    rules: 'Lusaka stays on CAT (UTC+2) all year: Zambia does not change its clocks.',
+  },
 };
 
 // Canonical order: the order the pair is usually searched. The reverse
@@ -160,6 +223,31 @@ const PAIR_LIST: Array<[string, string]> = [
   ['calgary', 'toronto'],
   ['chicago', 'berlin'],
   ['los-angeles', 'sydney'],
+  // PR 2 (Nov 2026): the rest of the Bing list, in the same city names
+  ['denver', 'los-angeles'],
+  ['denver', 'chicago'],
+  ['new-york', 'denver'],
+  ['denver', 'london'],
+  ['phoenix', 'chicago'],
+  ['phoenix', 'new-york'],
+  ['calgary', 'vancouver'],
+  ['winnipeg', 'toronto'],
+  ['new-york', 'paris'],
+  ['los-angeles', 'paris'],
+  ['new-york', 'athens'],
+  ['los-angeles', 'athens'],
+  ['new-york', 'sydney'],
+  ['chicago', 'sydney'],
+  ['london', 'sydney'],
+  ['los-angeles', 'tokyo'],
+  ['new-york', 'tokyo'],
+  ['new-york', 'mumbai'],
+  ['chicago', 'mumbai'],
+  ['los-angeles', 'mumbai'],
+  ['london', 'mumbai'],
+  ['new-york', 'manila'],
+  ['los-angeles', 'manila'],
+  ['lusaka', 'toronto'],
 ];
 
 export const TIME_PAIRS: TimePair[] = PAIR_LIST.map(([a, b]) => ({
@@ -564,5 +652,5 @@ export function pairDescription(p: TimePair, year: GapShare[]): string {
   const main = year[0]?.gap ?? 0;
   const changes = year.length > 1 ? `, when it changes` : '';
   const rel = main === 0 ? `${p.a.name} and ${p.b.name} are usually on the same time` : `${relationSentence(p.a.name, p.b.name, main)} most of the year`;
-  return `${rel}. The time in both now${changes}, overlapping work hours, the best meeting times and an hour-by-hour chart.`;
+  return `${rel}. Both clocks now${changes}, the best meeting times and an hour-by-hour chart.`;
 }

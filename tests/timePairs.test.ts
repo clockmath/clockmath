@@ -203,6 +203,8 @@ test('every page: title length, unique slugs, FAQs, redirects', () => {
   const block = api.slice(api.indexOf('const TIME_PAIR_REDIRECTS'), api.indexOf('Object.assign(EXACT_REDIRECTS'));
   const inWorker = Object.fromEntries([...block.matchAll(/'([^']+)': '([^']+)'/g)].map((m) => [m[1], m[2]]));
   assert.deepEqual(inWorker, reverseRedirects());
+  // No reverse order is itself a page
+  for (const from of Object.keys(inWorker)) assert.ok(!slugs.has(from.replace('/time/', '')), `${from} is a page and a redirect`);
 });
 
 test('the worker’s live sentence and clocks match the page’s', () => {
