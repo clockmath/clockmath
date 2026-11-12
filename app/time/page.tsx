@@ -2,15 +2,15 @@ import Link from 'next/link';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import { generateSEOMetadata } from '@/lib/seo';
-import { TIME_PAIRS, formatGap, segments, yearOfGaps } from '@/lib/timePairs';
+import { TIME_PAIRS, formatGap, segments, yearOfGaps, type TimePair } from '@/lib/timePairs';
 
 // Nov 2026: the index of the time difference pages, linked from the time
 // zone converter. Each row gives the pair's gaps over the year, computed at
 // build time like the pages themselves.
 export const metadata = generateSEOMetadata({
-  title: 'Time Difference Between Cities: US, UK, Europe & Canada',
+  title: 'Time Difference Between Cities: US, Canada, Europe & Asia',
   description:
-    'The time difference between New York, Los Angeles, Chicago, London, Berlin, Toronto, Calgary, Phoenix and Sydney, with the dates it changes and the best meeting times.',
+    'The time difference between US and Canadian cities and London, Paris, Berlin, Athens, Mumbai, Manila, Tokyo, Sydney and Lusaka, with the dates it changes and the best meeting times.',
   path: '/time',
   ogImage: '/og/tool/timezone.png?v=3',
   keywords: 'time difference between cities, city time difference, time difference chart, us uk time difference, est to gmt, pst to gmt, time zones',
@@ -30,8 +30,21 @@ function gapsWords(slug: string): string {
     const rest = gaps.filter((g) => g !== 0);
     return `Same time or ${p.b.name} ${rest.map((g) => formatGap(g)).join(' or ')} ${word(rest[0])}`;
   }
-  const hours = gaps.map((g) => formatGap(g).replace(/ hours?$/, ''));
-  return `${p.b.name} ${hours.slice(0, -1).join(', ')} or ${hours[hours.length - 1]} hours ${word(gaps[0])}`;
+  const list = (xs: string[]) => `${xs.slice(0, -1).join(', ')} or ${xs[xs.length - 1]}`;
+  // Whole hours share the unit ("17, 18 or 19 hours"); half hours keep their own
+  if (gaps.some((g) => g % 60 !== 0)) return `${p.b.name} ${list(gaps.map((g) => formatGap(g)))} ${word(gaps[0])}`;
+  return `${p.b.name} ${list(gaps.map((g) => String(Math.abs(g) / 60)))} hours ${word(gaps[0])}`;
+}
+
+const GROUPS = ['US and Canada', 'Europe', 'Asia and Australia', 'Africa'] as const;
+
+/** The list a pair goes in: the region of whichever city is farther from North America. */
+function groupOf(p: TimePair): (typeof GROUPS)[number] {
+  const zones = [p.a.zone, p.b.zone];
+  if (zones.some((z) => z.startsWith('Asia/') || z.startsWith('Australia/'))) return 'Asia and Australia';
+  if (zones.some((z) => z.startsWith('Africa/'))) return 'Africa';
+  if (zones.some((z) => z.startsWith('Europe/'))) return 'Europe';
+  return 'US and Canada';
 }
 
 export default function TimeDifferencesPage() {
@@ -45,18 +58,22 @@ export default function TimeDifferencesPage() {
         <p className="st-lede">The time now in two cities, the dates their difference changes, and when both are at work</p>
       </div>
 
-      <section className="st-calc">
-        <ul className="st-list st-tp-index">
-          {TIME_PAIRS.map((p) => (
-            <li key={p.slug}>
-              <Link href={`/time/${p.slug}/`}>
-                {p.a.name} to {p.b.name}
-              </Link>
-              <span>{gapsWords(p.slug)}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* Nov 2026: 34 pairs, so one list per region (the farther city's) */}
+      {GROUPS.map((g, i) => (
+        <section key={g} className={i === 0 ? 'st-calc st-tp-group' : 'st-tp-group'}>
+          <h2>{g}</h2>
+          <ul className="st-list st-tp-index">
+            {TIME_PAIRS.filter((p) => groupOf(p) === g).map((p) => (
+              <li key={p.slug}>
+                <Link href={`/time/${p.slug}/`}>
+                  {p.a.name} to {p.b.name}
+                </Link>
+                <span>{gapsWords(p.slug)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
 
       <p className="st-nudge">
         Two other places? The <Link href="/tools/timezone/">time zone converter</Link> takes any city, on any date.

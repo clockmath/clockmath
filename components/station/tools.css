@@ -433,6 +433,8 @@ html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zon
 .station .st-tp-key { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 12px 0 0; font-size: 13px; color: var(--quiet); }
 .station .st-tp-key span { padding: 2px 8px; border-radius: 4px; }
 .station .st-tp-key span[data-kind="night"] { border: 1px solid var(--rule); }
+.station .st-tp-group + .st-tp-group { margin-top: 36px; }
+.station .st-tp-group h2 { margin: 0 0 10px; font-size: 22px; font-weight: 800; color: var(--ink); }
 .station .st-tp-index li > :first-child { font-weight: 700; color: var(--ink); }
 .station .st-tp-index li > :last-child { font-weight: 400; color: var(--text); }
 @media (max-width: 760px) {
