@@ -370,3 +370,24 @@ html:not(.classic) .station .st-dbd-also dd { font-size: 30px; }
   .station .st-dc-amounts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .station .st-dc-business { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 }
+
+/* ---- Today's date (TodaysDateTool, Nov 2026) ----
+   The answer board alone in the band (no fields), then the date in other
+   formats as a ruled list. Layout in both views; colours come from the
+   line's board (lines.css). */
+.station .st-today { padding-top: 0; }
+.station .st-today .st-answer { padding-top: 26px; }
+.station .st-today-cap { margin: 0 0 10px; font-size: 15px; font-weight: 600; color: var(--ink); }
+html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { color: var(--line-ink); }
+.station .st-today-gap { display: inline-block; width: 0.22em; }
+.station .st-today .st-big .u { margin-left: 0.25em; }
+.station .st-today-sentence { margin-top: 16px; max-width: 46ch; font-size: 17px; }
+.station .st-today-zone { margin-top: 6px; font-size: 14px; opacity: 0.85; }
+.station .st-today .st-also dd small { font-size: 0.55em; font-weight: 700; }
+.station .st-today-h2 { margin: 34px 0 10px; font-size: 20px; font-weight: 800; color: var(--ink); }
+.station .st-today-formats { max-width: 640px; }
+.station .st-today-formats li > :last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 760px) {
+  .station .st-today-formats li { grid-template-columns: 1fr; gap: 2px; }
+  .station .st-today-formats li > :last-child { text-align: left; }
+}

@@ -117,7 +117,7 @@ export const navPanelOpen = () => {
 // Callers fire this once per page session (on first real use of the tool) so
 // counts reflect users-who-used-it rather than raw interactions.
 export const toolUsed = (
-  tool: "calculator" | "countdown" | "timezone" | "timesheet" | "market_hours" | "decimal_hours" | "sleep" | "quiz" | "overtime" | "days_between" | "date_calculator",
+  tool: "calculator" | "countdown" | "timezone" | "timesheet" | "market_hours" | "decimal_hours" | "sleep" | "quiz" | "overtime" | "days_between" | "date_calculator" | "todays_date",
   params: Record<string, unknown> = {},
 ) => {
   event({ action: "tool_used", params: { tool, ...params } });

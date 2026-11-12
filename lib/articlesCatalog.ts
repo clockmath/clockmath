@@ -153,6 +153,13 @@ export const TOOL_LINKS: ToolLink[] = [
     priority: 5,
   },
   {
+    title: "Today's Date",
+    description: 'The date where you are, day of the year, week number and Julian date',
+    href: '/tools/todays-date',
+    category: 'calculator',
+    priority: 4,
+  },
+  {
     title: 'Timezone Converter Tool',
     description: 'Convert time between any timezone',
     href: '/tools/timezone',

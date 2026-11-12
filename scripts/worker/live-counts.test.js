@@ -5,8 +5,8 @@ const path = require('path');
 const assert = require('assert');
 
 const code = fs.readFileSync(path.join(__dirname, 'live-counts.js'), 'utf8');
-const { liveDays, liveDateLabel, cacheControlFor, weeksPhrase, liveNextDate } = new Function(
-  `${code}; return { liveDays, liveDateLabel, cacheControlFor, weeksPhrase, liveNextDate };`,
+const { liveDays, liveDateLabel, cacheControlFor, weeksPhrase, liveNextDate, liveToday } = new Function(
+  `${code}; return { liveDays, liveDateLabel, cacheControlFor, weeksPhrase, liveNextDate, liveToday };`,
 )();
 
 const at = (iso) => Date.parse(iso);
@@ -63,6 +63,35 @@ assert.strictEqual(weeksPhrase(43), " That's 6 weeks and 1 day.");
 assert.strictEqual(weeksPhrase(10), " That's 1 week and 3 days.");
 assert.strictEqual(weeksPhrase(6), '');
 assert.strictEqual(weeksPhrase(400), '');
+
+// Today's date (/tools/todays-date/), in the visitor's zone. Every day of
+// several years is checked against lib/todaysDate.ts in tests/todaysDate.test.ts.
+const nov12 = at('2026-11-12T15:00:00Z');
+assert.strictEqual(liveToday('long', nov12, NY), 'Thursday, November 12, 2026');
+assert.strictEqual(liveToday('weekday', nov12, NY), 'Thursday');
+assert.strictEqual(liveToday('iso', nov12, NY), '2026-11-12');
+assert.strictEqual(liveToday('us', nov12, NY), '11/12/2026');
+assert.strictEqual(liveToday('eu', nov12, NY), '12/11/2026');
+assert.strictEqual(liveToday('doy', nov12, NY), '316');
+assert.strictEqual(liveToday('left', nov12, NY), '49');
+assert.strictEqual(liveToday('days-in-year', nov12, NY), '365');
+assert.strictEqual(liveToday('week', nov12, NY), '46');
+assert.strictEqual(liveToday('week-us', nov12, NY), '46');
+assert.strictEqual(liveToday('quarter', nov12, NY), 'Q4');
+assert.strictEqual(liveToday('jdn', at('2000-01-01T12:00:00Z'), 'UTC'), '2451545');
+assert.strictEqual(liveToday('ordinal', nov12, NY), '2026-316');
+assert.strictEqual(liveToday('yyddd', nov12, NY), '26316');
+assert.strictEqual(liveToday('zone', nov12, NY), NY);
+assert.strictEqual(liveToday('nonsense', nov12, NY), null);
+// 03:00 UTC Jan 1, 2027: still Dec 31 in New York (day 365, ISO week 53), already Jan 1 in Sydney
+const newYear = at('2027-01-01T03:00:00Z');
+assert.strictEqual(liveToday('iso', newYear, NY), '2026-12-31');
+assert.strictEqual(liveToday('week', newYear, NY), '53');
+assert.strictEqual(liveToday('iso', newYear, 'Australia/Sydney'), '2027-01-01');
+assert.strictEqual(liveToday('week', newYear, 'Australia/Sydney'), '53'); // Fri Jan 1, 2027 is in 2026's week 53
+assert.strictEqual(liveToday('doy', newYear, 'Australia/Sydney'), '1');
+assert.strictEqual(liveToday('iso', newYear, 'Not/AZone'), '2027-01-01'); // bad zone → UTC
+assert.strictEqual(liveToday('zone', newYear, 'Not/AZone'), 'UTC');
 
 // Cache policy.
 const res = (type, status = 200) => ({ status, headers: new Map([['Content-Type', type]]) });

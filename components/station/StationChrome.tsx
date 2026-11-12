@@ -111,7 +111,7 @@ export default function StationChrome({ children, currentTool, onToggleTheme, is
   // site pages light none.
   const active = TABS.some((t) => t.id === currentTool)
     ? currentTool
-    : ["overtime", "decimal-hours", "market-hours", "days-between-dates", "date-calculator"].includes(currentTool)
+    : ["overtime", "decimal-hours", "market-hours", "days-between-dates", "date-calculator", "todays-date"].includes(currentTool)
       ? "tools"
       : null
   return (

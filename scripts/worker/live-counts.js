@@ -89,6 +89,74 @@ function liveDateLabel(ms, timeZone) {
   }
 }
 
+// ---- Today's date (/tools/todays-date/, Nov 2026) ----
+// The page's answer ("Today is Thursday, November 12, 2026. It is day 316
+// of the year…") is what Copilot quotes for "what day is it" and "today's
+// date". Built in, it is right only on deploy day, so each piece carries
+// data-live-today="<kind>" and is rewritten here in the visitor's zone.
+// Mirror of lib/todaysDate.ts; tests/todaysDate.test.ts checks the two agree.
+const JDN_EPOCH = 2440588;
+const isLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+const dayNum = (y, m, d) => Math.round(Date.UTC(y, m - 1, d) / DAY_MS);
+const weekdayOf = (n) => (((n + 4) % 7) + 7) % 7; // day number → 0 Sun … 6 Sat
+const pad2 = (n) => String(n).padStart(2, '0');
+
+function liveToday(kind, nowMs, timeZone) {
+  const ymd = ymdInZone(nowMs, timeZone);
+  const y = +ymd.slice(0, 4);
+  const m = +ymd.slice(5, 7);
+  const d = +ymd.slice(8, 10);
+  const n = dayNum(y, m, d);
+  const doy = n - dayNum(y, 1, 1) + 1;
+  const yearDays = isLeap(y) ? 366 : 365;
+  switch (kind) {
+    case 'long':
+      return new Date(ymdToUtc(ymd)).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    case 'weekday':
+      return new Date(ymdToUtc(ymd)).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long' });
+    case 'iso':
+      return ymd;
+    case 'us':
+      return pad2(m) + '/' + pad2(d) + '/' + y;
+    case 'eu':
+      return pad2(d) + '/' + pad2(m) + '/' + y;
+    case 'year':
+      return String(y);
+    case 'doy':
+      return String(doy);
+    case 'days-in-year':
+      return String(yearDays);
+    case 'left':
+      return String(yearDays - doy);
+    case 'week': {
+      // ISO 8601: the Thursday of this Monday-to-Sunday week decides
+      const thursday = n - (weekdayOf(n) || 7) + 4;
+      const wy = new Date(thursday * DAY_MS).getUTCFullYear();
+      return String(Math.floor((thursday - dayNum(wy, 1, 1)) / 7) + 1);
+    }
+    case 'week-us':
+      return String(Math.floor((doy - 1 + weekdayOf(dayNum(y, 1, 1))) / 7) + 1);
+    case 'quarter':
+      return 'Q' + (Math.floor((m - 1) / 3) + 1);
+    case 'jdn':
+      return String(n + JDN_EPOCH);
+    case 'ordinal':
+      return y + '-' + String(doy).padStart(3, '0');
+    case 'yyddd':
+      return pad2(y % 100) + String(doy).padStart(3, '0');
+    case 'zone':
+      // The zone the date was read in; UTC when Cloudflare's isn't valid (as ymdInZone does)
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone });
+        return timeZone;
+      } catch (e) {
+        return 'UTC';
+      }
+    default:
+      return null;
+  }
+}
+
 function withLiveCounts(res, request) {
   const type = res.headers.get('Content-Type') || '';
   if (!type.includes('text/html') || typeof HTMLRewriter === 'undefined') return res;
@@ -141,6 +209,12 @@ function withLiveCounts(res, request) {
       element(el) {
         el.before('<!--email_off-->', { html: true });
         el.after('<!--/email_off-->', { html: true });
+      },
+    })
+    .on('[data-live-today]', {
+      element(el) {
+        const text = liveToday(el.getAttribute('data-live-today'), now, timeZone);
+        if (text !== null) el.setInnerContent(text);
       },
     })
     .on('[data-live-date]', {
