@@ -94,7 +94,7 @@ export const ARTICLE_LINKS: ArticleLink[] = [
     href: '/articles/time-between-dates-calculator',
     category: 'calculator',
     priority: 3,
-    relatedTools: ['/'],
+    relatedTools: ['/tools/days-between-dates', '/'],
   },
   {
     title: 'Hours Calculator Online',
@@ -135,6 +135,13 @@ export const TOOL_LINKS: ToolLink[] = [
     title: 'Time Duration Calculator',
     description: 'Calculate time between two times instantly',
     href: '/',
+    category: 'calculator',
+    priority: 5,
+  },
+  {
+    title: 'Days Between Dates Calculator',
+    description: 'Days, weeks, months and business days between two dates',
+    href: '/tools/days-between-dates',
     category: 'calculator',
     priority: 5,
   },

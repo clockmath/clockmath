@@ -295,3 +295,30 @@ html.dark:not(.classic) .station .st-answer-bar { background: var(--line-button,
 @media (prefers-reduced-motion: reduce) { .station .st-answer-bar, .station .st-answer-bar[data-show] { transition: none; } }
 /* The install offer sits above the bar while it shows */
 @media (max-width: 760px) { html[data-answer-bar] .station .st-install { bottom: 72px; } }
+
+/* ---- Days between dates (DaysBetweenTool, Nov 2026) ----
+   The homepage's band with one date per field, not a date and time pair.
+   The layout rules apply in both views (a new page has no classic look to
+   keep); the tiles' unit letters are station-only like the tiles. */
+.station .st-dbd .st-fields { grid-template-columns: 1fr 1fr; }
+.station .st-dbd .st-pair { grid-template-columns: minmax(0, 1fr); }
+.station .st-dbd-options { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 28px; margin-top: 14px; font-size: 15px; }
+.station .st-dbd-options label { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; color: var(--ink); }
+.station .st-dbd-options input[type="checkbox"] { width: 20px; height: 20px; flex: none; accent-color: var(--enamel); cursor: pointer; }
+.station .st-dbd .st-dbd-span { margin-top: 16px; }
+.station .st-dbd-also { max-width: 520px; }
+.station .st-dbd-also dd { white-space: nowrap; }
+.station .st-dbd-also dd .u { font-size: 0.6em; font-weight: 700; margin: 0 0.3em 0 0.08em; }
+.station .st-dbd-also dd .st-dbd-part:last-child .u { margin-right: 0; }
+html:not(.classic) .station .st-dbd-also dd { font-size: 30px; }
+/* Phones: a life's worth of days ("13,341") keeps "days" beside it, and the
+   breakdown is a ruled list, name left and tiles right, as two columns of
+   "1,905 w 6 d" ran into each other at 375px */
+@media (max-width: 760px) {
+  .station .st-dbd .st-fields { grid-template-columns: minmax(0, 1fr); }
+  .station .st-dbd .st-big.long { white-space: nowrap; }
+  html:not(.classic) .station .st-dbd .st-big.long { font-size: min(64px, 14.5vw); }
+  .station .st-dbd-also { grid-template-columns: minmax(0, 1fr); }
+  .station .st-dbd-also div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  html:not(.classic) .station .st-dbd-also dd { font-size: 26px; }
+}

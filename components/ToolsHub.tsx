@@ -19,6 +19,7 @@ import {
   Trophy,
   AlarmClockPlus,
   BookOpen,
+  CalendarDays,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
@@ -46,6 +47,13 @@ const TILES: Array<{
     description: 'The exact time between two times or dates — handles overnight automatically',
     icon: Clock,
     sample: [['8', 'h'], ['30', 'm']],
+  },
+  {
+    href: '/tools/days-between-dates',
+    title: 'Days Between Dates',
+    description: 'Days, weeks, months and business days from one date to another',
+    icon: CalendarDays,
+    sample: [['365', 'd']],
   },
   {
     href: '/tools/timesheet',
@@ -144,7 +152,7 @@ export default function ToolsHub() {
 
       <div className="st-intro">
         <h1 className="st-h1">Free time &amp; date tools</h1>
-        <p className="st-lede">Nine free tools. No signup, no ads.</p>
+        <p className="st-lede">Ten free tools. No signup, no ads.</p>
       </div>
 
       {/* A departures board: one ruled row per tool */}

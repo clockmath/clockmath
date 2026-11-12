@@ -22,8 +22,10 @@ export function analyticsSafeUrl(href: string): string {
   }
 }
 
-/** True when the current address carries something a visitor typed in. */
+/** True when the current address carries something a visitor typed in
+ *  (Nov 2026: plus days-between-dates' ?from=, beside the ?to= it shares
+ *  with the countdown). */
 export function urlHasVisitorData(search: string = typeof window === 'undefined' ? '' : window.location.search): boolean {
   const params = new URLSearchParams(search);
-  return ['d', 'title', 'to'].some((k) => params.has(k));
+  return ['d', 'title', 'from', 'to'].some((k) => params.has(k));
 }

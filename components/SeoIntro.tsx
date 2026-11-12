@@ -48,7 +48,7 @@ const FAQS = [
   {
     question: 'Can it calculate the duration between two dates?',
     answer:
-      'Yes — both ends take a date as well as a time. The result breaks the span down calendar-accurately into years, months, days, hours and minutes, and the breakdown link under the answer gives it as a total number of days, weeks or hours.',
+      'Yes — both ends take a date as well as a time. The result breaks the span down calendar-accurately into years, months, days, hours and minutes, and the breakdown link under the answer gives it as a total number of days, weeks or hours. For a plain count of days between two dates, with business days and the end date in or out, use the days between dates calculator.',
   },
   {
     question: 'What are decimal hours?',
@@ -90,6 +90,13 @@ export default function SeoIntro() {
             className="text-primary hover:text-primary/80 font-semibold"
           >
             how long you slept
+          </Link>
+          . To count the days between two dates (weeks, months and business days too), use the{' '}
+          <Link
+            href="/tools/days-between-dates"
+            className="text-primary hover:text-primary/80 font-semibold"
+          >
+            days between dates calculator
           </Link>
           . For minutes-to-decimal conversions, see the{' '}
           <Link
