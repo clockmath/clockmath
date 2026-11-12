@@ -207,13 +207,26 @@ html:not(.classic) .station .st-chart td.st-chart-dec { font-family: var(--displ
 html:not(.classic) .station .st-chart td.st-chart-dec:last-child { padding-right: 0; }
 /* The quarter hours: 15, 30, 45 and 60 minutes */
 html:not(.classic) .station .st-chart td.q { color: #ffb27a; font-weight: 800; }
+/* Nov 2026: links from the first chart to the other two, and the rounding
+   chart's two short tables side by side (stacked on phones) */
+html:not(.classic) .station .st-chart-head p a { color: var(--dep-ink); text-decoration: underline; text-underline-offset: 3px; }
+.station .st-chart-cols { display: grid; gap: 18px 48px; }
+@media (min-width: 641px) { .station .st-chart-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+.station .st-chart-cols h3 { margin: 0 0 6px; font-size: 17px; font-weight: 700; }
+/* One column pair each: keep the hours near their minutes */
+.station .st-chart-cols table { max-width: 340px; }
+html:not(.classic) .station .st-chart-cols h3 { color: var(--dep-ink); }
 @media (max-width: 640px) {
   /* Keep it a table on phones (the holidays board turns its rows into cards) */
   .station .st-chart table { display: table; }
   .station .st-chart thead { display: table-header-group; position: static; width: auto; height: auto; overflow: visible; clip: auto; }
   .station .st-chart tbody { display: table-row-group; }
   .station .st-chart tbody tr { display: table-row; padding: 0; }
-  html:not(.classic) .station .st-chart :is(thead th, tbody td) { display: table-cell; padding: 4px 4px 4px 0; }
+  /* Nov 2026: table-cell unscoped too; scoped, Classic view on phones fell
+     back to the holidays board's stacked cells, one figure per line
+     (".st-chart.st-departures" to outrank that rule, which loads later) */
+  .station .st-chart.st-departures :is(thead th, tbody td) { display: table-cell; }
+  html:not(.classic) .station .st-chart :is(thead th, tbody td) { padding: 4px 4px 4px 0; }
   html:not(.classic) .station .st-chart td.st-chart-dec { font-size: 17px; padding-right: 8px; }
   html:not(.classic) .station .st-chart td.st-chart-min { font-size: 13px; }
 }

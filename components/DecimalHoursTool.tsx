@@ -19,22 +19,12 @@ import { toolUsed } from '@/lib/gtag';
 import { getDevice } from '@/lib/device';
 import { parseAmount, parseHours } from '@/lib/overtime';
 import { copyText } from '@/lib/clipboard';
+import { decimalToHm } from '@/lib/decimalTime';
 import { flashClass, useSettledChange } from '@/hooks/use-answer-feedback';
 
 
 interface DecimalHoursToolProps {
   className?: string;
-}
-
-/** minutes → decimal hours fraction, 2dp (payroll convention) */
-export function minutesToDecimal(minutes: number): number {
-  return Math.round((minutes / 60) * 100) / 100;
-}
-
-/** decimal hours → whole hours + minutes (minutes rounded to nearest) */
-export function decimalToHm(decimal: number): { hours: number; minutes: number } {
-  const totalMinutes = Math.round(decimal * 60);
-  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 };
 }
 
 /** A time written out ("7:45", "7h 45m"), as opposed to a plain number */
