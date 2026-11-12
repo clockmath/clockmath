@@ -23,8 +23,11 @@ import { copyText } from '@/lib/clipboard';
 export const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'All holidays', href: '/countdown/holidays/' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/' },
+  { title: 'Fable', href: '/countdown/fable/' },
   { title: 'GTA 6', href: '/countdown/gta-6/' },
+  { title: 'FF7 Revelation', href: '/countdown/final-fantasy-7-revelation/' },
   { title: 'Christmas', href: '/countdown/christmas/' },
+  { title: 'God of War Laufey', href: '/countdown/god-of-war-laufey/' },
   { title: 'Halloween', href: '/countdown/halloween/' },
   { title: 'Beyond the Spider-Verse', href: '/countdown/beyond-the-spider-verse/' },
   { title: 'Clocks change', href: '/countdown/daylight-saving-time/' },

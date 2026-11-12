@@ -116,6 +116,17 @@ export const COUNTDOWNS = {
       board: { color: '#2f5d2a' },
     },
   },
+  fable: {
+    name: 'Fable',
+    path: '/countdown/fable/',
+    spec: {
+      target: new Date(2027, 1, 23),
+      countdownTitle: 'Fable',
+      arrivedLabel: 'Fable is out! 🎮',
+      disclaimer: buildEventDisclaimer('Fable', 'Xbox Game Studios, Playground Games or Microsoft'),
+      board: { color: '#3f2a1d', ink: '#f2c45a' },
+    },
+  },
   'gta-6': {
     name: 'GTA 6',
     path: '/countdown/gta-6/',
@@ -127,6 +138,17 @@ export const COUNTDOWNS = {
       board: { color: '#b0215f' },
     },
   },
+  'final-fantasy-7-revelation': {
+    name: 'Final Fantasy VII Revelation',
+    path: '/countdown/final-fantasy-7-revelation/',
+    spec: {
+      target: new Date(2027, 3, 8),
+      countdownTitle: 'FF7 Revelation',
+      arrivedLabel: 'Final Fantasy VII Revelation is out! 🎮',
+      disclaimer: buildEventDisclaimer('Final Fantasy', 'Square Enix'),
+      board: { color: '#1b3a5c' },
+    },
+  },
   'avengers-doomsday': {
     name: 'Avengers: Doomsday',
     path: '/countdown/avengers-doomsday/',
@@ -136,6 +158,17 @@ export const COUNTDOWNS = {
       arrivedLabel: 'Avengers: Doomsday is here! 💥',
       disclaimer: buildEventDisclaimer('Avengers', 'Marvel Studios or The Walt Disney Company'),
       board: { color: '#23402f' },
+    },
+  },
+  'god-of-war-laufey': {
+    name: 'God of War Laufey',
+    path: '/countdown/god-of-war-laufey/',
+    spec: {
+      target: new Date(2027, 4, 20),
+      countdownTitle: 'God of War Laufey',
+      arrivedLabel: 'God of War Laufey is out! 🪓',
+      disclaimer: buildEventDisclaimer('God of War', 'Sony Interactive Entertainment or Santa Monica Studio'),
+      board: { color: '#5c1a14', ink: '#f3e3c3' },
     },
   },
   'olympics-2028': {
