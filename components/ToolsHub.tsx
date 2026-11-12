@@ -21,6 +21,7 @@ import {
   BookOpen,
   CalendarDays,
   CalendarPlus,
+  CalendarCheck,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
@@ -62,6 +63,15 @@ const TILES: Array<{
     description: 'Add or subtract days, weeks, months or business days from a date',
     icon: CalendarPlus,
     sample: [['+30', 'd']],
+  },
+  {
+    href: '/tools/todays-date',
+    title: "Today's Date",
+    description: 'The date where you are, day of the year, week number and Julian date',
+    icon: CalendarCheck,
+    // Today's figures change daily and a fixed date would be wrong
+    // tomorrow ("live" is the market-hours pill), so the word itself
+    sample: [['TODAY', '']],
   },
   {
     href: '/tools/timesheet',
@@ -160,7 +170,7 @@ export default function ToolsHub() {
 
       <div className="st-intro">
         <h1 className="st-h1">Free time &amp; date tools</h1>
-        <p className="st-lede">Eleven free tools. No signup, no ads.</p>
+        <p className="st-lede">Twelve free tools. No signup, no ads.</p>
       </div>
 
       {/* A departures board: one ruled row per tool */}
