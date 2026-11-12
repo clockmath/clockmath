@@ -249,6 +249,7 @@ const SUBTITLES = {
   easter: 'The first Sunday after the first full moon of spring',
   'lunar-new-year': 'The new moon between January 21 and February 20',
   hanukkah: 'Eight nights from 25 Kislev',
+  'march-madness': 'First games March 16, Final Four April 3, 2027',
   'super-bowl': 'Game day: Sunday, February 14, 2027',
   fable: 'Release day: February 23, 2027',
   'gta-6': 'Release day: November 19, 2026',
