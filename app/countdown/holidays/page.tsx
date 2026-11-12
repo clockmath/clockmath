@@ -6,6 +6,7 @@ import EventPage from '@/components/EventPage';
 import StackedTable from '@/components/StackedTable';
 import { buildDay } from '@/lib/buildDay';
 import { eventColour } from '@/lib/countdowns';
+import { SEASON_STARTS } from '@/lib/seasons';
 import {
   EASTER,
   HANUKKAH,
@@ -26,22 +27,34 @@ import {
 // deploys. Row ORDER is fixed at build (sorted from the build day): a
 // holiday that has just passed keeps its place, showing next year's date,
 // until the next deploy re-sorts.
+// The seasons' UTC dates (the equinox can be a day later in East Asia)
+const utcDays = (list: ReadonlyArray<number>): DateRange[] => list.map((ms) => ({ start: new Date(ms).toISOString().slice(0, 10) }));
+
 const ITEMS: Array<{ name: string; href: string; ranges: DateRange[] }> = [
   { name: 'Halloween', href: '/countdown/halloween/', ranges: fixedDates(9, 31) },
   { name: 'US clocks change', href: '/countdown/daylight-saving-time/', ranges: US_CLOCK_CHANGES },
   { name: 'GTA 6 release', href: '/countdown/gta-6/', ranges: [{ start: '2026-11-19' }] },
   { name: 'Thanksgiving', href: '/countdown/thanksgiving/', ranges: nthWeekdayDates(10, 4, 4) },
+  { name: 'First day of summer', href: '/countdown/first-day-of-summer/', ranges: utcDays(SEASON_STARTS.summer) },
   { name: 'Black Friday', href: '/countdown/black-friday/', ranges: nthWeekdayDates(10, 4, 4, 1) },
+  { name: 'First day of spring', href: '/countdown/first-day-of-spring/', ranges: utcDays(SEASON_STARTS.spring) },
   { name: 'Hanukkah', href: '/countdown/hanukkah/', ranges: HANUKKAH },
   { name: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', ranges: [{ start: '2026-12-18' }] },
   { name: 'Christmas', href: '/countdown/christmas/', ranges: fixedDates(11, 25) },
   { name: "New Year's Day", href: '/countdown/new-year/', ranges: fixedDates(0, 1) },
+  { name: 'Ramadan (expected)', href: '/countdown/ramadan/', ranges: [{ start: '2027-02-08', end: '2027-03-08' }] },
   { name: 'Lunar New Year', href: '/countdown/lunar-new-year/', ranges: LUNAR_NEW_YEAR },
+  { name: 'Beyond the Spider-Verse', href: '/countdown/beyond-the-spider-verse/', ranges: [{ start: '2027-06-18' }] },
   { name: "Valentine's Day", href: '/countdown/valentines-day/', ranges: fixedDates(1, 14) },
+  { name: 'March Madness', href: '/countdown/march-madness/', ranges: [{ start: '2027-03-16', end: '2027-04-05' }] },
   { name: 'Super Bowl LXI', href: '/countdown/super-bowl/', ranges: [{ start: '2027-02-14' }] },
+  { name: 'Fable release', href: '/countdown/fable/', ranges: [{ start: '2027-02-23' }] },
   { name: 'Easter', href: '/countdown/easter/', ranges: EASTER.map((e) => ({ start: e.easter })) },
+  { name: 'FF7 Revelation release', href: '/countdown/final-fantasy-7-revelation/', ranges: [{ start: '2027-04-08' }] },
   { name: 'Canada Day', href: '/countdown/canada-day/', ranges: fixedDates(6, 1) },
+  { name: 'God of War Laufey release', href: '/countdown/god-of-war-laufey/', ranges: [{ start: '2027-05-20' }] },
   { name: '4th of July', href: '/countdown/july-4th/', ranges: fixedDates(6, 4) },
+  { name: "Women's World Cup", href: '/countdown/womens-world-cup-2027/', ranges: [{ start: '2027-06-24', end: '2027-07-25' }] },
 ];
 
 const DAY_MS = 86400000;
