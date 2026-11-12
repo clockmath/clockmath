@@ -251,6 +251,7 @@ const SUBTITLES = {
   hanukkah: 'Eight nights from 25 Kislev',
   'super-bowl': 'Game day: Sunday, February 14, 2027',
   'gta-6': 'Release day: November 19, 2026',
+  'final-fantasy-7-revelation': 'Release day: April 8, 2027',
   'avengers-doomsday': 'In theaters December 18, 2026',
   'olympics-2028': 'Opening ceremony: July 14, 2028',
   'solar-eclipse-2027': 'August 2, 2027',

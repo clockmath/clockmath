@@ -127,6 +127,17 @@ export const COUNTDOWNS = {
       board: { color: '#b0215f' },
     },
   },
+  'final-fantasy-7-revelation': {
+    name: 'Final Fantasy VII Revelation',
+    path: '/countdown/final-fantasy-7-revelation/',
+    spec: {
+      target: new Date(2027, 3, 8),
+      countdownTitle: 'FF7 Revelation',
+      arrivedLabel: 'Final Fantasy VII Revelation is out! 🎮',
+      disclaimer: buildEventDisclaimer('Final Fantasy', 'Square Enix'),
+      board: { color: '#1b3a5c' },
+    },
+  },
   'avengers-doomsday': {
     name: 'Avengers: Doomsday',
     path: '/countdown/avengers-doomsday/',
