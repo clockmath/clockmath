@@ -43,3 +43,41 @@ test('Hanukkah ranges are eight days, in order', () => {
   const starts = HANUKKAH.map((r) => r.start);
   assert.deepEqual([...starts].sort(), starts);
 });
+
+test('Easter by computus matches the Easter table', async () => {
+  const { EASTER, westernEaster } = await import('../lib/holidays.ts');
+  for (const e of EASTER) assert.equal(iso(westernEaster(Number(e.year))), e.easter, e.year);
+  assert.equal(iso(westernEaster(2026)), '2026-04-05');
+  assert.equal(iso(westernEaster(2019)), '2019-04-21');
+  assert.equal(iso(westernEaster(2038)), '2038-04-25'); // latest possible
+});
+
+test('full year lists: federal holidays and observances in date order', async () => {
+  const { holidayList } = await import('../lib/holidays.ts');
+  const y2026 = holidayList(2026);
+  const by = Object.fromEntries(y2026.map((h) => [h.id, h]));
+  assert.equal(y2026.filter((h) => h.federal).length, 11);
+  assert.deepEqual([...y2026].map((h) => h.date).sort(), y2026.map((h) => h.date), 'in order');
+  assert.equal(by['lunar-new-year'].date, '2026-02-17');
+  assert.equal(by['good-friday'].date, '2026-04-03');
+  assert.equal(by['easter'].date, '2026-04-05');
+  assert.equal(by['mothers'].date, '2026-05-10');
+  assert.equal(by['fathers'].date, '2026-06-21');
+  assert.equal(by['black-friday'].date, '2026-11-27');
+  assert.equal(by['hanukkah'].date, '2026-12-04');
+  assert.equal(by['july-4th'].observed, '2026-07-03'); // Saturday
+  assert.equal(by['thanksgiving'].observed, undefined);
+  const y2027 = Object.fromEntries(holidayList(2027).map((h) => [h.id, h]));
+  assert.equal(y2027['easter'].date, '2027-03-28');
+  assert.equal(y2027['good-friday'].date, '2027-03-26');
+  assert.equal(y2027['mothers'].date, '2027-05-09');
+  assert.equal(y2027['fathers'].date, '2027-06-20');
+  assert.equal(y2027['juneteenth'].observed, '2027-06-18');
+  assert.equal(y2027['christmas'].observed, '2027-12-24');
+  assert.equal(y2027['lunar-new-year'].name, 'Lunar New Year (Year of the Goat)');
+  assert.equal(y2027['hanukkah'].date, '2027-12-24');
+  // A year the Lunar New Year and Hanukkah tables don't reach: those rows are left out, not wrong
+  const y2040 = holidayList(2040).map((h) => h.id);
+  assert.ok(!y2040.includes('lunar-new-year') && !y2040.includes('hanukkah'));
+  assert.equal(y2040.length, 21);
+});

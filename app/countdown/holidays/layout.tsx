@@ -2,13 +2,15 @@ import type { ReactNode } from 'react';
 import { generateSEOMetadata } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata({
-  title: 'Holidays 2026–2027: Dates and Days Until Each | ClockMath',
+  // Nov 2026: "Full List" for "holidays in 2026", which Copilot answered
+  // from other sites; the page now lists every holiday of both years
+  title: 'Holidays 2026 & 2027: Full List, Dates, Days Until | ClockMath',
   description:
-    'Upcoming holidays and events with the days left until each, updated daily, plus all 11 US federal holidays for 2027 and the days they are observed.',
+    'Every holiday in 2026 and 2027: the 11 US federal holidays with their observed days, plus Easter, Mother’s Day, Halloween and more, and the days left until each.',
   path: '/countdown/holidays',
   ogImage: '/og/countdown/holidays.png?v=3',
   keywords:
-    'holidays 2026, holidays 2027, federal holidays 2027, upcoming holidays, us holidays 2027, days until holidays, list of holidays 2027, when is the next holiday',
+    'holidays 2026, holidays 2027, holidays in 2026, list of holidays 2026, federal holidays 2026, 2026 holidays, federal holidays 2027, upcoming holidays, us holidays 2027, days until holidays, list of holidays 2027, when is the next holiday',
 });
 
 export default function HolidaysLayout({ children }: { children: ReactNode }) {

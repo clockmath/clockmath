@@ -12,9 +12,12 @@ import {
   LUNAR_NEW_YEAR,
   US_CLOCK_CHANGES,
   fixedDates,
+  holidayList,
   nthWeekdayDates,
   usFederalHolidays,
   type DateRange,
+  type HolidayId,
+  type ListedHoliday,
 } from '@/lib/holidays';
 
 // Every holiday and event with a countdown page. Rows carry their date list
@@ -67,12 +70,43 @@ const ORDERED = ITEMS.map((it) => ({ ...it, buildNext: nextOf(it.ranges, BUILD_T
   .sort((a, b) => a.buildNext!.start.localeCompare(b.buildNext!.start));
 
 const FEDERAL_YEAR = buildDay().getFullYear() + 1;
-const FEDERAL = usFederalHolidays(FEDERAL_YEAR).map((h) => ({
-  name: h.name,
-  date: fmtDate(h.date),
-  observed: h.observed ? fmtDate(h.observed, h.observed.getUTCFullYear() !== FEDERAL_YEAR) : 'Same day',
-}));
-const REST_OF_YEAR = usFederalHolidays(FEDERAL_YEAR - 1).filter((h) => h.date.toISOString().slice(0, 10) >= BUILD_TODAY);
+
+// Nov 2026: the full year lists, this year's and next ("holidays in 2026"
+// drew 1K–5K Copilot citations to other sites while the page had only next
+// year's federal holidays, inside the closed fold). On the page, under the
+// board, not in the fold. A year list keeps its past rows: it's a calendar,
+// not a countdown.
+const LIST_YEARS = [FEDERAL_YEAR - 1, FEDERAL_YEAR];
+const PAGE_FOR: Partial<Record<HolidayId, string>> = {
+  'new-year': '/countdown/new-year/',
+  'lunar-new-year': '/countdown/lunar-new-year/',
+  valentines: '/countdown/valentines-day/',
+  easter: '/countdown/easter/',
+  'july-4th': '/countdown/july-4th/',
+  halloween: '/countdown/halloween/',
+  thanksgiving: '/countdown/thanksgiving/',
+  'black-friday': '/countdown/black-friday/',
+  hanukkah: '/countdown/hanukkah/',
+  christmas: '/countdown/christmas/',
+};
+const listRows = (year: number) =>
+  holidayList(year).map((h: ListedHoliday) => ({
+    key: h.id,
+    name: h.name,
+    date: dateLabel(h.date),
+    federal: h.federal ? 'yes' : '',
+    // One column, so a phone row is two lines: "Sat, Jul 4, 2026 · Federal
+    // holiday, off Fri, Jul 3". The observed day carries its year when it is
+    // in the year before (New Year's Day on a Saturday).
+    type: !h.federal
+      ? 'Observance'
+      : h.observed
+        ? `Federal holiday, off ${h.observed.startsWith(`${year}-`) ? dateLabel(h.observed).replace(/, \d{4}$/, '') : dateLabel(h.observed)}`
+        : 'Federal holiday',
+  }));
+const LISTS = LIST_YEARS.map((year) => ({ year, rows: listRows(year), all: holidayList(year) }));
+
+const fmtShort = (s: string) => new Date(toUtc(s)).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
 
 const listJoin = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
 
@@ -113,13 +147,14 @@ export default function HolidaysPage() {
     <EventPage
       heading={'Holidays 2026–2027'}
       tagline="Upcoming holidays and events, with the days left until each — updated daily"
-      lastUpdated="2026-10-16"
+      lastUpdated="2026-11-12"
       breadcrumb="Holidays"
       countdownSlot={
-        // A departures board: every countdown in date order, days left set
-        // large. Its own table, not StackedTable: rows lay out as a grid on
-        // phones (name and date left, days right). Explicit roles keep the
-        // table semantics that display changes drop.
+        <>
+        {/* A departures board: every countdown in date order, days left set
+            large. Its own table, not StackedTable: rows lay out as a grid on
+            phones (name and date left, days right). Explicit roles keep the
+            table semantics that display changes drop. */}
         <section className="st-departures" aria-labelledby="st-coming-up">
           <h2 id="st-coming-up">Coming up</h2>
           <table role="table">
@@ -155,43 +190,53 @@ export default function HolidaysPage() {
           </table>
           <p>Days are counted to the start of each date in your own timezone. Each name links to its live countdown.</p>
         </section>
+
+        {LISTS.map(({ year, rows }) => (
+          <section key={year} className="max-w-3xl mx-auto mb-section" aria-labelledby={`holidays-${year}`} id={`holidays-${year}`}>
+            <h2 id={`holidays-${year}`} className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
+              Holidays {year}
+            </h2>
+            <div>
+              <p className="text-muted-foreground mb-3">
+                The 11 US federal holidays in {year} and the other days most calendars mark, in date order.
+              </p>
+              <StackedTable
+                rows={rows}
+                firstKey="key"
+                firstHeader="Holiday"
+                renderFirst={(r) =>
+                  PAGE_FOR[r.key as HolidayId] ? (
+                    <Link href={PAGE_FOR[r.key as HolidayId]!} className="text-primary hover:text-primary/80">
+                      {r.name}
+                    </Link>
+                  ) : (
+                    r.name
+                  )
+                }
+                columns={[
+                  { key: 'date', header: 'Date' },
+                  { key: 'type', header: 'Federal holiday or observance' },
+                ]}
+                rowAttrs={(r): Record<string, string> => (r.federal ? { 'data-federal': '' } : {})}
+              />
+            </div>
+          </section>
+        ))}
+        </>
       }
       intro={
         <>
           Every holiday and event ClockMath counts down to, in date order, with the <strong>days left until each</strong>,
-          plus the full list of <strong>US federal holidays for {FEDERAL_YEAR}</strong> and the days they are observed when
-          they fall on a weekend.
+          plus the <strong>full lists of holidays for {LIST_YEARS.join(' and ')}</strong>: the 11 US federal holidays with
+          the days they are observed when they fall on a weekend, and the other days most calendars mark. When a federal
+          holiday falls on a Saturday it is observed on the Friday before; on a Sunday, the Monday after.
         </>
       }
-      extraContent={
-        <section className="max-w-3xl mx-auto mb-section">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-100 mb-3">
-            US federal holidays {FEDERAL_YEAR}
-          </h2>
-          <div>
-            <StackedTable
-              rows={FEDERAL}
-              firstKey="name"
-              firstHeader="Holiday"
-              stack="lines"
-              columns={[
-                { key: 'date', header: 'Date', mobileLabel: 'Date:' },
-                { key: 'observed', header: 'Observed', mobileLabel: 'Observed:' },
-              ]}
-            />
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            {REST_OF_YEAR.length > 0 && (
-              <>
-                Still to come in {FEDERAL_YEAR - 1}:{' '}
-                {REST_OF_YEAR.map((h) => `${h.name} (${fmtDate(h.date)})`).join(', ')}.{' '}
-              </>
-            )}
-            When a federal holiday falls on a Saturday it is observed on the Friday before; on a Sunday, the Monday after.
-          </p>
-        </section>
-      }
       faqs={[
+        ...LISTS.map(({ year, all }) => ({
+          question: `What are the holidays in ${year}?`,
+          answer: `In ${year}: ${all.map((h) => `${h.name.replace(/ \(.*\)$/, '')} (${fmtShort(h.date)}${h.federal ? ', federal' : ''})`).join(', ')}. Federal holidays are days off for federal workers, banks and most schools; the rest are observances.`,
+        })),
         {
           question: `What are the US federal holidays in ${FEDERAL_YEAR}?`,
           answer: `There are 11: ${usFederalHolidays(FEDERAL_YEAR)

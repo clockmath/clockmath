@@ -391,3 +391,7 @@ html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { colo
   .station .st-today-formats li { grid-template-columns: 1fr; gap: 2px; }
   .station .st-today-formats li > :last-child { text-align: left; }
 }
+
+/* ---- Holidays page year lists (Nov 2026): federal holidays, the days
+   off, a weight heavier than the observances around them ---- */
+.station tr[data-federal] > td:first-child { font-weight: 700; }
