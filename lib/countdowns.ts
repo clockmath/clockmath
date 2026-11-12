@@ -183,6 +183,17 @@ export const COUNTDOWNS = {
       board: { color: '#0e5a8a' },
     },
   },
+  'beyond-the-spider-verse': {
+    name: 'Beyond the Spider-Verse',
+    path: '/countdown/beyond-the-spider-verse/',
+    spec: {
+      target: new Date(2027, 5, 18),
+      countdownTitle: 'Beyond the Spider-Verse',
+      arrivedLabel: 'Beyond the Spider-Verse is in theaters! 🕷️',
+      disclaimer: buildEventDisclaimer('Spider-Man', 'Sony Pictures or Marvel'),
+      board: { color: '#1a1f6e', ink: '#ff5fa2' },
+    },
+  },
   'solar-eclipse-2027': {
     name: '2027 solar eclipse',
     path: '/countdown/solar-eclipse-2027/',

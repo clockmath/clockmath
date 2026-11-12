@@ -29,6 +29,7 @@ export const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Christmas', href: '/countdown/christmas/' },
   { title: 'God of War Laufey', href: '/countdown/god-of-war-laufey/' },
   { title: 'Halloween', href: '/countdown/halloween/' },
+  { title: 'Beyond the Spider-Verse', href: '/countdown/beyond-the-spider-verse/' },
   { title: 'Clocks change', href: '/countdown/daylight-saving-time/' },
   { title: 'Thanksgiving', href: '/countdown/thanksgiving/' },
   { title: 'Black Friday', href: '/countdown/black-friday/' },
