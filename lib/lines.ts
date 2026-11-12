@@ -10,8 +10,9 @@ export type LineId = 'time' | 'work' | 'zones' | 'sleep' | 'countdowns' | 'quiz'
 
 const BY_TOOL: Record<string, LineId> = {
   calculator: 'time',
-  // Nov 2026: the duration calculator's sibling, on the same line
+  // Nov 2026: the duration calculator's siblings, on the same line
   'days-between-dates': 'time',
+  'date-calculator': 'time',
   timesheet: 'work',
   overtime: 'work',
   'decimal-hours': 'work',
@@ -31,7 +32,7 @@ export function lineForTool(tool: string): LineId | null {
 /** The line a link leads to, from its href; none for site pages. */
 export function lineForHref(href: string): LineId | null {
   const path = href.replace(/\/+$/, '') || '/';
-  if (path === '/' || path === '/tools/days-between-dates') return 'time';
+  if (path === '/' || path === '/tools/days-between-dates' || path === '/tools/date-calculator') return 'time';
   if (/^\/tools\/(timesheet|overtime|decimal-hours)$/.test(path)) return 'work';
   if (/^\/tools\/(timezone|market-hours)$/.test(path)) return 'zones';
   if (path === '/tools/sleep') return 'sleep';

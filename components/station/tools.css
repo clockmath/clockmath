@@ -335,3 +335,38 @@ html:not(.classic) .station .st-dbd-also dd { font-size: 30px; }
   .station .st-dbd-also div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   html:not(.classic) .station .st-dbd-also dd { font-size: 26px; }
 }
+
+/* ---- Date calculator (DateCalculatorTool, Nov 2026) ----
+   The homepage's band: the start date, Add/Subtract and Calendar/Business
+   days in one row, the amounts under them, the answer on the line's board.
+   Layout applies in both views (a new page has no classic look to keep);
+   classic.css gives the inputs the old card look. */
+.station .st-dc-top { display: grid; grid-template-columns: minmax(0, 1.2fr) auto auto; gap: 20px; align-items: end; }
+.station .st-dc-top .st-pair { grid-template-columns: minmax(0, 1fr); }
+.station .st-dc-top .st-seg { display: flex; }
+.station .st-dc-amounts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 20px; max-width: 640px; }
+.station .st-dc-amounts label > span { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.station .st-dc-amounts input[type="text"] {
+  width: 100%; min-height: 52px; padding: 0 12px; border: 1px solid transparent; border-radius: 6px;
+  background: var(--wash); color: var(--ink); font: inherit; font-size: 21px; font-weight: 700; font-stretch: 85%;
+}
+.station .st-dc-amounts input[type="text"]:hover { border-color: var(--rule); }
+.station .st-dc-amounts input[type="text"]:focus { outline: none; border-color: var(--enamel); box-shadow: 0 0 0 3px var(--ring); }
+.station .st-dc-amounts input[aria-invalid="true"] { border-color: var(--signal, #c0392b); }
+.station .st-dc-bad { margin: 6px 0 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+.station .st-dc-business { grid-template-columns: minmax(0, 200px) auto; align-items: end; }
+.station .st-dc-check { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; font-size: 15px; color: var(--ink); cursor: pointer; }
+.station .st-dc-check input { width: 20px; height: 20px; flex: none; accent-color: var(--enamel); cursor: pointer; }
+.station .st-dc-presets { display: flex; flex-wrap: wrap; gap: 0 20px; margin-top: 10px; }
+.station .st-dc-presets .st-link-btn { white-space: nowrap; }
+.station .st-dc .st-dc-long { margin-top: 14px; }
+/* The year beside the tiles, smaller, like a unit */
+.station .st-dc .st-big .u { margin-left: 0.25em; }
+.station .st-dc-gap { display: inline-block; width: 0.22em; }
+@media (max-width: 760px) {
+  .station .st-dc-top { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .station .st-dc-top .st-seg { height: 44px; width: 100%; }
+  .station .st-dc-top .st-seg button { flex: 1; white-space: nowrap; padding: 0 10px; }
+  .station .st-dc-amounts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .station .st-dc-business { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}

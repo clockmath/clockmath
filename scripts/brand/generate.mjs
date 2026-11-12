@@ -136,6 +136,7 @@ const TOOLS = [
   // [file, line, question, answer (HTML), what it means, footer path]
   ['og-v4', 'time', 'Time between two times', '8<span class="u">h</span>30<span class="u">m</span>', '9:00 AM to 5:30 PM, with decimal hours for timesheets', 'clockmath.com'],
   ['og/tool/days-between-dates', 'time', 'Days between dates', '45<span class="u">days</span>', 'Mar 1 to Apr 15, 2026: 6 weeks 3 days, 32 business days', 'clockmath.com/tools/days-between-dates'],
+  ['og/tool/date-calculator', 'time', 'Date calculator', 'Dec 12', 'Nov 12, 2026 + 30 days: Saturday, December 12, 2026', 'clockmath.com/tools/date-calculator'],
   ['og/tool/timesheet', 'work', 'Work hours calculator', '37.50<span class="u">hours</span>', 'Five shifts, breaks taken off, ready for payroll', 'clockmath.com/tools/timesheet'],
   ['og/tool/overtime', 'work', 'Overtime calculator', '40 + 6.5<span class="u">h</span>', 'Regular and overtime hours, and what time and a half pays', 'clockmath.com/tools/overtime'],
   ['og/tool/decimal-hours', 'work', 'Minutes to decimal hours', '7:45 = 7.75', 'Hours and minutes to decimal, and back, for timesheets', 'clockmath.com/tools/decimal-hours'],

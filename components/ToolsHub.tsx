@@ -20,6 +20,7 @@ import {
   AlarmClockPlus,
   BookOpen,
   CalendarDays,
+  CalendarPlus,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
@@ -54,6 +55,13 @@ const TILES: Array<{
     description: 'Days, weeks, months and business days from one date to another',
     icon: CalendarDays,
     sample: [['365', 'd']],
+  },
+  {
+    href: '/tools/date-calculator',
+    title: 'Date Calculator',
+    description: 'Add or subtract days, weeks, months or business days from a date',
+    icon: CalendarPlus,
+    sample: [['+30', 'd']],
   },
   {
     href: '/tools/timesheet',
@@ -152,7 +160,7 @@ export default function ToolsHub() {
 
       <div className="st-intro">
         <h1 className="st-h1">Free time &amp; date tools</h1>
-        <p className="st-lede">Ten free tools. No signup, no ads.</p>
+        <p className="st-lede">Eleven free tools. No signup, no ads.</p>
       </div>
 
       {/* A departures board: one ruled row per tool */}

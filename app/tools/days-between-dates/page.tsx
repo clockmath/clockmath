@@ -197,6 +197,12 @@ export default function DaysBetweenDatesPage() {
               — the time between two dates and times, to the minute
             </li>
             <li>
+              <Link href="/tools/date-calculator/" className="text-primary hover:text-primary/80 font-semibold">
+                Date calculator
+              </Link>{' '}
+              — the other way round: a date plus or minus days, weeks, months or business days
+            </li>
+            <li>
               <Link href="/tools/countdown/" className="text-primary hover:text-primary/80 font-semibold">
                 Countdown timer
               </Link>{' '}
