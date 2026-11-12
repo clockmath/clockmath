@@ -116,6 +116,17 @@ export const COUNTDOWNS = {
       board: { color: '#2f5d2a' },
     },
   },
+  fable: {
+    name: 'Fable',
+    path: '/countdown/fable/',
+    spec: {
+      target: new Date(2027, 1, 23),
+      countdownTitle: 'Fable',
+      arrivedLabel: 'Fable is out! 🎮',
+      disclaimer: buildEventDisclaimer('Fable', 'Xbox Game Studios, Playground Games or Microsoft'),
+      board: { color: '#3f2a1d', ink: '#f2c45a' },
+    },
+  },
   'gta-6': {
     name: 'GTA 6',
     path: '/countdown/gta-6/',

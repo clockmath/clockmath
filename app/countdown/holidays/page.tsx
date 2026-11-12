@@ -39,6 +39,7 @@ const ITEMS: Array<{ name: string; href: string; ranges: DateRange[] }> = [
   { name: 'Lunar New Year', href: '/countdown/lunar-new-year/', ranges: LUNAR_NEW_YEAR },
   { name: "Valentine's Day", href: '/countdown/valentines-day/', ranges: fixedDates(1, 14) },
   { name: 'Super Bowl LXI', href: '/countdown/super-bowl/', ranges: [{ start: '2027-02-14' }] },
+  { name: 'Fable release', href: '/countdown/fable/', ranges: [{ start: '2027-02-23' }] },
   { name: 'Easter', href: '/countdown/easter/', ranges: EASTER.map((e) => ({ start: e.easter })) },
   { name: 'Canada Day', href: '/countdown/canada-day/', ranges: fixedDates(6, 1) },
   { name: '4th of July', href: '/countdown/july-4th/', ranges: fixedDates(6, 4) },
