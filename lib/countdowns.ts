@@ -12,6 +12,8 @@ import { EASTER, HANUKKAH, LUNAR_NEW_YEAR } from '@/lib/holidays';
 import { buildEventDisclaimer } from '@/lib/disclaimer';
 import { GTA6_RELEASE, LAUNCHED as GTA6_LAUNCHED } from '@/app/countdown/gta-6/launch';
 import { channels, luminance } from '@/lib/colour';
+import { buildDay } from '@/lib/buildDay';
+import { nextSeasonStart } from '@/lib/seasons';
 
 export interface CountdownSpec {
   /** Fixed one-off target. */
@@ -247,6 +249,41 @@ export const COUNTDOWNS = {
       title: 'the 2028 annular solar eclipse',
       arrivedLabel: 'The January 2028 eclipse has passed — next: a total eclipse on July 22, 2028',
       where: 'over the Atlantic off northern Brazil',
+    },
+  },
+  'first-day-of-spring': {
+    name: 'First day of spring',
+    path: '/countdown/first-day-of-spring/',
+    spec: {
+      // The next March equinox after the build day, to the minute (lib/seasons.ts)
+      target: new Date(nextSeasonStart('spring', buildDay().getTime())),
+      countdownTitle: 'the first day of spring',
+      arrivedLabel: 'Spring is here! 🌷',
+      board: { color: '#4a7c1f' },
+    },
+  },
+  'first-day-of-summer': {
+    name: 'First day of summer',
+    path: '/countdown/first-day-of-summer/',
+    spec: {
+      // The next June solstice after the build day, to the minute (lib/seasons.ts)
+      target: new Date(nextSeasonStart('summer', buildDay().getTime())),
+      countdownTitle: 'the first day of summer',
+      arrivedLabel: 'Summer is here! ☀️',
+      board: { color: '#0a5c7a', ink: '#ffd166' },
+    },
+  },
+  ramadan: {
+    name: 'Ramadan 2027',
+    path: '/countdown/ramadan/',
+    spec: {
+      // Expected; set by moon sighting (app/countdown/ramadan/page.tsx)
+      dateRanges: [{ start: '2027-02-08', end: '2027-03-08' }],
+      countdownTitle: 'Ramadan 2027',
+      arrivedLabel: 'Ramadan Mubarak! 🌙',
+      disclaimer:
+        'Expected dates. Ramadan begins and ends with the sighting of the new crescent moon, so the dates can differ by a day from country to country.',
+      board: { color: '#0f4c5c', ink: '#f2d16b' },
     },
   },
   'daylight-saving-time': {
