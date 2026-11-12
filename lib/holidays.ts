@@ -114,7 +114,17 @@ export function nextOccurrence(dateFor: (year: number) => Date): Date {
 
 const fmtUTC = (d: Date, opts: Intl.DateTimeFormatOptions) => d.toLocaleDateString('en-US', { timeZone: 'UTC', ...opts });
 
-/** Title and description pieces for a countdown's next date. */
+/**
+ * Title and description pieces for a countdown's next date.
+ *
+ * Nov 2026: the title is the pre-Oct 17 one that ranked (Bing position ~5,
+ * "How Many Days Until Thanksgiving? Live Countdown"), plus the year. The
+ * Oct 17 version added "Countdown to Nov 26" (70 characters) and every page
+ * retitled that day lost Bing: Thanksgiving 357 → 37 impressions a day and
+ * out of the index by Nov 12, Black Friday 15 → 0, while pages left alone
+ * held. The date stays in the descriptions. Keep titles at 65 characters or
+ * fewer (Bing flags longer ones "Title too long"; tests/holidays.test.ts).
+ */
 export function seasonalSEO(name: string, dateFor: (year: number) => Date) {
   const d = nextOccurrence(dateFor);
   return {
@@ -123,7 +133,7 @@ export function seasonalSEO(name: string, dateFor: (year: number) => Date) {
     short: fmtUTC(d, { month: 'short', day: 'numeric' }),
     /** "Thursday, November 26" */
     long: fmtUTC(d, { weekday: 'long', month: 'long', day: 'numeric' }),
-    title: `How Many Days Until ${name} ${d.getUTCFullYear()}? Countdown to ${fmtUTC(d, { month: 'short', day: 'numeric' })} | ClockMath`,
+    title: `How Many Days Until ${name} ${d.getUTCFullYear()}? Live Countdown | ClockMath`,
   };
 }
 
