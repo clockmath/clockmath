@@ -62,7 +62,7 @@ export default function SleepHoursCalculatorPage() {
     <ArticleLayout
       title="How Many Hours of Sleep Did I Get?"
       description="Count the time to midnight, then add the time after it."
-      publishDate="2026-11-13"
+      publishDate="2026-11-12"
       category="calculator"
       currentPath="/articles/sleep-hours-calculator"
     >
