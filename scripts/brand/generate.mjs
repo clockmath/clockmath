@@ -254,6 +254,7 @@ const SUBTITLES = {
   'avengers-doomsday': 'In theaters December 18, 2026',
   'olympics-2028': 'Opening ceremony: July 14, 2028',
   'solar-eclipse-2027': 'August 2, 2027',
+  'womens-world-cup-2027': 'Brazil, June 24 to July 25, 2027',
   'solar-eclipse-2028': 'July 22, 2028',
   'annular-eclipse-2028': 'January 26, 2028',
   'daylight-saving-time': 'When the clocks change where you are',

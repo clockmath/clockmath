@@ -39,6 +39,7 @@ export const POPULAR_COUNTDOWNS: Array<{ title: string; href: string }> = [
   { title: 'Canada Day', href: '/countdown/canada-day/' },
   { title: 'The Weekend', href: '/countdown/weekend/' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/' },
+  { title: "Women's World Cup", href: '/countdown/womens-world-cup-2027/' },
   { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/' },
   { title: '2028 annular eclipse', href: '/countdown/annular-eclipse-2028/' },
   { title: '2028 solar eclipse', href: '/countdown/solar-eclipse-2028/' },

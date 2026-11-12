@@ -161,6 +161,17 @@ export const COUNTDOWNS = {
       where: 'near Luxor, Egypt',
     },
   },
+  'womens-world-cup-2027': {
+    name: "Women's World Cup 2027",
+    path: '/countdown/womens-world-cup-2027/',
+    spec: {
+      dateRanges: [{ start: '2027-06-24', end: '2027-07-25' }],
+      countdownTitle: "the 2027 Women's World Cup",
+      arrivedLabel: "The Women's World Cup is on! ⚽",
+      disclaimer: buildEventDisclaimer("FIFA Women's World Cup", 'FIFA'),
+      board: { color: '#00573f', ink: '#ffdf00' },
+    },
+  },
   'solar-eclipse-2028': {
     name: '2028 solar eclipse',
     path: '/countdown/solar-eclipse-2028/',
