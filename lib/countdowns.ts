@@ -107,6 +107,17 @@ export const COUNTDOWNS = {
     path: '/countdown/hanukkah/',
     spec: { dateRanges: HANUKKAH, countdownTitle: 'Hanukkah', arrivedLabel: 'Happy Hanukkah! 🕎', board: { color: '#1d4f91' } },
   },
+  'march-madness': {
+    name: 'March Madness 2027',
+    path: '/countdown/march-madness/',
+    spec: {
+      dateRanges: [{ start: '2027-03-16', end: '2027-04-05' }],
+      countdownTitle: 'March Madness 2027',
+      arrivedLabel: "It's March Madness! 🏀",
+      disclaimer: buildEventDisclaimer('March Madness', 'the National Collegiate Athletic Association (NCAA)'),
+      board: { color: '#13294b', ink: '#ff7a1a' },
+    },
+  },
   'super-bowl': {
     name: 'Super Bowl',
     path: '/countdown/super-bowl/',
@@ -116,6 +127,17 @@ export const COUNTDOWNS = {
       arrivedLabel: "It's Super Bowl Sunday! 🏈",
       disclaimer: buildEventDisclaimer('Super Bowl', 'the National Football League (NFL)'),
       board: { color: '#2f5d2a' },
+    },
+  },
+  fable: {
+    name: 'Fable',
+    path: '/countdown/fable/',
+    spec: {
+      target: new Date(2027, 1, 23),
+      countdownTitle: 'Fable',
+      arrivedLabel: 'Fable is out! 🎮',
+      disclaimer: buildEventDisclaimer('Fable', 'Xbox Game Studios, Playground Games or Microsoft'),
+      board: { color: '#3f2a1d', ink: '#f2c45a' },
     },
   },
   'gta-6': {
@@ -129,6 +151,17 @@ export const COUNTDOWNS = {
       board: { color: '#b0215f' },
     },
   },
+  'final-fantasy-7-revelation': {
+    name: 'Final Fantasy VII Revelation',
+    path: '/countdown/final-fantasy-7-revelation/',
+    spec: {
+      target: new Date(2027, 3, 8),
+      countdownTitle: 'FF7 Revelation',
+      arrivedLabel: 'Final Fantasy VII Revelation is out! 🎮',
+      disclaimer: buildEventDisclaimer('Final Fantasy', 'Square Enix'),
+      board: { color: '#1b3a5c' },
+    },
+  },
   'avengers-doomsday': {
     name: 'Avengers: Doomsday',
     path: '/countdown/avengers-doomsday/',
@@ -138,6 +171,17 @@ export const COUNTDOWNS = {
       arrivedLabel: 'Avengers: Doomsday is here! 💥',
       disclaimer: buildEventDisclaimer('Avengers', 'Marvel Studios or The Walt Disney Company'),
       board: { color: '#23402f' },
+    },
+  },
+  'god-of-war-laufey': {
+    name: 'God of War Laufey',
+    path: '/countdown/god-of-war-laufey/',
+    spec: {
+      target: new Date(2027, 4, 20),
+      countdownTitle: 'God of War Laufey',
+      arrivedLabel: 'God of War Laufey is out! 🪓',
+      disclaimer: buildEventDisclaimer('God of War', 'Sony Interactive Entertainment or Santa Monica Studio'),
+      board: { color: '#5c1a14', ink: '#f3e3c3' },
     },
   },
   'olympics-2028': {
@@ -152,6 +196,17 @@ export const COUNTDOWNS = {
       board: { color: '#0e5a8a' },
     },
   },
+  'beyond-the-spider-verse': {
+    name: 'Beyond the Spider-Verse',
+    path: '/countdown/beyond-the-spider-verse/',
+    spec: {
+      target: new Date(2027, 5, 18),
+      countdownTitle: 'Beyond the Spider-Verse',
+      arrivedLabel: 'Beyond the Spider-Verse is in theaters! 🕷️',
+      disclaimer: buildEventDisclaimer('Spider-Man', 'Sony Pictures or Marvel'),
+      board: { color: '#1a1f6e', ink: '#ff5fa2' },
+    },
+  },
   'solar-eclipse-2027': {
     name: '2027 solar eclipse',
     path: '/countdown/solar-eclipse-2027/',
@@ -161,6 +216,17 @@ export const COUNTDOWNS = {
       title: 'the 2027 total solar eclipse',
       arrivedLabel: 'The 2027 eclipse has passed — the next total eclipse is July 22, 2028',
       where: 'near Luxor, Egypt',
+    },
+  },
+  'womens-world-cup-2027': {
+    name: "Women's World Cup 2027",
+    path: '/countdown/womens-world-cup-2027/',
+    spec: {
+      dateRanges: [{ start: '2027-06-24', end: '2027-07-25' }],
+      countdownTitle: "the 2027 Women's World Cup",
+      arrivedLabel: "The Women's World Cup is on! ⚽",
+      disclaimer: buildEventDisclaimer("FIFA Women's World Cup", 'FIFA'),
+      board: { color: '#00573f', ink: '#ffdf00' },
     },
   },
   'solar-eclipse-2028': {

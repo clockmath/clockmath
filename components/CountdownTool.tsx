@@ -36,6 +36,7 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'New Year', href: '/countdown/new-year/', note: 'January 1' },
   { title: "Valentine's Day", href: '/countdown/valentines-day/', note: 'February 14' },
   { title: 'Super Bowl', href: '/countdown/super-bowl/', note: 'Super Bowl LXI, Feb 14, 2027' },
+  { title: 'March Madness', href: '/countdown/march-madness/', note: 'Selection Sunday, Mar 14, 2027' },
   { title: 'Lunar New Year', href: '/countdown/lunar-new-year/', note: 'Feb 6, 2027' },
   { title: 'First day of spring', href: '/countdown/first-day-of-spring/', note: 'The March equinox' },
   { title: 'Easter', href: '/countdown/easter/', note: 'March 28, 2027' },
@@ -49,12 +50,17 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'First day of summer', href: '/countdown/first-day-of-summer/', note: 'The June solstice' },
   { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
   { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },
+  { title: 'God of War Laufey', href: '/countdown/god-of-war-laufey/', note: 'May 20, 2027' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: 'December 18, 2026' },
+  { title: 'Fable', href: '/countdown/fable/', note: 'February 23, 2027' },
   { title: 'GTA 6', href: '/countdown/gta-6/', note: 'November 19, 2026' },
+  { title: 'FF7 Revelation', href: '/countdown/final-fantasy-7-revelation/', note: 'April 8, 2027' },
   { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/', note: 'August 2, 2027' },
   { title: '2028 annular eclipse', href: '/countdown/annular-eclipse-2028/', note: 'January 26, 2028' },
+  { title: "Women's World Cup", href: '/countdown/womens-world-cup-2027/', note: 'June 24, 2027, Brazil' },
   { title: '2028 solar eclipse', href: '/countdown/solar-eclipse-2028/', note: 'July 22, 2028' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
+  { title: 'Beyond the Spider-Verse', href: '/countdown/beyond-the-spider-verse/', note: 'June 18, 2027' },
 ];
 
 interface CountdownToolProps {
