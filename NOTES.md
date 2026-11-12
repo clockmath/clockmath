@@ -9,6 +9,7 @@
 - **Countdown pages:** 22 event pages under `/countdown/` (holidays, launches, eclipses, clock changes, retirement), a holidays board, and embeddable widgets at `/embed/countdown/…`. 14 guides under `/articles/`
 - **Design:** station design with line colours, split-flap answer boards, a classic-view toggle and dark mode
 - **Recent features:**
+  - **Beyond the Spider-Verse countdown (Nov 12, open PR):** `/countdown/beyond-the-spider-verse/`, Fri Jun 18 2027 in US theaters (moved Jun 4 → Jun 25 → Jun 18; the weekend of Father's Day and observed Juneteenth). Board `#1a1f6e`/`#ff5fa2`, share card `og/countdown/beyond-the-spider-verse.png?v=1`. One of the Nov 12 event pages Mark approved (each its own PR off `main`; they add lines to the same lists, so later merges may need a rebase)
   - Tools hub row highlight (#165, merged and deployed Nov 12): the row under the pointer, or with keyboard focus, takes a wash of its line colour (`--hub-wash` in `lines.css`), so the All tools rows no longer run into each other. Mixed into `--dial` (8% light; 13% of the lifted `--line-rule` in dark, since the deep purple and blue vanished at plain mixes; quiz yellow 18% in light). Hover only under `(hover: hover)` so taps don't leave it stuck; 16px right padding keeps the sample tiles off the edge. The same `.st-hub` list is on the guides index, the time zone guides page and the 404, so they get it too. Classic view unchanged
   - **Copilot gap pages (Nov 12, #155 #158 #160 #161, merged and deployed Nov 12):** pages for the questions Bing Copilot answered from other sites (AI Performance → opportunity queries)
     - Decimal hours (#155): decimal → minutes chart (every hundredth), payroll rounding chart (tenths; quarter hours / 7-minute rule), reverse quick answers, 5 more FAQs, a print button per chart, maths in `lib/decimalTime.ts`. Title 64 characters (was 69). Also fixed Classic view on phones, where the minutes chart showed one figure per line
@@ -36,6 +37,7 @@
   - **First deploy of 2027:** the holidays page's title and heading say "2026–2027" in text (the lists and FAQs follow the build year); change them to 2027–2028. Lunar New Year 2026 is a one-off constant in `lib/holidays.ts` that can go then
   - **Nov 1:** deploy so the Halloween title rolls over to next year. Seasonal titles are computed at build time (`seasonalSEO` in `lib/holidays.ts`)
   - **On or after Nov 19:** deploy so `/countdown/gta-6/` switches to its launch version (`LAUNCHED` in `app/countdown/gta-6/launch.ts` reads the build day)
+  - **Beyond the Spider-Verse:** recheck the date when the first trailer lands (it has moved three times); add the UK date when announced; refresh for release on or after Jun 18 2027
   - **When the NFL announces it:** add the Super Bowl LXI kickoff time; the page says it isn't announced yet
 - **Nov 3:** check whether the Oct 17–25 title and design changes moved Bing, Google and Copilot numbers (Thanksgiving, sleep, decimal hours)
 

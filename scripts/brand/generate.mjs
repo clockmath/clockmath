@@ -253,6 +253,7 @@ const SUBTITLES = {
   'gta-6': 'Release day: November 19, 2026',
   'avengers-doomsday': 'In theaters December 18, 2026',
   'olympics-2028': 'Opening ceremony: July 14, 2028',
+  'beyond-the-spider-verse': 'In theaters June 18, 2027',
   'solar-eclipse-2027': 'August 2, 2027',
   'solar-eclipse-2028': 'July 22, 2028',
   'annular-eclipse-2028': 'January 26, 2028',
