@@ -611,6 +611,22 @@ const EXACT_REDIRECTS = {
   '/time-calculator': '/',
   '/calculator': '/',
 };
+// Time difference pages (Nov 2026): each pair has one page, in the order
+// it is usually searched; the other order 301s to it. Must match
+// reverseRedirects() in lib/timePairs.ts (tests/timePairs.test.ts checks).
+const TIME_PAIR_REDIRECTS = {
+  '/time/london-to-los-angeles': '/time/los-angeles-to-london/',
+  '/time/london-to-new-york': '/time/new-york-to-london/',
+  '/time/los-angeles-to-chicago': '/time/chicago-to-los-angeles/',
+  '/time/los-angeles-to-new-york': '/time/new-york-to-los-angeles/',
+  '/time/london-to-chicago': '/time/chicago-to-london/',
+  '/time/chicago-to-new-york': '/time/new-york-to-chicago/',
+  '/time/los-angeles-to-phoenix': '/time/phoenix-to-los-angeles/',
+  '/time/toronto-to-calgary': '/time/calgary-to-toronto/',
+  '/time/berlin-to-chicago': '/time/chicago-to-berlin/',
+  '/time/sydney-to-los-angeles': '/time/los-angeles-to-sydney/',
+};
+Object.assign(EXACT_REDIRECTS, TIME_PAIR_REDIRECTS);
 const PREFIX_REDIRECTS = [
   ['/article/', '/articles/'],
   ['/tool/', '/tools/'],

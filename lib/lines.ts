@@ -35,7 +35,7 @@ export function lineForHref(href: string): LineId | null {
   const path = href.replace(/\/+$/, '') || '/';
   if (path === '/' || path === '/tools/days-between-dates' || path === '/tools/date-calculator' || path === '/tools/todays-date') return 'time';
   if (/^\/tools\/(timesheet|overtime|decimal-hours)$/.test(path)) return 'work';
-  if (/^\/tools\/(timezone|market-hours)$/.test(path)) return 'zones';
+  if (/^\/tools\/(timezone|market-hours)$/.test(path) || path === '/time' || path.startsWith('/time/')) return 'zones';
   if (path === '/tools/sleep') return 'sleep';
   if (path === '/tools/countdown' || path.startsWith('/countdown')) return 'countdowns';
   if (path === '/tools/quiz') return 'quiz';

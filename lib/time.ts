@@ -354,3 +354,44 @@ export function parseDateTimeInZone(
     return new Date();
   }
 }
+
+const CHANGE_SCAN_DAY_MS = 24 * 60 * 60 * 1000;
+
+export interface ClockChange {
+  /** Instant the clocks change (ms). */
+  at: number;
+  /** UTC offsets in minutes either side of it. */
+  before: number;
+  after: number;
+}
+
+/**
+ * The next instant `timeZone` changes its UTC offset, within ~13 months.
+ * Scans a day at a time, then narrows to the minute. Goes through lib/time's
+ * getTimezoneOffset, so places that stopped changing clocks in 2026 (BC,
+ * Alberta, the Northwest Territories, Manitoba) correctly show no change even on browsers with stale tz data.
+ */
+export function nextClockChange(timeZone: string, fromMs: number): ClockChange | null {
+  let lo = fromMs;
+  let loOffset = getTimezoneOffset(timeZone, new Date(lo));
+  for (let day = 0; day < 400; day++) {
+    const hi = lo + CHANGE_SCAN_DAY_MS;
+    const hiOffset = getTimezoneOffset(timeZone, new Date(hi));
+    if (hiOffset !== loOffset) {
+      // Narrow to the millisecond: `b` ends as the first instant on the new
+      // offset. (Stopping at a minute and rounding overshoots by one when the
+      // search lands just past the boundary.)
+      let a = lo;
+      let b = hi;
+      while (b - a > 1) {
+        const mid = Math.floor((a + b) / 2);
+        if (getTimezoneOffset(timeZone, new Date(mid)) === loOffset) a = mid;
+        else b = mid;
+      }
+      return { at: b, before: loOffset, after: hiOffset };
+    }
+    lo = hi;
+    loOffset = hiOffset;
+  }
+  return null;
+}

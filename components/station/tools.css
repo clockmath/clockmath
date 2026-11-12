@@ -395,3 +395,46 @@ html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { colo
 /* ---- Holidays page year lists (Nov 2026): federal holidays, the days
    off, a weight heavier than the observances around them ---- */
 .station tr[data-federal] > td:first-child { font-weight: 700; }
+
+/* ---- Time difference pages (/time/…, Nov 2026): both clocks on the board,
+   the gap in a sentence across it; the hour chart shaded for working hours,
+   waking hours and night. Layout and shading use the palette variables, so
+   classic view gets the same chart in its own colours ---- */
+.station .st-tp { padding-top: 0; }
+.station .st-tp-board { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 22px 40px; }
+.station .st-tp-place { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
+.station .st-tp-board .st-big.st-tp-time { font-size: clamp(56px, 8vw, 104px); }
+.station .st-tp-zone { margin: 12px 0 0; font-size: 15px; }
+.station .st-tp-sentence { grid-column: 1 / -1; }
+.station .st-tp-gap { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.3; }
+html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zone, .st-tp-gap) { color: var(--line-ink); }
+html:not(.classic) .station[data-line] .st-tp-sentence { padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--line-ink) 35%, transparent); }
+.station .st-tp-actions { align-items: center; }
+.station .st-tp-actions .st-seg { height: 46px; }
+.station .st-tp-prose > p, .station .st-tp-meet p { margin: 0 0 14px; }
+.station .st-tp-changes { margin-bottom: 4px; }
+.station .st-tp-changes li > :first-child { color: var(--text); }
+.station .st-tp-changes li > :last-child { white-space: nowrap; }
+.station .st-tp-meet h3 { margin: 18px 0 4px; font-size: 17px; font-weight: 700; color: var(--ink); }
+.station .st-tp-meet:first-child h3 { margin-top: 0; }
+.station .st-tp-gaps { height: 42px; margin-bottom: 12px; }
+.station .st-tp-hours-cap { margin: 0 0 8px; font-size: 15px; color: var(--quiet); }
+.station .st-tp-table { width: 100%; max-width: 440px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.station .st-tp-table th { text-align: left; font-size: 14px; color: var(--quiet); font-weight: 600; padding: 6px 12px; border-bottom: 1px solid var(--rule); }
+.station .st-tp-table td { padding: 5px 12px; border-bottom: 1px solid var(--dial); color: var(--ink); font-size: 16px; width: 50%; }
+.station .st-tp-table td small { margin-left: 8px; font-size: 12px; color: var(--quiet); }
+.station :is(.st-tp-table td, .st-tp-key span)[data-kind="work"] { background: var(--enamel-wash); font-weight: 700; }
+.station :is(.st-tp-table td, .st-tp-key span)[data-kind="awake"] { background: var(--wash); }
+.station .st-tp-table td[data-kind="night"] { color: var(--quiet); }
+.station .st-tp-key { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 12px 0 0; font-size: 13px; color: var(--quiet); }
+.station .st-tp-key span { padding: 2px 8px; border-radius: 4px; }
+.station .st-tp-key span[data-kind="night"] { border: 1px solid var(--rule); }
+.station .st-tp-index li > :first-child { font-weight: 700; color: var(--ink); }
+.station .st-tp-index li > :last-child { font-weight: 400; color: var(--text); }
+@media (max-width: 760px) {
+  .station .st-tp-board { grid-template-columns: 1fr; }
+  .station .st-tp-board .st-big.st-tp-time { font-size: 64px; }
+  .station .st-tp-gap { font-size: 19px; }
+  .station .st-tp-changes li, .station .st-tp-index li { grid-template-columns: 1fr; gap: 2px; }
+  .station .st-tp-changes li > :last-child, .station .st-tp-index li > :last-child { text-align: left; }
+}

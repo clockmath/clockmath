@@ -120,11 +120,31 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
     if (!isHydrated) return;
     
     const userTZ = getUserTimeZone();
-    setFromTZ(userTZ);
+    // Nov 2026: the time difference pages (/time/…) link here with both
+    // places set: ?from=<IANA zone>&to=<IANA zone>&fromName=…&toName=…
+    // An unknown zone is ignored (the device's zone, and UTC, stay).
+    const params = new URLSearchParams(window.location.search);
+    const knownZone = (tz: string | null) => {
+      if (!tz) return null;
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone: tz });
+        return tz;
+      } catch {
+        return null;
+      }
+    };
+    const presetName = (key: string, tz: string) => params.get(key)?.trim().slice(0, 60) || getTimeZoneDisplayName(tz);
+    const presetFrom = knownZone(params.get('from'));
+    const presetTo = knownZone(params.get('to'));
+    setFromTZ(presetFrom ?? userTZ);
     // Show the detected place in the box: it read "Type a city…" while the
     // place was already set (only a small hint below said so)
-    setFromLocationDisplay(getTimeZoneDisplayName(userTZ));
-    
+    setFromLocationDisplay(presetFrom ? presetName('fromName', presetFrom) : getTimeZoneDisplayName(userTZ));
+    if (presetTo) {
+      setToTZ(presetTo);
+      setToLocationDisplay(presetName('toName', presetTo));
+    }
+
     // Set initial date/time to now (host-local, not UTC — toISOString() would
     // be a day off near midnight west of UTC).
     const now = new Date();

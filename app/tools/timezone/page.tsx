@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
 import { useDarkMode } from '@/hooks/use-dark-mode';
+import { TIME_PAIRS } from '@/lib/timePairs';
 
 // Year-round differences, checked against tzdata for Oct 2026–Oct 2027 — stated
 // with their seasonal ranges so they stay true whatever day the page is read.
@@ -86,6 +87,20 @@ export default function TimezonePage() {
         {/* Tools Navigation */}
         {/* Timezone Converter */}
         <TimezoneConverter className="mb-section" />
+
+      {/* Nov 2026: a page per common pair, with the dates the gap changes,
+          shared working hours and an hour-by-hour chart */}
+      <section className="st-more">
+        <h2>Time differences between cities</h2>
+        <div className="st-chips">
+          {TIME_PAIRS.map((p) => (
+            <Link key={p.slug} href={`/time/${p.slug}/`}>
+              {p.a.name} to {p.b.name}
+            </Link>
+          ))}
+          <Link href="/time/">All time differences</Link>
+        </div>
+      </section>
 
       <StationFold>
       <section className="max-w-3xl mx-auto mb-section">
