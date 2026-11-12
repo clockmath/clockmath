@@ -102,7 +102,8 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
   const now = segmentAt(segs, BUILD_MS);
   const converterHref = `/tools/timezone/?${new URLSearchParams({ from: p.a.zone, to: p.b.zone, fromName: p.a.name, toName: p.b.name })}`;
   const others = TIME_PAIRS.filter((o) => o.slug !== p.slug);
-  const related = [...others.filter((o) => [o.a.slug, o.b.slug].some((s) => s === p.a.slug || s === p.b.slug)), ...others.filter((o) => ![o.a.slug, o.b.slug].some((s) => s === p.a.slug || s === p.b.slug))];
+  // Pairs that share a city with this one (34 pages: all of them was a wall of links); the index has the rest
+  const related = others.filter((o) => [o.a.slug, o.b.slug].some((s) => s === p.a.slug || s === p.b.slug));
 
   return (
     <StationChrome currentTool="timezone">

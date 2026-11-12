@@ -153,6 +153,7 @@ const post = (url, body, headers = {}) =>
   // Time difference pages: the reverse order goes to the one page
   assert.strictEqual(api.redirectTarget('/time/london-to-new-york/'), '/time/new-york-to-london/');
   assert.strictEqual(api.redirectTarget('/time/toronto-to-calgary'), '/time/calgary-to-toronto/');
+  assert.strictEqual(api.redirectTarget('/time/mumbai-to-new-york/'), '/time/new-york-to-mumbai/');
   assert.strictEqual(api.redirectTarget('/time/new-york-to-london/'), null, 'canonical pair untouched');
   assert.strictEqual(api.redirectTarget('/time/'), null);
   for (const p of ['//evil.com', '/blog//evil.com', '/tool/%2F%2Fevil.com']) {
