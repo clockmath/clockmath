@@ -87,7 +87,8 @@ const PLACES: Record<string, PairPlace> = {
     name: 'Calgary',
     zone: 'America/Edmonton',
     full: 'Calgary, Alberta, Canada',
-    abbr: { [-420]: 'MST', [-360]: 'UTC−6' },
+    // No name for the new year-round UTC−6 (shown as "UTC−6")
+    abbr: { [-420]: 'MST' },
     sameTime: ['Edmonton', 'all of Alberta', 'Yellowknife', 'Regina and Saskatoon (Saskatchewan)', 'Mexico City'],
     rules: 'Calgary stays on UTC−6 all year: Alberta kept its summer time in 2026 and no longer changes its clocks (it did not fall back on November 1, 2026).',
   },

@@ -401,13 +401,20 @@ html:not(.classic) .station[data-line] .st-today .st-answer .st-today-cap { colo
    waking hours and night. Layout and shading use the palette variables, so
    classic view gets the same chart in its own colours ---- */
 .station .st-tp { padding-top: 0; }
-.station .st-tp-board { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 22px 40px; }
-.station .st-tp-place { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
-.station .st-tp-board .st-big.st-tp-time { font-size: clamp(56px, 8vw, 104px); }
+.station .st-tp-board { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "a d b" "s s s"; align-items: center; gap: 20px 32px; }
+.station .st-tp-a { grid-area: a; }
+.station .st-tp-b { grid-area: b; }
+.station .st-tp-place { margin: 0 0 10px; font-size: 18px; font-weight: 700; }
+.station .st-tp-board .st-big.st-tp-time { font-size: clamp(56px, 7.5vw, 100px); }
 .station .st-tp-zone { margin: 12px 0 0; font-size: 15px; }
-.station .st-tp-sentence { grid-column: 1 / -1; }
+/* The difference between the two clocks, set as big as they are */
+.station .st-tp-diff { grid-area: d; text-align: center; padding: 0 28px; border-inline: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.station .st-tp-board .st-big.st-tp-diff-fig { font-size: clamp(48px, 6vw, 84px); }
+.station .st-tp-diff-same { margin: 0; font-size: 30px; font-weight: 800; }
+.station .st-tp-diff-cap { margin: 10px 0 0; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.station .st-tp-sentence { grid-area: s; }
 .station .st-tp-gap { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.3; }
-html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zone, .st-tp-gap) { color: var(--line-ink); }
+html:not(.classic) .station[data-line] .st-tp-board :is(.st-tp-place, .st-tp-zone, .st-tp-gap, .st-tp-diff-cap, .st-tp-diff-same) { color: var(--line-ink); }
 html:not(.classic) .station[data-line] .st-tp-sentence { padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--line-ink) 35%, transparent); }
 .station .st-tp-actions { align-items: center; }
 .station .st-tp-actions .st-seg { height: 46px; }
@@ -432,9 +439,18 @@ html:not(.classic) .station[data-line] .st-tp-sentence { padding-top: 16px; bord
 .station .st-tp-index li > :first-child { font-weight: 700; color: var(--ink); }
 .station .st-tp-index li > :last-child { font-weight: 400; color: var(--text); }
 @media (max-width: 760px) {
-  .station .st-tp-board { grid-template-columns: 1fr; }
-  .station .st-tp-board .st-big.st-tp-time { font-size: 64px; }
-  .station .st-tp-gap { font-size: 19px; }
+  /* Phones: the two clocks side by side, the difference under them */
+  .station .st-tp-board { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "a b" "d d" "s s"; gap: 16px 14px; align-items: start; }
+  .station .st-tp-place { font-size: 15px; margin-bottom: 6px; }
+  .station .st-tp-board .st-big.st-tp-time { font-size: clamp(40px, 11vw, 76px); }
+  .station .st-tp-zone { font-size: 13px; margin-top: 8px; }
+  .station .st-tp-utc { display: none; }
+  .station .st-tp-diff { display: flex; align-items: baseline; justify-content: center; gap: 12px; padding: 12px 0 0; border-inline: 0;
+                         border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+  .station .st-tp-board .st-big.st-tp-diff-fig { font-size: clamp(44px, 10vw, 64px); }
+  .station .st-tp-diff-cap { margin: 0; font-size: 16px; }
+  .station .st-tp-diff-same { font-size: 24px; }
+  .station .st-tp-gap { font-size: 18px; }
   .station .st-tp-changes li, .station .st-tp-index li { grid-template-columns: 1fr; gap: 2px; }
   .station .st-tp-changes li > :last-child, .station .st-tp-index li > :last-child { text-align: left; }
 }

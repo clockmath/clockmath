@@ -57,13 +57,19 @@ export function TimePairBoard({
   const offB = now === null ? build.b : getTimezoneOffset(b.zone, new Date(ms));
   const gap = offB - offA;
 
-  const city = (side: Side, offset: number) => {
+  // The difference as a figure between the clocks: "+5h", "−3h", "+9h 30m"
+  // (B against A). From the build's gap until mount, like the tiles' "--"
+  const gapH = Math.floor(Math.abs(gap) / 60);
+  const gapM = Math.abs(gap) % 60;
+  const sign = gap > 0 ? '+' : '−';
+
+  const city = (side: Side, offset: number, area: 'a' | 'b') => {
     const d = new Date(ms + offset * 60_000);
     const minutes = d.getUTCHours() * 60 + d.getUTCMinutes();
     const [clock, suffix] = formatClock(minutes, is24h).split(' ');
     const [hh, mm] = now === null ? ['--', '--'] : clock.split(':');
     return (
-      <div className="st-tp-city">
+      <div className={`st-tp-city st-tp-${area}`}>
         <p className="st-tp-place">{side.name}</p>
         <p className="st-big st-tp-time" aria-hidden="true">
           <Flap value={hh} />
@@ -72,7 +78,14 @@ export function TimePairBoard({
           {suffix && now !== null && <span className="u">{suffix}</span>}
         </p>
         <p className="st-tp-zone">
-          {now === null ? ' ' : `${wallClockLabel(ms, offset, is24h).split(' ')[0]} · ${side.abbr[offset] ?? utcLabel(offset)} (${utcLabel(offset)})`}
+          {now === null ? (
+            ' '
+          ) : (
+            <>
+              {wallClockLabel(ms, offset, is24h).split(' ')[0]} · {side.abbr[offset] ?? utcLabel(offset)}
+              {side.abbr[offset] && <span className="st-tp-utc"> ({utcLabel(offset)})</span>}
+            </>
+          )}
         </p>
       </div>
     );
@@ -81,8 +94,27 @@ export function TimePairBoard({
   return (
     <section className="st-calc st-tp" aria-label={`Time in ${a.name} and ${b.name}`}>
       <div className="st-answer st-tp-board">
-        {city(a, offA)}
-        {city(b, offB)}
+        {city(a, offA, 'a')}
+        <div className="st-tp-diff">
+          {gap === 0 ? (
+            <p className="st-tp-diff-same">Same time</p>
+          ) : (
+            <p className="st-big st-tp-diff-fig" aria-hidden="true">
+              <Flap value={`${sign}${gapH}`} />
+              <span className="u">h</span>
+              {gapM > 0 && (
+                <>
+                  <Flap value={String(gapM)} />
+                  <span className="u">m</span>
+                </>
+              )}
+            </p>
+          )}
+          <p className="st-tp-diff-cap">
+            {gap === 0 ? 'No difference' : `${b.name} ${gap > 0 ? 'ahead' : 'behind'}`}
+          </p>
+        </div>
+        {city(b, offB, 'b')}
         {/* The answer as sentences: what crawlers read and Copilot quotes */}
         <div className="st-tp-sentence" data-pair-spec={spec} data-pair-names={`${a.name}|${b.name}`}>
           <p className="st-tp-gap">

@@ -138,7 +138,9 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
         <h1 className="st-h1">
           {p.a.name} to {p.b.name} Time
         </h1>
-        <p className="st-lede">{p.context}</p>
+        {/* No lede (Nov 2026, Mark): the board with the two times and the
+            difference is the answer, so it comes straight after the heading;
+            the pair's context opens "Through the year" instead */}
       </div>
 
       <TimePairBoard
@@ -152,6 +154,7 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
       <section className="st-more">
         <h2>Through the year</h2>
         <div className="st-tp-prose">
+          <p>{p.context}</p>
           <p>{yearSentence(p, year)}</p>
           {changes.length > 0 ? (
             <>
