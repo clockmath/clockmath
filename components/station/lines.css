@@ -89,6 +89,24 @@ html.dark:not(.classic) .station[data-line] :is(.st-answer, .st-result) { box-sh
 
 /* ---- Every line on one map: the tools hub and guides lists ---- */
 html:not(.classic) .station .st-hub li[data-line] a { border-left: 6px solid var(--line); padding-left: 16px; }
+/* Nov 2026: rows ran into each other, so the row under the pointer (or with
+   keyboard focus) takes a wash of its line colour. Mixed into --dial so it
+   reads on white and on the dark dial. Dark mode mixes the lifted rule shade,
+   since the deep purple and blue vanish into the dial; the pale quiz yellow
+   needs more of itself on white. The right padding keeps the sample tiles off
+   the wash's edge. Hover only where there is a pointer, so a tap doesn't
+   leave it stuck */
+html:not(.classic) .station .st-hub a {
+  --hub-wash: color-mix(in srgb, var(--line, var(--enamel)) 8%, var(--dial));
+  padding-right: 16px; transition: background-color 120ms ease-out;
+}
+html:not(.classic) .station .st-hub li[data-line="quiz"] a { --hub-wash: color-mix(in srgb, var(--line) 18%, var(--dial)); }
+html.dark:not(.classic) .station .st-hub a { --hub-wash: color-mix(in srgb, var(--line-rule, var(--enamel)) 13%, var(--dial)); }
+@media (hover: hover) {
+  html:not(.classic) .station .st-hub a:hover { background: var(--hub-wash); }
+}
+html:not(.classic) .station .st-hub a:focus-visible { background: var(--hub-wash); }
+@media (prefers-reduced-motion: reduce) { html:not(.classic) .station .st-hub a { transition: none; } }
 /* Each tool's sample answer, on tiles of its line colour */
 html:not(.classic) .station .st-hub-sample {
   display: inline-flex; align-items: baseline; gap: 12px; justify-self: end; white-space: nowrap;
