@@ -13,6 +13,7 @@ Free time calculators: durations, work hours and pay, time zones, sleep, countdo
 | Tool | Route | What it does |
 |---|---|---|
 | Time Duration Calculator | `/` | The time between two dates and times (overnight included), with decimal hours, total minutes, other units and a saved history. Press Calculate for the answer. |
+| Days Between Dates | `/tools/days-between-dates` | Days between two dates, plus weeks and days, months and days, years/months/days and business days; end date in or out, `?from=`/`?to=` share links. |
 | Work Hours Calculator | `/tools/timesheet` | Add up shifts with breaks and overnight handling: total hours, decimal hours, gross pay, optional weekly overtime. Saves drafts and named timesheets; share, copy or CSV. |
 | Overtime Calculator | `/tools/overtime` | Splits a week into regular and overtime hours at 1.5× or 2×, with pay. |
 | Minutes to Decimal Converter | `/tools/decimal-hours` | Hours and minutes to decimal hours and back, with a printable 1–60 minute chart. |

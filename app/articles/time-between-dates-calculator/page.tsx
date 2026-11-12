@@ -8,7 +8,9 @@ import { Flap } from "@/components/station/Flap";
 // This guide used to be titled "Time Between Two Dates Calculator – Free
 // Online Tool", which pitted it against the homepage (the actual tool) for
 // the same query; GSC had it as "Crawled – currently not indexed" (Oct 2026).
-// It now targets the how-to intent and hands tool-seekers to the homepage.
+// It now targets the how-to intent and hands tool-seekers to the tools: since
+// Nov 2026 the days between dates calculator for day counts, the homepage
+// for spans with times of day.
 const TITLE = "How to Calculate the Time Between Two Dates | ClockMath";
 const DESCRIPTION =
   "Count the days between two dates by hand: month lengths, leap years, inclusive vs. exclusive counting, and crossing into a new year — with worked examples.";
@@ -48,9 +50,10 @@ export default function TimeBetweenDatesCalculatorPage() {
       currentPath="/articles/time-between-dates-calculator"
     >
       <p>
-        If you just need the answer, the <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> gives
-        it instantly, times of day included. This guide shows how the counting actually works, so you can check a
-        result or do it without a computer.
+        If you just need the answer, the <Link href="/tools/days-between-dates/" className="text-primary hover:text-primary font-medium">days between dates calculator</Link> gives
+        it instantly, in days, weeks, months and business days (the <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> adds
+        times of day). This guide shows how the counting actually works, so you can check a result or do it without
+        a computer.
       </p>
 
       <h2>The method: count to the end of each month</h2>
@@ -114,7 +117,8 @@ export default function TimeBetweenDatesCalculatorPage() {
       </ul>
 
       <p>
-        For spans that include times of day, or when you'd rather not count, the <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> gives
+        When you'd rather not count, the <Link href="/tools/days-between-dates/" className="text-primary hover:text-primary font-medium">days between dates calculator</Link> does
+        it for any two dates, end date in or out. For spans that include times of day, the <Link href="/" className="text-primary hover:text-primary font-medium">time duration calculator</Link> gives
         a calendar-accurate breakdown. To watch the days tick down to a future date, use
         the <Link href="/tools/countdown" className="text-primary hover:text-primary font-medium">countdown timer</Link>.
       </p>
