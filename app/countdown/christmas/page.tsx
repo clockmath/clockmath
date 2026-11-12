@@ -3,6 +3,8 @@
 import EventPage from '@/components/EventPage';
 import { countdownProps } from '@/lib/countdowns';
 import HolidayDatesTable, { usFederalObserved } from '@/components/HolidayDatesTable';
+import WorkingDays from '@/components/WorkingDays';
+import { christmasEveAhead } from '@/lib/workingDays';
 
 export default function ChristmasCountdownPage() {
   return (
@@ -10,7 +12,7 @@ export default function ChristmasCountdownPage() {
       {...countdownProps('christmas')}
       heading={'How Many Days Until Christmas?'}
       tagline="Live countdown to December 25 — days, hours, minutes, and seconds"
-      lastUpdated="2026-10-15"
+      lastUpdated="2026-11-12"
       breadcrumb="Christmas"
       facts={[
         { label: 'Date', value: 'December 25' },
@@ -24,6 +26,10 @@ export default function ChristmasCountdownPage() {
         </>
       }
       extraContent={
+        <>
+        <WorkingDays title="Working days until Christmas" through={christmasEveAhead} throughLabel="Christmas Eve">
+          Many workplaces close early or all day on Christmas Eve, so the last full working day may be the one before.
+        </WorkingDays>
         <HolidayDatesTable
           name="Christmas"
           month={11}
@@ -32,6 +38,7 @@ export default function ChristmasCountdownPage() {
           observedLabel="US federal holiday observed"
           note="When Christmas falls on a weekend, the US federal holiday moves to the Friday before or the Monday after."
         />
+        </>
       }
       faqs={[
         {
@@ -43,6 +50,16 @@ export default function ChristmasCountdownPage() {
           question: 'How many sleeps until Christmas?',
           answer:
             'The same as the number of days at the top of this page: each night between now and Christmas morning is one sleep. On Christmas Eve, it is one sleep to go.',
+        },
+        {
+          question: 'How many working days until Christmas?',
+          answer:
+            'Count Monday to Friday from today through Christmas Eve, leaving out Thanksgiving: the "Working days until Christmas" section on this page does it for today. In 2026 Christmas Eve is a Thursday. In 2027 Christmas falls on a Saturday, so the US federal holiday is Friday, December 24, and Thursday, December 23 is the last federal working day.',
+        },
+        {
+          question: 'How many weekends until Christmas?',
+          answer:
+            'The "Working days until Christmas" section on this page counts the weekends left too, along with the working days, from today through Christmas Eve.',
         },
         {
           question: 'What day of the week is Christmas 2026?',
