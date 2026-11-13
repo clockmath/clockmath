@@ -114,6 +114,12 @@ export default function CountdownWidgetPage() {
               — count down to any date and time, share it, or embed it
             </li>
             <li>
+              <Link href="/time/" className="text-primary hover:text-primary/80 font-semibold">
+                Time difference widgets
+              </Link>{' '}
+              — the time now in two cities and the gap, for 34 city pairs
+            </li>
+            <li>
               <Link href="/countdown/holidays/" className="text-primary hover:text-primary/80 font-semibold">
                 Holidays 2026–2027
               </Link>{' '}

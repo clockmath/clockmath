@@ -44,3 +44,28 @@ html:has(.st-embed), html:has(.st-embed) body { background: transparent !importa
 /* The station lettering and split-flap tiles, as on the event pages (type.css) */
 html:not(.classic) .st-embed :is(.st-embed-days, .st-embed-clock dd) { font-family: var(--display); font-stretch: 100%; letter-spacing: 0; }
 html:not(.classic) .st-embed .st-embed-days small { font-family: var(--font-archivo), sans-serif; }
+
+/* ---------------------------------------------------------------------------
+   Time difference embed (/embed/time/<a>-to-<b>/, Nov 2026): two clocks side
+   by side, the gap in words under them. The same board and sizing as the
+   countdown, by the iframe's width.
+--------------------------------------------------------------------------- */
+.st-embed-clocks { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: nowrap; }
+.st-embed-city { min-width: 0; }
+.st-embed-place { margin: 0 0 5px; font-size: 14px; font-weight: 700; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-embed-time { margin: 0; display: flex; align-items: flex-end; font-weight: 900; font-stretch: 66%; line-height: 0.8;
+                 letter-spacing: -0.03em; font-size: clamp(30px, 11cqi, 64px); white-space: nowrap; }
+.st-embed-colon { margin: 0 2px; }
+.st-embed-time small { font-size: 14px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; margin-left: 6px; }
+.st-embed-day { margin: 5px 0 0; font-size: 12px; opacity: 0.8; white-space: nowrap; }
+.st-embed-tp .st-embed-date { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Sidebar: still side by side, smaller (two clocks of 4 tiles fit in ~270px) */
+@container (max-width: 380px) {
+  .st-embed-clocks { gap: 10px; }
+  .st-embed-time { font-size: clamp(24px, 10.5cqi, 38px); }
+  .st-embed-time small { font-size: 10px; margin-left: 3px; }
+  .st-embed-place { font-size: 13px; }
+  .st-embed-day { font-size: 11px; }
+}
+html:not(.classic) .st-embed .st-embed-time { font-family: var(--display); font-stretch: 100%; letter-spacing: 0; }
+html:not(.classic) .st-embed .st-embed-time small { font-family: var(--font-archivo), sans-serif; }

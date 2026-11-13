@@ -17,6 +17,8 @@ interface EmbedCodeProps {
   id: string;
   /** Event countdowns also come as an image badge (lib/badges.ts). */
   badge?: { src: string; name: string };
+  /** A countdown (default) or the two clocks of a time difference page. */
+  kind?: 'countdown' | 'clocks';
 }
 
 type Format = 'widget' | 'badge' | 'link';
@@ -43,7 +45,10 @@ const BADGE_CODES: Array<{ id: BadgeCode; label: string }> = [
 // Ghost). An image badge in a link survives where iframes are stripped
 // (WordPress.com's cheaper plans, forums, newsletters, READMEs), and
 // Notion, Google Sites and Wix take the embed's address, not code.
-export function EmbedCode({ src, creditHref, label, id, badge }: EmbedCodeProps) {
+export function EmbedCode({ src, creditHref, label, id, badge, kind = 'countdown' }: EmbedCodeProps) {
+  // The clocks need less room than a countdown's days, hours and seconds
+  const height = kind === 'clocks' ? 200 : 230;
+  const credit = kind === 'clocks' ? 'Time difference from' : 'Countdown from';
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<Format>('widget');
   const [badgeCode, setBadgeCode] = useState<BadgeCode>('html');
@@ -60,10 +65,10 @@ export function EmbedCode({ src, creditHref, label, id, badge }: EmbedCodeProps)
       return `<a href="${creditHref}"><img src="${img}" alt="${alt.replace(/"/g, '&quot;')}" height="64" style="border:0"></a>`;
     }
     return (
-      `<iframe src="${ORIGIN}${src}" title="${label.replace(/"/g, '&quot;')}" width="100%" height="230" style="max-width:560px;border:0" loading="lazy"></iframe>\n` +
-      `<p style="font:13px/1.4 sans-serif;margin:6px 0 0">Countdown from <a href="${creditHref}">ClockMath</a></p>`
+      `<iframe src="${ORIGIN}${src}" title="${label.replace(/"/g, '&quot;')}" width="100%" height="${height}" style="max-width:560px;border:0" loading="lazy"></iframe>\n` +
+      `<p style="font:13px/1.4 sans-serif;margin:6px 0 0">${credit} <a href="${creditHref}">ClockMath</a></p>`
     );
-  }, [format, badgeCode, src, creditHref, label, badge]);
+  }, [format, badgeCode, src, creditHref, label, badge, height, credit]);
 
   const pick = (f: Format) => {
     setFormat(f);
@@ -92,7 +97,7 @@ export function EmbedCode({ src, creditHref, label, id, badge }: EmbedCodeProps)
           )}
         </p>
       ) : (
-        <iframe src={src} title={label} width="100%" height={230} loading="lazy" className="st-embedcode-preview" />
+        <iframe src={src} title={label} width="100%" height={height} loading="lazy" className="st-embedcode-preview" />
       )}
 
       <div className="st-embedcode-formats">
@@ -134,7 +139,10 @@ export function EmbedCode({ src, creditHref, label, id, badge }: EmbedCodeProps)
 
       {format === 'widget' && (
         <p className="st-embedcode-help">
-          A live countdown that ticks every second and fits any width, from a sidebar to a full column. WordPress: add a
+          {kind === 'clocks'
+            ? 'Both clocks, live, with the difference between them; it follows the clock changes by itself. Add ?h=24 to the address for a 24-hour clock.'
+            : 'A live countdown that ticks every second and fits any width, from a sidebar to a full column.'}{' '}
+          WordPress: add a
           Custom HTML block. Squarespace: a Code block. Blogger: an HTML/JavaScript gadget. Ghost: an HTML card. No
           sign-up, and it sets no cookies on your site.
         </p>
@@ -149,7 +157,7 @@ export function EmbedCode({ src, creditHref, label, id, badge }: EmbedCodeProps)
       {format === 'link' && (
         <p className="st-embedcode-help">
           For builders that take an address instead of code. Notion: type /embed and paste it. Google Sites: Insert,
-          Embed, By URL. Wix: Embed a Site. Make the box about 230 pixels tall.
+          Embed, By URL. Wix: Embed a Site. Make the box about {height} pixels tall.
         </p>
       )}
     </div>
