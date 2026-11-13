@@ -77,6 +77,7 @@ export default function TimeDifferencesPage() {
 
       <p className="st-nudge">
         Two other places? The <Link href="/tools/timezone/">time zone converter</Link> takes any city, on any date.
+        Every pair above also comes as a widget for your own site: open it and see “Put these clocks on your site”.
       </p>
 
       <SiteFooter />

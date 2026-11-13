@@ -110,6 +110,8 @@ function handleBadge(request) {
 // free 1,000 writes a day; a Set per isolate saves repeat reads.
 const EMBED_USE_TTL = 60 * 60 * 24 * 90;
 const EMBED_PATH = /^\/embed\/countdown\/(?:([a-z0-9-]+)\/)?$/;
+// Time difference embeds (Nov 2026), counted as "embed:time-<pair>"
+const TIME_EMBED_PATH = /^\/embed\/time\/([a-z0-9-]+)\/$/;
 const OWN_HOST = /(^|\.)clockmath\.com$|(^|\.)clockmath\.pages\.dev$/;
 const embedUseSeen = new Set();
 
@@ -118,8 +120,10 @@ function embedUseKey(pathname, referer, nowMs) {
   let kind;
   const badge = BADGE_PATH.exec(pathname);
   const embed = EMBED_PATH.exec(pathname);
+  const time = TIME_EMBED_PATH.exec(pathname);
   if (badge) kind = 'badge:' + badge[1];
   else if (embed) kind = 'embed:' + (embed[1] || 'custom');
+  else if (time) kind = 'embed:time-' + time[1];
   else return null;
   let host = '(none)';
   if (referer) {

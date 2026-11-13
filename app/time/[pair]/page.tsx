@@ -7,6 +7,7 @@ import StationFold from '@/components/station/StationFold';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { TimePairBoard } from '@/components/TimePairBoard';
 import { TimePairHours } from '@/components/TimePairHours';
+import { EmbedCode } from '@/components/embed/EmbedCode';
 import { generateSEOMetadata } from '@/lib/seo';
 import {
   TIME_PAIRS,
@@ -253,6 +254,20 @@ export default async function TimePairPage({ params }: { params: Promise<{ pair:
             <Link href="/time/">All time differences</Link>
           </div>
         </section>
+      </StationFold>
+
+      {/* Nov 2026: the two clocks as a widget for other sites (links item 7),
+          folded like the countdowns' embed panel */}
+      <StationFold id="embed" summary="Put these clocks on your site">
+        <div className="st-fold-plain">
+          <EmbedCode
+            src={`/embed/time/${p.slug}/`}
+            creditHref={`https://clockmath.com/time/${p.slug}/`}
+            label={`Time in ${p.a.name} and ${p.b.name}`}
+            id={`time-${p.slug}`}
+            kind="clocks"
+          />
+        </div>
       </StationFold>
 
       <SiteFooter />

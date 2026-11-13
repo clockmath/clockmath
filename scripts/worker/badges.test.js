@@ -100,6 +100,8 @@ assert.strictEqual(embedUseKey('/embed/countdown/christmas/', 'https://blog.exam
 assert.strictEqual(embedUseKey('/embed/countdown/', 'https://Teacher.Example.com/class?x=1', day), 'embeds:2026-11-12:embed:custom:teacher.example.com');
 assert.strictEqual(embedUseKey('/badge/countdown/gta-6.svg', 'https://forum.example.net/thread/9', day), 'embeds:2026-11-12:badge:gta-6:forum.example.net');
 assert.strictEqual(embedUseKey('/embed/countdown/christmas/', null, day), 'embeds:2026-11-12:embed:christmas:(none)');
+assert.strictEqual(embedUseKey('/embed/time/new-york-to-london/', 'https://team.example.com/wiki', day), 'embeds:2026-11-12:embed:time-new-york-to-london:team.example.com');
+assert.strictEqual(embedUseKey('/embed/time/', 'https://team.example.com/', day), null);
 assert.strictEqual(embedUseKey('/embed/countdown/christmas/', 'not a url', day), 'embeds:2026-11-12:embed:christmas:(unreadable)');
 // ClockMath's own previews, other paths and the embed's own files aren't counted
 assert.strictEqual(embedUseKey('/embed/countdown/christmas/', 'https://clockmath.com/countdown/christmas/', day), null);
