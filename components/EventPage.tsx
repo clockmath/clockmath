@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { StationBoard } from '@/components/station/StationBoard';
 import { EmbedCode } from '@/components/embed/EmbedCode';
+import { badgePath } from '@/lib/badges';
 import StationFold from '@/components/station/StationFold';
 import { eventColour, getCountdown } from '@/lib/countdowns';
 import { tileShade } from '@/lib/colour';
@@ -248,7 +249,12 @@ export default function EventPage({
               creditHref={`https://clockmath.com${embeddable.path}`}
               label={`Countdown to ${embeddable.name}`}
               id={slug}
+              badge={embeddable.clockChange ? undefined : { src: badgePath(slug), name: embeddable.name }}
             />
+            <p className="st-embedcode-help">
+              <Link href="/tools/countdown-widget/">All countdown widgets</Link>: every holiday, release and eclipse, or
+              your own date.
+            </p>
           </div>
         </StationFold>
       )}

@@ -12,6 +12,7 @@
 //   api.js          security headers, CSP nonce, /api/* handlers, redirects
 //   live-counts.js  live countdown numbers, cache policy
 //   stale-assets.js reload guard for pages left over from an earlier deploy
+//   badges.js       /badge/countdown/<slug>.svg image badges, embed use counts
 // plus lib/quiz.ts compiled with esbuild (the quiz API re-scores with it).
 const fs = require('fs');
 const path = require('path');
@@ -36,11 +37,22 @@ const quizLibCode = require('esbuild').buildSync({
   logLevel: 'silent',
 }).outputFiles[0].text;
 
+// The image badges' table (lib/badges.ts), written by the Next build
+// (app/badge/countdown/data.json/route.ts) with the pages' build day.
+const badgesFile = path.join(OUT, 'badge/countdown/data.json');
+if (!fs.existsSync(badgesFile)) {
+  console.error('[build-worker] out/badge/countdown/data.json is missing: run `next build` first.');
+  process.exit(1);
+}
+const badges = JSON.parse(fs.readFileSync(badgesFile, 'utf8'));
+
 const worker = `// Built by scripts/build-worker.js — edit scripts/worker/*.js, not this file.
 ${quizLibCode}
 ${read('api.js')}
 ${read('live-counts.js')}
 ${read('stale-assets.js')}
+const BADGES = ${JSON.stringify(badges)};
+${read('badges.js')}
 
 async function route(request, env) {
   const url = new URL(request.url);
@@ -58,6 +70,7 @@ async function route(request, env) {
     case '/api/quiz': return handleQuizApi(request, env);
     case '/api/feedback': return handleFeedbackApi(request, env);
   }
+  if (url.pathname.startsWith('/badge/countdown/') && url.pathname.endsWith('.svg')) return handleBadge(request);
   // The static export: pages, 404.html for anything missing, trailing-slash
   // redirects, as Pages serves it without a worker.
   return env.ASSETS.fetch(request);
@@ -68,8 +81,10 @@ async function route(request, env) {
 // for pages left over from an earlier deploy, then every script on it gets
 // the response's CSP nonce (withNonce, after the guard so the guard gets it).
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const res = await route(request, env);
+    // Which sites show the embeds and badges (badges.js); never delays or fails the response
+    if (ctx) ctx.waitUntil(countEmbedUse(request, env, new URL(request.url).pathname, res.status).catch(() => {}));
     const nonce = cspNonce();
     return withSecurityHeaders(withNonce(withStaleGuard(withLiveCounts(res, request)), nonce), new URL(request.url).pathname, nonce);
   },
@@ -84,4 +99,4 @@ fs.writeFileSync(
   JSON.stringify({ version: 1, include: ['/*'], exclude: ['/_next/static/*'] }) + '\n',
 );
 fs.writeFileSync(path.join(OUT, '_headers'), '/_next/static/*\n  cache-control: public,max-age=31536000,immutable\n');
-console.log('[build-worker] Wrote out/_worker.js (redirects, APIs, live counts, stale-page guard, CSP nonce, security headers, cache policy), _routes.json and _headers.');
+console.log('[build-worker] Wrote out/_worker.js (redirects, APIs, live counts, badges, stale-page guard, CSP nonce, security headers, cache policy), _routes.json and _headers.');

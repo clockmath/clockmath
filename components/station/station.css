@@ -463,6 +463,12 @@ html:not(.classic) .station .st-aside-tile { background: none; border: 0; border
 .st-embedcode textarea { box-sizing: border-box; width: 100%; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
   color: var(--ink); background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; resize: vertical; }
 .st-embedcode-help { font-size: 14px; color: var(--quiet); margin: 12px 0 0; }
+/* Nov 2026: widget, badge or link, and the badge's code flavour */
+html:not(.classic) .st-embedcode-formats { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+html:not(.classic) .st-embedcode-formats .st-seg-small { height: 40px; }
+html:not(.classic) .st-embedcode-formats .st-seg-small button { font-size: 14px; padding: 0 12px; }
+html:not(.classic) .st-embedcode-badge { display: flex; align-items: center; min-height: 64px; margin: 0; }
+html:not(.classic) .st-embedcode-badge img { display: block; max-width: 100%; height: 64px; width: auto; }
 .st-swatches { display: flex; gap: 8px; margin: 0 0 14px; }
 .st-swatches button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .st-swatches button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 2px var(--dial); }
@@ -483,3 +489,14 @@ html:not(.classic) .station .st-aside-tile { background: none; border: 0; border
 /* A fold straight after a tinted section (or another fold) continues it */
 .st-more + .st-fold, .st-fold + .st-fold { margin-top: 0; }
 @media (max-width: 760px) { .st-fold-summary { font-size: 16px; } }
+
+/* Countdown widgets gallery (/tools/countdown-widget/, Nov 2026): the events
+   as picks, then the chosen one's embed code */
+html:not(.classic) .st-widgets { display: grid; gap: 22px; }
+html:not(.classic) .st-widgets-h { font-size: 15px; font-weight: 700; color: var(--ink); margin: 0 0 10px; }
+html:not(.classic) .st-widgets-picks { display: flex; flex-wrap: wrap; gap: 8px; }
+html:not(.classic) .st-widgets-picks button { font: inherit; font-size: 15px; color: var(--ink); background: var(--dial);
+  border: 1px solid var(--rule); border-radius: 6px; padding: 9px 12px; min-height: 44px; cursor: pointer; }
+html:not(.classic) .st-widgets-picks button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); font-weight: 600; }
+html:not(.classic) .st-widgets-code { margin: 32px 0 0; scroll-margin-top: 16px; }
+html:not(.classic) .st-widgets-code > .st-widgets-h { font-size: 20px; }
