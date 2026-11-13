@@ -95,6 +95,13 @@ export default function DaylightSavingTimePage() {
               Times are local. Because the US and Europe change on different dates, New York and London are four hours
               apart instead of five for about a week around the start of November and two weeks in March.
             </p>
+            <p className={`${BODY} text-sm mt-2`}>
+              Every year to 2035, with Israel, Egypt and Chile too:{' '}
+              <Link href="/countdown/daylight-saving-time/dates/" className={LINK}>
+                daylight saving time dates by country
+              </Link>
+              , printable.
+            </p>
           </section>
 
           <section className={CARD}>
