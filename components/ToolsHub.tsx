@@ -22,6 +22,7 @@ import {
   CalendarDays,
   CalendarPlus,
   CalendarCheck,
+  Code,
 } from 'lucide-react';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
@@ -117,6 +118,14 @@ const TILES: Array<{
     sample: [['42', 'd']],
   },
   {
+    href: '/tools/countdown-widget',
+    title: 'Countdown Widgets',
+    description: 'A live countdown for your website or blog: holidays, releases, eclipses',
+    icon: Code,
+    // Its answer is a widget, not a figure: the word, as Today's Date does
+    sample: [['EMBED', '']],
+  },
+  {
     href: '/tools/overtime',
     title: 'Overtime Calculator',
     description: 'Regular vs overtime split, and what time and a half really pays',
@@ -170,7 +179,7 @@ export default function ToolsHub() {
 
       <div className="st-intro">
         <h1 className="st-h1">Free time &amp; date tools</h1>
-        <p className="st-lede">Twelve free tools. No signup, no ads.</p>
+        <p className="st-lede">Thirteen free tools. No signup, no ads.</p>
       </div>
 
       {/* A departures board: one ruled row per tool */}

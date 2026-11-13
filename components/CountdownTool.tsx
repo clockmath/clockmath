@@ -427,6 +427,10 @@ export function CountdownTool({ className = '' }: CountdownToolProps) {
               label={`Countdown to ${activeTitle || 'the big day'}`}
               id="custom"
             />
+            <p className="st-embedcode-help">
+              Counting to a holiday, a release or an eclipse? The{' '}
+              <Link href="/tools/countdown-widget/">ready-made countdown widgets</Link> come as image badges too.
+            </p>
           </div>
         )}
       </div>

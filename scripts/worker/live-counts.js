@@ -315,6 +315,9 @@ function withLiveCounts(res, request) {
 function cacheControlFor(pathname, res) {
   if (pathname.startsWith('/api/') || res.status >= 300) return null;
   if (pathname.startsWith('/_next/static/')) return 'public, max-age=31536000, immutable';
+  // Image badges (badges.js) count days in the viewer's zone: half an hour,
+  // so one cached on another site turns over soon after midnight
+  if (pathname.startsWith('/badge/')) return 'public, max-age=1800';
   const type = res.headers.get('Content-Type') || '';
   if (/text\/(html|x-component|plain|xml)|application\/xml/.test(type) || /\.(txt|xml)$/.test(pathname)) {
     return 'public, max-age=0, must-revalidate';

@@ -15,9 +15,10 @@
     "start": "next start",
     "spacing:audit": "node scripts/spacing-audit.js",
     "indexnow": "node scripts/indexnow.js",
-    "test": "node --import ./tests/alias.mjs --test --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/*.test.ts && node scripts/worker/live-counts.test.js && node scripts/worker/stale-assets.test.js && node scripts/worker/api.test.js && node scripts/indexnow.test.js",
+    "test": "node --import ./tests/alias.mjs --test --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/*.test.ts && node scripts/worker/live-counts.test.js && node scripts/worker/stale-assets.test.js && node scripts/worker/api.test.js && node scripts/worker/badges.test.js && node scripts/indexnow.test.js",
     "stale-check": "node scripts/stale-check.mjs",
-    "feedback": "node scripts/feedback.mjs"
+    "feedback": "node scripts/feedback.mjs",
+    "embeds": "node scripts/embeds.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "1.1.1",
