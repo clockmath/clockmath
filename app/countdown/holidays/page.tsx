@@ -58,6 +58,9 @@ const ITEMS: Array<{ name: string; href: string; ranges: DateRange[] }> = [
 ];
 
 const DAY_MS = 86400000;
+
+// Years with a printable calendar page (app/calendar/<year>/)
+const CALENDAR_YEARS = [2027];
 const toUtc = (s: string) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
 const ymdLocal = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -212,6 +215,11 @@ export default function HolidaysPage() {
             <div>
               <p className="text-muted-foreground mb-3">
                 The 11 US federal holidays in {year} and the other days most calendars mark, in date order.
+                {CALENDAR_YEARS.includes(year) && (
+                  <>
+                    {' '}On a calendar, printable: <Link href={`/calendar/${year}/`}>{year} calendar with holidays</Link>.
+                  </>
+                )}
               </p>
               <StackedTable
                 rows={rows}

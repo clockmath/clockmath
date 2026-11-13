@@ -77,7 +77,8 @@ export default function TodaysDatePage() {
         Counting from today?{' '}
         <Link href="/tools/days-between-dates/">Days between dates</Link> counts to any date, the{' '}
         <Link href="/tools/date-calculator/">date calculator</Link> adds days, weeks or months, and the{' '}
-        <Link href="/countdown/holidays/">holidays list</Link> has the days left until each.
+        <Link href="/countdown/holidays/">holidays list</Link> has the days left until each. Planning ahead: the{' '}
+        <Link href="/calendar/2027/">2027 calendar with holidays</Link>.
       </p>
 
       <StationFold>

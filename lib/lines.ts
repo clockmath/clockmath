@@ -14,6 +14,7 @@ const BY_TOOL: Record<string, LineId> = {
   'days-between-dates': 'time',
   'date-calculator': 'time',
   'todays-date': 'time',
+  'year-calendar': 'time',
   timesheet: 'work',
   overtime: 'work',
   'decimal-hours': 'work',
@@ -34,7 +35,7 @@ export function lineForTool(tool: string): LineId | null {
 /** The line a link leads to, from its href; none for site pages. */
 export function lineForHref(href: string): LineId | null {
   const path = href.replace(/\/+$/, '') || '/';
-  if (path === '/' || path === '/tools/days-between-dates' || path === '/tools/date-calculator' || path === '/tools/todays-date') return 'time';
+  if (path === '/' || path === '/tools/days-between-dates' || path === '/tools/date-calculator' || path === '/tools/todays-date' || path.startsWith('/calendar/')) return 'time';
   if (/^\/tools\/(timesheet|overtime|decimal-hours)$/.test(path)) return 'work';
   if (/^\/tools\/(timezone|market-hours)$/.test(path) || path === '/time' || path.startsWith('/time/')) return 'zones';
   if (path === '/tools/sleep') return 'sleep';
