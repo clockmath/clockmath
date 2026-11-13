@@ -316,8 +316,12 @@ function cacheControlFor(pathname, res) {
   if (pathname.startsWith('/api/') || res.status >= 300) return null;
   if (pathname.startsWith('/_next/static/')) return 'public, max-age=31536000, immutable';
   // Image badges (badges.js) count days in the viewer's zone: half an hour,
-  // so one cached on another site turns over soon after midnight
-  if (pathname.startsWith('/badge/')) return 'public, max-age=1800';
+  // so one cached on another site turns over soon after midnight. Private,
+  // because a shared copy is one viewer's count: on clockmath.com Cloudflare's
+  // edge cached the SVG (cf-cache-status HIT, Nov 13 2026), serving the first
+  // viewer's zone to everyone and skipping the worker, so the embed counter
+  // missed those loads. badges.js also sends Cloudflare-CDN-Cache-Control.
+  if (pathname.startsWith('/badge/')) return 'private, max-age=1800';
   const type = res.headers.get('Content-Type') || '';
   if (/text\/(html|x-component|plain|xml)|application\/xml/.test(type) || /\.(txt|xml)$/.test(pathname)) {
     return 'public, max-age=0, must-revalidate';

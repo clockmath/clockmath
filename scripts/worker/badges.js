@@ -87,8 +87,15 @@ function handleBadge(request) {
   return new Response(request.method === 'HEAD' ? null : body, {
     status,
     // Any site may show it (an <img> needs no CORS, but canvas and some
-    // README renderers fetch it); the cache time is cacheControlFor's.
-    headers: { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Access-Control-Allow-Origin': '*' },
+    // README renderers fetch it); the browser cache time is cacheControlFor's.
+    // Cloudflare's edge must not keep one: the count is the viewer's, and a
+    // cache hit never reaches the worker (countEmbedUse). Nov 13 2026: the
+    // zone cached .svg by extension; this header is Cloudflare's own override.
+    headers: {
+      'Content-Type': 'image/svg+xml; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+      'Cloudflare-CDN-Cache-Control': 'no-store',
+    },
   });
 }
 
