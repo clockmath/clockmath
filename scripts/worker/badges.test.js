@@ -91,7 +91,8 @@ for (const p of ['/badge/countdown/nope.svg', '/badge/countdown/constructor.svg'
 }
 
 // Cache: half an hour for badges
-assert.strictEqual(cacheControlFor('/badge/countdown/christmas.svg', { status: 200, headers: new Map([['Content-Type', 'image/svg+xml']]) }), 'public, max-age=1800');
+// private: no shared cache keeps one viewer's count (Cloudflare's edge did, Nov 13)
+assert.strictEqual(cacheControlFor('/badge/countdown/christmas.svg', { status: 200, headers: new Map([['Content-Type', 'image/svg+xml']]) }), 'private, max-age=1800');
 
 // ---- Embed use counter ----
 const day = at('2026-11-12T15:00:00Z');
@@ -107,6 +108,15 @@ assert.strictEqual(embedUseKey('/embed/countdown/christmas/', 'https://abc123.cl
 assert.strictEqual(embedUseKey('/countdown/christmas/', 'https://blog.example.org/', day), null);
 assert.strictEqual(embedUseKey('/embed/countdown/christmas/index.txt', 'https://blog.example.org/', day), null);
 assert.ok(embedUseKey('/embed/countdown/christmas/', 'https://' + 'a'.repeat(300) + '.com/', day).length < 200);
+
+// The response itself: SVG, any site may load it, and Cloudflare's edge keeps no copy
+{
+  const res = new Function('BADGES', `${code}; return handleBadge;`)(BADGES)({ url: 'https://clockmath.com/badge/countdown/christmas.svg', method: 'GET', cf: { timezone: NY } });
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.headers.get('Content-Type'), 'image/svg+xml; charset=utf-8');
+  assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
+  assert.strictEqual(res.headers.get('Cloudflare-CDN-Cache-Control'), 'no-store');
+}
 
 (async () => {
   const store = new Map();
