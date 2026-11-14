@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Code } from 'lucide-react';
 import { DecimalHoursTool } from '@/components/DecimalHoursTool';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
@@ -9,6 +10,7 @@ import StationFold from '@/components/station/StationFold';
 import JsonLd, { getSoftwareApplicationSchema, getFAQPageSchema } from '@/components/JsonLd';
 import QuickAnswers, { type QuickAnswer } from '@/components/QuickAnswers';
 import PrintChartButton from '@/components/PrintChartButton';
+import { ChartEmbedCode } from '@/components/embed/ChartEmbedCode';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 import { decimalToMinutes, formatMinutes, minutesToDecimal, roundingBands } from '@/lib/decimalTime';
 
@@ -194,7 +196,17 @@ export default function DecimalHoursPage() {
               <a href="#dh-rounding-title">rounding chart</a>.
             </p>
           </div>
-          <PrintChartButton />
+          <div className="flex flex-wrap gap-2">
+            <PrintChartButton />
+            {/* Opens the fold under this board (StationFold follows #links into itself) */}
+            <a
+              href="#embed-chart"
+              className="st-chart-link inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            >
+              <Code className="w-4 h-4" aria-hidden="true" />
+              Embed
+            </a>
+          </div>
         </div>
         <div className="st-chart-scroll">
           <PairTable
@@ -209,6 +221,15 @@ export default function DecimalHoursPage() {
           before that rounding.
         </p>
       </section>
+
+      {/* Nov 2026, item 8 of the links plan: the chart above as an image for
+          payroll and HR blogs, linking back here. Folded like the event pages'
+          embed panel; the chart's Embed link opens it. */}
+      <StationFold id="embed-chart" summary="Put this chart on your site">
+        <div className="st-fold-plain">
+          <ChartEmbedCode />
+        </div>
+      </StationFold>
 
       {/* Nov 2026: the reverse lookup ("0.8 hours in minutes") as its own
           board, every hundredth so any timesheet figure can be read off.

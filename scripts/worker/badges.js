@@ -99,11 +99,30 @@ function handleBadge(request) {
   });
 }
 
+// ---- The embeddable charts (Nov 2026) ----
+// /charts/minutes-to-decimal.png (and .svg): static files from public/,
+// drawn by lib/decimalChart.ts, that payroll and HR blogs paste in with a
+// link to /tools/decimal-hours/. Served from the export like any file, but
+// through here so Cloudflare's edge keeps no copy: the chart is the same for
+// everyone, but a cached copy is served without running the worker, so the
+// counter below would only see the first site per edge location and cache
+// period (the badges' lesson, Nov 13). The cost is a worker run per browser
+// load of a ~130 KB file, at most once a day per viewer (cacheControlFor).
+const CHART_PATH = /^\/charts\/([a-z0-9-]+)\.(?:png|svg)$/;
+
+async function handleChart(request, env) {
+  const res = await env.ASSETS.fetch(request);
+  const headers = new Headers(res.headers);
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
 // ---- Who uses the embeds and badges (Nov 2026) ----
 // GA doesn't run on /embed/ (it would set cookies on other people's sites),
 // so until now there was no way to see whether anyone used them. Each day,
-// the first request for an embed or badge from a new host page writes one KV
-// key: embeds:<UTC day>:<embed|badge>:<slug>:<host>. The host is the
+// the first request for an embed, badge or chart from a new host page writes
+// one KV key: embeds:<UTC day>:<embed|badge|chart>:<slug>:<host>. The host is the
 // Referer's hostname only (browsers send just the origin cross-site); no IP,
 // no path, nothing about the visitor. Kept 90 days; read with
 // `npm run embeds`. One write per host, embed and day keeps well inside KV's
@@ -115,15 +134,17 @@ const TIME_EMBED_PATH = /^\/embed\/time\/([a-z0-9-]+)\/$/;
 const OWN_HOST = /(^|\.)clockmath\.com$|(^|\.)clockmath\.pages\.dev$/;
 const embedUseSeen = new Set();
 
-/** The KV key for one embed or badge request, or null if it isn't counted. */
+/** The KV key for one embed, badge or chart request, or null if it isn't counted. */
 function embedUseKey(pathname, referer, nowMs) {
   let kind;
   const badge = BADGE_PATH.exec(pathname);
   const embed = EMBED_PATH.exec(pathname);
   const time = TIME_EMBED_PATH.exec(pathname);
+  const chart = CHART_PATH.exec(pathname);
   if (badge) kind = 'badge:' + badge[1];
   else if (embed) kind = 'embed:' + (embed[1] || 'custom');
   else if (time) kind = 'embed:time-' + time[1];
+  else if (chart) kind = 'chart:' + chart[1]; // the PNG and SVG count as one
   else return null;
   let host = '(none)';
   if (referer) {

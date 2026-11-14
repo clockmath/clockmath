@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// node scripts/embeds.mjs [days] — which sites show ClockMath's countdown
-// embeds and image badges, from the worker's KV keys (QUIZ_KV, `embeds:`
+// node scripts/embeds.mjs [days] — which sites show ClockMath's embeds,
+// image badges and the decimal chart (/charts/), from the worker's KV keys (QUIZ_KV, `embeds:`
 // prefix; see countEmbedUse in scripts/worker/badges.js). One key per host
 // page's hostname, embed and UTC day, kept 90 days. "(none)" is requests
 // with no Referer (Notion, email apps, privacy settings, bots).
@@ -15,7 +15,7 @@ try {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   });
-  // embeds:<day>:<embed|badge>:<slug>:<host>
+  // embeds:<day>:<embed|badge|chart>:<slug>:<host>
   const rows = JSON.parse(out)
     .map((k) => k.name.split(':'))
     .filter((p) => p.length >= 5 && p[1] >= since)

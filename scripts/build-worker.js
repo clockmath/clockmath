@@ -12,7 +12,8 @@
 //   api.js          security headers, CSP nonce, /api/* handlers, redirects
 //   live-counts.js  live countdown numbers, cache policy
 //   stale-assets.js reload guard for pages left over from an earlier deploy
-//   badges.js       /badge/countdown/<slug>.svg image badges, embed use counts
+//   badges.js       /badge/countdown/<slug>.svg image badges, the /charts/
+//                   images' headers, embed use counts
 // plus lib/quiz.ts compiled with esbuild (the quiz API re-scores with it).
 const fs = require('fs');
 const path = require('path');
@@ -71,6 +72,7 @@ async function route(request, env) {
     case '/api/feedback': return handleFeedbackApi(request, env);
   }
   if (url.pathname.startsWith('/badge/countdown/') && url.pathname.endsWith('.svg')) return handleBadge(request);
+  if (CHART_PATH.test(url.pathname)) return handleChart(request, env);
   // The static export: pages, 404.html for anything missing, trailing-slash
   // redirects, as Pages serves it without a worker.
   return env.ASSETS.fetch(request);

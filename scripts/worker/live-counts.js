@@ -322,6 +322,10 @@ function cacheControlFor(pathname, res) {
   // viewer's zone to everyone and skipping the worker, so the embed counter
   // missed those loads. badges.js also sends Cloudflare-CDN-Cache-Control.
   if (pathname.startsWith('/badge/')) return 'private, max-age=1800';
+  // The embeddable charts (badges.js): the same for everyone, but private for
+  // the same reason, so every site's loads reach the embed counter. A day in
+  // the browser; a changed chart gets a ?v= in the embed code.
+  if (pathname.startsWith('/charts/')) return 'private, max-age=86400';
   const type = res.headers.get('Content-Type') || '';
   if (/text\/(html|x-component|plain|xml)|application\/xml/.test(type) || /\.(txt|xml)$/.test(pathname)) {
     return 'public, max-age=0, must-revalidate';
