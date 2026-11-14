@@ -8,10 +8,11 @@
  * protocol (indexnow.org/documentation), only URLs that were ADDED, UPDATED
  * or DELETED are submitted — resubmitting unchanged pages risks a 429.
  *
- * Change detection: a fingerprint of each page's visible <main> text from
- * the deployed output, compared with .indexnow-state.json (git-ignored,
- * written only after a successful submission). Visible text, not raw HTML,
- * because chunk hashes and build ids change on every build.
+ * Change detection: a fingerprint of each page's title, visible <main> text
+ * and meta description from the deployed output, compared with
+ * .indexnow-state.json (git-ignored, written only after a successful
+ * submission). Visible text, not raw HTML, because chunk hashes and build ids
+ * change on every build.
  *
  *   node scripts/indexnow.js            submit changed pages
  *   node scripts/indexnow.js --dry-run  show what would be submitted
@@ -64,12 +65,32 @@ function visibleText(html) {
     .trim();
 }
 
+/** The page's <meta name="description"> content, or '' without one. */
+function metaDescription(html) {
+  const tag = (html.match(/<meta\s[^>]*name="description"[^>]*>/) || [])[0] || '';
+  return (tag.match(/\scontent="([^"]*)"/) || [])[1] || '';
+}
+
+const hash = (text, length) => crypto.createHash('sha256').update(text).digest('hex').slice(0, length);
+
+// "content.description": the title and visible text, then the meta
+// description. Nov 2026: the homepage's new description (#192) wasn't
+// submitted because only title and text were fingerprinted; Bing shows
+// written descriptions more often than Google does.
 function fingerprint(url) {
   const p = new URL(url).pathname;
   const file = p === '/' ? path.join(OUT, 'index.html') : path.join(OUT, p, 'index.html');
   const html = fs.readFileSync(file, 'utf8');
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
-  return crypto.createHash('sha256').update(title + '\n' + visibleText(html)).digest('hex').slice(0, 16);
+  return `${hash(title + '\n' + visibleText(html), 16)}.${hash(metaDescription(html), 8)}`;
+}
+
+// State saved before the description was added holds the content part only.
+// Compare those on content alone, so the change of format doesn't make all
+// ~100 pages "updated" at once; the next successful submission saves every
+// page in the new format.
+function isUpdated(previous, current) {
+  return previous.includes('.') ? previous !== current : previous !== current.split('.')[0];
 }
 
 async function main() {
@@ -85,7 +106,7 @@ async function main() {
     reason = previous ? 'all pages (--all)' : 'all pages (first run — no saved state)';
   } else {
     const added = urls.filter((u) => !(u in previous));
-    const updated = urls.filter((u) => u in previous && previous[u] !== current[u]);
+    const updated = urls.filter((u) => u in previous && isUpdated(previous[u], current[u]));
     const deleted = Object.keys(previous).filter((u) => !(u in current));
     changed = [...added, ...updated, ...deleted];
     reason = `${added.length} added, ${updated.length} updated, ${deleted.length} removed`;
@@ -136,7 +157,7 @@ async function main() {
   }
 }
 
-module.exports = { pageUrls, fingerprint, findKey, visibleText };
+module.exports = { pageUrls, fingerprint, findKey, visibleText, metaDescription, isUpdated };
 
 if (require.main === module) {
   main().catch((e) => console.log(`[indexnow] skipped: ${e.message}`));
