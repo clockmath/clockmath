@@ -231,6 +231,34 @@ html:not(.classic) .station .st-chart-cols h3 { color: var(--dep-ink); }
   html:not(.classic) .station .st-chart td.st-chart-min { font-size: 13px; }
 }
 
+/* ---- Shift hours chart (Nov 2026): a departures board of shifts, each with
+   three figures (no break, 30-minute and 1-hour lunch). Hours and minutes
+   large, decimal hours small beside them. Group rows split it into day,
+   evening, overnight, long and short shifts. ---- */
+.station .st-shifts thead th:last-child,
+.station .st-shifts tbody td:last-child { text-align: left; }
+.station .st-shifts tbody th { line-height: 1.25; }
+.station .st-shift-24 { margin-left: 8px; font-size: 13px; font-weight: 500; color: var(--quiet); white-space: nowrap; }
+.station .st-shifts td b { font-weight: 700; color: var(--ink); white-space: nowrap; }
+.station .st-shifts td span { margin-left: 4px; font-size: 14px; color: var(--quiet); }
+.station .st-shifts tr.st-shift-group th { padding: 22px 0 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--quiet); }
+.station .st-shifts tbody:first-of-type tr.st-shift-group th { padding-top: 8px; }
+html:not(.classic) .station .st-shifts td b { font-family: var(--display); font-size: 21px; color: var(--dep-ink); }
+html:not(.classic) .station .st-shifts :is(.st-shift-24, td span, tr.st-shift-group th) { color: var(--dep-quiet); }
+html:not(.classic) .station .st-shifts > p a { color: var(--dep-ink); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  /* The shift on its own line, its three figures under it, each labelled
+     (from data-k, so the labels aren't repeated in the HTML) */
+  .station .st-shifts tbody tr { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; row-gap: 6px; }
+  .station .st-shifts tbody th { grid-column: 1 / -1; }
+  .station .st-shifts tbody td:nth-child(n) { grid-column: auto; grid-row: auto; font-size: 15px; text-align: left; }
+  .station .st-shifts tbody td::before { content: attr(data-k); display: block; font-size: 12px; color: var(--quiet); }
+  .station .st-shifts td span { font-size: 13px; }
+  .station .st-shifts tr.st-shift-group th { padding: 16px 0 0; }
+  html:not(.classic) .station .st-shifts td b { font-size: 19px; }
+  html:not(.classic) .station .st-shifts tbody td::before { color: var(--dep-quiet); }
+}
+
 /* ---- Sleep planner: the suggested times as a small departures board ---- */
 html:not(.classic) .station .st-sleep-board { list-style: none; margin: 0; padding: 4px 18px !important; }
 .station .st-sleep-board li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
