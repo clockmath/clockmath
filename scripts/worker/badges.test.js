@@ -93,6 +93,8 @@ for (const p of ['/badge/countdown/nope.svg', '/badge/countdown/constructor.svg'
 // Cache: half an hour for badges
 // private: no shared cache keeps one viewer's count (Cloudflare's edge did, Nov 13)
 assert.strictEqual(cacheControlFor('/badge/countdown/christmas.svg', { status: 200, headers: new Map([['Content-Type', 'image/svg+xml']]) }), 'private, max-age=1800');
+// Charts: a day, private so Cloudflare's edge doesn't answer for the worker (and the counter)
+assert.strictEqual(cacheControlFor('/charts/minutes-to-decimal.png', { status: 200, headers: new Map([['Content-Type', 'image/png']]) }), 'private, max-age=86400');
 
 // ---- Embed use counter ----
 const day = at('2026-11-12T15:00:00Z');
@@ -110,6 +112,13 @@ assert.strictEqual(embedUseKey('/embed/countdown/christmas/', 'https://abc123.cl
 assert.strictEqual(embedUseKey('/countdown/christmas/', 'https://blog.example.org/', day), null);
 assert.strictEqual(embedUseKey('/embed/countdown/christmas/index.txt', 'https://blog.example.org/', day), null);
 assert.ok(embedUseKey('/embed/countdown/christmas/', 'https://' + 'a'.repeat(300) + '.com/', day).length < 200);
+// The embeddable chart (Nov 2026): PNG and SVG count as one, other files don't
+assert.strictEqual(embedUseKey('/charts/minutes-to-decimal.png', 'https://payroll.example.com/blog/decimal', day), 'embeds:2026-11-12:chart:minutes-to-decimal:payroll.example.com');
+assert.strictEqual(embedUseKey('/charts/minutes-to-decimal.svg', 'https://payroll.example.com/', day), 'embeds:2026-11-12:chart:minutes-to-decimal:payroll.example.com');
+assert.strictEqual(embedUseKey('/charts/minutes-to-decimal.png', 'https://clockmath.com/tools/decimal-hours/', day), null);
+for (const p of ['/charts/', '/charts/minutes-to-decimal.jpg', '/charts/x/minutes-to-decimal.png', '/og/tool/decimal-hours.png']) {
+  assert.strictEqual(embedUseKey(p, 'https://payroll.example.com/', day), null, p);
+}
 
 // The response itself: SVG, any site may load it, and Cloudflare's edge keeps no copy
 {
@@ -121,6 +130,21 @@ assert.ok(embedUseKey('/embed/countdown/christmas/', 'https://' + 'a'.repeat(300
 }
 
 (async () => {
+  // The chart: the export's file, with headers that keep it out of the edge cache
+  {
+    const handleChart = new Function('BADGES', `${code}; return handleChart;`)(BADGES);
+    const env = { ASSETS: { fetch: async () => new Response('PNG', { status: 200, headers: { 'Content-Type': 'image/png', ETag: '"abc"' } }) } };
+    const res = await handleChart({ url: 'https://clockmath.com/charts/minutes-to-decimal.png', method: 'GET' }, env);
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(await res.text(), 'PNG');
+    assert.strictEqual(res.headers.get('Content-Type'), 'image/png');
+    assert.strictEqual(res.headers.get('ETag'), '"abc"');
+    assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
+    assert.strictEqual(res.headers.get('Cloudflare-CDN-Cache-Control'), 'no-store');
+    const missing = await handleChart({ url: 'https://clockmath.com/charts/nope.png', method: 'GET' }, { ASSETS: { fetch: async () => new Response('Not found', { status: 404 }) } });
+    assert.strictEqual(missing.status, 404);
+  }
+
   const store = new Map();
   let writes = 0;
   let reads = 0;
