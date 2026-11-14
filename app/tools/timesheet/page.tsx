@@ -192,6 +192,12 @@ export default function TimesheetPage() {
             — the exact time between any two times, including across midnight
           </li>
           <li>
+            <Link href="/tools/shift-hours-chart/" className="text-primary hover:text-primary/80 font-semibold">
+              Shift hours chart
+            </Link>{' '}
+            — how many hours 9 to 5, 7 to 3:30 and other common shifts are, with and without lunch
+          </li>
+          <li>
             <Link href="/tools/overtime" className="text-primary hover:text-primary/80 font-semibold">
               Overtime calculator
             </Link>{' '}

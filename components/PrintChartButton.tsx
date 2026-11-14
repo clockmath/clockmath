@@ -6,9 +6,21 @@ import { Printer } from 'lucide-react';
 import { decimalToMinutes, formatMinutes, minutesToDecimal, roundingBands } from '@/lib/decimalTime';
 import { event as gaEvent } from '@/lib/gtag';
 import { usePrintSheet } from '@/hooks/use-print-sheet';
+import {
+  LUNCHES,
+  SHIFTS,
+  SHIFT_GROUPS,
+  clock12,
+  clock24,
+  decimalHours,
+  hoursMinutes,
+  paidMinutes,
+  shiftMinutes,
+} from '@/lib/shiftHours';
 
 /**
- * "Print chart" for the decimal hours charts. Printable charts are what
+ * "Print chart" for the decimal hours charts (and, Nov 2026, the shift hours
+ * chart). Printable charts are what
  * people search for ("minutes to decimal chart": several top results are
  * printables) and what payroll and HR pages link to (Oct 2026). Nov 2026:
  * one button per chart (minutes → decimal, decimal → minutes, rounding).
@@ -17,7 +29,7 @@ import { usePrintSheet } from '@/hooks/use-print-sheet';
  * static HTML carries each chart once (the on-page table) rather than twice.
  * globals.css hides everything else under html.printing-chart.
  */
-export type PrintableChart = 'minutes_to_decimal' | 'decimal_to_minutes' | 'rounding';
+export type PrintableChart = 'minutes_to_decimal' | 'decimal_to_minutes' | 'rounding' | 'shift_hours';
 
 export default function PrintChartButton({ chart = 'minutes_to_decimal' }: { chart?: PrintableChart }) {
   const [printing, print] = usePrintSheet();
@@ -80,12 +92,68 @@ function PairGrid({ pairs, cols, head, size = '12pt' }: { pairs: Array<[ReactNod
   );
 }
 
+/** The shift hours chart (/tools/shift-hours-chart/): every shift, grouped, on one page. */
+function ShiftSheet() {
+  // Small and tight so all 43 shifts fit one Letter or A4 page.
+  const head: CSSProperties = { ...cell, borderBottom: '2px solid #000', padding: '2px 6px' };
+  const row: CSSProperties = { ...cell, padding: '1px 6px' };
+  const value = (mins: number | null) =>
+    mins === null ? '—' : (
+      <>
+        {hoursMinutes(mins)} <span style={{ color: '#444' }}>({decimalHours(mins)})</span>
+      </>
+    );
+  return (
+    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt', lineHeight: 1.05 }}>
+      <thead>
+        <tr>
+          <th style={head}>Shift</th>
+          <th style={head}>No break</th>
+          {LUNCHES.map((l) => (
+            <th key={l} style={head}>
+              {l === 60 ? '1-hour lunch' : `${l}-min lunch`}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      {SHIFT_GROUPS.map((g) => (
+        <tbody key={g.id}>
+          <tr>
+            <th colSpan={2 + LUNCHES.length} style={{ ...row, paddingTop: '3pt', fontWeight: 700 }}>
+              {g.name}
+            </th>
+          </tr>
+          {SHIFTS.filter((s) => s.group === g.id).map((s) => (
+            <tr key={`${s.start}-${s.end}`}>
+              <td style={row}>
+                {clock12(s.start)} – {clock12(s.end)} <span style={{ color: '#444' }}>({clock24(s.start)}–{clock24(s.end)})</span>
+              </td>
+              <td style={{ ...row, ...figure }}>{value(shiftMinutes(s.start, s.end))}</td>
+              {LUNCHES.map((l) => (
+                <td key={l} style={{ ...row, ...figure }}>
+                  {value(paidMinutes(s.start, s.end, l))}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      ))}
+    </table>
+  );
+}
+
 /** One A4/Letter page per chart, black on white. */
 function PrintSheet({ chart }: { chart: PrintableChart }) {
   let title: string;
   let intro: string;
   let body: ReactNode;
-  if (chart === 'decimal_to_minutes') {
+  let footer = 'Payroll systems that round punch times (to 6 or 15 minutes) round before converting. Converter and full guide: clockmath.com/tools/decimal-hours';
+  if (chart === 'shift_hours') {
+    title = 'Shift hours chart';
+    intro = 'Clock hours, then paid hours after an unpaid lunch. Decimal hours for timesheets in brackets.';
+    footer = 'Your own times and breaks, totalled for the week: clockmath.com/tools/timesheet';
+    body = <ShiftSheet />;
+  } else if (chart === 'decimal_to_minutes') {
     title = 'Decimal hours to minutes chart';
     intro = 'Minutes = decimal × 60. 0.25 hours is 15 minutes; 7.80 hours is 7 hours 48 minutes.';
     body = (
@@ -119,10 +187,7 @@ function PrintSheet({ chart }: { chart: PrintableChart }) {
       <h1 style={{ fontSize: '20pt', margin: '0 0 4pt' }}>{title}</h1>
       <p style={{ fontSize: '11pt', margin: '0 0 12pt' }}>{intro}</p>
       {body}
-      <p style={{ fontSize: '10pt', margin: '14pt 0 0', color: '#333' }}>
-        Payroll systems that round punch times (to 6 or 15 minutes) round before converting. Converter and full guide:
-        clockmath.com/tools/decimal-hours
-      </p>
+      <p style={{ fontSize: '10pt', margin: '14pt 0 0', color: '#333' }}>{footer}</p>
     </div>
   );
 }

@@ -109,7 +109,21 @@ export default function SeoIntro() {
         </p>
       </section>
 
-      <QuickAnswers heading="How many hours is a shift?" intro="Common start and end times, worked out:" items={SHIFTS} />
+      {/* Nov 2026: the paid hours after lunch, and 40-odd more shifts, are on
+          the shift hours chart (Google's answers add the lunch break). */}
+      <QuickAnswers
+        heading="How many hours is a shift?"
+        intro={
+          <>
+            Common start and end times, worked out. With a lunch break taken off, and more shifts, see the{' '}
+            <Link href="/tools/shift-hours-chart/" className="text-primary hover:text-primary/80 font-semibold">
+              shift hours chart
+            </Link>
+            :
+          </>
+        }
+        items={SHIFTS}
+      />
 
       <section aria-labelledby="faq-heading" className="max-w-3xl mx-auto mb-section">
         <h2
