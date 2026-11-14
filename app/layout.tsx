@@ -13,8 +13,12 @@ import NotOnEmbed from "@/components/NotOnEmbed";
 export const metadata: Metadata = {
   metadataBase: new URL("https://clockmath.com"),
   title: "Time Duration Calculator & Hours Calculator — ClockMath",
+  // Nov 2026: Google answers "how many hours is 9 to 5:30" in its own box, so
+  // the snippet leads with a worked answer plus what that box leaves out
+  // (dates, overnight, decimal hours for payroll, totals). The title stays:
+  // the Oct 17 retitles cost Bing rankings. 157 characters.
   description:
-    "Calculate the time difference between two times (even across midnight). Fast, simple, mobile-friendly. Also shows decimal hours and minutes.",
+    "How many hours between two times or dates, overnight shifts included. 9 AM to 5:30 PM is 8 h 30 min, or 8.5 decimal hours for payroll. Add up several shifts.",
   generator: "Next.js",
   alternates: {
     canonical: "https://clockmath.com/",
