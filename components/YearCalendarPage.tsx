@@ -8,7 +8,7 @@ import StackedTable from '@/components/StackedTable';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { YearGrid, YearLegend, YearPrintButton } from '@/components/YearCalendar';
 import { useDarkMode } from '@/hooks/use-dark-mode';
-import { longDate, shortDate, yearFacts, yearMarks } from '@/lib/yearCalendar';
+import { CALENDAR_YEARS, longDate, shortDate, yearFacts, yearMarks } from '@/lib/yearCalendar';
 
 /**
  * /calendar/<year>/: one page per year, from app/calendar/<year>/page.tsx.
@@ -19,11 +19,16 @@ export default function YearCalendarPage({ year }: { year: number }) {
   const marks = yearMarks(year);
   const facts = yearFacts(year);
   const federal = marks.filter((m) => m.kind !== 'other' && !m.name.endsWith('(observed)'));
-  const offFor = (name: string) => marks.find((m) => m.kind === 'off' && (m.name === name || m.name === `${name} (observed)`));
-  const rows = federal.map((h) => {
-    const off = offFor(h.name);
-    return { holiday: h.name, date: shortDate(h.date), off: off ? (off.date === h.date ? 'Same day' : shortDate(off.date)) : '' };
-  });
+  // A weekend holiday's day off can fall in the year before (New Year's Day
+  // 2028 is observed on Fri Dec 31, 2027), so it comes from the mark itself
+  const offDate = (h: (typeof marks)[number]) => h.observed ?? h.date;
+  const offLabel = (date: string) => (date.startsWith(`${year}-`) ? shortDate(date) : `${shortDate(date)}, ${date.slice(0, 4)}`);
+  const rows = federal.map((h) => ({
+    holiday: h.name,
+    date: shortDate(h.date),
+    off: offDate(h) === h.date ? 'Same day' : offLabel(offDate(h)),
+  }));
+  const offLastYear = federal.filter((h) => !offDate(h).startsWith(`${year}-`));
   const nextNewYear = marks.find((m) => m.kind === 'off' && m.name.includes(`${year + 1}`));
   const others = marks.filter((m) => m.kind === 'other');
   const weekendOnes = federal.filter((h) => h.kind === 'weekend-holiday');
@@ -36,8 +41,11 @@ export default function YearCalendarPage({ year }: { year: number }) {
         (nextNewYear
           ? ` The extra one is ${longDate(nextNewYear.date)}: New Year's Day ${year + 1} is a Saturday, so it is observed on the Friday before, in ${year}.`
           : '') +
+        (offLastYear.length
+          ? ` The one missing is ${offLastYear[0].name}, ${longDate(offLastYear[0].date)}: its day off is ${longDate(offDate(offLastYear[0]))}, the year before.`
+          : '') +
         (weekendOnes.length
-          ? ` ${weekendOnes.map((h) => h.name).join(', ')} fall on a weekend, so the day off is the Friday before (Saturday) or the Monday after (Sunday).`
+          ? ` ${andList(weekendOnes.map((h) => h.name))} ${weekendOnes.length === 1 ? 'falls' : 'fall'} on a weekend, so the day off is the Friday before (Saturday) or the Monday after (Sunday).`
           : ''),
     },
     {
@@ -45,13 +53,12 @@ export default function YearCalendarPage({ year }: { year: number }) {
       answer: `${facts.workingDays}: there are ${facts.weekdays} weekdays (Monday to Friday) in ${year}, less ${facts.federalDaysOff} federal days off. States and employers add their own holidays, so check your own calendar.`,
     },
     ...weekendOnes.map((h) => {
-      const off = offFor(h.name);
       return {
         question: `When is ${h.name} observed in ${year}?`,
         // Banks follow the Federal Reserve, which closes on the Monday after a
         // Sunday holiday but stays open on the Friday before a Saturday one
         answer:
-          `${h.name} falls on ${longDate(h.date)}, so federal employees have ${off ? longDate(off.date) : 'the nearest weekday'} off instead.` +
+          `${h.name} falls on ${longDate(h.date)}, so federal employees have ${longDate(offDate(h))} off instead.` +
           (new Date(`${h.date}T12:00:00Z`).getUTCDay() === 6
             ? ' Banks usually stay open that Friday: the Federal Reserve does not move Saturday holidays.'
             : ' Banks usually close that Monday too, as the Federal Reserve does.'),
@@ -80,6 +87,14 @@ export default function YearCalendarPage({ year }: { year: number }) {
           Every month of {year} with the US federal days off marked, the holidays that fall on a weekend, and the days
           most calendars note
         </p>
+      </div>
+
+      {/* Nov 2026: Print sat below all twelve months (~3,500px down on a
+          phone) on a page titled "Printable"; now it comes first, with the
+          other years beside it */}
+      <div className="max-w-3xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-3">
+        <YearPrintButton year={year} />
+        <YearLinks year={year} />
       </div>
 
       <section className="max-w-3xl mx-auto mb-section st-cal-section" aria-label={`${year} calendar`}>
@@ -208,7 +223,33 @@ export default function YearCalendarPage({ year }: { year: number }) {
         </section>
       </StationFold>
 
+      <div className="max-w-3xl mx-auto mb-section">
+        <YearLinks year={year} />
+      </div>
+
       <SiteFooter />
     </StationChrome>
+  );
+}
+
+/** "A", "A and B", "A, B and C" */
+const andList = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`);
+
+/** "Other years: 2026 · 2028", from CALENDAR_YEARS */
+function YearLinks({ year }: { year: number }) {
+  const others = CALENDAR_YEARS.filter((y) => y !== year);
+  if (!others.length) return null;
+  return (
+    <nav aria-label="Calendars for other years" className="text-sm text-muted-foreground">
+      Other years:{' '}
+      {others.map((y, i) => (
+        <span key={y}>
+          {i > 0 && ' · '}
+          <Link href={`/calendar/${y}/`} className="text-primary hover:text-primary/80 font-semibold">
+            {y} calendar
+          </Link>
+        </span>
+      ))}
+    </nav>
   );
 }

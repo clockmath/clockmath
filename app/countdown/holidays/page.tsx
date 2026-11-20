@@ -7,6 +7,7 @@ import StackedTable from '@/components/StackedTable';
 import { buildDay } from '@/lib/buildDay';
 import { eventColour } from '@/lib/countdowns';
 import { SEASON_STARTS } from '@/lib/seasons';
+import { CALENDAR_YEARS } from '@/lib/yearCalendar';
 import {
   EASTER,
   HANUKKAH,
@@ -59,8 +60,6 @@ const ITEMS: Array<{ name: string; href: string; ranges: DateRange[] }> = [
 
 const DAY_MS = 86400000;
 
-// Years with a printable calendar page (app/calendar/<year>/)
-const CALENDAR_YEARS = [2027];
 const toUtc = (s: string) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
 const ymdLocal = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

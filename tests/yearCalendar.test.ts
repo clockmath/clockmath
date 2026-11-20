@@ -85,3 +85,11 @@ test('date labels', () => {
   assert.equal(shortDate('2027-07-05'), 'Mon, Jul 5');
   assert.equal(longDate('2027-12-31'), 'Friday, December 31, 2027');
 });
+
+test('weekend holidays carry their day off, even in the year before', () => {
+  const newYear2028 = yearMarks(2028).find((m) => m.kind === 'weekend-holiday' && m.name === "New Year's Day");
+  assert.equal(newYear2028?.observed, '2027-12-31');
+  const july4th2026 = yearMarks(2026).find((m) => m.kind === 'weekend-holiday' && m.name === 'Independence Day');
+  assert.equal(july4th2026?.observed, '2026-07-03');
+  assert.ok(yearMarks(2027).filter((m) => m.kind !== 'weekend-holiday').every((m) => m.observed === undefined));
+});
