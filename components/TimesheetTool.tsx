@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import { useClockFormat } from '@/hooks/use-clock-format';
@@ -32,7 +33,9 @@ import {
 } from '@/lib/timesheet';
 import Link from 'next/link';
 import { buildDay } from '@/lib/buildDay';
-import { Coffee, X } from 'lucide-react';
+import { Coffee, Printer, X } from 'lucide-react';
+import TimesheetPrint from '@/components/TimesheetPrint';
+import { usePrintSheet } from '@/hooks/use-print-sheet';
 import InfoTip from '@/components/InfoTip';
 import { getDevice } from '@/lib/device';
 import { copyText } from '@/lib/clipboard';
@@ -484,6 +487,19 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
     offerSupport('csv');
   }, [shifts, ordered, totalMins, gross, rateNum, saveName, formatClock, otSplit, otMultiplier, offerSupport]);
 
+  // Nov 2026: the timesheet as a printed time card (or a PDF), with
+  // signature lines; the blank one is /tools/timesheet-template/
+  const [printing, printSheet] = usePrintSheet();
+  const handlePrint = useCallback(() => {
+    gaEvent({ action: 'timesheet_exported', params: { device: getDevice(), shifts: shifts.length, format: 'print' } });
+    printSheet();
+  }, [shifts.length, printSheet]);
+  const printSummary: string[] = [];
+  if (otSplit) printSummary.push(`Regular: ${otSplit.regularHours} h · Overtime: ${otSplit.overtimeHours} h at ${otMultiplier}×`);
+  if (gross != null) {
+    printSummary.push(`Gross pay: $${gross.toFixed(2)} (at $${rateNum.toFixed(2)}/h${otSplit && otSplit.totalPay != null ? ' + overtime' : ''})`);
+  }
+
   return (
     <div className={className}>
       {/* Shifts (input) */}
@@ -884,7 +900,36 @@ export function TimesheetTool({ className = '' }: TimesheetToolProps) {
             </svg>
             CSV
           </button>
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-card dark:bg-muted hover:bg-muted dark:hover:bg-muted text-foreground font-medium rounded-lg border border-border/50 dark:border-border shadow transition-all duration-200"
+          >
+            <Printer className="w-4 h-4" aria-hidden="true" />
+            Print
+          </button>
         </div>
+        {printing &&
+          createPortal(
+            <TimesheetPrint
+              name={saveName.trim()}
+              rows={ordered.map((s) => {
+                const mins = shiftMinutes(s);
+                const dst = dstLabel(s);
+                return {
+                  date: formatShiftDate(s.date),
+                  start: formatClock(s.start),
+                  end: `${formatClock(s.end)}${isOvernight(s) ? ' (+1 day)' : ''}${dst ? ` (${dst})` : ''}`,
+                  breakMins: s.breakMins,
+                  hours: decimalHours(mins),
+                  clock: hhmm(mins),
+                };
+              })}
+              total={decimalHours(totalMins)}
+              totalClock={hhmm(totalMins)}
+              summary={printSummary}
+            />,
+            document.body,
+          )}
 
         {supportNudge && (
           <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-border/50 dark:border-border/50 bg-muted/40 dark:bg-background/40 px-3 py-2 text-sm text-muted-foreground">

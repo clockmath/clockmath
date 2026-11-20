@@ -198,6 +198,12 @@ export default function TimesheetPage() {
             — how many hours 9 to 5, 7 to 3:30 and other common shifts are, with and without lunch
           </li>
           <li>
+            <Link href="/tools/timesheet-template/" className="text-primary hover:text-primary/80 font-semibold">
+              Printable timesheet template
+            </Link>{' '}
+            — a blank weekly or biweekly timesheet to print, save as a PDF or open in Excel
+          </li>
+          <li>
             <Link href="/tools/overtime" className="text-primary hover:text-primary/80 font-semibold">
               Overtime calculator
             </Link>{' '}
