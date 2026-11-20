@@ -11,6 +11,7 @@
 import { EASTER, HANUKKAH, LUNAR_NEW_YEAR } from '@/lib/holidays';
 import { buildEventDisclaimer } from '@/lib/disclaimer';
 import { GTA6_RELEASE, LAUNCHED as GTA6_LAUNCHED } from '@/app/countdown/gta-6/launch';
+import { DOOMSDAY_RELEASE, RELEASED as DOOMSDAY_RELEASED } from '@/app/countdown/avengers-doomsday/launch';
 import { channels, luminance } from '@/lib/colour';
 import { buildDay } from '@/lib/buildDay';
 import { nextSeasonStart } from '@/lib/seasons';
@@ -166,10 +167,10 @@ export const COUNTDOWNS = {
     name: 'Avengers: Doomsday',
     path: '/countdown/avengers-doomsday/',
     spec: {
-      target: new Date(2026, 11, 18),
+      target: DOOMSDAY_RELEASE,
       countdownTitle: 'Avengers: Doomsday',
       arrivedLabel: 'Avengers: Doomsday is here! 💥',
-      disclaimer: buildEventDisclaimer('Avengers', 'Marvel Studios or The Walt Disney Company'),
+      disclaimer: buildEventDisclaimer('Avengers', 'Marvel Studios or The Walt Disney Company', { released: DOOMSDAY_RELEASED }),
       board: { color: '#23402f' },
     },
   },

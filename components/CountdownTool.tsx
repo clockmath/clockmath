@@ -27,6 +27,7 @@ import { getDevice } from '@/lib/device';
 import { copyText } from '@/lib/clipboard';
 import { parseWallClock, toWallClock } from '@/lib/wallClock';
 import { LAUNCHED as GTA6_LAUNCHED } from '@/app/countdown/gta-6/launch';
+import { RELEASED as DOOMSDAY_RELEASED } from '@/app/countdown/avengers-doomsday/launch';
 import { useCalculateFeedback } from '@/hooks/use-answer-feedback';
 
 // Curated event countdowns (each is its own SEO landing page).
@@ -52,7 +53,7 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
   { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },
   { title: 'God of War Laufey', href: '/countdown/god-of-war-laufey/', note: 'May 20, 2027' },
-  { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: 'December 18, 2026' },
+  { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: DOOMSDAY_RELEASED ? 'In theaters since Dec 18, 2026' : 'December 18, 2026' },
   { title: 'Fable', href: '/countdown/fable/', note: 'February 23, 2027' },
   // Nov 2026: the page turns into "GTA 6 is out" from the first deploy on release day
   { title: 'GTA 6', href: '/countdown/gta-6/', note: GTA6_LAUNCHED ? 'Out now, since Nov 19, 2026' : 'November 19, 2026' },
