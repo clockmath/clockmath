@@ -41,10 +41,20 @@ const soonness = (slug: CountdownSlug) => {
   return buildDayCount({ target, recurring, nthWeekday, dateRanges });
 };
 
+// A one-off date that has passed (GTA 6 after Nov 19 2026) isn't a
+// countdown any more: its widget would only say "GTA 6 is out!". Left out of
+// the picks from the first deploy after the day; embeds already on other
+// sites keep working, as /embed/countdown/<slug>/ stays.
+const passed = (slug: CountdownSlug) => {
+  const e = entry(slug);
+  return Boolean(e.spec.target) && (soonness(slug) ?? 0) < 0;
+};
+
 function groups() {
   const listed = new Set(GROUPS.flatMap((g) => g.slugs));
-  const rest = COUNTDOWN_SLUGS.filter((s) => !listed.has(s));
-  const all = rest.length ? [...GROUPS, { title: 'More', slugs: rest }] : GROUPS;
+  const rest = COUNTDOWN_SLUGS.filter((s) => !listed.has(s) && !passed(s));
+  const current = GROUPS.map((g) => ({ ...g, slugs: g.slugs.filter((s) => !passed(s)) })).filter((g) => g.slugs.length);
+  const all = rest.length ? [...current, { title: 'More', slugs: rest }] : current;
   return all.map((g, i) =>
     i === 0
       ? { ...g, slugs: [...g.slugs].sort((a, b) => (soonness(a) ?? Infinity) - (soonness(b) ?? Infinity)) }

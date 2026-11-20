@@ -40,7 +40,24 @@ const files = [
   'lib/markets.ts',
 ].filter((f) => fs.existsSync(path.join(ROOT, f)));
 
+// A page with its own `buildDay() >= X` switch (GTA 6's LAUNCHED, launch.ts)
+// has an after-the-date version: once X has passed it isn't stale, it's
+// finished. Nov 2026: GTA 6 was flagged "every date has passed" on every
+// deploy after Nov 19 although the live page already said "GTA 6 is out".
+function switchedOn(dir) {
+  for (const name of fs.readdirSync(path.join(ROOT, dir))) {
+    if (!/\.tsx?$/.test(name)) continue;
+    const src = fs.readFileSync(path.join(ROOT, dir, name), 'utf8');
+    for (const m of src.matchAll(/const \w+ = buildDay\(\)\.getTime\(\)\s*>=\s*(\w+)\.getTime\(\)/g)) {
+      const d = src.match(new RegExp(`const ${m[1]} = new Date\\((20\\d\\d),\\s*(\\d{1,2}),\\s*(\\d{1,2})\\)`));
+      if (d && Date.UTC(+d[1], +d[2], +d[3]) <= todayUtc) return Date.UTC(+d[1], +d[2], +d[3]);
+    }
+  }
+  return null;
+}
+
 const problems = [];
+const finished = [];
 for (const f of files) {
   const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
   // lastUpdated is a verification stamp, not an event date.
@@ -49,7 +66,9 @@ for (const f of files) {
   if (dates.length) {
     const latest = Math.max(...dates);
     const daysLeft = Math.round((latest - todayUtc) / DAY);
-    if (daysLeft < 0) problems.push(`${f}: every date has passed (latest ${fmt(latest)}) — roll it forward or retire the page`);
+    const switched = daysLeft < 0 && f.startsWith('app/countdown/') ? switchedOn(path.dirname(f)) : null;
+    if (switched !== null) finished.push(`${f}: switched to its after-the-date version on ${fmt(switched)}`);
+    else if (daysLeft < 0) problems.push(`${f}: every date has passed (latest ${fmt(latest)}) — roll it forward or retire the page`);
     else if (daysLeft <= SOON_DAYS) problems.push(`${f}: latest date ${fmt(latest)} is ${daysLeft} days away — add the next date, or plan the page for after it`);
   }
   if (lastUpdated) {
@@ -59,6 +78,7 @@ for (const f of files) {
   }
 }
 
+for (const f of finished) console.log(`[stale-check] done: ${f}`);
 if (problems.length === 0) {
   console.log('[stale-check] no date tables running out');
 } else {

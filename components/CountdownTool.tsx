@@ -26,6 +26,7 @@ import { buildDay } from '@/lib/buildDay';
 import { getDevice } from '@/lib/device';
 import { copyText } from '@/lib/clipboard';
 import { parseWallClock, toWallClock } from '@/lib/wallClock';
+import { LAUNCHED as GTA6_LAUNCHED } from '@/app/countdown/gta-6/launch';
 import { useCalculateFeedback } from '@/hooks/use-answer-feedback';
 
 // Curated event countdowns (each is its own SEO landing page).
@@ -53,7 +54,8 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'God of War Laufey', href: '/countdown/god-of-war-laufey/', note: 'May 20, 2027' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: 'December 18, 2026' },
   { title: 'Fable', href: '/countdown/fable/', note: 'February 23, 2027' },
-  { title: 'GTA 6', href: '/countdown/gta-6/', note: 'November 19, 2026' },
+  // Nov 2026: the page turns into "GTA 6 is out" from the first deploy on release day
+  { title: 'GTA 6', href: '/countdown/gta-6/', note: GTA6_LAUNCHED ? 'Out now, since Nov 19, 2026' : 'November 19, 2026' },
   { title: 'FF7 Revelation', href: '/countdown/final-fantasy-7-revelation/', note: 'April 8, 2027' },
   { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/', note: 'August 2, 2027' },
   { title: '2028 annular eclipse', href: '/countdown/annular-eclipse-2028/', note: 'January 26, 2028' },
