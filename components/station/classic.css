@@ -114,3 +114,23 @@
 .classic .st-cal-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 20px 0 0; }
 .classic .st-cal-legend span { display: inline-flex; align-items: center; gap: 8px; }
 .classic .st-cal-key { position: relative; display: inline-block; width: 18px; height: 18px; }
+.classic .st-cal-key.st-cal-off { background: var(--primary); border-radius: 4px; }
+.classic .st-cal-key.st-cal-weekend { box-shadow: inset 0 0 0 2px var(--primary); border-radius: 4px; }
+.classic .st-cal-key.st-cal-other::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--primary); }
+/* Month calendar (Nov 2026): plain boxes in the classic colours */
+.classic .st-mcal table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.classic .st-mcal th { font-size: 12px; text-align: left; padding: 0 6px 6px; }
+.classic .st-mcal td { position: relative; vertical-align: top; border: 1px solid var(--border); height: 56px; padding: 5px 6px; }
+.classic .st-mcal-day { display: block; font-weight: 600; }
+.classic .st-mcal-names { display: none; }
+.classic .st-mcal td.st-cal-off { background: var(--primary); color: var(--primary-foreground); }
+.classic .st-mcal td.st-cal-weekend { box-shadow: inset 0 0 0 2px var(--primary); }
+.classic .st-mcal td:is(.st-cal-other, .st-cal-weekend)::after { content: ""; position: absolute; left: 7px; bottom: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+@media (min-width: 640px) {
+  .classic .st-mcal td { height: 96px; }
+  .classic .st-mcal-names { display: block; margin-top: 4px; font-size: 12px; line-height: 1.3; }
+  .classic .st-mcal td:is(.st-cal-other, .st-cal-weekend)::after { display: none; }
+}
+.classic .st-mcal-nav { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; font-weight: 600; }
+.classic .st-mcal-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 8px 16px; list-style: none; padding: 0; }
+.classic .st-mcal-months span { font-weight: 700; }

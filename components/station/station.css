@@ -518,5 +518,37 @@ html:not(.classic) .station .st-cal-month td.st-cal-other::after { content: ""; 
 html:not(.classic) .st-cal-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--quiet); margin: 22px 0 0; }
 html:not(.classic) .st-cal-legend span { display: inline-flex; align-items: center; gap: 8px; }
 html:not(.classic) .st-cal-key { position: relative; display: inline-block; width: 18px; height: 18px; }
+/* Nov 2026: the swatches had no rules of their own (the td ones don't reach
+   the <i>), so the key showed text only */
+html:not(.classic) .station .st-cal-key.st-cal-off { background: var(--line); border-radius: 4px; }
+html:not(.classic) .station .st-cal-key.st-cal-weekend { box-shadow: inset 0 0 0 2px var(--line); border-radius: 4px; }
+html:not(.classic) .station .st-cal-key.st-cal-other::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--line); }
 /* The calendar has no heading column: its months use the full width */
 html:not(.classic) .station section.st-cal-section > * { grid-column: 1 / -1; max-width: none; }
+html:not(.classic) .st-cal-month h3 a { color: inherit; text-decoration: none; }
+html:not(.classic) .st-cal-month h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Month calendar (/calendar/<year>/<month>/, Nov 2026): one month as a wall
+   calendar, with the year grid's marks; holiday names show in the boxes from
+   640px up, a dot below (components/MonthCalendar.tsx) */
+html:not(.classic) .st-mcal table { width: 100%; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
+html:not(.classic) .st-mcal th { font-size: 12px; font-weight: 600; color: var(--quiet); text-align: left; padding: 0 6px 6px; }
+html:not(.classic) .st-mcal td { position: relative; vertical-align: top; border: 1px solid var(--rule); height: 56px; padding: 5px 6px; color: var(--ink); background: var(--dial); }
+html:not(.classic) .st-mcal td.st-mcal-blank { background: transparent; }
+html:not(.classic) .st-mcal td:first-child .st-mcal-day, html:not(.classic) .st-mcal td:last-child .st-mcal-day { color: var(--quiet); }
+html:not(.classic) .st-mcal-day { display: block; font-size: 15px; font-weight: 600; }
+html:not(.classic) .st-mcal-names { display: none; }
+html:not(.classic) .station .st-mcal td.st-cal-off { background: var(--line); }
+html:not(.classic) .station .st-mcal td.st-cal-off :is(.st-mcal-day, .st-mcal-names) { color: var(--line-ink); }
+html:not(.classic) .station .st-mcal td.st-cal-weekend { box-shadow: inset 0 0 0 2px var(--line); }
+html:not(.classic) .station .st-mcal td:is(.st-cal-other, .st-cal-weekend)::after { content: ""; position: absolute; left: 7px; bottom: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+@media (min-width: 640px) {
+  html:not(.classic) .st-mcal td { height: 96px; padding: 7px 8px; }
+  html:not(.classic) .st-mcal-names { display: block; margin-top: 4px; font-size: 12px; line-height: 1.3; color: var(--quiet); }
+  html:not(.classic) .station .st-mcal td:is(.st-cal-other, .st-cal-weekend)::after { display: none; }
+}
+html:not(.classic) .st-mcal-nav { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; font-weight: 600; }
+html:not(.classic) .st-mcal-nav a { color: var(--line-text, var(--ink)); }
+html:not(.classic) .st-mcal-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 8px 16px; list-style: none; padding: 0; margin: 0; }
+html:not(.classic) .st-mcal-months a, html:not(.classic) .st-mcal-months span { display: block; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+html:not(.classic) .st-mcal-months span { font-weight: 700; color: var(--ink); }

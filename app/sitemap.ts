@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
 import { TIME_PAIRS } from '@/lib/timePairs';
+import { CALENDAR_YEARS, MONTH_SLUGS } from '@/lib/yearCalendar';
 
 // Define the base URL for the site
 const baseUrl = 'https://clockmath.com';
@@ -168,7 +169,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
   
-  return [...sitemapEntries, ...additionalPages];
+  // Month calendars (Nov 2026): /calendar/<year>/<month>/ for each year with
+  // a calendar page, dated by the last commit to the month template or the
+  // calendar data (the same ':(literal)' for "[month]")
+  let monthLastmod = '2026-11-20';
+  try {
+    const d = execFileSync('git', ['log', '-1', '--format=%cs', '--', ':(glob)app/calendar/*/[[]month]/**', 'components/MonthCalendarPage.tsx', 'components/MonthCalendar.tsx', 'lib/yearCalendar.ts', 'lib/holidays.ts'], {
+      encoding: 'utf-8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) monthLastmod = d;
+  } catch {
+    // keep the default
+  }
+  const monthPages: MetadataRoute.Sitemap = CALENDAR_YEARS.flatMap((year) =>
+    MONTH_SLUGS.map((month) => ({
+      url: `${baseUrl}/calendar/${year}/${month}/`,
+      lastModified: monthLastmod,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  );
+
+  return [...sitemapEntries, ...additionalPages, ...monthPages];
 }
 
 // Export the sitemap function as the default export

@@ -1,9 +1,10 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { Printer } from 'lucide-react';
-import { MONTH_NAMES, dayKey, monthWeeks, shortDate, yearFacts, yearMarks, type CalendarMark } from '@/lib/yearCalendar';
+import { MONTH_NAMES, MONTH_SLUGS, dayKey, monthWeeks, shortDate, yearFacts, yearMarks, type CalendarMark } from '@/lib/yearCalendar';
 import { event as gaEvent } from '@/lib/gtag';
 import { usePrintSheet } from '@/hooks/use-print-sheet';
 
@@ -28,7 +29,10 @@ export function YearGrid({ year }: { year: number }) {
     <div className="st-cal">
       {MONTH_NAMES.map((name, i) => (
         <section key={name} className="st-cal-month" aria-label={`${name} ${year}`}>
-          <h3>{name}</h3>
+          {/* Each month has its own page (Nov 2026) */}
+          <h3>
+            <Link href={`/calendar/${year}/${MONTH_SLUGS[i]}/`}>{name}</Link>
+          </h3>
           <table>
             <thead>
               <tr>

@@ -93,3 +93,36 @@ test('weekend holidays carry their day off, even in the year before', () => {
   assert.equal(july4th2026?.observed, '2026-07-03');
   assert.ok(yearMarks(2027).filter((m) => m.kind !== 'weekend-holiday').every((m) => m.observed === undefined));
 });
+
+test('month pages: slugs, neighbours and facts', async () => {
+  const { CALENDAR_YEARS, adjacentMonth, monthFacts, monthFromSlug, monthMarks } = await import('../lib/yearCalendar.ts');
+  assert.equal(monthFromSlug('january'), 1);
+  assert.equal(monthFromSlug('december'), 12);
+  assert.equal(monthFromSlug('jan'), null);
+  assert.deepEqual(adjacentMonth(2027, 1, -1), { year: 2026, month: 12 });
+  assert.deepEqual(adjacentMonth(2027, 12, 1), { year: 2028, month: 1 });
+  assert.equal(adjacentMonth(CALENDAR_YEARS[0], 1, -1), null);
+  assert.equal(adjacentMonth(CALENDAR_YEARS[CALENDAR_YEARS.length - 1], 12, 1), null);
+  // January 2027: Fri 1st, 21 weekdays, New Year's Day and MLK Day off
+  assert.deepEqual(monthFacts(2027, 1), { days: 31, starts: 'Friday', ends: 'Sunday', weekdays: 21, workingDays: 19, federalDaysOff: 2 });
+  // December 2027: Christmas observed Fri 24th and New Year's Day 2028 observed Fri 31st
+  assert.equal(monthFacts(2027, 12).federalDaysOff, 2);
+  assert.deepEqual(monthMarks(2027, 12).filter((m) => m.kind === 'off').map((m) => m.date), ['2027-12-24', '2027-12-31']);
+  // February 2028 is a leap February
+  assert.equal(monthFacts(2028, 2).days, 29);
+  // The months add up to the year
+  for (const y of CALENDAR_YEARS) {
+    const months = Array.from({ length: 12 }, (_, i) => monthFacts(y, i + 1));
+    assert.equal(months.reduce((n, m) => n + m.workingDays, 0), yearFacts(y).workingDays);
+  }
+});
+
+test('month titles and descriptions fit', async () => {
+  const { CALENDAR_YEARS, monthDescription, monthTitle } = await import('../lib/yearCalendar.ts');
+  for (const y of CALENDAR_YEARS) {
+    for (let m = 1; m <= 12; m++) {
+      assert.ok(monthTitle(y, m).length <= 65, monthTitle(y, m));
+      assert.ok(monthDescription(y, m).length <= 160, monthDescription(y, m));
+    }
+  }
+});
