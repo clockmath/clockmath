@@ -23,7 +23,19 @@ export interface CalendarMark {
    * days that aren't days off by law, and the US clock changes.
    */
   kind: MarkKind;
+  /**
+   * weekend-holiday only: the weekday off, which can fall in another year
+   * (New Year's Day 2028, a Saturday, is observed on Friday Dec 31, 2027)
+   */
+  observed?: string;
 }
+
+/**
+ * Years with a page at /calendar/<year>/ (one app/calendar/<year>/ folder
+ * each). Nov 2026: 2026 and 2028 added next to 2027; the holidays list and
+ * each calendar's year links read this.
+ */
+export const CALENDAR_YEARS = [2026, 2027, 2028];
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const ymd = (y: number, m: number, d: number) => `${y}-${pad(m)}-${pad(d)}`;
@@ -37,7 +49,7 @@ export function yearMarks(year: number): CalendarMark[] {
       continue;
     }
     if (h.observed) {
-      marks.push({ date: h.date, name: h.name, kind: 'weekend-holiday' });
+      marks.push({ date: h.date, name: h.name, kind: 'weekend-holiday', observed: h.observed });
       if (h.observed.startsWith(`${year}-`)) marks.push({ date: h.observed, name: `${h.name} (observed)`, kind: 'off' });
     } else {
       marks.push({ date: h.date, name: h.name, kind: 'off' });
