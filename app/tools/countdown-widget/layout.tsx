@@ -7,8 +7,10 @@ import { generateSEOMetadata } from '@/lib/seo';
 // Uses the countdown tool's share card until this page has its own.
 export const metadata = generateSEOMetadata({
   title: 'Free Countdown Widget for Your Website: Embed Code | ClockMath',
+  // Nov 2026: "GTA 6" → "game releases" once GTA 6 was out (its widget left
+  // the picks); the title is unchanged
   description:
-    'Free countdown widgets for your website or blog: Christmas, Thanksgiving, New Year, GTA 6, eclipses and more. Copy one line of code. No sign-up, no cookies.',
+    'Free countdown widgets for your website or blog: Christmas, Thanksgiving, New Year, game releases, eclipses and more. One line of code, no sign-up, no cookies.',
   path: '/tools/countdown-widget',
   ogImage: '/og/tool/countdown.png?v=3',
   keywords:
