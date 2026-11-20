@@ -8,7 +8,7 @@ import StackedTable from '@/components/StackedTable';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { YearGrid, YearLegend, YearPrintButton } from '@/components/YearCalendar';
 import { useDarkMode } from '@/hooks/use-dark-mode';
-import { CALENDAR_YEARS, longDate, shortDate, yearFacts, yearMarks } from '@/lib/yearCalendar';
+import { CALENDAR_YEARS, andList, longDate, shortDate, yearFacts, yearMarks } from '@/lib/yearCalendar';
 
 /**
  * /calendar/<year>/: one page per year, from app/calendar/<year>/page.tsx.
@@ -231,9 +231,6 @@ export default function YearCalendarPage({ year }: { year: number }) {
     </StationChrome>
   );
 }
-
-/** "A", "A and B", "A, B and C" */
-const andList = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`);
 
 /** "Other years: 2026 · 2028", from CALENDAR_YEARS */
 function YearLinks({ year }: { year: number }) {

@@ -124,3 +124,71 @@ export function longDate(date: string): string {
 }
 
 export const dayKey = ymd;
+
+/** "A", "A and B", "A, B and C" */
+export const andList = (items: string[]) =>
+  items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+
+/*
+ * Month pages (/calendar/<year>/<month>/, Nov 2026): "january 2027 calendar"
+ * style searches, one page per month of each CALENDAR_YEARS year, from the
+ * same marks as the year page.
+ */
+export const MONTH_SLUGS = MONTH_NAMES.map((n) => n.toLowerCase());
+
+/** 1–12 for "january"…"december", or null */
+export function monthFromSlug(slug: string): number | null {
+  const i = MONTH_SLUGS.indexOf(slug);
+  return i < 0 ? null : i + 1;
+}
+
+/** The marks dated in that month (a weekend holiday keeps its own date) */
+export const monthMarks = (year: number, month: number) => yearMarks(year).filter((m) => m.date.startsWith(`${year}-${pad(month)}-`));
+
+/** The month before or after, if it has a page */
+export function adjacentMonth(year: number, month: number, step: -1 | 1): { year: number; month: number } | null {
+  const m = month + step;
+  const at = m < 1 ? { year: year - 1, month: 12 } : m > 12 ? { year: year + 1, month: 1 } : { year, month: m };
+  return CALENDAR_YEARS.includes(at.year) ? at : null;
+}
+
+export interface MonthFacts {
+  days: number;
+  /** Weekday of the 1st and of the last day */
+  starts: string;
+  ends: string;
+  weekdays: number;
+  workingDays: number;
+  federalDaysOff: number;
+}
+
+export function monthFacts(year: number, month: number): MonthFacts {
+  const days = daysInMonth(year, month);
+  const span = countWorkingDays({ year, month, day: 1 }, { year, month, day: days });
+  return {
+    days,
+    starts: WEEKDAY_NAMES[weekday({ year, month, day: 1 })],
+    ends: WEEKDAY_NAMES[weekday({ year, month, day: days })],
+    weekdays: span.workingDays + span.holidays.length,
+    workingDays: span.workingDays,
+    federalDaysOff: span.holidays.length,
+  };
+}
+
+/** The holiday a day off is for: "Independence Day (observed)" → "Independence Day" */
+export const offName = (m: CalendarMark) => m.name.replace(/ \(observed\)$/, '');
+
+/** Under 65 characters for every month ("September 2027 …" is the longest) */
+export const monthTitle = (year: number, month: number) => `${MONTH_NAMES[month - 1]} ${year} Calendar with Holidays (Printable) | ClockMath`;
+
+/** At most 160 characters: drops the holiday names when they don't fit */
+export function monthDescription(year: number, month: number): string {
+  const name = `${MONTH_NAMES[month - 1]} ${year}`;
+  const facts = monthFacts(year, month);
+  const offs = monthMarks(year, month).filter((m) => m.kind === 'off').map(offName);
+  const tail = ` ${facts.workingDays} working days; starts on a ${facts.starts}. Printable.`;
+  const withNames = offs.length
+    ? `The ${name} calendar with US holidays. Days off: ${andList(offs)}.${tail}`
+    : `The ${name} calendar with US holidays marked. No federal days off this month.${tail}`;
+  return withNames.length <= 160 ? withNames : `The ${name} calendar with ${offs.length} US federal day${offs.length === 1 ? '' : 's'} off and other holidays marked.${tail}`;
+}
