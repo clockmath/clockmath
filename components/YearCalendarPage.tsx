@@ -8,6 +8,7 @@ import StackedTable from '@/components/StackedTable';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import { YearGrid, YearLegend, YearPrintButton } from '@/components/YearCalendar';
 import { useDarkMode } from '@/hooks/use-dark-mode';
+import { REGIONS, REGION_IDS } from '@/lib/regionCalendar';
 import { CALENDAR_YEARS, andList, longDate, shortDate, yearFacts, yearMarks } from '@/lib/yearCalendar';
 
 /**
@@ -232,21 +233,39 @@ export default function YearCalendarPage({ year }: { year: number }) {
   );
 }
 
-/** "Other years: 2026 · 2028", from CALENDAR_YEARS */
+/** "Other years: 2026 · 2028" and "Other countries: 2027 UK · 2027 Canada" */
 function YearLinks({ year }: { year: number }) {
   const others = CALENDAR_YEARS.filter((y) => y !== year);
-  if (!others.length) return null;
+  // Nov 2026: the UK and Canada calendars (lib/regionCalendar.ts)
+  const countries = REGION_IDS.filter((r) => REGIONS[r].years.includes(year));
   return (
-    <nav aria-label="Calendars for other years" className="text-sm text-muted-foreground">
-      Other years:{' '}
-      {others.map((y, i) => (
-        <span key={y}>
-          {i > 0 && ' · '}
-          <Link href={`/calendar/${y}/`} className="text-primary hover:text-primary/80 font-semibold">
-            {y} calendar
-          </Link>
+    <nav aria-label="Other calendars" className="text-sm text-muted-foreground">
+      {others.length > 0 && (
+        <span className="block">
+          Other years:{' '}
+          {others.map((y, i) => (
+            <span key={y}>
+              {i > 0 && ' · '}
+              <Link href={`/calendar/${y}/`} className="text-primary hover:text-primary/80 font-semibold">
+                {y} calendar
+              </Link>
+            </span>
+          ))}
         </span>
-      ))}
+      )}
+      {countries.length > 0 && (
+        <span className="block">
+          Other countries:{' '}
+          {countries.map((r, i) => (
+            <span key={r}>
+              {i > 0 && ' · '}
+              <Link href={`/calendar/${year}/${r}/`} className="text-primary hover:text-primary/80 font-semibold">
+                {year} {REGIONS[r].name}
+              </Link>
+            </span>
+          ))}
+        </span>
+      )}
     </nav>
   );
 }
