@@ -552,3 +552,16 @@ html:not(.classic) .st-mcal-nav a { color: var(--line-text, var(--ink)); }
 html:not(.classic) .st-mcal-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 8px 16px; list-style: none; padding: 0; margin: 0; }
 html:not(.classic) .st-mcal-months a, html:not(.classic) .st-mcal-months span { display: block; padding: 8px 0; border-bottom: 1px solid var(--rule); }
 html:not(.classic) .st-mcal-months span { font-weight: 700; color: var(--ink); }
+
+/* ---- Timesheet template (Nov 2026): the options, then the sheet as it will
+   print, on white paper in either theme. The sheet's own styles are inline
+   (it is also the print), so only the frame lives here. Below 640px the
+   paper scrolls sideways rather than squeezing seven columns. ---- */
+html:not(.classic) .st-tpl-options { display: flex; flex-wrap: wrap; gap: 16px 28px; }
+html:not(.classic) .st-tpl-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--quiet); }
+html:not(.classic) .st-tpl-preview { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--rule); padding: 16px; }
+html:not(.classic) .st-tpl-paper { min-width: 600px; max-width: 760px; margin: 0 auto; background: #fff; padding: 36px 40px; box-shadow: 0 1px 4px rgb(0 0 0 / 0.18); }
+@media (max-width: 639px) {
+  html:not(.classic) .st-tpl-preview { padding: 10px; }
+  html:not(.classic) .st-tpl-paper { padding: 24px; }
+}

@@ -134,3 +134,7 @@
 .classic .st-mcal-nav { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; font-weight: 600; }
 .classic .st-mcal-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 8px 16px; list-style: none; padding: 0; }
 .classic .st-mcal-months span { font-weight: 700; }
+.classic .st-tpl-options { display: flex; flex-wrap: wrap; gap: 16px 28px; }
+.classic .st-tpl-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
+.classic .st-tpl-preview { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--muted); padding: 12px; }
+.classic .st-tpl-paper { min-width: 600px; max-width: 760px; margin: 0 auto; background: #fff; padding: 28px 32px; }

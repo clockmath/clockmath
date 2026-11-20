@@ -217,6 +217,12 @@ export default function ShiftHoursChartPage() {
               — every minute of the hour as a decimal
             </li>
             <li>
+              <Link href="/tools/timesheet-template/" className="text-primary hover:text-primary/80 font-semibold">
+                Printable timesheet template
+              </Link>{' '}
+              — a blank weekly or biweekly timesheet with lunch in and out
+            </li>
+            <li>
               <Link href="/tools/overtime/" className="text-primary hover:text-primary/80 font-semibold">
                 Overtime calculator
               </Link>{' '}
