@@ -5,15 +5,15 @@
  * (with substitute days), `weekend-holiday` for a holiday on a Saturday or
  * Sunday, `other` for days most calendars mark.
  *
- * Australia isn't here yet: its public holidays, even the national ones, are
- * set state by state (Anzac Day 2026, a Saturday: NSW adds Monday 27 April,
- * Queensland doesn't), and on Nov 20 2026 only the NSW and Queensland lists
- * could be checked.
+ * Australia is NSW only (Mark, Nov 20 2026): public holidays there are set
+ * state by state, even the national ones (Anzac Day 2026, a Saturday: NSW
+ * adds Monday 27 April, Queensland doesn't), and only the NSW and Queensland
+ * lists could be checked. NSW has published 2026 and 2027 so far.
  */
 import { lastWeekday, nthWeekday, westernEaster } from '@/lib/holidays';
 import { WEEKDAY_NAMES, type CalendarMark, type MarkKind } from '@/lib/yearCalendar';
 
-export type RegionId = 'uk' | 'canada';
+export type RegionId = 'uk' | 'canada' | 'australia';
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 const utc = (y: number, m: number, d: number) => new Date(Date.UTC(y, m, d));
@@ -183,6 +183,55 @@ function canadaOther(year: number): CalendarMark[] {
   ];
 }
 
+/* ---------- Australia (NSW) ---------- */
+
+/**
+ * NSW public holidays from nsw.gov.au/about-nsw/public-holidays (Public
+ * Holidays Act 2010; read Nov 20 2026), which covers 2026–2027. In NSW a
+ * holiday on a weekend is still the holiday, and New Year's Day, Christmas,
+ * Boxing Day and Anzac Day also get an additional weekday; Australia Day
+ * moves to the Monday instead. [date, name, additional weekday]
+ */
+const NSW: Table3 = {
+  2026: [
+    ['2026-01-01', "New Year's Day"], ['2026-01-26', 'Australia Day'], ['2026-04-03', 'Good Friday'],
+    ['2026-04-04', 'Easter Saturday'], ['2026-04-05', 'Easter Sunday'], ['2026-04-06', 'Easter Monday'],
+    ['2026-04-25', 'Anzac Day', '2026-04-27'], ['2026-06-08', "King's Birthday"], ['2026-10-05', 'Labour Day'],
+    ['2026-12-25', 'Christmas Day'], ['2026-12-26', 'Boxing Day', '2026-12-28'],
+  ],
+  2027: [
+    ['2027-01-01', "New Year's Day"], ['2027-01-26', 'Australia Day'], ['2027-03-26', 'Good Friday'],
+    ['2027-03-27', 'Easter Saturday'], ['2027-03-28', 'Easter Sunday'], ['2027-03-29', 'Easter Monday'],
+    ['2027-04-25', 'Anzac Day', '2027-04-26'], ['2027-06-14', "King's Birthday"], ['2027-10-04', 'Labour Day'],
+    ['2027-12-25', 'Christmas Day', '2027-12-27'], ['2027-12-26', 'Boxing Day', '2027-12-28'],
+  ],
+};
+type Table3 = Record<number, Array<[string, string, string?]>>;
+
+function nswMarks(year: number): CalendarMark[] {
+  const marks: CalendarMark[] = [];
+  for (const [date, name, extra] of NSW[year]) {
+    const weekend = dow(date) === 0 || dow(date) === 6;
+    marks.push(weekend ? { date, name, kind: 'weekend-holiday', ...(extra ? { observed: extra } : {}) } : { date, name, kind: 'off' });
+    if (extra) marks.push({ date: extra, name: `${name} (additional day)`, kind: 'off' });
+  }
+  return marks;
+}
+
+function australiaOther(year: number): CalendarMark[] {
+  return [
+    { date: `${year}-02-14`, name: "Valentine's Day", kind: 'other' },
+    // NSW daylight saving: ends the first Sunday in April, starts the first Sunday in October
+    { date: iso(nthWeekday(year, 3, 0, 1)), name: 'Clocks go back (NSW)', kind: 'other' },
+    { date: iso(nthWeekday(year, 4, 0, 2)), name: "Mother's Day", kind: 'other' },
+    { date: iso(nthWeekday(year, 7, 1, 1)), name: 'Bank Holiday (NSW banks only)', kind: 'other' },
+    { date: iso(nthWeekday(year, 8, 0, 1)), name: "Father's Day", kind: 'other' },
+    { date: iso(nthWeekday(year, 9, 0, 1)), name: 'Clocks go forward (NSW)', kind: 'other' },
+    { date: `${year}-12-24`, name: 'Christmas Eve', kind: 'other' },
+    { date: `${year}-12-31`, name: "New Year's Eve", kind: 'other' },
+  ];
+}
+
 /* ---------- Shared ---------- */
 
 export interface RegionalRow {
@@ -252,6 +301,19 @@ export const REGIONS: Record<RegionId, Region> = {
     },
     source: 'Canada Labour Code general holidays; 2026 dates checked against the Canada Revenue Agency list, November 20, 2026.',
   },
+  australia: {
+    id: 'australia',
+    name: 'Australia',
+    dayOff: 'public holiday',
+    scope: 'New South Wales',
+    years: [2026, 2027],
+    holidays: (year) => sortMarks(nswMarks(year)),
+    other: (year) => sortMarks(australiaOther(year)),
+    regional: (year) => [
+      { date: iso(nthWeekday(year, 7, 1, 1)), name: 'Bank Holiday', where: 'NSW banks and some financial institutions; not a public holiday' },
+    ],
+    source: 'NSW public holidays from the NSW Government (Public Holidays Act 2010), checked November 20, 2026.',
+  },
 };
 
 export const REGION_IDS = Object.keys(REGIONS) as RegionId[];
@@ -281,9 +343,9 @@ export const dayLabel = (date: string) => `${WEEKDAY_NAMES[dow(date)].slice(0, 3
 
 /** Under 65 characters (tests/regionCalendar.test.ts) */
 export function regionTitle(id: RegionId, year: number): string {
-  return id === 'uk'
-    ? `${year} Calendar UK with Bank Holidays (Printable) | ClockMath`
-    : `${year} Canada Calendar with Statutory Holidays | ClockMath`;
+  if (id === 'uk') return `${year} Calendar UK with Bank Holidays (Printable) | ClockMath`;
+  if (id === 'australia') return `${year} Australia Calendar with NSW Public Holidays | ClockMath`;
+  return `${year} Canada Calendar with Statutory Holidays | ClockMath`;
 }
 
 /** At most 160 characters; the substitute days go first when they fit */
@@ -298,6 +360,11 @@ export function regionDescription(id: RegionId, year: number): string {
     // The title already says "Printable", so that word goes before the dates do
     const trimmed = full.replace(/ Printable\.$/, '');
     return full.length <= 160 ? full : trimmed.length <= 160 ? trimmed : `${base}${tail}`;
+  }
+  if (id === 'australia') {
+    const extras = weekend.filter((m) => m.observed).map((m) => `${m.name} ${dayLabel(m.observed!)}`);
+    const full = `The ${year} Australia calendar with NSW public holidays marked, additional days included (${extras.join(', ')}). ${facts.workingDays} working days.`;
+    return full.length <= 160 ? full : `The ${year} Australia calendar with every NSW public holiday and additional day marked. ${facts.workingDays} working days. Printable.`;
   }
   const full = `The ${year} Canada calendar with the 10 statutory holidays marked, plus Family Day, Saint-Jean-Baptiste and the Civic Holiday. ${facts.workingDays} working days.`;
   return full.length <= 160 ? full : `The ${year} Canada calendar with the 10 statutory holidays and the provincial days marked. ${facts.workingDays} working days. Printable.`;

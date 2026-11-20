@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { REGIONS, REGION_IDS, regionDescription, regionFacts, regionTitle } from '../lib/regionCalendar.ts';
 
-const offDates = (id: 'uk' | 'canada', year: number) => REGIONS[id].holidays(year).filter((m) => m.kind === 'off').map((m) => m.date);
+const offDates = (id: 'uk' | 'canada' | 'australia', year: number) => REGIONS[id].holidays(year).filter((m) => m.kind === 'off').map((m) => m.date);
 
 test('UK 2027: Christmas and Boxing Day on the weekend, substitute days Mon 27 and Tue 28', () => {
   assert.deepEqual(offDates('uk', 2027), ['2027-01-01', '2027-03-26', '2027-03-29', '2027-05-03', '2027-05-31', '2027-08-30', '2027-12-27', '2027-12-28']);
@@ -50,4 +50,17 @@ test('titles and descriptions fit', () => {
       assert.ok(regionDescription(id, y).length <= 160, regionDescription(id, y));
     }
   }
+});
+
+test('Australia (NSW): additional days from the NSW Government list', () => {
+  // 2026: Anzac Day Sat → also Mon Apr 27; Boxing Day Sat → also Mon Dec 28
+  assert.deepEqual(offDates('australia', 2026), ['2026-01-01', '2026-01-26', '2026-04-03', '2026-04-06', '2026-04-27', '2026-06-08', '2026-10-05', '2026-12-25', '2026-12-28']);
+  // 2027: Anzac Sun → Mon Apr 26; Christmas Sat → Mon Dec 27; Boxing Day Sun → Tue Dec 28
+  assert.deepEqual(offDates('australia', 2027), ['2027-01-01', '2027-01-26', '2027-03-26', '2027-03-29', '2027-04-26', '2027-06-14', '2027-10-04', '2027-12-27', '2027-12-28']);
+  // Easter Saturday and Sunday are public holidays on the weekend, with no additional day
+  const easter = REGIONS.australia.holidays(2027).filter((m) => m.name.startsWith('Easter S'));
+  assert.deepEqual(easter.map((m) => [m.kind, m.observed]), [['weekend-holiday', undefined], ['weekend-holiday', undefined]]);
+  assert.deepEqual(regionFacts('australia', 2027), { starts: 'Friday', weekdays: 261, daysOff: 9, workingDays: 252 });
+  // Only the years NSW has published
+  assert.deepEqual(REGIONS.australia.years, [2026, 2027]);
 });
