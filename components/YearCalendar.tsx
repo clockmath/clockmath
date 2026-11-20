@@ -23,16 +23,16 @@ const byDate = (marks: CalendarMark[]) => {
  * days dotted. Built from the year alone (no "today"), so server and client
  * render the same markup.
  */
-export function YearGrid({ year }: { year: number }) {
-  const marks = byDate(yearMarks(year));
+export function YearGrid({ year, marks: given, monthLinks = true }: { year: number; marks?: CalendarMark[]; monthLinks?: boolean }) {
+  // Other countries pass their own marks (lib/regionCalendar.ts, Nov 2026);
+  // only the US months have pages of their own
+  const marks = byDate(given ?? yearMarks(year));
   return (
     <div className="st-cal">
       {MONTH_NAMES.map((name, i) => (
         <section key={name} className="st-cal-month" aria-label={`${name} ${year}`}>
           {/* Each month has its own page (Nov 2026) */}
-          <h3>
-            <Link href={`/calendar/${year}/${MONTH_SLUGS[i]}/`}>{name}</Link>
-          </h3>
+          <h3>{monthLinks ? <Link href={`/calendar/${year}/${MONTH_SLUGS[i]}/`}>{name}</Link> : name}</h3>
           <table>
             <thead>
               <tr>
@@ -67,39 +67,53 @@ export function YearGrid({ year }: { year: number }) {
   );
 }
 
-/** The key under the grids. */
-export function YearLegend() {
+/** The key under the grids; other countries name their own days off */
+export function YearLegend({ off = 'Federal day off', weekend = 'Federal holiday on a weekend', other = 'Other days and clock changes' }: { off?: string; weekend?: string; other?: string }) {
   return (
     <p className="st-cal-legend">
       <span>
-        <i className="st-cal-key st-cal-off" aria-hidden="true" /> Federal day off
+        <i className="st-cal-key st-cal-off" aria-hidden="true" /> {off}
       </span>
       <span>
-        <i className="st-cal-key st-cal-weekend" aria-hidden="true" /> Federal holiday on a weekend
+        <i className="st-cal-key st-cal-weekend" aria-hidden="true" /> {weekend}
       </span>
       <span>
-        <i className="st-cal-key st-cal-other" aria-hidden="true" /> Other days and clock changes
+        <i className="st-cal-key st-cal-other" aria-hidden="true" /> {other}
       </span>
     </p>
   );
 }
 
-export function YearPrintButton({ year }: { year: number }) {
+/** What another country's print sheet says in place of the US lines */
+export interface PrintText {
+  /** "2027 UK calendar" */
+  title: string;
+  /** "Bank holidays in England and Wales in 2027: 8 days off, 253 working days" */
+  summary: string;
+  /** Shaded / outlined key */
+  key: string;
+  /** "clockmath.com/calendar/2027/uk" */
+  url: string;
+  /** GA chart name */
+  chart: string;
+}
+
+export function YearPrintButton({ year, marks, text, label }: { year: number; marks?: CalendarMark[]; text?: PrintText; label?: string }) {
   const [printing, print] = usePrintSheet();
   return (
     <>
       <button
         type="button"
         onClick={() => {
-          gaEvent({ action: 'print_chart', params: { chart: `calendar_${year}` } });
+          gaEvent({ action: 'print_chart', params: { chart: text?.chart ?? `calendar_${year}` } });
           print();
         }}
         className="inline-flex items-center gap-1.5 rounded-lg border border-border dark:border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted/60 dark:hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
         <Printer className="w-4 h-4" aria-hidden="true" />
-        Print the {year} calendar
+        {label ?? `Print the ${year} calendar`}
       </button>
-      {printing && createPortal(<PrintSheet year={year} />, document.body)}
+      {printing && createPortal(<PrintSheet year={year} marks={marks} text={text} />, document.body)}
     </>
   );
 }
@@ -107,13 +121,14 @@ export function YearPrintButton({ year }: { year: number }) {
 const cellStyle: CSSProperties = { width: '14.28%', textAlign: 'center', padding: '1.6pt 0', fontSize: '9pt' };
 
 /** One A4/Letter page: twelve months, four a row, then the days off. */
-function PrintSheet({ year }: { year: number }) {
-  const marks = byDate(yearMarks(year));
-  const offs = yearMarks(year).filter((m) => m.kind === 'off');
+function PrintSheet({ year, marks: given, text }: { year: number; marks?: CalendarMark[]; text?: PrintText }) {
+  const all = given ?? yearMarks(year);
+  const marks = byDate(all);
+  const offs = all.filter((m) => m.kind === 'off' && m.date.startsWith(`${year}-`));
   const facts = yearFacts(year);
   return (
     <div id="print-chart" style={{ color: '#000', background: '#fff', fontFamily: 'system-ui, sans-serif' }}>
-      <h1 style={{ fontSize: '20pt', margin: '0 0 6pt' }}>{year} calendar</h1>
+      <h1 style={{ fontSize: '20pt', margin: '0 0 6pt' }}>{text?.title ?? `${year} calendar`}</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12pt 14pt' }}>
         {MONTH_NAMES.map((name, i) => (
           <div key={name} style={{ breakInside: 'avoid' }}>
@@ -159,7 +174,7 @@ function PrintSheet({ year }: { year: number }) {
         ))}
       </div>
       <h2 style={{ fontSize: '11pt', margin: '12pt 0 3pt' }}>
-        US federal days off in {year}: {facts.federalDaysOff} days off, {facts.workingDays} working days
+        {text?.summary ?? `US federal days off in ${year}: ${facts.federalDaysOff} days off, ${facts.workingDays} working days`}
       </h2>
       <div style={{ columns: 2, columnGap: '16pt', fontSize: '9pt', lineHeight: 1.5 }}>
         {offs.map((m) => (
@@ -170,8 +185,16 @@ function PrintSheet({ year }: { year: number }) {
         ))}
       </div>
       <p style={{ fontSize: '7.5pt', margin: '8pt 0 0', color: '#333' }}>
-        Shaded: federal day off. Outlined: federal holiday on a weekend (observed the Friday before or Monday after).
-        Weeks start on Sunday. Holidays and days until each: clockmath.com/calendar/{year}
+        {text ? (
+          <>
+            {text.key} Weeks start on Sunday. {text.url}
+          </>
+        ) : (
+          <>
+            Shaded: federal day off. Outlined: federal holiday on a weekend (observed the Friday before or Monday after).
+            Weeks start on Sunday. Holidays and days until each: clockmath.com/calendar/{year}
+          </>
+        )}
       </p>
     </div>
   );
