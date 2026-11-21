@@ -6,6 +6,8 @@ import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
 import JsonLd, { getFAQPageSchema } from '@/components/JsonLd';
 import TimesheetTemplateTool from '@/components/TimesheetTemplate';
+import PartnerCard from '@/components/PartnerCard';
+import { GUSTO } from '@/lib/affiliates';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
 // Nov 2026: a blank timesheet to print, save as a PDF or open in a
@@ -60,6 +62,7 @@ export default function TimesheetTemplatePage() {
       </div>
 
       <TimesheetTemplateTool />
+      <PartnerCard partner={GUSTO} tool="timesheet-template" />
 
       <p className="max-w-3xl mx-auto mb-section text-muted-foreground">
         Rather add up the hours on screen? The <Link href="/tools/timesheet/">work hours calculator</Link> totals your

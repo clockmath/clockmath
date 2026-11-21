@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { OvertimeTool } from '@/components/OvertimeTool';
+import PartnerCard from '@/components/PartnerCard';
+import { GUSTO } from '@/lib/affiliates';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
@@ -69,6 +71,7 @@ export default function OvertimePage() {
       </div>
 
       <OvertimeTool className="mb-section" />
+      <PartnerCard partner={GUSTO} tool="overtime" />
 
       <StationFold>
       {/* Explanation */}
