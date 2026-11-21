@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         <div className="st-article article-prose">
           <div>
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
-              <strong>Effective date:</strong> October 26, 2026
+              <strong>Effective date:</strong> November 21, 2026
             </p>
 
             <p className="mb-6">
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong>Your country</strong> (from Cloudflare) is checked on each visit to decide whether to show the
-                consent banner. It isn&apos;t stored.
+                consent banner and any partner link (see below). It isn&apos;t stored.
               </li>
             </ul>
 
@@ -142,9 +142,16 @@ export default function PrivacyPage() {
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />
 
-            <h2 className="text-2xl font-semibold mb-4">5. Third-party links</h2>
-            <p className="mb-6">
+            <h2 className="text-2xl font-semibold mb-4">5. Third-party and partner links</h2>
+            <p className="mb-4">
               Our site links to other websites. We are not responsible for their privacy practices.
+            </p>
+            <p className="mb-6">
+              Some work-hours tools may show a link marked <strong>Partner</strong>. It is an affiliate link: if you
+              sign up through it, ClockMath earns a commission, at no extra cost to you. The link is plain text, with
+              no scripts, pixels or cookies from the partner on our pages, and nothing you type into the tools is sent
+              with it. If you follow it, the partner&apos;s site (and its affiliate network) records that you came from
+              ClockMath, under its own privacy policy. We count clicks on it in our analytics, as with other links.
             </p>
 
             <hr className="my-6 border-border/50 dark:border-slate-700/50" />

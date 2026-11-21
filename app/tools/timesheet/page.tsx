@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { TimesheetTool } from '@/components/TimesheetTool';
+import PartnerCard from '@/components/PartnerCard';
+import { GUSTO } from '@/lib/affiliates';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
@@ -93,6 +95,7 @@ export default function TimesheetPage() {
       </div>
 
       <TimesheetTool className="mb-section" />
+      <PartnerCard partner={GUSTO} tool="timesheet" />
 
       <StationFold>
       {/* Supporting content — static JSX, fully server-rendered for crawlers */}

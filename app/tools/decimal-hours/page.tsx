@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { Code } from 'lucide-react';
 import { DecimalHoursTool } from '@/components/DecimalHoursTool';
+import PartnerCard from '@/components/PartnerCard';
+import { GUSTO } from '@/lib/affiliates';
 import SiteFooter from '@/components/SiteFooter';
 import StationChrome from '@/components/station/StationChrome';
 import StationFold from '@/components/station/StationFold';
@@ -182,6 +184,7 @@ export default function DecimalHoursPage() {
       </div>
 
       <DecimalHoursTool className="mb-section" />
+      <PartnerCard partner={GUSTO} tool="decimal-hours" />
 
       {/* The chart the page is named for, on the page (Oct 2026: it sat inside
           the closed "How it works" fold). A departures-style board; the

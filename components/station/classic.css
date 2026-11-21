@@ -138,3 +138,9 @@
 .classic .st-tpl-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
 .classic .st-tpl-preview { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--muted); padding: 12px; }
 .classic .st-tpl-paper { min-width: 600px; max-width: 760px; margin: 0 auto; background: #fff; padding: 28px 32px; }
+.classic .st-partner { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: var(--card); }
+.classic .st-partner-tag { display: inline-block; margin-bottom: 6px; padding: 1px 7px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--muted-foreground); }
+.classic .st-partner-head { margin: 0; font-size: 17px; font-weight: 700; }
+.classic .st-partner-body { margin: 4px 0 10px; font-size: 15px; color: var(--muted-foreground); }
+.classic .st-partner-link { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+.classic .st-partner-note { margin: 8px 0 0; font-size: 12.5px; color: var(--muted-foreground); }
