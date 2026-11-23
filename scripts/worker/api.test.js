@@ -149,6 +149,12 @@ const post = (url, body, headers = {}) =>
   assert.strictEqual(api.redirectTarget('/tool/timezone/'), '/tools/timezone/');
   assert.strictEqual(api.redirectTarget('/countdown/spider-man-brand-new-day/'), '/countdown/avengers-doomsday/');
   assert.strictEqual(api.redirectTarget('/countdown/'), '/tools/countdown/');
+  // Pruned Nov 2026: the four game and film countdowns, with or without the slash
+  for (const slug of ['fable', 'final-fantasy-7-revelation', 'god-of-war-laufey', 'beyond-the-spider-verse']) {
+    assert.strictEqual(api.redirectTarget(`/countdown/${slug}/`), '/tools/countdown/', slug);
+    assert.strictEqual(api.redirectTarget(`/countdown/${slug}`), '/tools/countdown/', slug);
+  }
+  assert.strictEqual(api.redirectTarget('/countdown/gta-6/'), null, 'kept game pages untouched');
   assert.strictEqual(api.redirectTarget('/countdown/christmas/'), null, 'event pages untouched');
   assert.strictEqual(api.redirectTarget('/tools/timezone/'), null);
   // Time difference pages: the reverse order goes to the one page

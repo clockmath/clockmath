@@ -602,6 +602,14 @@ const EXACT_REDIRECTS = {
   // Retired Oct 2026 once every date had passed (theatrical Jul 31, digital
   // Oct 6); its searchers are Marvel fans, so they go to the next release.
   '/countdown/spider-man-brand-new-day': '/countdown/avengers-doomsday/',
+  // Pruned Nov 2026 (the Nov 20 review: off-topic pages blur what the site
+  // is about). Game and film releases months away, chosen on topic alone, no
+  // click data to hand; the custom countdown counts down to any date. Their
+  // /embed/ URLs are gone too: no site had embedded them in 90 days.
+  '/countdown/fable': '/tools/countdown/',
+  '/countdown/final-fantasy-7-revelation': '/tools/countdown/',
+  '/countdown/god-of-war-laufey': '/tools/countdown/',
+  '/countdown/beyond-the-spider-verse': '/tools/countdown/',
   // Oct 2026 review: the folder of every event page was a 404 for anyone
   // trimming the URL; the header tab and breadcrumbs call the tool page
   // "Countdowns", so that's where it goes.
