@@ -20,7 +20,7 @@ const GROUPS: Array<{ title: string; slugs: CountdownSlug[] }> = [
     ],
   },
   { title: 'Sport', slugs: ['super-bowl', 'march-madness', 'womens-world-cup-2027', 'olympics-2028'] },
-  { title: 'Games and films', slugs: ['gta-6', 'fable', 'avengers-doomsday', 'final-fantasy-7-revelation', 'god-of-war-laufey', 'beyond-the-spider-verse'] },
+  { title: 'Games and films', slugs: ['gta-6', 'avengers-doomsday'] },
   { title: 'Sky and clocks', slugs: ['solar-eclipse-2027', 'annular-eclipse-2028', 'solar-eclipse-2028', 'daylight-saving-time'] },
 ];
 

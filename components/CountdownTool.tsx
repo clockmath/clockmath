@@ -52,18 +52,14 @@ const POPULAR_COUNTDOWNS: Array<{ title: string; href: string; note: string }> =
   { title: 'First day of summer', href: '/countdown/first-day-of-summer/', note: 'The June solstice' },
   { title: 'Canada Day', href: '/countdown/canada-day/', note: 'July 1' },
   { title: 'Retirement', href: '/countdown/retirement/', note: 'Your date' },
-  { title: 'God of War Laufey', href: '/countdown/god-of-war-laufey/', note: 'May 20, 2027' },
   { title: 'Avengers: Doomsday', href: '/countdown/avengers-doomsday/', note: DOOMSDAY_RELEASED ? 'In theaters since Dec 18, 2026' : 'December 18, 2026' },
-  { title: 'Fable', href: '/countdown/fable/', note: 'February 23, 2027' },
   // Nov 2026: the page turns into "GTA 6 is out" from the first deploy on release day
   { title: 'GTA 6', href: '/countdown/gta-6/', note: GTA6_LAUNCHED ? 'Out now, since Nov 19, 2026' : 'November 19, 2026' },
-  { title: 'FF7 Revelation', href: '/countdown/final-fantasy-7-revelation/', note: 'April 8, 2027' },
   { title: '2027 solar eclipse', href: '/countdown/solar-eclipse-2027/', note: 'August 2, 2027' },
   { title: '2028 annular eclipse', href: '/countdown/annular-eclipse-2028/', note: 'January 26, 2028' },
   { title: "Women's World Cup", href: '/countdown/womens-world-cup-2027/', note: 'June 24, 2027, Brazil' },
   { title: '2028 solar eclipse', href: '/countdown/solar-eclipse-2028/', note: 'July 22, 2028' },
   { title: 'LA 2028 Olympics', href: '/countdown/olympics-2028/', note: 'July 14, 2028' },
-  { title: 'Beyond the Spider-Verse', href: '/countdown/beyond-the-spider-verse/', note: 'June 18, 2027' },
 ];
 
 interface CountdownToolProps {
