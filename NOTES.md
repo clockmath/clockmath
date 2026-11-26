@@ -143,6 +143,22 @@
 - **Tests and checks:** `npm test` passes (lib unit tests plus worker tests); `npm run lint` (ESLint CLI with `eslint.config.mjs`; covers `scripts/worker/`, not the other scripts) is clean. CI runs both plus a build on every PR
 
 ## In progress
+- **Traffic check, Nov 26 (Bing data to Nov 24):** read in Mark's Chrome (Bing Webmaster, signed in). **Google not read:** the Google account signed in there (not the site owner's) has no access to clockmath.com in Search Console, as `sc-domain:` or `https://clockmath.com/`; GA not tried for the same reason. Next time: sign in with the owner account first, or export the Pages reports into `drafts/`
+  - Bing, 3 months (Aug 26–Nov 24): 548 clicks, 98.3K impressions, CTR 0.56%. Per day by period:
+
+    | Period | Clicks | Impressions | Copilot citations |
+    |---|---|---|---|
+    | Sep 1–30 | 11.2 | 2,005 | 698 |
+    | Oct 1–16 | 6.1 | 906 | 770 |
+    | Oct 17–31 (after the retitles) | 2.3 | 444 | 203 |
+    | Nov 1–17 | 1.7 | 318 | 126 |
+    | Nov 18–24 | 2.0 | 533 | 133 |
+
+  - Search fell in two steps (impressions halved in early October, then again after the Oct 17 retitles); Copilot held until Oct 16 and then fell ~83%. Bottomed out in November; impressions up ~2/3 in the last week on Thanksgiving queries
+  - Top pages by clicks (3 months): sleep tool 109 (12.5K impressions, pos 5.1), sleep guide 99 (7.2K, 4.9), Thanksgiving 80 (15.8K, 5.5), homepage 73 (32.9K, 7.5, CTR 0.22%), Doomsday 65 (4.0K, 5.5), overtime 23, time zone 21, decimal hours 13, stock-market guide 8, timesheet 5, quiz 5 (8.2% CTR). New pages starting to show: 2027 calendar 69 impressions/1 click, month pages 7–33 impressions; the timesheet template not yet (5 days old)
+  - Queries: "how many days until thanksgiving" 3.1K impressions, 5 clicks at 5.6 (and variants: thousands of impressions, few clicks: a title/snippet job for next season, not mid-season); "how many days till avengers doomsday" 10.75% CTR at 2.9; "clock math" 150 impressions, 9 clicks (navigational)
+  - Copilot (AI Performance, 3 months): 41.9K citations, ~12 cited pages a day. Top grounding queries: "15 minutes in decimal" 4.4K (45.8% share), Thanksgiving days-until queries ~5.5K together, "what is 15 minutes in decimal" 797, "minutes to decimal" 625, "what is 45 min in decimal" 278, "halloween how many days" 220, Doomsday ~430 together, "how many days until the weekend" 128 (50.2% share)
+  - The Nov 23 prune checks out: Fable 2 impressions, FF7 Revelation 2 and 1 click, God of War Laufey and Beyond the Spider-Verse none in 3 months. Sport pages near zero: Olympics 34 impressions/2 clicks, Women's World Cup 1/1, March Madness 5/0, Super Bowl absent. No Bing impressions at all for: the holidays board, clock changes (and its dates table), the eclipses, Canada Day, Hanukkah, Ramadan, first day of spring/summer, retirement, Super Bowl, the UK/Canada/Australia calendars
 - **Deployed Oct 29:** #145, #147, #149, #150 (after #144 Oct 26 and #148 Oct 27). Live checks with curl: 19 routes and APIs (pages, 308 slash, 404 page, `/countdown/` and legacy 301s, www → apex, RSC `.txt`, `/api/geo`, `/api/quiz`), all security headers, CSP nonce on all 37 scripts, "counting today", embed `frame-ancestors *`, immutable `/_next/static`, all 32 referenced assets 200, no 2025-01-15 sitemap dates. Headers match the previous deployment (including Pages' own `access-control-allow-origin: *`)
 - **Deployed Oct 29, later:** #151 and #152 (Next 16.4, React 19.3, lucide 1.64, react-day-picker 10). Live checks: pages, 308/301/404, Next 16's navigation `.txt` files, `/api/geo` and `/api/quiz`, all security headers, all 19 scripts nonced, "counting today", all 31 referenced assets 200 and immutable
 - **Deployed Nov 12:** #156 (days between dates). IndexNow submitted the new page with the deploy. Live checks with curl: page, hub, homepage, guide, share card and sitemap 200 (lastmod 2026-11-12), the slashless URL 308s, title and FAQ schema in the HTML, tiles in the static HTML, all 20 scripts nonced, all 19 page assets 200
