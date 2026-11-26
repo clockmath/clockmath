@@ -15,6 +15,7 @@ export const metadata = generateSEOMetadata({
   description:
     'TOrDO, a to-do list taken one card at a time: a deck deals seven tasks, swipe right to plan them for Today, then work through Today with a gentle timer.',
   path: '/tordo',
+  ogImage: '/og/tordo.png?v=1',
 });
 
 // App Store campaign link: ct=website tells App Store Connect the install
