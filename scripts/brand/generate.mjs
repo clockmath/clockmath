@@ -7,6 +7,7 @@
 //   public/og/tool/*.png      one share card per tool, in its line colour,
 //                             and the guides card for every article
 //   public/og/countdown/*.png one share card per countdown, in its board colour
+//   public/og/tordo.png       the TOrDO page's card (the app's hook and phone)
 // Older card files (og-v3.png, og-quiz-v2.png) stay in public/ so links
 // already shared with them keep their image; nothing references them now.
 //
@@ -231,6 +232,34 @@ function quizCard() {
        .marks i{width:46px;height:46px;border-radius:6px;display:block}`,
   );
   shoot('public/og-quiz-v3.png', html, 1200, 630);
+}
+
+// ---- TOrDO card (Nov 2026): the /tordo/ page's hook beside the phone from
+// the first App Store screenshot (app/tordo/deck.jpg), on that screenshot's
+// own cream: its top-left corner, blown up to fill the card, so the colours
+// can't drift apart.
+function tordoCard() {
+  const shot = pathToFileURL(path.join(ROOT, 'app/tordo/deck.jpg')).href;
+  const ink = '#1d1a2b';
+  const html = page(
+    `<div class="card" style="background:url('${shot}') left top / 160000px auto;color:${ink}">
+      ${wordmark(ink)}
+      <p class="h">Your to-do list, one card at a time.</p>
+      <p class="sub">For brains that freeze at a long list.</p>
+      <div class="foot"><span><b>TOrDO</b> for iPhone and iPad</span><b>clockmath.com/tordo</b></div>
+      <img class="phone" src="${shot}" alt="">
+    </div>`,
+    CARD_CSS +
+      `.card{position:relative;overflow:hidden}
+       .card > :not(.phone){max-width:590px}
+       .h{margin:auto 0 0;${DISPLAY};font-weight:900;font-size:100px;line-height:0.92}
+       .sub{margin:20px 0 32px;font-size:32px;font-weight:600;opacity:0.75}
+       .foot{border-top:2px solid rgb(29 26 43 / 0.2);padding-top:20px;margin-top:0}
+       .foot{font-size:24px}
+       .foot span b{font-weight:800}
+       .phone{position:absolute;right:48px;top:-196px;width:460px}`,
+  );
+  shoot('public/og/tordo.png', html, 1200, 630);
 }
 
 // ---- Countdown cards
