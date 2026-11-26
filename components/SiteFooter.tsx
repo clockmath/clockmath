@@ -18,6 +18,8 @@ const LINKS: Array<{ label: string; href: string }> = [
   // Not "Countdowns": the header tab of that name goes to /tools/countdown/
   { label: 'Holiday countdowns', href: '/countdown/holidays/' },
   { label: 'Guides', href: '/articles/' },
+  // Nov 2026: ClockMath's iPhone app (the site never mentioned it)
+  { label: 'TOrDO for iPhone', href: '/tordo/' },
   { label: 'Contact', href: '/contact/' },
   { label: 'Privacy', href: '/privacy/' },
   { label: 'Terms', href: '/terms/' },
