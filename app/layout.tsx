@@ -7,6 +7,7 @@ import ClarityAnalytics from "@/components/ClarityAnalytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import WebVitals from "@/components/WebVitals";
 import NotOnEmbed from "@/components/NotOnEmbed";
+import ErrorReporter from "@/components/ErrorReporter";
 
   
 
@@ -74,6 +75,9 @@ export default function RootLayout({
           <ClarityAnalytics />
           <WebVitals />
         </NotOnEmbed>
+        {/* Nov 2026: the site's own error log (lib/errorReport.ts), on
+            embeds too: their document is ours, so errors there are ours */}
+        <ErrorReporter />
         {children}
         <NotOnEmbed>
           <ConsentBanner />
