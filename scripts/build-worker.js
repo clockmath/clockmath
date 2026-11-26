@@ -70,6 +70,7 @@ async function route(request, env) {
     case '/api/geo': return handleGeoApi(request);
     case '/api/quiz': return handleQuizApi(request, env);
     case '/api/feedback': return handleFeedbackApi(request, env);
+    case '/api/error': return handleErrorApi(request, env);
   }
   if (url.pathname.startsWith('/badge/countdown/') && url.pathname.endsWith('.svg')) return handleBadge(request);
   if (CHART_PATH.test(url.pathname)) return handleChart(request, env);

@@ -17,7 +17,7 @@ const code = fs.readFileSync(path.join(__dirname, 'api.js'), 'utf8');
 // withSecurityHeaders uses cacheControlFor from live-counts.js, as in the worker.
 const liveCounts = fs.readFileSync(path.join(__dirname, 'live-counts.js'), 'utf8');
 const api = new Function(
-  `${quizLib}\n${liveCounts}\n${code}\nreturn { handleQuizApi, handlePlacesApi, handleFeedbackApi, fbSendEmailCopy, redirectTarget, rateLimited, withSecurityHeaders, cspNonce, __cmQuiz };`,
+  `${quizLib}\n${liveCounts}\n${code}\nreturn { handleQuizApi, handlePlacesApi, handleFeedbackApi, handleErrorApi, browserFamily, fbSendEmailCopy, redirectTarget, rateLimited, withSecurityHeaders, cspNonce, __cmQuiz };`,
 )();
 
 function memoryKV() {
@@ -203,6 +203,64 @@ const post = (url, body, headers = {}) =>
   // A 304 sends no CSP, so the browser keeps the one that came with its stored page
   const notModified = api.withSecurityHeaders(new Response(null, { status: 304 }), '/').headers;
   assert.strictEqual(notModified.get('Content-Security-Policy'), null);
+
+  // ---- Error log (Nov 2026): same-origin only, grouped per day and error ----
+  {
+    const errEnv = { QUIZ_KV: memoryKV() };
+    const chromeUA = 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36';
+    const iphoneUA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+    const report = (body, headers = {}) =>
+      api.handleErrorApi(post('https://clockmath.com/api/error', body, { Origin: 'https://clockmath.com', 'User-Agent': chromeUA, ...headers }), errEnv);
+    const sample = { message: 'TypeError: x is undefined', source: '/_next/static/chunks/app.js:1:200', stack: 'at f (app.js:1:200)', path: '/tools/timesheet/?d=SECRET#x', kind: 'error' };
+
+    res = await report(sample, { 'CF-Connecting-IP': '5.5.5.1' });
+    assert.strictEqual(res.status, 204);
+    res = await report({ ...sample, path: '/tools/overtime/' }, { 'CF-Connecting-IP': '5.5.5.2', 'User-Agent': iphoneUA });
+    assert.strictEqual(res.status, 204);
+    const keys = [...errEnv.QUIZ_KV.m.keys()];
+    assert.strictEqual(keys.length, 1, 'the same error on two pages is one key');
+    assert.match(keys[0], new RegExp(`^error:${today}:[0-9a-f]{12}$`));
+    const stored = JSON.parse(errEnv.QUIZ_KV.m.get(keys[0]));
+    assert.strictEqual(stored.count, 2);
+    assert.deepStrictEqual(stored.pages, { '/tools/timesheet/': 1, '/tools/overtime/': 1 }, 'path only, never the query');
+    assert.deepStrictEqual(stored.browsers, { Chrome: 1, 'Safari (phone)': 1 });
+    assert.ok(!JSON.stringify(stored).includes('SECRET'), 'no share-link data');
+    assert.ok(!JSON.stringify(stored).includes('5.5.5'), 'no IP');
+
+    // Another site, no Origin, a GET, junk: refused, nothing stored
+    res = await report(sample, { Origin: 'https://evil.example', 'CF-Connecting-IP': '5.5.5.3' });
+    assert.strictEqual(res.status, 403);
+    res = await api.handleErrorApi(new Request('https://clockmath.com/api/error', { method: 'POST', body: JSON.stringify(sample) }), errEnv);
+    assert.strictEqual(res.status, 403, 'no Origin header');
+    res = await api.handleErrorApi(new Request('https://clockmath.com/api/error'), errEnv);
+    assert.strictEqual(res.status, 405);
+    res = await report({ message: '', path: '/' }, { 'CF-Connecting-IP': '5.5.5.4' });
+    assert.strictEqual(res.status, 400);
+    res = await report({ message: 'x', path: 'https://evil.example/' }, { 'CF-Connecting-IP': '5.5.5.5' });
+    assert.strictEqual(res.status, 400, 'a path, not a URL');
+    res = await api.handleErrorApi(
+      new Request('https://clockmath.com/api/error', { method: 'POST', headers: { Origin: 'https://clockmath.com', 'CF-Connecting-IP': '5.5.5.6' }, body: 'x'.repeat(5000) }),
+      errEnv,
+    );
+    assert.strictEqual(res.status, 400, 'too large');
+    // A local preview posts to its own host, which counts as same-origin
+    res = await api.handleErrorApi(
+      new Request('http://localhost:8788/api/error', { method: 'POST', headers: { Origin: 'http://localhost:8788', 'CF-Connecting-IP': '5.5.5.7' }, body: JSON.stringify(sample) }),
+      errEnv,
+    );
+    assert.strictEqual(res.status, 204);
+    // 10 an hour per address, then 429
+    for (let i = 0; i < 10; i++) await report({ ...sample, message: `loop ${i}` }, { 'CF-Connecting-IP': '5.5.5.8' });
+    res = await report(sample, { 'CF-Connecting-IP': '5.5.5.8' });
+    assert.strictEqual(res.status, 429);
+    // At most 10 pages kept per error
+    for (let i = 0; i < 15; i++) await report({ ...sample, message: 'many pages', path: `/p${i}/` }, { 'CF-Connecting-IP': `6.6.6.${i}` });
+    const many = [...errEnv.QUIZ_KV.m.values()].map((v) => JSON.parse(v)).find((e) => e.message === 'many pages');
+    assert.strictEqual(many.count, 15);
+    assert.strictEqual(Object.keys(many.pages).length, 10);
+    assert.strictEqual(api.browserFamily('Mozilla/5.0 ... Edg/131.0'), 'Edge');
+    assert.strictEqual(api.browserFamily(''), 'Other');
+  }
 
   console.log('api: all checks passed');
 })().catch((e) => {

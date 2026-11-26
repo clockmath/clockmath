@@ -9,7 +9,7 @@
     "build": "next build",
     "pages:build": "next build && node scripts/build-worker.js",
     "preview": "npm run pages:build && wrangler pages dev",
-    "deploy": "npm test && npm run lint && node scripts/stale-check.mjs && node scripts/feedback.mjs --summary && npm run pages:build && wrangler pages deploy && node scripts/indexnow.js",
+    "deploy": "npm test && npm run lint && node scripts/stale-check.mjs && node scripts/feedback.mjs --summary && node scripts/errors.mjs --summary && npm run pages:build && wrangler pages deploy && node scripts/indexnow.js",
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
@@ -18,7 +18,8 @@
     "test": "node --import ./tests/alias.mjs --test --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/*.test.ts && node scripts/worker/live-counts.test.js && node scripts/worker/stale-assets.test.js && node scripts/worker/api.test.js && node scripts/worker/badges.test.js && node scripts/indexnow.test.js",
     "stale-check": "node scripts/stale-check.mjs",
     "feedback": "node scripts/feedback.mjs",
-    "embeds": "node scripts/embeds.mjs"
+    "embeds": "node scripts/embeds.mjs",
+    "errors": "node scripts/errors.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "1.1.1",

@@ -675,6 +675,100 @@ function resolveRedirect(pathname) {
 }
 // Follow chains (a prefix rule landing on an exact one, e.g. /article/x ->
 // /articles/x/ -> its new home) so a visitor or crawler gets a single hop.
+// ---- Error log (Nov 2026) ----
+// The site's own error log, instead of a third-party service (no package, no
+// CSP change, no new processor): lib/errorReport.ts posts an uncaught browser
+// error here, and it is kept in KV (QUIZ_KV) for 30 days, grouped by day and
+// error: one `error:<day>:<hash>` key per distinct error per day, counting
+// how often it happened, on which pages and in which browsers. `npm run
+// errors` reads them; every deploy prints a one-line summary. Stored: the
+// error text and stack (our scripts only), the page path (never the query:
+// share links carry timesheets there), a browser family and a phone flag.
+// No IP, no user agent string, no country.
+const errIpHits = new Map();
+const ERROR_TTL = 30 * 24 * 3600;
+const clip = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
+
+/** "Chrome", "Safari", "Firefox", "Edge", "Samsung" or "Other", from the User-Agent; the string itself isn't kept. */
+function browserFamily(ua) {
+  if (!ua) return 'Other';
+  if (/Edg\//.test(ua)) return 'Edge';
+  if (/SamsungBrowser\//.test(ua)) return 'Samsung';
+  if (/Firefox\/|FxiOS\//.test(ua)) return 'Firefox';
+  if (/Chrome\/|CriOS\//.test(ua)) return 'Chrome';
+  if (/Safari\//.test(ua)) return 'Safari';
+  return 'Other';
+}
+
+async function errorFingerprint(message, source) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(message + '|' + source));
+  return Array.from(new Uint8Array(digest).slice(0, 6), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function handleErrorApi(request, env) {
+  if (request.method !== 'POST') return quizJson(request, 405, { error: 'method not allowed' });
+  // Same-origin only: the page itself posts here (production, or a local
+  // preview on its own host); anything from another site is refused
+  const origin = request.headers.get('Origin');
+  let sameOrigin = false;
+  try { sameOrigin = !!origin && new URL(origin).host === new URL(request.url).host; } catch (e) { /* bad Origin */ }
+  if (!sameOrigin) return quizJson(request, 403, { error: 'forbidden' });
+  if (!env.QUIZ_KV) return quizJson(request, 503, { error: 'unavailable' });
+
+  // 10 an hour per address per isolate: one broken page sends at most 5
+  // (the reporter's own cap), so this only stops a loop or a bot
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (rateLimited(errIpHits, ip, 10, 3600000)) return quizJson(request, 429, { error: 'slow down' });
+
+  let body;
+  try {
+    const raw = await request.text();
+    if (raw.length > 4096) return quizJson(request, 400, { error: 'too large' });
+    body = JSON.parse(raw);
+  } catch (e) {
+    return quizJson(request, 400, { error: 'bad json' });
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return quizJson(request, 400, { error: 'bad body' });
+
+  const message = clip(body.message, 300).trim();
+  const path = clip(body.path, 200).split(/[?#]/)[0];
+  if (!message || !path.startsWith('/')) return quizJson(request, 400, { error: 'bad report' });
+  const source = clip(body.source, 200);
+  const stack = clip(body.stack, 1500);
+  const kind = body.kind === 'rejection' ? 'rejection' : 'error';
+  const ua = request.headers.get('User-Agent') || '';
+  const browser = browserFamily(ua) + (/Mobi|Android|iPhone|iPad/.test(ua) ? ' (phone)' : '');
+
+  const now = new Date().toISOString();
+  const key = 'error:' + now.slice(0, 10) + ':' + (await errorFingerprint(message, source));
+  let entry;
+  try {
+    const raw = await env.QUIZ_KV.get(key);
+    entry = raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    entry = null;
+  }
+  if (!entry || typeof entry !== 'object') {
+    entry = { message, source, stack, kind, count: 0, first: now, last: now, pages: {}, browsers: {} };
+  }
+  entry.count = (entry.count || 0) + 1;
+  entry.last = now;
+  // At most 10 pages and 10 browsers per error, so a key can't grow forever
+  const bump = (map, k) => {
+    if (map[k] !== undefined || Object.keys(map).length < 10) map[k] = (map[k] || 0) + 1;
+  };
+  entry.pages = entry.pages && typeof entry.pages === 'object' ? entry.pages : {};
+  entry.browsers = entry.browsers && typeof entry.browsers === 'object' ? entry.browsers : {};
+  bump(entry.pages, path);
+  bump(entry.browsers, browser);
+  try {
+    await env.QUIZ_KV.put(key, JSON.stringify(entry), { expirationTtl: ERROR_TTL });
+  } catch (e) {
+    return quizJson(request, 503, { error: 'busy' });
+  }
+  return quizJson(request, 204, null);
+}
+
 function redirectTarget(pathname) {
   let target = resolveRedirect(pathname);
   for (let hops = 0; target && hops < 3; hops++) {

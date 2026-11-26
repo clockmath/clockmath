@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         <div className="st-article article-prose">
           <div>
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-6">
-              <strong>Effective date:</strong> November 21, 2026
+              <strong>Effective date:</strong> November 26, 2026
             </p>
 
             <p className="mb-6">
@@ -120,6 +120,13 @@ export default function PrivacyPage() {
               <li>
                 <strong>Place search</strong> (time zone converter): the place name you type is sent through our server
                 to Geoapify to find matching places. We don&apos;t store it.
+              </li>
+              <li>
+                <strong>Error reports:</strong> if one of the site&apos;s own scripts fails in your browser, the page
+                sends us the error message and where in our code it happened, the page&apos;s address without anything
+                after a &ldquo;?&rdquo; or &ldquo;#&rdquo; (so no shared timesheet), and your browser&apos;s name and
+                whether it&apos;s a phone. No IP address, cookies or anything you typed. We keep them on Cloudflare for
+                30 days to fix bugs, and no other company receives them.
               </li>
               <li>
                 <strong>Your country</strong> (from Cloudflare) is checked on each visit to decide whether to show the
